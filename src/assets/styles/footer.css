@@ -1,0 +1,30 @@
+.footer {
+    background: rgba(0, 47, 108, 0.8);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    bottom: 0;
+  }
+  
+  .footer-links ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .footer-links ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .social-media a {
+    color: white;
+    margin-right: 10px;
+    text-decoration: none;
+  }
+  
