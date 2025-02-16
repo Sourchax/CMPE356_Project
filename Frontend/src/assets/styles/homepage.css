@@ -27,6 +27,17 @@ body {
     position: relative;
     z-index: 10;
 }
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.logo-text {
+    margin-left: 8px;
+}
 
 .logo img {
     height: 50px;

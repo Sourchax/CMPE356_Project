@@ -6,7 +6,7 @@ const Homepage = () => {
     <div className="homepage">
       <header className="header">
         <div className="logo">
-          <img src="logo.png" alt="Insert Logo" />
+            🚢 <span className="logo-text">İDO</span>
         </div>
         <nav className="navigation">
           <ul>
