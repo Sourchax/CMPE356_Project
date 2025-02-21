@@ -4,11 +4,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 80vh;
     background: url("../images/background_image.jpg") no-repeat center;
-    background-size: cover;
-  }
-  
+    background-position: center; /* Keeps the background centered */
+    
+}
   /* Hero Bölümü */
   .hero {
     text-align: center;
@@ -16,7 +16,7 @@
     margin-bottom: 50px;
     background: rgba(0, 47, 108, 0.85);
     color: white;
-    width: 50%;
+    width: 60%;
   }
   
   .hero h1 {
@@ -74,7 +74,7 @@
   
   /* Buton */
   .search-button {
-    background: #002F6C;
+    background: rgba(0, 47, 108, 0.95);
     color: white;
     padding: 12px;
     border-radius: 6px;

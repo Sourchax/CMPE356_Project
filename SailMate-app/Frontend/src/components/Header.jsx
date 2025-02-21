@@ -18,10 +18,25 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const navLinks = document.querySelectorAll('.nav-links li');
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      if (!this.classList.contains('dropdown')) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        this.classList.add('active');
+      }
+    });
+  });
+
+  const handleLogoClick = () => {
+    navLinks.forEach(link => link.classList.remove('active'));
+  };
+
   return (
     <div className="out-package">
       <header className="header">
-        <div className="logo">
+        <div className="logo" onClick={handleLogoClick}>
           <Link to="/">
           <img src={sailMatelogo} alt="Insert Logo" />
           </Link>
@@ -67,6 +82,7 @@ const Header = () => {
             <li><Link to="/contact">Contact</Link></li>
           </ul>
         </nav>
+
         <div className="auth-buttons">
             <SignedOut>
               <SignInButton />

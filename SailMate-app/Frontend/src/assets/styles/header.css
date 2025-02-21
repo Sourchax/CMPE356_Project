@@ -57,10 +57,7 @@
   top: 100%;
   left: 0;
   background: rgba(0, 47, 108, 0.95);
-  min-width: 180px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  padding: 5px 0;
   flex-direction: column;
   opacity: 0;
   transform: translateY(-10px);
@@ -76,25 +73,43 @@
 
 /* Dropdown Items */
 .dropdown-content li {
-  padding: 12px 20px;
   white-space: nowrap;
-  transition: background 0.3s ease-in-out;
 }
 
-.dropdown-content li:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
 
 /* Navbar Links */
 .nav-links li a, .dropdown > span {
   color: white;
   text-decoration: none;
   font-weight: bold;
+  position: relative;
   transition: color 0.3s ease-in-out;
 }
 
-.nav-links li a:hover, .dropdown:hover > span {
-  color: yellow;
+/* Underline Effect */
+.nav-links li a::after, .dropdown:hover > span::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #f0c808;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.nav-links li a:hover::after, .dropdown:hover > span::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Active Link */
+.nav-links li.active a {
+  color: #f0c808;
+  font-weight: bold;
+  border-bottom: 2px solid #f0c808; /* Adding underline to indicate selection */
 }
 
 /* Auth Buttons */
@@ -123,7 +138,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  background: linear-gradient(45deg, #f06, #ffba00);
+  background: linear-gradient(45deg, #f05d5e, #f0c808);
   color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -135,7 +150,7 @@
 /* Login Button */
 .login-btn {
   background-color: rgba(255, 255, 255, 0.2);
-  color: #f06;
+  color: #f05d5e;
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -151,7 +166,7 @@
 .auth-buttons button:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(45deg, #ffba00, #f06);
+  background: linear-gradient(45deg, #f0c808, #f05d5e);
 }
 
 /* Burger Menu */
@@ -159,7 +174,6 @@
   display: none;
   font-size: 24px;
   cursor: pointer;
-
 }
 
 @media screen and (max-width: 862px) {
@@ -176,18 +190,15 @@
     padding: 10px 0;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
-
   }
 
   .navigation.open {
     display: flex;
-    
   }
 
   .nav-links {
     flex-direction: column;
     gap: 0;
-    
   }
 
   .nav-links li {
@@ -197,11 +208,9 @@
   .menu-toggle {
     display: block;
     color: white;
-    
   }
 
   .dropdown-content {
     display: none !important;
-    
   }
 }

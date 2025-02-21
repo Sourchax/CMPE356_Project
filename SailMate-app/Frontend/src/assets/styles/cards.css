@@ -1,0 +1,23 @@
+.cards_header {
+    text-align: center; /* Centers the text horizontally */
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    padding-top: 50px;
+}
+
+.card-item {
+    width: 250px; /* Adjust the card width as needed */
+}

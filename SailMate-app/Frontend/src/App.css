@@ -5,10 +5,6 @@
     box-sizing: border-box;
   }
   
-  /* App Wrapper */
-  .app-wrapper {
-  }
-
   .header{
     max-width: 80rem;
     margin: 0 auto;

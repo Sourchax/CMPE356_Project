@@ -44,11 +44,14 @@ const AnimatedRoutes = () => {
 
 const AppLayout = ({ children }) => {
   return (
-    <div className="app-wrapper">
-      <Header />
-      <main>{children}</main>
-      <Footer />
-    </div>
+    <>
+      <title>SailMate</title>
+      <div className="app-wrapper">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </>
   );
 };
 
