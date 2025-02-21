@@ -1,27 +1,9 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background: url("../images/background_image.jpg") no-repeat center center fixed;
-  background-size: cover;
-}
-
 .ticketcheck-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Header ve Footer’ın görünmesini sağla */
-.header, .footer {
-  background: rgba(0, 47, 108, 0.8);
-  color: white;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
 
 /* Sayfa içeriğini ortala */
 .ticketcheck-main {

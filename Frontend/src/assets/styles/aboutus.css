@@ -1,24 +1,8 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-  }
-  
-  .aboutus-container {
+   .aboutus-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: url("../images/background_image.jpg") no-repeat center;
     background-size: cover;
-  }
-  
-  .header, .footer {
-    background: rgba(0, 47, 108, 0.8); /* Semi-transparent background */
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
   
   .navigation ul {

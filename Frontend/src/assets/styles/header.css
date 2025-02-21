@@ -6,21 +6,18 @@
   user-select: none;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+.out-package{
+  background: rgba(0, 47, 108, 0.95);
 }
 
-/* Header Container */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: rgba(0, 47, 108, 0.95);
   color: white;
   position: relative;
-  
+  margin: 0 auto;
 }
 
 .logo{
