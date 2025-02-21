@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Homepage from "./pages/homepage";
@@ -9,11 +9,12 @@ import Contact from "./pages/Contact";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
+import "./App.css";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
-  in: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  out: { opacity: 0, y: -20, transition: { duration: 0.4, ease: "easeIn" } },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } },
 };
 
 const AnimatedRoutes = () => {
@@ -24,19 +25,12 @@ const AnimatedRoutes = () => {
       <motion.div
         key={location.pathname}
         initial="initial"
-        animate="in"
-        exit="out"
+        animate="animate"
+        exit="exit"
         variants={pageVariants}
-        style={{
-          position: "relative",  /* Absolute yerine relative yaptık */
-          width: "100%",
-          minHeight: "calc(100vh - 80px)", /* Footer’ın yukarı kaymasını engelle */
-          display: "flex",
-          flexDirection: "column",
-        }}
       >
-        <Routes location={location}>
-          <Route path="/" element={<Homepage />} />
+        <Routes location={location} key={location.pathname}>
+          <Route path="/*" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
@@ -48,14 +42,22 @@ const AnimatedRoutes = () => {
   );
 };
 
+const AppLayout = ({ children }) => {
+  return (
+    <div className="app-wrapper">
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </div>
+  );
+};
+
 function App() {
   return (
     <Router>
-      <div className="app-container">
-        <Header />
+      <AppLayout>
         <AnimatedRoutes />
-        <Footer />
-      </div>
+      </AppLayout>
     </Router>
   );
 }

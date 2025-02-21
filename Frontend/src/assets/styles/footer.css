@@ -1,30 +1,105 @@
 .footer {
-    background: rgba(0, 47, 108, 0.8);
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    width: 100%;
-    bottom: 0;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #121212;
+  color: white;
+  text-align: center;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links ul li {
+  display: inline;
+}
+
+.footer-links ul li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.footer-links ul li a:hover {
+  color: #00bcd4;
+}
+
+.social-media {
+  margin-top: 15px;
+  display: flex;
+  gap: 15px;
+}
+
+.social-media a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 22px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+/* Facebook */
+.social-media a.facebook {
+  background-color: #1877F2;
+  color: white;
+}
+.social-media a.facebook:hover {
+  box-shadow: 0 0 10px #1877F2;
+  transform: scale(1.2);
+}
+
+/* Instagram - Gradient Effect */
+.social-media a.instagram {
+  background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+  color: white;
+}
+.social-media a.instagram:hover {
+  transform: scale(1.2) rotate(10deg);
+  box-shadow: 0 0 10px rgba(255, 0, 150, 0.7);
+}
+
+/* X (Twitter) */
+.social-media a.x {
+  background-color: black;
+  color: white;
+}
+.social-media a.x:hover {
+  background-color: white;
+  color: black;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px white;
+}
+
+.call-center {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* Responsive Fix */
+@media screen and (max-width: 840px) {
   .footer-links ul {
-    list-style: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .social-media {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
   }
-  
-  .footer-links ul li a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-  }
-  
+
   .social-media a {
-    color: white;
-    margin-right: 10px;
-    text-decoration: none;
+    margin: 5px;
   }
-  
+}

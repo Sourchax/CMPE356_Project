@@ -6,8 +6,8 @@ const Homepage = () => {
     <main className="homepage">
       {/* Hero Section */}
       <section className="hero">
-        <h1>🚢 Welcome to İDO</h1>
-        <p>Fast, safe, and comfortable sea travel in Istanbul.</p>
+        <h1>🚢 Welcome to SailMate</h1>
+        <p>Your mate for smooth sailing..</p>
       </section>
 
       {/* Ticket Search Section */}

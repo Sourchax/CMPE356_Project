@@ -12,10 +12,11 @@
   /* Hero Bölümü */
   .hero {
     text-align: center;
-    padding: 80px 20px;
+    padding: 30px 40px;
+    margin-bottom: 50px;
     background: rgba(0, 47, 108, 0.85);
     color: white;
-    width: 100%;
+    width: 50%;
   }
   
   .hero h1 {
@@ -27,12 +28,10 @@
     font-size: 18px;
   }
   
-  /* Ticket Search Bölümü */
   .ticket-search {
     display: flex;
     justify-content: center;
     padding: 50px 20px;
-    width: 100%;
   }
   
   .ticket-card {

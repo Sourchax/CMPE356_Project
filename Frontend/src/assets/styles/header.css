@@ -1,15 +1,41 @@
-/* Header Genel Stili */
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Header Container */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: rgba(0, 47, 108, 0.9);
+  background: rgba(0, 47, 108, 0.95);
   color: white;
   position: relative;
+  
 }
 
-/* Menü İçeriği */
+.logo{
+  height: 40px;
+  width: 100px;
+}
+.logo img {
+  height: 40px;
+}
+
+/* Navbar */
+.navigation {
+  display: flex;
+}
+
 .nav-links {
   list-style: none;
   display: flex;
@@ -21,77 +47,64 @@
   padding: 10px 15px;
 }
 
-/* Dropdown Menüsü */
+/* Dropdown Styling */
 .dropdown {
   position: relative;
   cursor: pointer;
 }
 
-/* Dropdown İçeriği (Başlangıçta Kapalı) */
+/* Dropdown Content */
 .dropdown-content {
-  display: none;  /* Başlangıçta görünmeyecek */
+  display: none;
   position: absolute;
   top: 100%;
   left: 0;
   background: rgba(0, 47, 108, 0.95);
-  min-width: 160px;
+  min-width: 180px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: left;
-  z-index: 1000;
-  flex-direction: column;
   border-radius: 5px;
   padding: 5px 0;
-}
-
-/* Dropdown içindeki liste elemanları */
-.dropdown-content li {
-  display: block;
-  padding: 10px 15px;
-  white-space: nowrap;
-}
-
-/* Dropdown Hover ile Açılacak */
-.dropdown:hover .dropdown-content {
-  display: flex;  /* Menü hover olunca açılacak ve alt alta sıralanacak */
   flex-direction: column;
-}
-
-/* Dropdown Menü Geçişi */
-.dropdown-content {
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content,
+.dropdown-content.show {
   display: flex;
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Menü Linkleri */
+/* Dropdown Items */
+.dropdown-content li {
+  padding: 12px 20px;
+  white-space: nowrap;
+  transition: background 0.3s ease-in-out;
+}
+
+.dropdown-content li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Navbar Links */
 .nav-links li a, .dropdown > span {
   color: white;
   text-decoration: none;
   font-weight: bold;
+  transition: color 0.3s ease-in-out;
 }
 
 .nav-links li a:hover, .dropdown:hover > span {
-  color: yellow; /* Üzerine gelince sarı olacak */
+  color: yellow;
 }
 
-/* Dropdown Butonu (Ok İkonu) */
-.dropdown span {
-  display: flex;
-  align-items: center;
-}
-
-
-
-/* Login ve Register Butonları */
+/* Auth Buttons */
 .auth-buttons {
   display: flex;
-  gap: 10px; /* Butonlar arasında boşluk bırakır */
+  gap: 12px;
+  width: 100px;
 }
 
 .auth-buttons button {
@@ -104,30 +117,94 @@
   transition: 0.3s ease-in-out;
 }
 
-/* Login Butonu */
+/* General Button Styles */
+.auth-buttons button {
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(45deg, #f06, #ffba00);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-buttons button:focus {
+  outline: none;
+}
+
+/* Login Button */
 .login-btn {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #002f6c;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #f06;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .login-btn:hover {
-  background-color: white;
-  border-color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #002f6c;
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Register Butonu */
-.register-btn {
-  background-color: #ffa500;
-  color: white;
-  border: 2px solid #ffa500;
+/* Hover effects for all buttons */
+.auth-buttons button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(45deg, #ffba00, #f06);
 }
 
-.register-btn:hover {
-  background-color: #ff8c00;
-  border-color: #ff8c00;
+/* Burger Menu */
+.menu-toggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+
 }
 
-.dropdown span::before{
-  content: none;
+@media screen and (max-width: 862px) {
+  .navigation {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 47, 108, 0.95);
+    width: 40%;
+    border-radius: 5px;
+    padding: 10px 0;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+
+  }
+
+  .navigation.open {
+    display: flex;
+    
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0;
+    
+  }
+
+  .nav-links li {
+    padding: 12px 20px;
+  }
+
+  .menu-toggle {
+    display: block;
+    color: white;
+    
+  }
+
+  .dropdown-content {
+    display: none !important;
+    
+  }
 }
