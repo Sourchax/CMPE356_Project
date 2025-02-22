@@ -1,11 +1,12 @@
 import React from "react";
 import SeatLayout from "../components/seatLayout";
 import "../assets/styles/aboutus.css";
+import TicketSum from "../components/seatSelectionPhase/TicketSum.jsx";
 
 const AboutUs = () => {
   return (
     <div className="aboutus-container">
-      <SeatLayout/>
+      <TicketSum/>
       <main className="aboutus-main"></main>
     </div>
   );

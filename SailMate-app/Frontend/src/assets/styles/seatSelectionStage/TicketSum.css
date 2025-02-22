@@ -1,0 +1,115 @@
+.mainTicket-container {
+  display: flex;
+  min-width: 300px;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: auto;
+}
+
+.departure-ticket {
+  display: flex;
+  flex-direction: column; /* Ensures items are stacked row by row */
+  align-items: center;
+  justify-content: flex-start;
+  height: auto; /* Allow height to grow based on content */
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 20px;
+  padding: 15px;
+  background-color: #e3e3e3;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.departure-ticket .items {
+  display: flex;
+  flex-direction: row; /* Each row is a flex container */
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+}
+
+.seatSelection-block {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.seatSelection-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.seatSelection-head h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.input {
+  display: none;
+}
+
+.custom-checkbox {
+  position: relative;
+  padding-left: 30px;
+  font-size: 14px;
+  color: #444;
+}
+
+.custom-checkbox::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.input:checked + .custom-checkbox::before {
+  background-color: #007bff;
+  border: 2px solid #007bff;
+}
+
+.input:checked + .custom-checkbox::after {
+  content: "✔";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: white;
+  font-weight: bold;
+}
+
+.departure-ticket img {
+  height: 20px;
+  width: 20px;
+}
+
