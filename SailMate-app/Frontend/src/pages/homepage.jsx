@@ -1,6 +1,9 @@
 import React from "react";
 import "../assets/styles/homepage.css";
 import Cards from "../components/cards.jsx";
+import creditCard from "../assets/images/secure-payment.png"
+import ship from "../assets/images/ship.png"
+import passenger from "../assets/images/passenger.png"
 
 const Homepage = () => {
   return (
@@ -54,6 +57,20 @@ const Homepage = () => {
           </div>
         </section>
       </main>
+    <div className="infobar-home">
+      <div>
+        <img src={creditCard}></img>
+        <h4> Secure Online Payment </h4>
+      </div>
+      <div>
+        <img src={ship}></img>
+        <h4> Accessibility Service </h4>
+      </div>
+      <div>
+        <img src={passenger}></img>
+        <h4> Enjoyable Journey </h4>
+      </div>
+    </div>
     <Cards/>
     </>
   );

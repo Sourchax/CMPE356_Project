@@ -1,17 +1,14 @@
 .stationPage {
   display: flex;
   flex-direction: column;
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin: 40px auto;
   min-height: 800px;
   max-width: 60rem;
-  margin: 0 auto;
-  padding-bottom: 50px;
-  padding-top: 50px;
 }
 
 .station-container {
   display: flex;
+  gap: 20px;
   justify-content: center;
   align-content: flex-start;
   gap: 20px;
@@ -28,6 +25,14 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  cursor: pointer;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.animating {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card svg {
@@ -37,7 +42,7 @@
 }
 
 .card:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -84,6 +89,8 @@
   gap: 10px;
   justify-content: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  padding: 0 20px;
 }
 
 .filter-bar button {
@@ -101,6 +108,7 @@
   text-decoration: none;
   transition: 0.5s ease all;
   z-index: 1;
+  cursor: pointer;
 }
 
 .filter-bar button:before {
@@ -117,12 +125,13 @@
 }
 
 .filter-bar button:hover,
-button:focus {
+.filter-bar button:focus {
   color: white;
+  outline: none;
 }
 
 .filter-bar button:hover:before,
-button:focus:before {
+.filter-bar button:focus:before {
   transition: 0.5s all ease;
   left: 0;
   right: 0;
@@ -133,7 +142,6 @@ button:focus:before {
   transform: scale(0.9);
 }
 
-/* Active state for the selected button */
 .filter-bar button.active {
   background-color: #f0c808;
   color: white;
@@ -145,39 +153,10 @@ button:focus:before {
   opacity: 1;
 }
 
-@media (max-width: 768px) {
-  .filter-bar {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .filter-bar button {
-    width: 100%;
-    font-size: 16px;
-    padding: 0.8em 1.5em;
-  }
-}
-
-@media (max-width: 480px) {
-  .filter-bar button {
-    width: 100%;
-    font-size: 14px;
-    padding: 0.6em 1.2em;
-  }
-
-  .station-container {
-    gap: 15px;
-  }
-
-  .card {
-    width: 250px;
-    height: 180px;
-  }
-}
-
 .aboutStations {
   text-align: center;
   margin-bottom: 30px;
+  padding: 0 20px;
 }
 
 .aboutStations h1 {
@@ -191,4 +170,117 @@ button:focus:before {
   font-size: 18px;
   color: #777;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .station-container {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .filter-bar button {
+    width: 100%;
+    font-size: 16px;
+    padding: 0.8em 1.5em;
+  }
+
+  .aboutStations h1 {
+    font-size: 30px;
+  }
+
+  .aboutStations p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .station-container {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .card {
+    width: 100%;
+    height: 180px;
+  }
+
+  .filter-bar button {
+    font-size: 14px;
+    padding: 0.6em 1.2em;
+  }
+
+  .aboutStations h1 {
+    font-size: 24px;
+  }
+
+  .aboutStations p {
+    font-size: 14px;
+  }
+}
+
+.infobar-home {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 60rem;
+  padding-top: 50px;
+  margin: 0 auto;
+  flex-direction: row;
+}
+
+.infobar-home img {
+  width: 50px;
+  height: 50px;
+}
+
+.infobar-home h4 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.infobar-home div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Media Query for Tablets */
+@media (max-width: 900px) {
+  .infobar-home {
+    width: 90%;
+    flex-direction: column;
+    padding-top: 30px;
+  }
+
+  .infobar-home img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .infobar-home h2 {
+    font-size: 1rem;
+  }
+}
+
+/* Media Query for Mobile */
+@media (max-width: 550px) {
+  .infobar-home {
+    width: 100%;
+    padding-top: 20px;
+  }
+
+  .infobar-home img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .infobar-home h2 {
+    font-size: 0.9rem;
+  }
 }
