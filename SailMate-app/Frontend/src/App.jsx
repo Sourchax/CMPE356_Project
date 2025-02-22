@@ -9,6 +9,7 @@ import Contact from "./pages/Contact";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
+import StationCard from "./components/stationCard";
 import "./App.css";
 
 const pageVariants = {
@@ -32,6 +33,7 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/*" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/stations" element={<StationCard />}/>
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />

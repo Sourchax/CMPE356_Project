@@ -62,6 +62,7 @@
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  z-index: 20;
 }
 
 .dropdown:hover .dropdown-content,

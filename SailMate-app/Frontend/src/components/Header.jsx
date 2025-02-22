@@ -52,7 +52,7 @@ const Header = () => {
         {/* Navigation Menu */}
         <nav className={menuOpen ? "navigation open" : "navigation"}>
           <ul className="nav-links" onMouseLeave={() => setMenuOpen(false)}>
-            <li><Link to="/">Stations</Link></li>
+            <li><Link to="/stations">Stations</Link></li>
 
             {/* Desktop: Show Dropdown | Mobile: Remove it completely */}
             {!isMobile && (
