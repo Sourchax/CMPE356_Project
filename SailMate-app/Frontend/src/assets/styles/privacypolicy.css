@@ -1,0 +1,68 @@
+body {
+    background-color: #f0f8ff;
+    color: #003366;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.privacy-container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+.nav-bar {
+    padding: 10px 0;
+}
+
+.home-link {
+    color: white;
+    text-decoration: none;
+    background-color: darkblue;
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.privacy-content {
+    text-align: center;
+}
+
+.policy-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: left;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 28px;
+    color: darkblue;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+ul {
+    list-style-type: square;
+    padding-left: 20px;
+}

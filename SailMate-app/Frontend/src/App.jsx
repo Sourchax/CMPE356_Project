@@ -10,6 +10,9 @@ import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
 import StationCard from "./components/stationCard";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import "./App.css";
 
 const pageVariants = {
@@ -38,6 +41,9 @@ const AnimatedRoutes = () => {
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
+          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

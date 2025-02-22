@@ -1,0 +1,142 @@
+.container {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    width: 80%;
+    background: white;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.inactive-step {
+    color: #a0a0a0;
+}
+
+.active-step {
+    color: #1e3a8a;
+    font-weight: bold;
+}
+
+.main-section {
+    display: flex;
+}
+
+.ticket-details {
+    width: 33%;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .ticket-details h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+.bold {
+    font-weight: bold;
+}
+
+.total {
+    background: #2563eb;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.payment-section {
+    width: 65%;
+    margin-left: 24px;
+}
+
+.promo-code {
+    margin-bottom: 16px;
+}
+
+.input-group {
+    display: flex;
+    margin-top: 4px;
+}
+
+    .input-group input {
+        border: 1px solid #ccc;
+        padding: 8px;
+        flex-grow: 1;
+        border-radius: 5px 0 0 5px;
+    }
+
+.apply-btn {
+    background: #ea580c;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 0 5px 5px 0;
+    border: none;
+}
+
+.card-details {
+    background: #f3f4f6;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.card-inputs {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+    .card-inputs select, .card-inputs input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 33%;
+    }
+
+.terms {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.summary {
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+    .summary p {
+        display: flex;
+        justify-content: space-between;
+    }
+
+.purchase-btn {
+    background: #ea580c;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    margin-top: 16px;
+    cursor: pointer;
+}
