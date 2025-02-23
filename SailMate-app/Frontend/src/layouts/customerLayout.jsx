@@ -1,7 +1,8 @@
-import { Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useEffect } from "react";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -12,21 +13,28 @@ const pageVariants = {
 const CustomerLayout = () => {
   const location = useLocation();
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [location]);
+
   return (
     <>
-      <Header />
-      <div className="min-h-screen">
+      <Header/>
+      <div className="layout">
         <motion.div
-          key={location.pathname} // Ensures proper animation on route change
+          key={location.pathname}
           variants={pageVariants}
           initial="initial"
           animate="animate"
           exit="exit"
         >
-          <Outlet />
+          <Outlet/>
         </motion.div>
       </div>
-      <Footer />
+      <Footer/>
     </>
   );
 };

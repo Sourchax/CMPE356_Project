@@ -4,6 +4,8 @@ import { AnimatePresence } from "framer-motion";
 import Homepage from "./pages/homepage";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
@@ -13,6 +15,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import CustomerLayout from "./layouts/customerLayout";
+import CustomSignIn from "./pages/customSignIn";
+import CustomSignUp from "./pages/customSignUp";
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -32,6 +36,8 @@ const AnimatedRoutes = () => {
           <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/sign-in" element={<CustomSignIn />} />
+          <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
         <Route path="*" element={<Navigate to="/" replace />} />

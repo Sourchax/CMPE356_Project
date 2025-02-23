@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import "../assets/styles/header.css";
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
@@ -44,7 +44,7 @@ const Header = () => {
 
         {/* Burger Menu Button */}
         <div className="menu-toggle" 
-          onMouseEnter={() => setMenuOpen(!menuOpen)}
+          onMouseEnter={() => setMenuOpen(true)}
         >
           ☰
         </div>
@@ -84,12 +84,14 @@ const Header = () => {
         </nav>
 
         <div className="auth-buttons">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+          <SignedOut>
+            <Link to="/sign-in">
+              <button className="custom-signin-btn">Sign In</button>
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </header>
     </div>
