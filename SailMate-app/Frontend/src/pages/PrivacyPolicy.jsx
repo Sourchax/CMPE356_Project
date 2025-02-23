@@ -1,11 +1,12 @@
 import React from "react";
-import "../assets/styles/privacypolicy.css"; // Import external CSS file
+import { Link } from "react-router-dom";
+import "../assets/styles/privacypolicy.css";
 
 const PrivacyPolicy = () => {
     return (
         <div className="privacy-container">
             <nav className="nav-bar">
-                <a href="/" className="home-link">Back to Home</a>
+                <Link to="/" className="home-link">Back to Home</Link>
             </nav>
             <div className="privacy-content">
                 <div className="policy-box">

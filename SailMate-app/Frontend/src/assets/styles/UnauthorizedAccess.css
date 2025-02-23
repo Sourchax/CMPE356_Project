@@ -1,0 +1,81 @@
+/* Basic reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Scoped styles for UnauthorizedAccess page */
+.unauthorized-container {
+  font-family: 'Arial', sans-serif;
+  background-color: #e3f2fd; /* Light blue background, like the sea */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.unauthorized-content {
+  text-align: center;
+  background-color: #ffffff;
+  border: 2px solid #1976d2; /* Nautical blue border */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.icon-background {
+  position: relative;
+  background-color: #0288d1; /* Nautical blue */
+  border-radius: 50%;
+  padding: 20px;
+  display: inline-block;
+}
+
+.sailboat-icon {
+  font-size: 50px;
+  color: #ffffff;
+}
+
+.cross-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 36px;
+  color: #f44336; /* Red color for the cross */
+  font-weight: bold;
+  transform: translate(25%, -25%); /* Position the cross on the upper-right corner */
+}
+
+.unauthorized-title {
+  color: #f44336;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.unauthorized-text {
+  color: #555;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.upgrade-button {
+  background-color: #0288d1;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.upgrade-button:hover {
+  background-color: #1976d2;
+}

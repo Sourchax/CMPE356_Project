@@ -1,57 +1,76 @@
 
-  .contact-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
-  /* Sayfanın içeriğini ortala */
-  .contact-main {
-    flex-grow: 1;
-    text-align: center;
-    padding: 50px 20px;
-    color: white;
-  }
-  
-  /* İletişim formu stilleri */
-  .contact-form {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 500px;
-    margin: 20px auto;
-    color: black;
-  }
-  
-  .contact-form .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-  }
-  
-  .contact-form label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .contact-form input,
-  .contact-form textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .contact-form button {
-    width: 100%;
-    background-color: #002f6c;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .contact-form button:hover {
-    background-color: #004a99;
-  }
-  
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 100px;
+  align-items: center; /* Centers horizontally */
+  min-height: 100vh; /* Full viewport height */
+  text-align: center; /* Ensures text content is centered */
+}
+
+/* From Uiverse.io by ClawHack1 */ 
+.contact-form {
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.contact-form label {
+  color: black;
+}
+
+.contact-form .heading {
+  font-size: 24px;
+  color: black;
+  ;
+  margin-bottom: 12px;
+  font-weight: bold;
+  display: block;
+}
+
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-form label {
+  color: rgba(0, 47, 108, 0.95);
+  margin-bottom: 10px;
+}
+
+.contact-form textarea {
+  resize: none;
+  height: 80px;
+  width: 400px;
+}
+
+.contact-form input, .contact-form textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.contact-form input:focus, .contact-form textarea:focus {
+  outline: none;
+  box-shadow: 0 0 5px #f0c808;
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
+.contact-form button[type="submit"] {
+  background-color: #f0c808;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.contact-form button[type="submit"]:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+    
