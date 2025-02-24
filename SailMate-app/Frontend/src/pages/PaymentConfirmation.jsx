@@ -3,7 +3,7 @@ import "../assets/styles/paymentconfirmation.css"; // Import external CSS file
 
 const PaymentConfirmation = () => {
   return (
-    <div className="container">
+    <div className="payment-container">
       <div className="content">
         {/* Step Indicator */}
         <div className="step-indicator">

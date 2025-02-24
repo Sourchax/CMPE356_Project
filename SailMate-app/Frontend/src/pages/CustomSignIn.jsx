@@ -13,7 +13,7 @@ const CustomSignIn = () => {
   }, [clerk.loaded]);
 
   return (
-    <div className="container">
+    <div className="sign-in_container">
       <div className="signin-box">
         {loaded && (
           <Link to="/" className={`back-link ${loaded ? "visible" : ""}`}>
