@@ -1,56 +1,62 @@
 import React from "react";
-import "../../assets/styles/seatSelectionStage/TicketSum.css";
-import arrowIcon from "../../assets/images/right-arrow.png"
-import calendars from "../../assets/images/calendars.png"
-import clock from "../../assets/images/clock.png"
+import { FaClock, FaMapMarkerAlt, FaCalendarAlt, FaInfoCircle, FaShieldAlt } from 'react-icons/fa';
 const TicketSum = () => {
     return(
-        <div className="mainTicket-container">
-            <div className="departure-ticket">
-                <div className="items">
-                    <h4>Departure</h4>
-                    <img src={arrowIcon} alt="Image"/>
-                    <h4>Placeholder</h4>
-                </div>
-                <div className="items">
-                    <h4>Departure</h4>
-                    <h4>ok </h4>
-                    <h4>Placeholder</h4>
-                </div>
-                <div className="items">
-                    <div>
-                        <img src={calendars} alt="Image"/>
-                        <h4>Date</h4>
-                    </div>
-                    <div>
-                        <img src={clock} alt="Image"/>
-                        <h4>saatler</h4>
-                    </div>
-                </div>
-                <div className="items">
-                    <h4> i Passengers</h4>
-                    <h4> Price </h4>
-                </div>
-                <div className="items">
-                    <h4> Fee</h4>
-                    <h4> Price </h4>
-                </div>
-                <div className="items">
-                    <h4>Total</h4>
-                    <h4>Price</h4>
-                </div>
-            </div>
-            <div className="seatSelection-block">
-                <div className="seatSelection-head">
-                    <h4> Seat Selection</h4>
-                    <h4> Placeholder</h4>
-                </div>
-                <label>
-                    <input type="checkbox" class="input"/>
-                    <span class="custom-checkbox"> Automatic Seat Selection </span>
-                </label>
-            </div>
+        <div className="bg-white rounded-md shadow-sm p-4 mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <div className="bg-white text-blue-600 font-bold">ONE WAY</div>
+          <div className="flex items-center">
+            <span className="mr-2 text-gray-500">&#8594;</span>
+            <span className="text-green-500 font-bold">ECONOMY</span>
+          </div>
         </div>
+
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center">
+            <span className="text-gray-600">Bursa</span>
+            <FaMapMarkerAlt className="mx-2 text-green-500" />
+          </div>
+          <div className="flex items-center">
+            <span className="text-gray-600">Yenikapi</span>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center">
+            <FaCalendarAlt className="mr-2 text-green-500" />
+            <div>
+              <div className="text-gray-600">Date</div>
+              <div>February 27, 2025</div>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <div className="text-right">
+              <div className="text-gray-600">Departure - Arrival</div>
+              <div>08:30 - 10:55</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t my-2"></div>
+
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center">
+            <div className="text-gray-600">Passenger</div>
+          </div>
+          <div>1 Passenger</div>
+          <div className="text-green-500 font-bold">₺490</div>
+        </div>
+
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-gray-600">Service Fee</div>
+          <div className="text-green-500">₺10</div>
+        </div>
+
+        <div className="bg-green-500 text-white p-2 flex justify-between items-center">
+          <div>TOTAL</div>
+          <div>₺500</div>
+        </div>
+      </div>
     );
 }
 
