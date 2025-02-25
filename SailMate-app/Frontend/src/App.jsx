@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate} from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Homepage from "./pages/homepage";
@@ -17,6 +17,7 @@ import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import CustomerLayout from "./layouts/customerLayout";
 import CustomSignIn from "./pages/customSignIn";
 import CustomSignUp from "./pages/customSignUp";
+import JourneyCatagory from "./components/PlanningPhase/JourneyCatagory";
 import "./App.css";
 
 const AnimatedRoutes = () => {

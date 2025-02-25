@@ -1,0 +1,50 @@
+.planning-container {
+    padding: 20px;
+    background-color: #fff; 
+  }
+  
+  .planning-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #0D3A73; 
+  }
+  
+  .table-container {
+    overflow-x: auto; /* horizon overflow shift */
+  }
+  
+  .voyage-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+  
+  .voyage-table thead tr {
+    color: #fff;
+  }
+  
+  .voyage-table th,
+  .voyage-table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+  }
+  
+  /* column titles */
+  .th-departure {
+    background-color: #06AED5;
+  }
+  
+  .th-promo {
+    background-color: #F0C808;
+  }
+  
+  .th-economy {
+    background-color: #D1FFD7;
+  }
+  
+  .th-business {
+    background-color: #F05D5E;
+  }
+  
