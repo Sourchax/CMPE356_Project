@@ -3,15 +3,7 @@ import "../assets/styles/paymentconfirmation.css"; // Import external CSS file
 
 const PaymentConfirmation = () => {
   return (
-    <div className="payment-container">
       <div className="content">
-        {/* Step Indicator */}
-        <div className="step-indicator">
-          <div className="inactive-step">Voyage Plan</div>
-          <div className="inactive-step">Voyage Information</div>
-          <div className="active-step">Confirmation and Payment</div>
-        </div>
-        
         <div className="main-section">
           {/* Ticket Details */}
           <div className="ticket-details">
@@ -63,7 +55,6 @@ const PaymentConfirmation = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

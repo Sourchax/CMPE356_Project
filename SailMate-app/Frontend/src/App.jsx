@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
-import StationCard from "./components/stationCard";
+import StationList from "./components/stationCard";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -29,7 +29,7 @@ const AnimatedRoutes = () => {
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
-          <Route path="/stations" element={<StationCard />} />
+          <Route path="/stations" element={<StationList />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />

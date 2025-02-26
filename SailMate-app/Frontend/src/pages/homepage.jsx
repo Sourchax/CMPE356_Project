@@ -4,6 +4,7 @@ import Cards from "../components/cards.jsx";
 import creditCard from "../assets/images/secure-payment.png"
 import ship from "../assets/images/ship.png"
 import passenger from "../assets/images/passenger.png"
+import Contact from "./Contact.jsx";
 
 const Homepage = () => {
   return (
@@ -57,20 +58,22 @@ const Homepage = () => {
           </div>
         </section>
       </main>
-    <div className="infobar-home">
-      <div>
-        <img src={creditCard}></img>
-        <h4> Secure Online Payment </h4>
+      <div className="flex justify-around items-center mx-auto max-w-5xl w-full flex-wrap gap-6 py-12">
+        <div className="flex flex-col items-center justify-center text-center">
+          <img src={creditCard} className="w-12 h-12 sm:w-10 sm:h-10 md:w-14 md:h-14" alt="Secure Online Payment" />
+          <h4 className="mt-2 text-lg sm:text-sm md:text-base">Secure Online Payment</h4>
+        </div>
+        <div className="flex flex-col items-center justify-center text-center">
+          <img src={ship} className="w-12 h-12 sm:w-10 sm:h-10 md:w-14 md:h-14" alt="Accessibility Service" />
+          <h4 className="mt-2 text-lg sm:text-sm md:text-base">Accessibility Service</h4>
+        </div>
+        <div className="flex flex-col items-center justify-center text-center">
+          <img src={passenger} className="w-12 h-12 sm:w-10 sm:h-10 md:w-14 md:h-14" alt="Enjoyable Journey" />
+          <h4 className="mt-2 text-lg sm:text-sm md:text-base">Enjoyable Journey</h4>
+        </div>
       </div>
-      <div>
-        <img src={ship}></img>
-        <h4> Accessibility Service </h4>
-      </div>
-      <div>
-        <img src={passenger}></img>
-        <h4> Enjoyable Journey </h4>
-      </div>
-    </div>
+      <h1 className="text-center">Latest Announcements</h1>
+
     <Cards/>
     </>
   );

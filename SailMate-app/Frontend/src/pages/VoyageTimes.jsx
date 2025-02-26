@@ -57,13 +57,13 @@ const VoyageTimes = () => {
             <option value="Pendik">Pendik</option>
             <option value="Yalova">Yalova</option>
           </select>
-        </div>
           <label>Date:</label>
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
           />
+        </div>
       </div>
       <h2 className="title_voyage">Voyage List</h2>
       {filteredVoyages.length === 0 ? (
