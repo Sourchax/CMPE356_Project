@@ -1,50 +1,88 @@
 .planning-container {
-    padding: 20px;
-    background-color: #fff; 
-  }
-  
-  .planning-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    color: #0D3A73; 
-  }
-  
-  .table-container {
-    overflow-x: auto; /* horizon overflow shift */
-  }
-  
-  .voyage-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    border: 1px solid #ccc;
-  }
-  
-  .voyage-table thead tr {
-    color: #fff;
-  }
-  
-  .voyage-table th,
-  .voyage-table td {
-    padding: 12px;
-    border: 1px solid #ccc;
-  }
-  
-  /* column titles */
-  .th-departure {
-    background-color: #06AED5;
-  }
-  
-  .th-promo {
-    background-color: #F0C808;
-  }
-  
-  .th-economy {
-    background-color: #D1FFD7;
-  }
-  
-  .th-business {
-    background-color: #F05D5E;
-  }
-  
+  padding: 20px;
+  background-color: #fff; 
+}
+
+/* Sayfa başlığı */
+.planning-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #0D3A73; 
+}
+
+/* Tablo konteyneri */
+.table-container {
+  overflow-x: auto; /* horizon overflow shift */
+  margin-bottom: 24px; /* Tablolar arası boşluk */
+}
+
+/* Gidiş - Dönüş başlıklarını daha belirgin yap */
+.trip-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #0D3A73;
+  text-align: left;
+  border-bottom: 2px solid #0D3A73;
+  padding-bottom: 5px;
+}
+
+/* Tablo tasarımı */
+.voyage-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+/* Tablo başlıkları */
+.voyage-table thead tr {
+  color: #fff;
+}
+
+.voyage-table th,
+.voyage-table td {
+  padding: 12px;
+  border: 1px solid #ccc;
+}
+
+/* Kolon başlıkları */
+.th-departure {
+  background-color: #06AED5;
+}
+
+.th-promo {
+  background-image: url('/public/Promo.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 50px; /* Hücrenin yüksekliğini ayarla */
+  padding: 10px;
+}
+
+
+.th-economy {
+  background-image: url('/public/Economy.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 50px;
+  padding: 10px;
+}
+
+.th-business {
+  background-image: url('/public/Business.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 50px;
+  padding: 10px;
+}
+
+/* Eğer round-trip seçilmişse, dönüş tablosunu belirgin yap */
+.return-trip {
+  margin-top: 32px; /* Gidiş tablosuyla arasına boşluk bırak */
+  border-top: 3px solid #0D3A73;
+  padding-top: 10px;
+}
