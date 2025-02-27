@@ -18,6 +18,12 @@ import CustomerLayout from "./layouts/customerLayout";
 import CustomSignIn from "./pages/customSignIn";
 import CustomSignUp from "./pages/customSignUp";
 import JourneyCatagory from "./components/PlanningPhase/JourneyCatagory";
+import AdminRBA from "./RBAcomponents/AdminRBA";
+import AdminLayout from "./layouts/adminLayout";
+import AdminStations from "./pages/Admin/adminStations";
+import AdminAnnounce from "./pages/Admin/adminAnnounce";
+
+
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -40,6 +46,16 @@ const AnimatedRoutes = () => {
           <Route path="/sign-in" element={<CustomSignIn />} />
           <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>
+
+        <Route element={<AdminRBA />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/adminStations" element={<AdminStations />} />
+            <Route path="/adminAnnounce" element={<AdminAnnounce />} />
+          </Route>
+        </Route>
+
+
+
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
