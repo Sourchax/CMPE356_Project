@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import "../assets/styles/CustomSignUp.css";
 
 const CustomSignUp = () => {
-    const clerk = useClerk();
+  const clerk = useClerk();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,9 @@ const CustomSignUp = () => {
           path="/sign-up"
           routing="path"
           signInUrl="/sign-in"
+          redirectUrl="/verify-email"
         />
+
       </div>
     </div>
   );
