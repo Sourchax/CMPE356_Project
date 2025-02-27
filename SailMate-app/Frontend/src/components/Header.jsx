@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import "../assets/styles/header.css";
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
 import sailMatelogo from "../assets/images/SailMate_logo.png";
+import { LogIn } from "lucide-react";
+import CustomUserButton from "../pages/customUserButton";
+
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -83,16 +86,19 @@ const Header = () => {
           </ul>
         </nav>
 
-        <div className="auth-buttons">
           <SignedOut>
-            <Link to="/sign-in">
-              <button className="custom-signin-btn">Sign In</button>
-            </Link>
+            <div className="flex justify-center">
+              <Link to="/sign-in">
+                <div className="flex items-center gap-2 px-5 py-2 bg-[#f0c808] text-gray-900 font-medium rounded-lg shadow-md hover:bg-yellow-500 transition">
+                  <LogIn size={20} />
+                  <span>Sign In</span>
+                </div>
+              </Link>
+            </div>
           </SignedOut>
           <SignedIn>
-            <UserButton />
+            <CustomUserButton />
           </SignedIn>
-        </div>
       </header>
     </div>
   );

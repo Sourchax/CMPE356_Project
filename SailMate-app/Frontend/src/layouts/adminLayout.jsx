@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import AdminHeader from "../components/adminHeader";
 import { useEffect } from "react";
 
 const pageVariants = {
@@ -10,7 +9,7 @@ const pageVariants = {
   exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } },
 };
 
-const CustomerLayout = () => {
+const AdminLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
@@ -23,20 +22,19 @@ const CustomerLayout = () => {
   return (
     <>
       <div className="layout">
-        <Header/>
-          <motion.div
-            key={location.pathname}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <Outlet/>
-          </motion.div>
-        <Footer/>
+        <AdminHeader/>
+        <motion.div
+          key={location.pathname}
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <Outlet/>
+        </motion.div>
       </div>
     </>
   );
 };
 
-export default CustomerLayout;
+export default AdminLayout;
