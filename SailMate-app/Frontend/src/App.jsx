@@ -22,7 +22,7 @@ import AdminRBA from "./RBAcomponents/AdminRBA";
 import AdminLayout from "./layouts/adminLayout";
 import AdminStations from "./pages/Admin/adminStations";
 import AdminAnnounce from "./pages/Admin/adminAnnounce";
-
+import FerryTicketForm from "./pages/FerryTicketForm";
 
 import "./App.css";
 
@@ -41,6 +41,7 @@ const AnimatedRoutes = () => {
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
           <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/sign-in" element={<CustomSignIn />} />

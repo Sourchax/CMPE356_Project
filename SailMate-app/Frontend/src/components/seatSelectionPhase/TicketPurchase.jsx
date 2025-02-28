@@ -3,23 +3,6 @@ import React from 'react';
 const TicketPurchase = ({ notifyBySMS, setNotifyBySMS, notifyByEmail, setNotifyByEmail, wantETicket, setWantETicket }) => {
     return (
       <div className="p-4">
-        <h3 className="text-blue-800 font-bold mb-4">Ticket Purchaser</h3>
-  
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative">
-            <input type="text" placeholder="Your Name" className="w-full p-2 border rounded" />
-          </div>
-          <div className="relative">
-            <input type="text" placeholder="Your Surname" className="w-full p-2 border rounded" />
-          </div>
-          <div className="relative">
-            <input type="text" placeholder="Phone" className="w-full p-2 border rounded" />
-          </div>
-          <div className="relative">
-            <input type="email" placeholder="E-Mail Address" className="w-full p-2 border rounded" />
-          </div>
-        </div>
-  
         <div className="mt-4 text-xs text-orange-500">
           <p>Personal Data Protection and Processing Policy, Privacy and Data Security Policy...</p>
         </div>
