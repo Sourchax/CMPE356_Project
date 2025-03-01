@@ -1,55 +1,222 @@
-.ticketcheck-container {
+.ticket-page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
 }
 
+/* Hero section with ocean background */
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65vh;
+  background-image: url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
 
-/* Sayfa içeriğini ortala */
-.ticketcheck-main {
+/* Wave transition between ocean and white */
+.wave-transition {
+  position: absolute;
+  top: 60vh;
+  left: 0;
+  width: 100%;
+  height: 15vh;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.wave-transition svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  fill: white;
+}
+
+.ticket-page-content {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.ticket-page-header {
   text-align: center;
-  padding: 50px 20px;
+  margin-bottom: 30px;
   color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  max-width: 800px;
 }
 
-/* Form stilleri */
-.ticketcheck-form {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: 20px auto;
-  color: black;
+.ticket-page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.ticketcheck-form .form-group {
-  margin-bottom: 15px;
+.ticket-page-header p {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+.ticket-form-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out;
+  margin-top: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ticket-form {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 12px 12px 12px 45px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
   text-align: left;
 }
 
-.ticketcheck-form label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
+.input-with-icon input::placeholder {
+  color: #aaa;
+  opacity: 1;
 }
 
-.ticketcheck-form input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.input-with-icon input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  outline: none;
 }
 
-.ticketcheck-form button {
+.submit-button {
   width: 100%;
-  background-color: #002f6c;
+  background-color: #0066cc;
   color: white;
   border: none;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ticketcheck-form button:hover {
-  background-color: #004a99;
+.submit-button:hover {
+  background-color: #0055aa;
+  transform: translateY(-2px);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.submit-button.loading {
+  background-color: #3388dd;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ticket-form-footer {
+  padding: 15px 30px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eee;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.ticket-form-footer a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ticket-form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ticket-page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .ticket-page-header p {
+    font-size: 1rem;
+  }
+  
+  .ticket-form {
+    padding: 20px;
+  }
+  
+  .hero-background {
+    height: 70vh;
+  }
+  
+  .wave-transition {
+    top: 65vh;
+  }
 }

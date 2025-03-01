@@ -5,6 +5,8 @@ import creditCard from "../assets/images/secure-payment.png";
 import ship from "../assets/images/ship.png";
 import passenger from "../assets/images/passenger.png";
 import Contact from "./Contact.jsx";
+import FerrySlider from "../components/FerrySlider";
+
 
 const Homepage = () => {
   const [departure, setDeparture] = useState("");
@@ -83,7 +85,7 @@ const Homepage = () => {
             Book Your Journey
           </a>
         </div>
-        </section>
+      </section>
 
       {/* Booking Section */}
       <section id="booking" className="relative -mt-16 mb-16 px-4">
@@ -310,118 +312,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Popular Routes Section with Enhanced Cards */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Popular Routes</h2>
-          <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">Discover our most popular ferry routes with frequent departures and competitive prices</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Route Card 1 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group">
-              <div className="relative h-56 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-                <div 
-                  className="h-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700" 
-                  style={{ backgroundImage: "url('https://images.unsplash.com/photo-1609102026400-3c0ca378e4c5?q=80&w=1000&auto=format&fit=crop')" }}
-                ></div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-20">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-xl">Yenikapı - Bandırma</h3>
-                    <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">from $25</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Duration: 2h 15m</span>
-                </div>
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span>Daily departures</span>
-                </div>
-                <button className="w-full bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-800 font-medium py-2 rounded-lg transition-colors">
-                  View Schedule
-                </button>
-              </div>
-            </div>
-            
-            {/* Route Card 2 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group">
-              <div className="relative h-56 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-                <div 
-                  className="h-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700" 
-                  style={{ backgroundImage: "url('https://images.unsplash.com/photo-1588993608283-7f43d38d4f95?q=80&w=1000&auto=format&fit=crop')" }}
-                ></div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-20">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-xl">Yenikapı - Yalova</h3>
-                    <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">from $18</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Duration: 1h 30m</span>
-                </div>
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span>Multiple departures</span>
-                </div>
-                <button className="w-full bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-800 font-medium py-2 rounded-lg transition-colors">
-                  View Schedule
-                </button>
-                </div>
-              </div>
-
-            {/* Route Card 3 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group">
-              <div className="relative h-56 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-                <div 
-                  className="h-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-700" 
-                  style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop')" }}
-                ></div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-20">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-bold text-xl">Bursa - Bandırma</h3>
-                    <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">from $22</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Duration: 1h 45m</span>
-                </div>
-                <div className="flex items-center mb-4 text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span>Weekend service</span>
-                </div>
-                <button className="w-full bg-gray-100 hover:bg-orange-500 hover:text-white text-gray-800 font-medium py-2 rounded-lg transition-colors">
-                  View Schedule
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials Section - New Addition */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
@@ -480,6 +370,19 @@ const Homepage = () => {
         </div>
       </section>
 
+      {/* Ferry Slider Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Explore Our Ferries</h2>
+          <p className="text-gray-600 mb-8">Check out our featured ferries and routes to find the perfect journey for you.</p>
+          
+          {/* Ferry Slider Component */}
+          <div className="relative z-10 w-full max-w-5xl mx-auto mt-6">
+            <FerrySlider />
+          </div>
+        </div>
+      </section>
+
       {/* Features Section with Animated Cards */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
@@ -498,10 +401,10 @@ const Homepage = () => {
             <div className="text-center p-8 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100">
               <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 transform transition-transform hover:rotate-12">
                 <img src={ship} className="w-10 h-10" alt="Modern Fleet" />
-        </div>
+              </div>
               <h3 className="text-xl font-bold mb-3">Modern Fleet</h3>
               <p className="text-gray-600">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
-      </div>
+            </div>
             
             <div className="text-center p-8 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100">
               <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 transform transition-transform hover:rotate-12">
