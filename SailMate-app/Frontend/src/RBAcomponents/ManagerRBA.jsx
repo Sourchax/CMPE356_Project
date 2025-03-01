@@ -1,18 +1,17 @@
 import { useUser } from "@clerk/clerk-react";
 import { Navigate, Outlet } from "react-router-dom";
 
-const ManagerRBA = () => {
-  const { user, isLoaded } = useUser();
-  console.log(user?.publicMetadata?.role);
-  if (!isLoaded) {
-    return null;
-  }
+const AdminRBA = () => {
+    const { user, isLoaded } = useUser();
+    if (!isLoaded) {
+        return null;
+    }
 
-  if (user?.publicMetadata?.role !== "Manager") {
-    return <Navigate to="/unauthorized" replace />;
-  }
+    //if (user?.publicMetadata?.role !== "admin") {
+    //  return <Navigate to="/unauthorized" replace />;
+    //}
 
-  return <Outlet />;
+    return <Outlet />;
 };
 
-export default ManagerRBA;
+export default AdminRBA;
