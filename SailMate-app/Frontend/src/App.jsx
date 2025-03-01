@@ -30,6 +30,7 @@ import ManagerLogs from "./pages/Manager/managerLogs";
 import ManagerUsers from "./pages/Manager/managerUsers";
 import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
+import AdminVoyage from "./pages/Admin/adminVoyage";
 
 
 import "./App.css";
@@ -60,6 +61,7 @@ const AnimatedRoutes = () => {
           <Route element={<AdminLayout />}>
             <Route path="/adminStations" element={<AdminStations />} />
             <Route path="/adminAnnounce" element={<AdminAnnounce />} />
+            <Route path="/adminVoyage" element={<AdminVoyage />} />
           </Route>
         </Route>
 

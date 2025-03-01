@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Clock, Bell, Menu, X } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react"; // Import necessary functions from Clerk
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
-import CustomUserButton from '../pages/CustomUserButton';  // Import CustomUserButton
+import CustomUserButton from '../pages/customUserButton';  // Import CustomUserButton
 
 const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,7 +26,7 @@ const AdminHeader = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6">
           <NavLink to="/adminStations" icon={MapPin} text="Edit Stations" />
-          <NavLink to="/voyage-times" icon={Clock} text="Voyage Times" />
+          <NavLink to="/adminVoyage" icon={Clock} text="Voyage Times" />
           <NavLink to="/adminAnnounce" icon={Bell} text="Announcements" />
         </nav>
 

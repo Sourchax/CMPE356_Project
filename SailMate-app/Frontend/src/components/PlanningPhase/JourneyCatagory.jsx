@@ -63,7 +63,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
     <div className="overflow-x-auto">
       <table className="w-full max-w-full border-collapse shadow-lg rounded-lg overflow-hidden">
         <thead>
-          <tr className="text-white text-xl">
+          <tr className="text-blue text-xl">
             <th className="p-6" colSpan={2} style={{ textAlign: 'center', fontSize: '1.5rem' }}>Departure & Arrival</th>
             <th className="p-6" style={{ backgroundImage: `url(${PromoLogo})`, backgroundSize: 'cover', fontSize: '1.5rem' }}></th>
             <th className="p-6 bg-[#D1FFD7]" style={{ backgroundImage: `url(${EconomyLogo})`, backgroundSize: 'cover', fontSize: '1.5rem' }}></th>

@@ -49,9 +49,10 @@ const ManagerHeader = () => {
             {/* Mobile Navigation (Slide Down) */}
             {menuOpen && (
                 <div className="md:hidden flex flex-col items-center gap-4 mt-4 pb-4 bg-blue-700 rounded-lg transition-all duration-300">
-                    <NavLink to="/adminStations" icon={MapPin} text="Edit Stations" />
-                    <NavLink to="/voyage-times" icon={Clock} text="Voyage Times" />
-                    <NavLink to="/adminAnnounce" icon={Bell} text="Announcements" />
+                    <NavLink to="/managerLogs" icon={MapPin} text="Log" />
+                    <NavLink to="/managerUsers" icon={Clock} text="Users" />
+                    <NavLink to="/managerComplaints" icon={Bell} text="Complaints" />
+                    <NavLink to="/managerFinance" icon={Bell} text="Finance" />
                     {/* Replaced UserProfileDropdown with CustomUserButton */}
                     <CustomUserButton user={user} handleSignOut={handleSignOut} />
                 </div>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useClerk, useSession } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import "../assets/styles/VoyageTimes.css";
 
 const VoyageTimes = () => {
   const allVoyages = [
@@ -19,8 +18,8 @@ const VoyageTimes = () => {
     { departure: "15:00", arrival: "15:45", date: "2025-02-22", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Istanbul", to: "Pendik" },
   ];
 
-  const { isSignedIn } = useSession();  // To check if the user is signed in
-  const navigate = useNavigate();       // To navigate to different routes
+  const { isSignedIn } = useSession();
+  const navigate = useNavigate();
 
   const [selectedDate, setSelectedDate] = useState("2025-02-22");
   const [selectedFrom, setSelectedFrom] = useState("");
@@ -34,81 +33,232 @@ const VoyageTimes = () => {
 
   const handleBuyTicket = () => {
     if (!isSignedIn) {
-      navigate("/sign-in"); // Redirect to the sign-in page if the user is not signed in
+      navigate("/sign-in");
     } else {
-      navigate("/homepage"); // Redirect to homepage if the user is signed in
+      navigate("/homepage");
     }
   };
 
+  // Status badge component
+  const StatusBadge = ({ status }) => {
+    const colorClass = status === "Normal" 
+      ? "bg-green-100 text-green-800" 
+      : "bg-red-100 text-red-800";
+    
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+        {status}
+      </span>
+    );
+  };
+
+  // Fuel badge component
+  const FuelBadge = ({ fuel }) => {
+    const colorClass = fuel === "LPG" 
+      ? "bg-blue-100 text-blue-800" 
+      : "bg-yellow-100 text-yellow-800";
+    
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+        {fuel}
+      </span>
+    );
+  };
+
   return (
-    <div className="voyage-container">
-      <div className="voyage_filter_info_box">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-info-circle-fill"
-          viewBox="0 0 16 16"
-          style={{ marginRight: '8px' }}
-        >
-          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
-        </svg>
-        <span>Voyage Filter</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">SailMate Voyages</h1>
+        <p className="mt-2 text-sm text-gray-500">Find and book your next sea journey</p>
       </div>
-      <div className="filter-bar">
-        <div className="dep-arr_filter">
-          <label>Departure:</label>
-          <select value={selectedFrom} onChange={(e) => setSelectedFrom(e.target.value)}>
-            <option value="">All</option>
-            <option value="Yalova">Yalova</option>
-            <option value="Istanbul">Istanbul</option>
-          </select>
-          <label>Arrival:</label>
-          <select value={selectedTo} onChange={(e) => setSelectedTo(e.target.value)}>
-            <option value="">All</option>
-            <option value="Pendik">Pendik</option>
-            <option value="Yalova">Yalova</option>
-          </select>
-          <label>Date:</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
+      
+      {/* Filter Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+        <div className="flex items-center p-4 border-b border-gray-200 bg-blue-50 rounded-t-lg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-blue-500 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
+          </svg>
+          <span className="font-medium text-blue-900">Voyage Filter</span>
+        </div>
+        
+        <div className="p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Departure</label>
+              <select 
+                value={selectedFrom} 
+                onChange={(e) => setSelectedFrom(e.target.value)}
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Departures</option>
+                <option value="Yalova">Yalova</option>
+                <option value="Istanbul">Istanbul</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Arrival</label>
+              <select 
+                value={selectedTo} 
+                onChange={(e) => setSelectedTo(e.target.value)}
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Arrivals</option>
+                <option value="Pendik">Pendik</option>
+                <option value="Yalova">Yalova</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <h2 className="title_voyage">Voyage List</h2>
-      {filteredVoyages.length === 0 ? (
-        <p>No voyages found matching your criteria.</p>
-      ) : (
-        <table className="voyage_table">
-          <thead>
-            <tr>
-              <th>Voyage</th>
-              <th>Departure Arrival Point</th>
-              <th>Voyage Date</th>
-              <th>Voyage Status</th>
-              <th>Ship Type</th>
-              <th>Fuel Type</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredVoyages.map((voyage, index) => (
-              <tr key={index} className={voyage.status === "Voyage Cancel" ? "cancelled" : "normal"}>
-                <td>{voyage.from} - {voyage.to}</td>
-                <td>Departure {voyage.departure} <br /> Arrival {voyage.arrival}</td>
-                <td>{voyage.date}</td>
-                <td>{voyage.status}</td>
-                <td>{voyage.type}</td>
-                <td className={voyage.fuel === "LPG" ? "lpg" : "no-lpg"}>{voyage.fuel}</td>
-                <td>{voyage.available ? <button className="buy-button" onClick={handleBuyTicket}>Buy Ticket</button> : "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      
+      {/* Voyage List */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">Voyage List</h2>
+        </div>
+        
+        {filteredVoyages.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No voyages found</h3>
+            <p className="mt-1 text-sm text-gray-500">Try adjusting your search criteria.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Voyage
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Times
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ship Type
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fuel
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredVoyages.map((voyage, index) => (
+                  <tr 
+                    key={index} 
+                    className={voyage.status === "Voyage Cancel" ? "bg-red-50" : ""}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <div className="flex items-center">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5 text-blue-500 mr-2" 
+                          viewBox="0 0 20 20" 
+                          fill="currentColor"
+                        >
+                          <path fillRule="evenodd" d="M6 3.5A3.5 3.5 0 019.5 0h1A3.5 3.5 0 0114 3.5v.5h1.5a3 3 0 013 3v10a3 3 0 01-3 3h-9a3 3 0 01-3-3V7a3 3 0 013-3H6v-.5zm7 0a2 2 0 00-2-2h-1a2 2 0 00-2 2v.5h5v-.5z" clipRule="evenodd" />
+                        </svg>
+                        {voyage.from} - {voyage.to}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <svg className="h-4 w-4 text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                          </svg>
+                          <span>Dep: {voyage.departure}</span>
+                        </div>
+                        <div className="flex items-center mt-1">
+                          <svg className="h-4 w-4 text-red-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                          </svg>
+                          <span>Arr: {voyage.arrival}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {new Date(voyage.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge status={voyage.status} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {voyage.type}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <FuelBadge fuel={voyage.fuel} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {voyage.available ? (
+                        <button
+                          onClick={handleBuyTicket}
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                          </svg>
+                          Buy Ticket
+                        </button>
+                      ) : (
+                        <span className="text-gray-400">Not Available</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

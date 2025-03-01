@@ -163,7 +163,7 @@ const AboutUs = () => {
             {
               name: "Ali Utku Özaslan",
               title: "Head of Customer Experience",
-              image: "",
+              image: "https://evo.khas.edu.tr/wp-content/uploads/2024/03/AliUtku_Ozaslan_We%CC%82bsitePhoto-768x768.jpg",
               delay: 0.6
             }
           ].map((member, index) => (

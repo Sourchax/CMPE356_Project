@@ -90,6 +90,7 @@ const CustomUserButton = () => {
                     // If already on /adminVoyage, switch to user mode
                     navigate("/");
                   } else if (location.pathname === "/managerFinance"){
+                    navigate("/");
                   } else {
                     
                     navigate("/managerLogs");
