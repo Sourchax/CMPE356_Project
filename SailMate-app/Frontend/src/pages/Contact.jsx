@@ -1,5 +1,16 @@
 import React, { useState } from "react";
 import "../assets/styles/contact.css";
+import { 
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  User,
+  Send,
+  Tag
+} from "lucide-react";
+import { FaFacebookF, FaXTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
+
 
 const Contact = () => {
   // Form state management
@@ -106,7 +117,7 @@ const Contact = () => {
           <div className="contact-details">
             <div className="contact-detail-item">
               <div className="contact-icon">
-                <i className="fas fa-map-marker-alt"></i>
+                <MapPin size={20} />
               </div>
               <div>
                 <h3>Our Location</h3>
@@ -116,7 +127,7 @@ const Contact = () => {
             
             <div className="contact-detail-item">
               <div className="contact-icon">
-                <i className="fas fa-phone-alt"></i>
+                <Phone size={20} />
               </div>
               <div>
                 <h3>Phone Number</h3>
@@ -126,7 +137,7 @@ const Contact = () => {
             
             <div className="contact-detail-item">
               <div className="contact-icon">
-                <i className="fas fa-envelope"></i>
+                <Mail size={20} />
               </div>
               <div>
                 <h3>Email Address</h3>
@@ -136,7 +147,7 @@ const Contact = () => {
             
             <div className="contact-detail-item">
               <div className="contact-icon">
-                <i className="fas fa-clock"></i>
+                <Clock size={20} />
               </div>
               <div>
                 <h3>Working Hours</h3>
@@ -148,10 +159,26 @@ const Contact = () => {
           <div className="contact-social">
             <h3>Follow Us</h3>
             <div className="social-icons">
-              <a href="#" className="social-icon"><i className="fab fa-facebook-f"></i></a>
-              <a href="#" className="social-icon"><i className="fab fa-twitter"></i></a>
-              <a href="#" className="social-icon"><i className="fab fa-instagram"></i></a>
-              <a href="#" className="social-icon"><i className="fab fa-linkedin-in"></i></a>
+              <a href="#" className="social-icon facebook">
+                <FaFacebookF size={18} />
+                <span className="tooltip">Facebook</span>
+              </a>
+              <a href="#" className="social-icon twitter">
+                <FaXTwitter size={18} />
+                <span className="tooltip">X</span>
+              </a>
+              <a href="#" className="social-icon instagram">
+                <FaInstagram size={18} />
+                <span className="tooltip">Instagram</span>
+              </a>
+              <a href="#" className="social-icon linkedin">
+                <FaLinkedinIn size={18} />
+                <span className="tooltip">LinkedIn</span>
+              </a>
+              <a href="#" className="social-icon youtube">
+                <FaYoutube size={18} />
+                <span className="tooltip">YouTube</span>
+              </a>
             </div>
           </div>
         </div>
@@ -171,7 +198,6 @@ const Contact = () => {
               <div className="form-group">
                 <label htmlFor="name">Full Name</label>
                 <div className="input-with-icon">
-                  <i className="fas fa-user"></i>
                   <input 
                     type="text" 
                     id="name" 
@@ -181,6 +207,7 @@ const Contact = () => {
                     placeholder="Your name"
                     className={errors.name ? "error" : ""}
                   />
+                  <User className="input-icon" size={18} />
                 </div>
                 {errors.name && <span className="error-message">{errors.name}</span>}
               </div>
@@ -188,7 +215,6 @@ const Contact = () => {
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
                 <div className="input-with-icon">
-                  <i className="fas fa-envelope"></i>
                   <input 
                     type="email" 
                     id="email" 
@@ -198,6 +224,7 @@ const Contact = () => {
                     placeholder="Your email"
                     className={errors.email ? "error" : ""}
                   />
+                  <Mail className="input-icon" size={18} />
                 </div>
                 {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
@@ -205,7 +232,6 @@ const Contact = () => {
               <div className="form-group">
                 <label htmlFor="subject">Subject</label>
                 <div className="input-with-icon">
-                  <i className="fas fa-tag"></i>
                   <input 
                     type="text" 
                     id="subject" 
@@ -215,6 +241,7 @@ const Contact = () => {
                     placeholder="Message subject"
                     className={errors.subject ? "error" : ""}
                   />
+                  <Tag className="input-icon" size={18} />
                 </div>
                 {errors.subject && <span className="error-message">{errors.subject}</span>}
               </div>
@@ -222,7 +249,6 @@ const Contact = () => {
               <div className="form-group">
                 <label htmlFor="message">Message</label>
                 <div className="textarea-with-icon">
-                  <i className="fas fa-comment-alt"></i>
                   <textarea 
                     id="message" 
                     name="message" 
@@ -231,6 +257,7 @@ const Contact = () => {
                     placeholder="Your message"
                     className={errors.message ? "error" : ""}
                   ></textarea>
+                  <Send className="input-icon" size={18} />
                 </div>
                 {errors.message && <span className="error-message">{errors.message}</span>}
               </div>

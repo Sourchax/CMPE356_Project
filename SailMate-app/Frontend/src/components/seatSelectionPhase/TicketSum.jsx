@@ -145,7 +145,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
       {/* Total Price at the end */}
       <div className="bg-green-600 text-white p-4 mt-6 rounded-md shadow-md flex justify-between items-center">
         <div className="text-lg font-bold">Grand Total</div>
-        <div className="text-xl font-bold">{`₺${departureTotalPrice + returnTotalPrice}`}</div>
+        <div className="text-xl font-bold">{returnDate === "" ? `₺${departureTotalPrice}` : `₺${departureTotalPrice + returnTotalPrice}`}</div>
       </div>
     </>
   );

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { MapPin, Phone, User, ExternalLink } from "lucide-react";
 
 const stations = [
   { name: "Izmir Central", person: "Ali Kaya", phone: "+90 232 123 4567", address: "Konak, Izmir, Turkey", city: "Izmir" },
@@ -10,47 +11,99 @@ const stations = [
 
 export default function StationCard() {
   const [filter, setFilter] = useState("All");
+  const [animateCards, setAnimateCards] = useState(false);
+  
+  useEffect(() => {
+    // Trigger animation after filter change
+    setAnimateCards(false);
+    setTimeout(() => setAnimateCards(true), 50);
+  }, [filter]);
 
   const filteredStations = filter === "All" ? stations : stations.filter((s) => s.city === filter);
+  const cities = ["All", ...new Set(stations.map(station => station.city))];
 
   return (
-    <div className="flex flex-col items-center px-4 py-6 min-h-screen">
-      {/* Page Title */}
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Stations</h1>
-      <div className="w-full max-w-screen-md border-b-4 border-gray-300 mb-6"></div>
+    <div className="flex flex-col items-center px-4 py-12 min-h-screen bg-gradient-to-b from-white to-[#D1FFD7]">
+      {/* Header with wave */}
+      <div className="relative w-full max-w-6xl mb-16">
+        <div className="absolute inset-0 bg-[#0D3A73] rounded-3xl opacity-10"></div>
+        <div className="relative z-10 flex flex-col items-center py-10 px-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#0D3A73] mb-2">Ferry Stations</h1>
+          <p className="text-[#06AED5] text-lg md:text-xl max-w-2xl text-center">
+            Find your nearest SailMate station and get in touch with our local representatives
+          </p>
+          
+          {/* Wave decoration */}
+          <div className="absolute bottom-0 left-0 right-0 h-8 overflow-hidden">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+              <path 
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C115.39,33.9,195.72,60.15,321.39,56.44Z" 
+                className="fill-white"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
 
       {/* Filter Buttons */}
-      <div className="mb-8 flex flex-wrap justify-center gap-4">
-        {["All", "Izmir", "Istanbul", "Bursa"].map((city) => (
+      <div className="mb-12 flex flex-wrap justify-center gap-3">
+        {cities.map((city) => (
           <button
             key={city}
             onClick={() => setFilter(city)}
-            className={`px-5 py-2 text-base md:text-lg rounded-lg transition-all duration-300 font-medium border
+            className={`px-6 py-3 text-base font-medium rounded-full transition-all duration-300 transform 
               ${
                 filter === city
-                  ? "bg-blue-600 text-white border-blue-600 shadow-lg"
-                  : "bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white hover:border-blue-500"
+                  ? "bg-[#0D3A73] text-white shadow-lg scale-105"
+                  : "bg-white text-[#0D3A73] border border-[#0D3A73] hover:bg-[#06AED5] hover:text-white hover:border-[#06AED5]"
               }`}
           >
             {city}
           </button>
         ))}
       </div>
-      <div className="w-full max-w-screen-md border-b-4 border-gray-300 mb-6"></div>
 
       {/* Station Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-lg w-full justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
         {filteredStations.map((station, index) => (
           <div
-            key={index}
-            onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(station.address)}`, "_blank")}
-            className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border cursor-pointer transition-all duration-300 transform
-              hover:scale-[1.05] hover:shadow-2xl hover:border-blue-400 active:scale-95 max-w-sm w-full text-center mx-auto"
+            key={station.name}
+            className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 transform 
+              ${animateCards ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
+              hover:shadow-2xl`}
+            style={{ transitionDelay: `${index * 100}ms` }}
           >
-            <h2 className="text-xl md:text-2xl font-bold text-blue-600 mb-3">{station.name}</h2>
-            <p className="text-gray-700 text-base md:text-lg">Contact: {station.person}</p>
-            <p className="text-gray-700 text-base md:text-lg">Phone: {station.phone}</p>
-            <p className="text-gray-500 text-sm md:text-md mt-2">{station.address}</p>
+            {/* Card Header */}
+            <div className="bg-[#0D3A73] py-4 px-6 relative">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#F0C808] rounded-full opacity-20 transform translate-x-8 -translate-y-10"></div>
+              <h2 className="text-xl font-bold text-white relative z-10">{station.name}</h2>
+              <p className="text-[#D1FFD7] text-sm relative z-10">{station.city}, Turkey</p>
+            </div>
+            
+            {/* Card Content */}
+            <div className="p-6">
+              <div className="flex items-center mb-3">
+                <User size={18} className="text-[#06AED5] mr-3" />
+                <p className="text-gray-700">{station.person}</p>
+              </div>
+              <div className="flex items-center mb-3">
+                <Phone size={18} className="text-[#06AED5] mr-3" />
+                <p className="text-gray-700">{station.phone}</p>
+              </div>
+              <div className="flex items-start mb-6">
+                <MapPin size={18} className="text-[#06AED5] mr-3 mt-1" />
+                <p className="text-gray-600">{station.address}</p>
+              </div>
+              
+              {/* Action Button */}
+              <button 
+                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(station.address)}`, "_blank")}
+                className="w-full mt-2 bg-[#F0C808] hover:bg-[#e5bd08] text-[#0D3A73] font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+              >
+                <span>View on Map</span>
+                <ExternalLink size={16} className="ml-2" />
+              </button>
+            </div>
           </div>
         ))}
       </div>

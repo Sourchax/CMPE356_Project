@@ -6,54 +6,121 @@ import ship from "../assets/images/ship.png";
 import passenger from "../assets/images/passenger.png";
 import Contact from "./Contact.jsx";
 import FerrySlider from "../components/FerrySlider";
+import { useNavigate } from "react-router-dom";
 
 
 const Homepage = () => {
-  const [departure, setDeparture] = useState("");
-  const [arrival, setArrival] = useState("");
-  const [tripType, setTripType] = useState("one-way");
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
-  const [passengerDetails, setPassengerDetails] = useState({
-    adult: 1,
-    child: 0,
-    senior: 0
-  });
-  const [showPassengerModal, setShowPassengerModal] = useState(false);
+  const navigate = useNavigate();
   
-  // Calculate total passengers
-  const totalPassengers = Object.values(passengerDetails).reduce((sum, count) => sum + count, 0);
-  
-  // Get today's date in YYYY-MM-DD format for min date attribute
+  // Get today's date in YYYY-MM-DD format for min date validation
   const today = new Date().toISOString().split('T')[0];
   
-  // Handle location switch
-  const handleSwitch = () => {
-    setDeparture(arrival);
-    setArrival(departure);
-  };
+  // Form state
+  const [tripType, setTripType] = useState("one-way");
+  const [formData, setFormData] = useState({
+    departure: "",
+    arrival: "",
+    departureDate: "",
+    returnDate: "",
+    passengers: 1,
+  });
   
-  // Prevent same selection in departure and arrival
+  // Passenger details state
+  const [passengerDetails, setPassengerDetails] = useState({
+    adult: 0,
+    student: 0,
+    senior: 0
+  });
+  
+  // Calculate total passengers
+  const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior;
+  
+  // Update formData when passenger details change
   useEffect(() => {
-    if (departure && departure === arrival) {
-      setArrival("");
-    }
-  }, [departure, arrival]);
-
-  // Update passenger counts
-  const updatePassengerCount = (type, value) => {
-    const newCount = Math.max(type === 'adult' ? 1 : 0, passengerDetails[type] + value);
-    setPassengerDetails({
-      ...passengerDetails,
-      [type]: newCount
-    });
-  };
-
+    setFormData(prev => ({
+      ...prev,
+      passengers: totalPassengers
+    }));
+  }, [totalPassengers]);
+  
+  // Passenger modal visibility state
+  const [showPassengerModal, setShowPassengerModal] = useState(false);
+  
   // Toggle passenger selection modal
   const togglePassengerModal = () => {
     setShowPassengerModal(!showPassengerModal);
   };
-
+  
+  // Update passenger count
+  const updatePassengerCount = (type, change) => {
+    setPassengerDetails(prev => {
+      const newCount = prev[type] + change;
+      
+      // Ensure no negative values for any type
+      if (newCount < 0) return prev;
+      
+      // Ensure at least one passenger total if reducing count
+      const otherPassengers = Object.entries(prev)
+        .filter(([key]) => key !== type)
+        .reduce((sum, [_, value]) => sum + value, 0);
+        
+      if (change < 0 && newCount + otherPassengers === 0) return prev;
+      
+      return {
+        ...prev,
+        [type]: newCount
+      };
+    });
+  };
+  
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  // Switch departure and arrival locations
+  const handleSwitch = (e) => {
+    // Prevent default button behavior
+    e.preventDefault();
+    
+    if (formData.departure && formData.arrival) {
+      setFormData(prev => ({
+        ...prev,
+        departure: prev.arrival,
+        arrival: prev.departure
+      }));
+    }
+  };
+  
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Check if departure and arrival are the same
+    if (formData.departure === formData.arrival) {
+      alert("Departure and arrival locations cannot be the same. Please select different locations.");
+      return;
+    }
+    if(formData.passengers === 0){
+      alert("Please enter a valid number of passengers.");
+      return;
+    }
+    
+    // Create trip data to pass via location state
+    const tripData = {
+      ...formData,
+      tripType,
+      passengerTypes: passengerDetails
+    };
+    
+    // Navigate to results page with form data
+    navigate('/ferry-ticket-form', { state: { tripData } });
+    console.log(tripData);
+  };
   return (
     <>
       {/* Hero Section with Background Image and Animated Elements */}
@@ -89,228 +156,246 @@ const Homepage = () => {
 
       {/* Booking Section */}
       <section id="booking" className="relative -mt-16 mb-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Ferry Tickets Header - Replacing the tabs */}
-          <div className="bg-orange-500 text-white rounded-t-xl shadow-lg">
-            <div className="py-4 px-6 text-center font-semibold text-lg">
-              <i className="fas fa-ship mr-2"></i> Ferry Tickets
-            </div>
+      <div className="max-w-6xl mx-auto">
+        {/* Ferry Tickets Header */}
+        <div className="bg-orange-500 text-white rounded-t-xl shadow-lg">
+          <div className="py-4 px-6 text-center font-semibold text-lg">
+            <i className="fas fa-ship mr-2"></i> Ferry Tickets
           </div>
-          
-          {/* Booking Form */}
-          <div className="bg-white shadow-xl rounded-b-xl p-6">
-            {/* Trip Type Selection */}
-            <div className="flex mb-6 text-sm">
-              <label className="flex items-center gap-2 mr-6">
-                <input
-                  type="radio"
-                  checked={tripType === "one-way"}
-                  onChange={() => setTripType("one-way")}
-                  className="accent-orange-500"
-                /> 
-                One-Way
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={tripType === "round-trip"}
-                  onChange={() => setTripType("round-trip")}
-                  className="accent-orange-500"
-                /> 
-                Round-Trip
-              </label>
+        </div>
+        
+        {/* Booking Form */}
+        <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-b-xl p-6">
+          {/* Trip Type Selection */}
+          <div className="flex mb-6 text-sm">
+            <label className="flex items-center gap-2 mr-6">
+              <input
+                type="radio"
+                checked={tripType === "one-way"}
+                onChange={() => setTripType("one-way")}
+                className="accent-orange-500"
+              /> 
+              One-Way
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                checked={tripType === "round-trip"}
+                onChange={() => setTripType("round-trip")}
+                className="accent-orange-500"
+              /> 
+              Round-Trip
+            </label>
+          </div>
+
+          {/* Search Form - Horizontal Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* From-To Section */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-1 flex items-center space-x-2">
+              <div className="flex-1">
+                <label className="block text-sm mb-2 text-gray-600 font-medium">From</label>
+                <select 
+                  name="departure"
+                  value={formData.departure}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  required
+                >
+                  <option value="">Select Departure</option>
+                  <option value="Yenikapı" disabled={formData.arrival === "Yenikapı"}>Yenikapı</option>
+                  <option value="Bursa" disabled={formData.arrival === "Bursa"}>Bursa</option>
+                  <option value="Bandırma" disabled={formData.arrival === "Bandırma"}>Bandırma</option>
+                  <option value="Yalova" disabled={formData.arrival === "Yalova"}>Yalova</option>
+                </select>
+              </div>
+
+              {/* Switch Button */}
+              <div className="self-end mb-1">
+                <button 
+                  type="button" 
+                  onClick={handleSwitch}
+                  disabled={!formData.departure || !formData.arrival}
+                  className={`bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition-colors ${(!formData.departure || !formData.arrival) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8L22 12L18 16"></path>
+                    <path d="M6 16L2 12L6 8"></path>
+                    <path d="M2 12H22"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <div className="flex-1">
+                <label className="block text-sm mb-2 text-gray-600 font-medium">To</label>
+                <select 
+                  name="arrival"
+                  value={formData.arrival}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  required
+                >
+                  <option value="">Select Arrival</option>
+                  <option value="Yenikapı" disabled={formData.departure === "Yenikapı"}>Yenikapı</option>
+                  <option value="Bursa" disabled={formData.departure === "Bursa"}>Bursa</option>
+                  <option value="Bandırma" disabled={formData.departure === "Bandırma"}>Bandırma</option>
+                  <option value="Yalova" disabled={formData.departure === "Yalova"}>Yalova</option>
+                </select>
+              </div>
             </div>
 
-            {/* Search Form - Horizontal Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* From-To Section */}
-              <div className="col-span-1 md:col-span-2 lg:col-span-1 flex items-center space-x-2">
-                <div className="flex-1">
-                  <label className="block text-sm mb-2 text-gray-600 font-medium">From</label>
-                  <select 
-                    value={departure}
-                    onChange={(e) => setDeparture(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                  >
-                    <option value="">Select Departure</option>
-                    <option value="yenikapi" disabled={arrival === "yenikapi"}>Yenikapı</option>
-                    <option value="bursa" disabled={arrival === "bursa"}>Bursa</option>
-                  </select>
-                </div>
+            {/* Date Selection */}
+            <div className="col-span-1 flex space-x-2">
+              <div className="flex-1">
+                <label className="block text-sm mb-2 text-gray-600 font-medium">Departure Date</label>
+                <input 
+                  type="date" 
+                  name="departureDate"
+                  value={formData.departureDate}
+                  min={today}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  required
+                />
+              </div>
 
-                {/* Switch Button */}
-                <div className="self-end mb-1">
-                  <button 
-                    type="button" 
-                    onClick={handleSwitch}
-                    disabled={!departure || !arrival}
-                    className={`bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition-colors ${(!departure || !arrival) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8L22 12L18 16"></path>
-                      <path d="M6 16L2 12L6 8"></path>
-                      <path d="M2 12H22"></path>
-                    </svg>
-                  </button>
-                </div>
-
+              {tripType === "round-trip" && (
                 <div className="flex-1">
-                  <label className="block text-sm mb-2 text-gray-600 font-medium">To</label>
-                  <select 
-                    value={arrival}
-                    onChange={(e) => setArrival(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                  >
-                    <option value="">Select Arrival</option>
-                    <option value="bandirma" disabled={departure === "bandirma"}>Bandırma</option>
-                    <option value="yalova" disabled={departure === "yalova"}>Yalova</option>
-                  </select>
-                </div>
-                </div>
-
-              {/* Date Selection */}
-              <div className="col-span-1 flex space-x-2">
-                <div className="flex-1">
-                  <label className="block text-sm mb-2 text-gray-600 font-medium">Departure Date</label>
+                  <label className="block text-sm mb-2 text-gray-600 font-medium">Return Date</label>
                   <input 
                     type="date" 
-                    value={departureDate}
-                    min={today}
-                    onChange={(e) => setDepartureDate(e.target.value)}
+                    name="returnDate"
+                    value={formData.returnDate}
+                    min={formData.departureDate || today}
+                    onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                    required={tripType === "round-trip"}
                   />
                 </div>
+              )}
+            </div>
 
-                {tripType === "round-trip" && (
-                  <div className="flex-1">
-                    <label className="block text-sm mb-2 text-gray-600 font-medium">Return Date</label>
-                    <input 
-                      type="date" 
-                      value={returnDate}
-                      min={departureDate || today}
-                      onChange={(e) => setReturnDate(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                    />
+            {/* Passengers and Search */}
+            <div className="col-span-1 flex space-x-2">
+              {/* Passengers Dropdown */}
+              <div className="flex-1 relative">
+                <label className="block text-sm mb-2 text-gray-600 font-medium">Passengers</label>
+                <button
+                  type="button"
+                  onClick={togglePassengerModal}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 text-left flex justify-between items-center focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                >
+                  <span>{totalPassengers} Passenger{totalPassengers !== 1 ? 's' : ''}</span>
+                  <span>▼</span>
+                </button>
+                
+                {/* Passenger Selection Modal */}
+                {showPassengerModal && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10 p-4">
+                    {/* Adult Passengers */}
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <div className="font-medium text-gray-800">Adults</div>
+                        <div className="text-xs text-gray-500">18+ years</div>
+                      </div>
+                      <div className="flex items-center">
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('adult', -1)}
+                          disabled={passengerDetails.adult <= 0}
+                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.adult <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                        >
+                          -
+                        </button>
+                        <span className="mx-3 text-gray-800">{passengerDetails.adult}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('adult', 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Student Passengers */}
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <div className="font-medium text-gray-800">Students</div>
+                        <div className="text-xs text-gray-500">8-25 years</div>
+                      </div>
+                      <div className="flex items-center">
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('student', -1)}
+                          disabled={passengerDetails.student <= 0}
+                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.student <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                        >
+                          -
+                        </button>
+                        <span className="mx-3 text-gray-800">{passengerDetails.student}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('student', 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Senior Passengers */}
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <div className="font-medium text-gray-800">Seniors</div>
+                        <div className="text-xs text-gray-500">65+ years</div>
+                      </div>
+                      <div className="flex items-center">
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('senior', -1)}
+                          disabled={passengerDetails.senior <= 0}
+                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.senior <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                        >
+                          -
+                        </button>
+                        <span className="mx-3 text-gray-800">{passengerDetails.senior}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updatePassengerCount('senior', 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Apply Button */}
+                    <button 
+                      type="button"
+                      onClick={togglePassengerModal}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg mt-2 transition-colors"
+                    >
+                      Apply
+                    </button>
                   </div>
                 )}
               </div>
 
-              {/* Passengers and Search */}
-              <div className="col-span-1 flex space-x-2">
-                {/* Passengers Dropdown */}
-                <div className="flex-1 relative">
-                  <label className="block text-sm mb-2 text-gray-600 font-medium">Passengers</label>
-                  <button
-                    onClick={togglePassengerModal}
-                    className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 text-left flex justify-between items-center focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-                  >
-                    <span>{totalPassengers} Passenger{totalPassengers !== 1 ? 's' : ''}</span>
-                    <span>▼</span>
-                  </button>
-                  
-                  {/* Passenger Selection Modal */}
-                  {showPassengerModal && (
-                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10 p-4">
-                      {/* Adult Passengers */}
-                      <div className="flex justify-between items-center mb-4">
-                        <div>
-                          <div className="font-medium text-gray-800">Adults</div>
-                          <div className="text-xs text-gray-500">18+ years</div>
-                        </div>
-                        <div className="flex items-center">
-                          <button 
-                            onClick={() => updatePassengerCount('adult', -1)}
-                            disabled={passengerDetails.adult <= 1}
-                            className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.adult <= 1 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
-                          >
-                            -
-                          </button>
-                          <span className="mx-3 text-gray-800">{passengerDetails.adult}</span>
-                          <button 
-                            onClick={() => updatePassengerCount('adult', 1)}
-                            className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      
-                      {/* Child Passengers */}
-                      <div className="flex justify-between items-center mb-4">
-                        <div>
-                          <div className="font-medium text-gray-800">Children</div>
-                          <div className="text-xs text-gray-500">2-17 years</div>
-                        </div>
-                        <div className="flex items-center">
-                          <button 
-                            onClick={() => updatePassengerCount('child', -1)}
-                            disabled={passengerDetails.child <= 0}
-                            className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.child <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
-                          >
-                            -
-                          </button>
-                          <span className="mx-3 text-gray-800">{passengerDetails.child}</span>
-                          <button 
-                            onClick={() => updatePassengerCount('child', 1)}
-                            className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      
-                      {/* Senior Passengers */}
-                      <div className="flex justify-between items-center mb-4">
-                        <div>
-                          <div className="font-medium text-gray-800">Seniors</div>
-                          <div className="text-xs text-gray-500">65+ years</div>
-                        </div>
-                        <div className="flex items-center">
-                          <button 
-                            onClick={() => updatePassengerCount('senior', -1)}
-                            disabled={passengerDetails.senior <= 0}
-                            className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.senior <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
-                          >
-                            -
-                          </button>
-                          <span className="mx-3 text-gray-800">{passengerDetails.senior}</span>
-                          <button 
-                            onClick={() => updatePassengerCount('senior', 1)}
-                            className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      
-                      {/* Apply Button */}
-                      <button 
-                        onClick={togglePassengerModal}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg mt-2 transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Search Button */}
-                <div className="flex-1">
-                  {tripType === "one-way" ? (
-                    <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors h-[46px] mt-8">
-                      Search
-                    </button>
-                  ) : (
-                    <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors h-[46px] mt-8">
-                      Search Round Trip
-                    </button>
-                  )}
-                </div>
+              {/* Search Button */}
+              <div className="flex-1">
+                <button 
+                  type="submit"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors h-[46px] mt-8 relative overflow-hidden"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {tripType === "one-way" ? "Search" : "Search"}
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </form>
+      </div>
+    </section>
 
       {/* Testimonials Section - New Addition */}
       <section className="py-16 bg-white">

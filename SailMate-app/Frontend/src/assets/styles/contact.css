@@ -148,28 +148,118 @@
   font-weight: 600;
 }
 
+/* Social Icons Container */
 .social-icons {
   display: flex;
-  gap: 0.8rem; /* Reduced from 1rem */
+  gap: 15px;
+  margin-top: 15px;
 }
 
+/* Base Social Icon Style */
 .social-icon {
-  width: 36px; /* Reduced from 40px */
-  height: 36px; /* Reduced from 40px */
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   color: white;
-  font-size: 0.9rem; /* Reduced from 1rem */
+  font-size: 18px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Social Icon Hover Animation */
 .social-icon:hover {
-  background-color: #f0c808;
-  color: #003a75;
   transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.social-icon:before {
+  content: "";
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(45deg);
+  left: -110%;
+  top: 90%;
+}
+
+.social-icon:hover:before {
+  animation: shine 0.7s;
+}
+
+@keyframes shine {
+  0% {
+    left: -110%;
+    top: 90%;
+  }
+  50% {
+    left: -30%;
+    top: -30%;
+  }
+  100% {
+    left: 100%;
+    top: -100%;
+  }
+}
+
+/* Social Icon Colors */
+.social-icon.facebook {
+  background: #3b5998;
+}
+
+.social-icon.twitter {
+  background: #000000;
+}
+
+.social-icon.instagram {
+  background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+}
+
+.social-icon.linkedin {
+  background: #0077b5;
+}
+
+.social-icon.youtube {
+  background: #ff0000;
+}
+
+/* Tooltip Styling */
+.social-icon .tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.social-icon .tooltip:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.social-icon:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  top: -45px;
 }
 
 /* Contact Form Section */
@@ -313,6 +403,72 @@
   cursor: not-allowed;
 }
 
+.contact-icon {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.8rem;
+  color: #f0c808;
+  flex-shrink: 0;
+}
+
+/* Update input icon positioning for Lucide React */
+.input-with-icon,
+.textarea-with-icon {
+  position: relative;
+}
+
+.input-with-icon .input-icon,
+.textarea-with-icon .input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  transition: color 0.3s ease;
+  pointer-events: none;
+}
+
+.textarea-with-icon .input-icon {
+  top: 20px;
+  transform: none;
+}
+
+.input-with-icon input:focus + .input-icon,
+.textarea-with-icon textarea:focus + .input-icon {
+  color: #0056b3;
+}
+
+/* Adjust social icon styles for Lucide React */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon svg {
+  z-index: 1;
+}
+
+/* Success message icon update */
+.success-message svg {
+  font-size: 1.5rem;
+  margin-right: 0.8rem;
+  color: #28a745;
+}
+
 .spinner {
   width: 20px;
   height: 20px;
@@ -397,6 +553,18 @@
   .contact-map {
     padding: 0 1.5rem 1.5rem;
   }
+  
+  .social-icons {
+    justify-content: center;
+  }
+  
+  .social-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
+  .social-icon .tooltip {
+    display: none; /* Hide tooltips on mobile for better UX */
+  }
 }
-
-    
