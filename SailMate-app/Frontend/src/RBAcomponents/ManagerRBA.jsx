@@ -7,9 +7,9 @@ const AdminRBA = () => {
         return null;
     }
 
-    //if (user?.publicMetadata?.role !== "admin") {
-    //  return <Navigate to="/unauthorized" replace />;
-    //}
+    if (user?.publicMetadata?.role !== "manager" && user?.publicMetadata?.role !== "super") {
+      return <Navigate to="/unauthorized" replace />;
+    }
 
     return <Outlet />;
 };

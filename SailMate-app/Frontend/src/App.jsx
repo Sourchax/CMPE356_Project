@@ -69,8 +69,8 @@ const AnimatedRoutes = () => {
         </Route>
 
 
-        {/*<Route path="/unauthorized" element={<UnauthorizedAccess />} />*/}
-        {/*<Route path="*" element={<Navigate to="/" replace />} />*/}
+        <Route path="/unauthorized" element={<UnauthorizedAccess />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   );
