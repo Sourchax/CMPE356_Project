@@ -49,7 +49,7 @@ const CustomUserButton = () => {
             </li>
 
             {/* Switch to Admin Dashboard (only for admins) */}
-            {userRole === "admin" && (
+            {(userRole === "admin" || userRole === "super") && (
               <li
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
@@ -73,6 +73,34 @@ const CustomUserButton = () => {
                 {location.pathname === "/adminStations" || location.pathname === "/adminAnnounce" || location.pathname === "/adminVoyage" 
                   ? "Switch to User Mode" 
                   : "Switch to Admin Dashboard"}
+              </li>
+            )}
+
+            {(userRole === "manager" || userRole === "super") && (
+              <li
+                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  if (location.pathname === "/managerLogs") {
+                    // If already on /adminStations, switch to user mode
+                    navigate("/");
+                  } else if (location.pathname === "/managerUsers") {
+                    // If already on /adminAnnounce, switch to user mode
+                    navigate("/");
+                  } else if (location.pathname === "/managerComplaints") {
+                    // If already on /adminVoyage, switch to user mode
+                    navigate("/");
+                  } else if (location.pathname === "/managerFinance"){
+                  } else {
+                    
+                    navigate("/managerLogs");
+                  }
+                  handleMenuClose(); // Close menu after selecting option
+                }}
+              >
+                <LayoutDashboard size={18} />
+                {location.pathname === "/managerLogs" || location.pathname === "/managerUsers" || location.pathname === "/managerComplaints" || location.pathname === "/managerFinance" 
+                  ? "Switch to User Mode" 
+                  : "Switch to Manager Dashboard"}
               </li>
             )}
 

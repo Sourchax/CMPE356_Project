@@ -24,6 +24,13 @@ import AdminStations from "./pages/Admin/adminStations";
 import AdminAnnounce from "./pages/Admin/adminAnnounce";
 import FerryTicketForm from "./pages/FerryTicketForm";
 import FAQ from "./pages/FAQ";
+import ManagerRBA from "./RBAcomponents/ManagerRBA";
+import ManagerLayout from "./layouts/managerLayout";
+import ManagerLogs from "./pages/Manager/managerLogs";
+import ManagerUsers from "./pages/Manager/managerUsers";
+import ManagerComplaints from "./pages/Manager/managerComplaints";
+import ManagerFinance from "./pages/Manager/managerFinance";
+
 
 import "./App.css";
 
@@ -56,6 +63,14 @@ const AnimatedRoutes = () => {
           </Route>
         </Route>
 
+        <Route element={<ManagerRBA />}>
+            <Route element={<ManagerLayout />}>
+                <Route path="/managerLogs" element={<ManagerLogs />} />
+                <Route path="/managerUsers" element={<ManagerUsers />} />
+                <Route path="/managerComplaints" element={<ManagerComplaints />} />
+                <Route path="/managerFinance" element={<ManagerFinance />} />
+            </Route>
+        </Route>
 
 
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />

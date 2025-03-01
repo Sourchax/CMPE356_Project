@@ -7,7 +7,7 @@ const AdminRBA = () => {
     return null;
   }
 
-  if (user?.publicMetadata?.role !== "admin") {
+  if (user?.publicMetadata?.role !== "admin" && user?.publicMetadata?.role !== "super") {
     return <Navigate to="/unauthorized" replace />;
   }
 
