@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useClerk, useSession } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 import "../assets/styles/VoyageTimes.css";
 
 const VoyageTimes = () => {
@@ -17,6 +19,9 @@ const VoyageTimes = () => {
     { departure: "15:00", arrival: "15:45", date: "2025-02-22", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Istanbul", to: "Pendik" },
   ];
 
+  const { isSignedIn } = useSession();  // To check if the user is signed in
+  const navigate = useNavigate();       // To navigate to different routes
+
   const [selectedDate, setSelectedDate] = useState("2025-02-22");
   const [selectedFrom, setSelectedFrom] = useState("");
   const [selectedTo, setSelectedTo] = useState("");
@@ -27,22 +32,30 @@ const VoyageTimes = () => {
     (selectedTo === "" || voyage.to === selectedTo)
   );
 
+  const handleBuyTicket = () => {
+    if (!isSignedIn) {
+      navigate("/sign-in"); // Redirect to the sign-in page if the user is not signed in
+    } else {
+      navigate("/homepage"); // Redirect to homepage if the user is signed in
+    }
+  };
+
   return (
     <div className="voyage-container">
-      <div className="voyage_filter_info_box" >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        fill="currentColor"
-        className="bi bi-info-circle-fill"
-        viewBox="0 0 16 16"
-        style={{ marginRight: '8px' }}
-      >
-        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
-      </svg>
-      <span>Voyage Filter</span>
-    </div>
+      <div className="voyage_filter_info_box">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          className="bi bi-info-circle-fill"
+          viewBox="0 0 16 16"
+          style={{ marginRight: '8px' }}
+        >
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+        </svg>
+        <span>Voyage Filter</span>
+      </div>
       <div className="filter-bar">
         <div className="dep-arr_filter">
           <label>Departure:</label>
@@ -90,7 +103,7 @@ const VoyageTimes = () => {
                 <td>{voyage.status}</td>
                 <td>{voyage.type}</td>
                 <td className={voyage.fuel === "LPG" ? "lpg" : "no-lpg"}>{voyage.fuel}</td>
-                <td>{voyage.available ? <button className="buy-button">Buy Ticket</button> : "-"}</td>
+                <td>{voyage.available ? <button className="buy-button" onClick={handleBuyTicket}>Buy Ticket</button> : "-"}</td>
               </tr>
             ))}
           </tbody>

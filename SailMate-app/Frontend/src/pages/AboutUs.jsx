@@ -1,214 +1,323 @@
-import React, { useState, useEffect } from 'react';
-import { FaClock, FaInfoCircle, FaShieldAlt } from 'react-icons/fa';
-import DepartureInfo from '../components/seatSelectionPhase/DepartureInfo';
-import TicketPurchase from '../components/seatSelectionPhase/TicketPurchase';
-import TicketSum from '../components/seatSelectionPhase/TicketSum';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { motion } from 'framer-motion';
+import commerImage from '../assets/images/commer.png';
 
 const AboutUs = () => {
-  const [time, setTime] = useState(900);
+  const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser(); // Clerk hook to check if the user is signed in
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" + secs : secs}`;
-  };
-
-  const navigate = useNavigate(); // Initialize navigation
-
-  useEffect(() => {
-    if (time === 0) {
-      alert("Time is up! You are being redirected to the homepage.");
+  const handleClick = () => {
+    if (isSignedIn) {
+      // Navigate to homepage if signed in
       navigate('/');
-      return;
+    } else {
+      // Navigate to sign-in page if not signed in
+      navigate('/sign-in');
     }
-
-    const timer = setInterval(() => {
-      setTime((prevTime) => Math.max(prevTime - 1, 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [time, navigate]);
-
-
-  // Initialize departure details with passengers
-  const [departureDetails, setDepartureDetails] = useState({
-    from: "Bursa",
-    to: "Yenikapi",
-    tripType: "round",
-    passengerCount: 2,
-    passengers: [{ name: "", surname: "", phone: "", idNumber: "", birthDate: "", email: "", tripType: "departure" }],
-  });
-
-  const [seatNumbers, setSeatNumbers] = useState([315]);
-
-  // Updates a passenger's information
-  const handlePassengerChange = (index, field, value) => {
-    setDepartureDetails((prevDetails) => {
-      const updatedPassengers = [...prevDetails.passengers];
-
-      // Ensure the passenger exists before updating
-      if (!updatedPassengers[index]) {
-        updatedPassengers[index] = { name: "", surname: "", phone: "", idNumber: "", birthDate: "", email: "" };
-      }
-
-      updatedPassengers[index] = {
-        ...updatedPassengers[index],
-        [field]: value,
-      };
-
-      return { ...prevDetails, passengers: updatedPassengers };
-    });
   };
 
   useEffect(() => {
-    setSeatNumbers(Array.from({ length: departureDetails.passengerCount }, (_, i) => 315 + i));
-
-    setDepartureDetails((prevDetails) => {
-      const newPassengers = Array.from({ length: departureDetails.passengerCount }, (_, i) => 
-        prevDetails.passengers[i] || { name: "", surname: "", phone: "", idNumber: "", birthDate: "", email: "" }
-      );
-      return { ...prevDetails, passengers: newPassengers };
-    });
-  }, [departureDetails.passengerCount]);
-
-
-  const [notifyBySMS, setNotifyBySMS] = useState(false);
-  const [notifyByEmail, setNotifyByEmail] = useState(false);
-  const [wantETicket, setWantETicket] = useState(false);
-  const [seatSelectionMethod, setSeatSelectionMethod] = useState('automatic');
+    setIsVisible(true);
+  }, []);
 
   return (
-    <div className="w-4/5 mx-auto flex flex-col lg:flex-row gap-4 p-4 bg-gray-100 font-sans">
-      <div className="w-full lg:w-2/3 bg-white rounded-md shadow-sm">
-        <div className="flex justify-between items-center p-4 border-b">
-          <button className="bg-blue-800 text-white px-4 py-2 rounded-md flex items-center">
-            <span className="mr-2">&#8592;</span> Back
-          </button>
-          <div className="text-gray-600">
-            Your remaining time to complete the ticket purchase... <FaClock className="inline text-amber-500" /> {formatTime(time)}
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#D1FFD7]">
 
-          </div>
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-[#0D3A73] text-white">
+        <div className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <h1 className="text-5xl font-extrabold tracking-tight mb-4">
+              Setting Sail for a <span className="text-[#F0C808]">Smoother Journey</span>
+            </h1>
+            <p className="text-xl max-w-3xl mx-auto">
+              Discover the story behind SailMate, the revolutionary ferry ticketing system changing how people travel on water.
+            </p>
+          </motion.div>
         </div>
 
-        <div className="p-4 border-b">
-          <div className="flex justify-between items-center">
-            <h2 className="text-blue-800 text-xl font-bold">Departure Travel Information</h2>
-            <div className="flex items-center gap-2">
-              <span>{departureDetails.from}</span>
-              <span className="bg-blue-800 text-white p-1 rounded-sm">&#8652;</span>
-              <span>{departureDetails.to}</span>
+        {/* Animated waves */}
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full">
+            <path fill="#D1FFD7" fillOpacity="1" d="M0,128L48,133.3C96,139,192,149,288,154.7C384,160,480,160,576,138.7C672,117,768,75,864,69.3C960,64,1056,96,1152,106.7C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+          </svg>
+        </motion.div>
+      </div>
+
+      {/* Our Story Section */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">Our Story</h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative">
+              <div className="absolute -top-6 -left-6 w-24 h-24 bg-[#F0C808] rounded-full opacity-30"></div>
+              <img src={commerImage} alt="Ferry passengers using SailMate" className="w-80 h-80 rounded-lg shadow-xl relative z-10" />
             </div>
-          </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h3 className="text-2xl font-bold text-[#0D3A73] mb-4">How It All Began</h3>
+            <p className="text-gray-700 mb-6">
+              SailMate was born from a frustrating experience at a crowded ferry terminal in 2025. Our founder, waiting in a long queue for tickets, wondered why ferry booking couldn't be as seamless as other modern travel experiences.
+            </p>
+            <p className="text-gray-700">
+              What started as a simple idea to digitize ferry tickets quickly evolved into a comprehensive platform addressing the unique challenges of waterway transportation. Today, SailMate serves thousands of travelers and dozens of ferry operators worldwide.
+            </p>
+          </motion.div>
         </div>
+      </section>
 
-        {/* Render DepartureInfo for each passenger */}
-        {seatNumbers.map((seat, index) => (
-          <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Passenger {index + 1}
-            </h3>
-            <DepartureInfo 
-              seatNumber={seat} 
-              passengerIndex={index} 
-              departureDetails={departureDetails} 
-              onPassengerChange={handlePassengerChange}
-              tripType="departure"
-            />
-          </div>
-        ))}
-
-        {/* If it's round trip, show return information */}
-        {departureDetails.tripType === "round" && (
-          <div className="p-4 border-b">
-            <div className="flex justify-between items-center">
-              <h2 className="text-red-800 text-xl font-bold">Return Travel Information</h2>
-              <div className="flex items-center gap-2">
-                <span>{departureDetails.to}</span>
-                <span className="bg-red-800 text-white p-1 rounded-sm">&#8652;</span>
-                <span>{departureDetails.from}</span>
+      {/* Our Mission */}
+      <section className="py-16 bg-[#06AED5] text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-3xl mx-auto"
+          >
+            <h2 className="text-4xl font-bold mb-8">Our Mission</h2>
+            <p className="text-xl mb-10">
+              To transform waterway travel by creating technology that connects people to efficient, stress-free ferry experiences while supporting coastal and island communities.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
+                <div className="text-[#F0C808] text-5xl font-bold mb-2">95%</div>
+                <div>Reduction in boarding time</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
+                <div className="text-[#F0C808] text-5xl font-bold mb-2">500+</div>
+                <div>Ferry routes covered</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
+                <div className="text-[#F0C808] text-5xl font-bold mb-2">2M+</div>
+                <div>Happy travelers</div>
               </div>
             </div>
-          </div>
-        )}
+          </motion.div>
+        </div>
+      </section>
 
-        {/* If it's round trip, render return DepartureInfo */}
-        {departureDetails.tripType === "round" && seatNumbers.map((seat, index) => (
-          <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Passenger {index + 1}
-            </h3>
-            <DepartureInfo 
-              seatNumber={seat} 
-              passengerIndex={index} 
-              departureDetails={departureDetails} 
-              onPassengerChange={handlePassengerChange}
-              tripType="return"
-            />
-          </div>
-        ))}
+      {/* Team Section */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">Meet Our Team</h2>
+        </motion.div>
 
-        <TicketPurchase
-          notifyBySMS={notifyBySMS}
-          setNotifyBySMS={setNotifyBySMS}
-          notifyByEmail={notifyByEmail}
-          setNotifyByEmail={setNotifyByEmail}
-          wantETicket={wantETicket}
-          setWantETicket={setWantETicket}
-        />
-      </div>
-      
-      
-      {/* Sidebar summary */}
-      <div className="w-full lg:w-1/3">
-        <TicketSum />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {[
+            {
+              name: "Erk Demirel",
+              title: "Founder & CEO",
+              image: "https://evo.khas.edu.tr/wp-content/uploads/2024/03/Erk_Demirel.jpg",
+              delay: 0
+            },
+            {
+              name: "Ekmel Beyza Akın",
+              title: "CTO",
+              image: "/api/placeholder/300/300",
+              delay: 0.2
+            },
+            {
+              name: "Ege Kaptanoğlu",
+              title: "Head of Customer Experience",
+              image: "https://media.licdn.com/dms/image/v2/C4D03AQHdnIrOjIAOxQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1650220552799?e=1746057600&v=beta&t=dS4cN8SonvQfPD2yfTNGvot_oBAdiLHtOYX3EGgGC-U",
+              delay: 0.4
+            },
+            {
+              name: "Ali Utku Özaslan",
+              title: "Head of Customer Experience",
+              image: "",
+              delay: 0.6
+            }
+          ].map((member, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: member.delay }}
+              className="bg-white rounded-xl shadow-xl overflow-hidden transform transition-transform hover:scale-105"
+            >
+              <img src={member.image} alt={member.name} className="w-full h-64 object-contain " />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-[#0D3A73]">{member.name}</h3>
+                <p className="text-[#06AED5]">{member.title}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
 
-        <div className="bg-white rounded-md shadow-sm p-4 mb-4">
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-gray-600">SEAT SELECTION</div>
-            <div className="text-green-500">EKONOMI</div>
-          </div>
+      {/* Values Section */}
+      <section className="py-16 px-4 bg-[#0D3A73]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl text-white font-bold text-center mb-16">Our Values</h2>
+          </motion.div>
 
-          <div className="mb-2">
-            <div className="flex items-center mb-2">
-              <input 
-                type="radio" 
-                id="auto-seat" 
-                name="seatSelection" 
-                checked={seatSelectionMethod === 'automatic'} 
-                onChange={() => setSeatSelectionMethod('automatic')}
-                className="mr-2" 
-              />
-              <label htmlFor="auto-seat" className="text-sm">I want to make seat selection automatically</label>
-            </div>
-            <div className="flex items-center">
-              <input 
-                type="radio" 
-                id="manual-seat" 
-                name="seatSelection" 
-                checked={seatSelectionMethod === 'manual'} 
-                onChange={() => setSeatSelectionMethod('manual')}
-                className="mr-2" 
-              />
-              <label htmlFor="manual-seat" className="text-sm">I want to make seat selection manually</label>
-            </div>
-          </div>
-
-          <div className="flex justify-center mt-4">
-            <div className="border border-green-500 rounded-full px-4 py-1 text-green-500">
-              {seatNumbers.join(', ')}
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Innovation",
+                icon: "💡",
+                description: "We constantly explore new ways to improve the ferry travel experience.",
+                delay: 0
+              },
+              {
+                title: "Reliability",
+                icon: "🛡️",
+                description: "We build systems you can count on, in an industry where timing is everything.",
+                delay: 0.2
+              },
+              {
+                title: "Sustainability",
+                icon: "🌊",
+                description: "We're committed to supporting eco-friendly travel and protecting our waterways.",
+                delay: 0.4
+              },
+              {
+                title: "Community",
+                icon: "🤝",
+                description: "We strengthen connections between islands, coasts, and the people who call them home.",
+                delay: 0.6
+              }
+            ].map((value, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: value.delay }}
+                className="bg-white rounded-lg p-6 shadow-lg"
+              >
+                <div className="text-4xl mb-4">{value.icon}</div>
+                <h3 className="text-xl font-bold text-[#0D3A73] mb-2">{value.title}</h3>
+                <p className="text-gray-700">{value.description}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="bg-white rounded-md shadow-sm p-4 mb-4">
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-gray-400">Amount to be Paid</div>
+      {/* Testimonials */}
+      <section className="py-16 px-4 bg-[#D1FFD7]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">What People Say</h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "SailMate transformed how we operate our ferries. Reduced lines, happier customers, better business.",
+                author: "Coastal Ferries Ltd.",
+                role: "Ferry Operator",
+                delay: 0
+              },
+              {
+                quote: "I use the app for my daily commute across the bay. It's saved me countless hours of waiting in line.",
+                author: "Maria J.",
+                role: "Daily Commuter",
+                delay: 0.2
+              },
+              {
+                quote: "Planning our island-hopping vacation was a breeze with SailMate. Seamless connections every time.",
+                author: "The Robinson Family",
+                role: "Vacation Travelers",
+                delay: 0.4
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: testimonial.delay }}
+                className="bg-white rounded-xl shadow-lg p-6 relative"
+              >
+                <div className="absolute -top-5 left-6 text-5xl text-[#F0C808]">"</div>
+                <p className="text-gray-700 mb-6 pt-4">{testimonial.quote}</p>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-[#06AED5] rounded-full flex items-center justify-center text-white font-bold">
+                    {testimonial.author.charAt(0)}
+                  </div>
+                  <div className="ml-4">
+                    <div className="font-bold text-[#0D3A73]">{testimonial.author}</div>
+                    <div className="text-sm text-gray-500">{testimonial.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <div className="text-center text-2xl text-gray-700 mb-4">₺500,00</div>
-          <button className="w-full bg-orange-500 text-white py-2 rounded-md">Continue</button>
         </div>
-      </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-16 px-4 bg-[#F0C808]">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl text-[#0D3A73] font-bold mb-6">Ready to Simplify Ferry Travel?</h2>
+            <p className="text-xl text-[#0D3A73] mb-8">
+              Join thousands of travelers who have discovered a better way to sail.
+            </p>
+            <button className="bg-[#0D3A73] text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg hover:bg-opacity-90 transition-all transform hover:scale-105"  onClick={handleClick}>
+              Get Started Today
+            </button>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 };

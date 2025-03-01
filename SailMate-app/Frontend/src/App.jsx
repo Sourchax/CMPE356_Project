@@ -22,12 +22,15 @@ import AdminRBA from "./RBAcomponents/AdminRBA";
 import AdminLayout from "./layouts/adminLayout";
 import AdminStations from "./pages/Admin/adminStations";
 import AdminAnnounce from "./pages/Admin/adminAnnounce";
+import FerryTicketForm from "./pages/FerryTicketForm";
+import FAQ from "./pages/FAQ";
 import ManagerRBA from "./RBAcomponents/ManagerRBA";
 import ManagerLayout from "./layouts/managerLayout";
 import ManagerLogs from "./pages/Manager/managerLogs";
 import ManagerUsers from "./pages/Manager/managerUsers";
 import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
+
 
 import "./App.css";
 
@@ -41,13 +44,14 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/stations" element={<StationList />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
           <Route path="/sign-in" element={<CustomSignIn />} />
           <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>
