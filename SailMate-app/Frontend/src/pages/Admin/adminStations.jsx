@@ -16,11 +16,42 @@ const AdminStations = () => {
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name || formData.name.length < 3) newErrors.name = "Station name must be at least 3 characters";
-    if (!formData.person || !/^[a-zA-Z ]+$/.test(formData.person)) newErrors.person = "Contact person must contain only letters and spaces";
-    if (!formData.phone || !/^\+?[0-9]{10,15}$/.test(formData.phone)) newErrors.phone = "Invalid phone number";
-    if (!formData.city || !/^[a-zA-Z ]+$/.test(formData.city)) newErrors.city = "City must contain only letters and spaces";
-    if (!formData.address || formData.address.length < 5) newErrors.address = "Address must be at least 5 characters";
+    
+    // Station name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Station name is required";
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = "Station name must be at least 3 characters";
+    }
+    
+    // Contact person validation - allow letters, spaces, hyphens, and apostrophes
+    if (!formData.person.trim()) {
+      newErrors.person = "Contact person is required";
+    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.person.trim())) {
+      newErrors.person = "Contact person can only contain letters, spaces, hyphens, and apostrophes";
+    }
+    
+    // Phone validation - more flexible to allow different formats
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^(\+?\d{1,3}[- ]?)?\d{3,}[- \d]*$/.test(formData.phone.trim()) || formData.phone.replace(/[^\d]/g, '').length < 10) {
+      newErrors.phone = "Please enter a valid phone number with at least 10 digits";
+    }
+    
+    // City validation - allow letters, spaces, hyphens, and common punctuation
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    } else if (!/^[a-zA-Z\s'-.,]+$/.test(formData.city.trim())) {
+      newErrors.city = "City can only contain letters, spaces, and basic punctuation";
+    }
+    
+    // Address validation - more comprehensive
+    if (!formData.address.trim()) {
+      newErrors.address = "Address is required";
+    } else if (formData.address.trim().length < 5) {
+      newErrors.address = "Address must be at least 5 characters";
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
