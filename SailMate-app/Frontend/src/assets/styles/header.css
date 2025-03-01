@@ -52,6 +52,7 @@
 /* Dropdown Content */
 .dropdown-content {
   display: none;
+  list-style: none;
   position: absolute;
   top: 100%;
   left: 0;
