@@ -18,6 +18,20 @@ import CustomerLayout from "./layouts/customerLayout";
 import CustomSignIn from "./pages/customSignIn";
 import CustomSignUp from "./pages/customSignUp";
 import JourneyCatagory from "./components/PlanningPhase/JourneyCatagory";
+import AdminRBA from "./RBAcomponents/AdminRBA";
+import AdminLayout from "./layouts/adminLayout";
+import AdminStations from "./pages/Admin/adminStations";
+import AdminAnnounce from "./pages/Admin/adminAnnounce";
+import FerryTicketForm from "./pages/FerryTicketForm";
+import FAQ from "./pages/FAQ";
+import ManagerRBA from "./RBAcomponents/ManagerRBA";
+import ManagerLayout from "./layouts/managerLayout";
+import ManagerLogs from "./pages/Manager/managerLogs";
+import ManagerUsers from "./pages/Manager/managerUsers";
+import ManagerComplaints from "./pages/Manager/managerComplaints";
+import ManagerFinance from "./pages/Manager/managerFinance";
+
+
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -30,16 +44,35 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/stations" element={<StationList />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
           <Route path="/sign-in" element={<CustomSignIn />} />
           <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>
+
+        <Route element={<AdminRBA />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/adminStations" element={<AdminStations />} />
+            <Route path="/adminAnnounce" element={<AdminAnnounce />} />
+          </Route>
+        </Route>
+
+        <Route element={<ManagerRBA />}>
+            <Route element={<ManagerLayout />}>
+                <Route path="/managerLogs" element={<ManagerLogs />} />
+                <Route path="/managerUsers" element={<ManagerUsers />} />
+                <Route path="/managerComplaints" element={<ManagerComplaints />} />
+                <Route path="/managerFinance" element={<ManagerFinance />} />
+            </Route>
+        </Route>
+
+
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

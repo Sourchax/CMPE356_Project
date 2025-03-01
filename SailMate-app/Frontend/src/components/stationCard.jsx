@@ -54,6 +54,23 @@ export default function StationCard() {
           </div>
         ))}
       </div>
+      
+      {/* Empty State */}
+      {filteredStations.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-24 h-24 bg-[#D1FFD7] rounded-full flex items-center justify-center mb-6">
+            <MapPin size={36} className="text-[#0D3A73]" />
+          </div>
+          <h3 className="text-xl font-bold text-[#0D3A73] mb-2">No Stations Found</h3>
+          <p className="text-gray-600 max-w-md">We couldn't find any stations matching your filter. Please try another city or view all stations.</p>
+          <button 
+            onClick={() => setFilter("All")}
+            className="mt-6 bg-[#06AED5] hover:bg-[#059cc0] text-white font-medium py-2 px-6 rounded-lg transition-colors"
+          >
+            View All Stations
+          </button>
+        </div>
+      )}
     </div>
   );
 }
