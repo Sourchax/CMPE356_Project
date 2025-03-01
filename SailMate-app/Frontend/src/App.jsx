@@ -40,10 +40,9 @@ const AnimatedRoutes = () => {
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
           <Route path="/sign-in" element={<CustomSignIn />} />
           <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>

@@ -8,8 +8,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
   const serviceFee = 10;
 
   // Initialize totalPrice for both departure and return separately
-  let departureTotalPrice = serviceFee*passengers;
-  let returnTotalPrice = serviceFee*passengers;
+  let departureTotalPrice = serviceFee * passengers;
+  let returnTotalPrice = serviceFee * passengers;
 
   const tickets = [
     { label: "ONE WAY", date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
@@ -22,6 +22,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
     promo: "#f0c808",
     economy: "#34a693"
   };
+
+  let finalTotalPrice = 0;
 
   return (
     <>
@@ -86,7 +88,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
 
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center">
-                <Calendar className="mr-2" style={{ color: colorStyle }}/>
+                <Calendar className="mr-2" style={{ color: colorStyle }} />
                 <div>
                   <div className="text-gray-600">Date</div>
                   <div>{ticket.date || "N/A"}</div>
@@ -103,7 +105,6 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
             <div className="border-t my-2"></div>
 
             <div className="flex justify-between items-center mb-2">
-              <div className="text-gray-600">Passenger</div>
               <div>{passengers} Passenger{passengers > 1 ? 's' : ''}</div>
               <div className="font-bold" style={{ color: colorStyle }}>
                 ₺{selectedPrice !== "N/A" ? selectedPrice * passengers : "N/A"}
@@ -124,7 +125,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
             <div className="flex justify-between items-center mb-2">
               <div className="text-gray-600">Service Fee</div>
               <div className="font-bold" style={{ color: colorStyle }}>
-                ₺{serviceFee*passengers}
+                ₺{serviceFee * passengers}
               </div>
             </div>
 
@@ -135,9 +136,17 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
                 {ticket.label === "ONE WAY" ? `₺${departureTotalPrice}` : `₺${returnTotalPrice}`}
               </div>
             </div>
+
+          
           </div>
         );
       })}
+
+      {/* Total Price at the end */}
+      <div className="bg-green-600 text-white p-4 mt-6 rounded-md shadow-md flex justify-between items-center">
+        <div className="text-lg font-bold">Grand Total</div>
+        <div className="text-xl font-bold">{`₺${departureTotalPrice + returnTotalPrice}`}</div>
+      </div>
     </>
   );
 };

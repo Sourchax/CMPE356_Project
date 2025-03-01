@@ -4,7 +4,6 @@ import Cards from "../components/cards.jsx";
 import creditCard from "../assets/images/secure-payment.png";
 import ship from "../assets/images/ship.png";
 import passenger from "../assets/images/passenger.png";
-import Contact from "./Contact.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 
 
@@ -37,7 +36,7 @@ const Homepage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/ferry-ticket-form", {state: {tripData: formData}});
+    navigate("/ferry-ticket-form", { state: { tripData: formData, fromHomepage: true } });
   };
 
   return (
