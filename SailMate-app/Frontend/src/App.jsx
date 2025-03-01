@@ -23,6 +23,7 @@ import AdminLayout from "./layouts/adminLayout";
 import AdminStations from "./pages/Admin/adminStations";
 import AdminAnnounce from "./pages/Admin/adminAnnounce";
 import FerryTicketForm from "./pages/FerryTicketForm";
+import FAQ from "./pages/FAQ";
 
 import "./App.css";
 
@@ -36,6 +37,7 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Homepage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/stations" element={<StationList />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
