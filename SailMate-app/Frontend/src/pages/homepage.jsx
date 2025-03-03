@@ -124,7 +124,7 @@ const Homepage = () => {
   return (
     <>
       {/* Hero Section with Background Image and Animated Elements */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[45vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <div 
@@ -138,67 +138,64 @@ const Homepage = () => {
         </div>
         
         {/* Animated Wave Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 z-[1] opacity-30">
+        <div className="absolute bottom-0 left-0 right-0 h-20 z-[1] opacity-30">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full">
             <path fill="#ffffff" fillOpacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
           </svg>
         </div>
         
         {/* Hero Content with Animation */}
-        <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">Sail with Comfort & Style</h1>
-          <p className="text-xl md:text-2xl mb-8 drop-shadow-md">Discover the easiest way to travel across the sea with SailMate</p>
-          <a href="#booking" className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full text-lg transition-all transform hover:scale-105 inline-block animate-pulse-subtle">
-            Book Your Journey
-          </a>
+        <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto animate-fade-in-up">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 drop-shadow-lg tracking-tight leading-tight">Sail with Comfort & Style</h1>
+          <p className="text-base md:text-lg mb-2 drop-shadow-md font-light max-w-3xl mx-auto leading-relaxed">Discover the easiest way to travel across the sea with SailMate</p>
         </div>
       </section>
 
       {/* Booking Section */}
-      <section id="booking" className="relative -mt-16 mb-16 px-4">
+      <section id="booking" className="relative -mt-20 mb-40 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Ferry Tickets Header */}
-        <div className="bg-orange-500 text-white rounded-t-xl shadow-lg">
-          <div className="py-4 px-6 text-center font-semibold text-lg">
+        <div className="bg-[#0D3A73] text-white rounded-t-xl shadow-lg">
+          <div className="py-5 px-8 text-center font-semibold text-lg">
             <i className="fas fa-ship mr-2"></i> Ferry Tickets
           </div>
         </div>
         
         {/* Booking Form */}
-        <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-b-xl p-6">
+        <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-b-xl p-8">
           {/* Trip Type Selection */}
-          <div className="flex mb-6 text-sm">
-            <label className="flex items-center gap-2 mr-6">
+          <div className="flex mb-8 text-base">
+            <label className="flex items-center gap-3 mr-8 cursor-pointer">
               <input
                 type="radio"
                 checked={tripType === "one-way"}
                 onChange={() => setTripType("one-way")}
-                className="accent-orange-500"
+                className="accent-[#06AED5] w-4 h-4"
               /> 
-              One-Way
+              <span className="font-medium">One-Way</span>
             </label>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="radio"
                 checked={tripType === "round-trip"}
                 onChange={() => setTripType("round-trip")}
-                className="accent-orange-500"
+                className="accent-[#06AED5] w-4 h-4"
               /> 
-              Round-Trip
+              <span className="font-medium">Round-Trip</span>
             </label>
           </div>
 
           {/* Search Form - Horizontal Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* From-To Section */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-1 flex items-center space-x-2">
+            <div className="col-span-1 md:col-span-2 lg:col-span-1 flex items-center space-x-3">
               <div className="flex-1">
-                <label className="block text-sm mb-2 text-gray-600 font-medium">From</label>
+                <label className="block text-sm mb-2.5 text-gray-700 font-medium">From</label>
                 <select 
                   name="departure"
                   value={formData.departure}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm"
                   required
                 >
                   <option value="">Select Departure</option>
@@ -215,7 +212,7 @@ const Homepage = () => {
                   type="button" 
                   onClick={handleSwitch}
                   disabled={!formData.departure || !formData.arrival}
-                  className={`bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition-colors ${(!formData.departure || !formData.arrival) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-gray-100 p-3.5 rounded-full hover:bg-gray-200 transition-colors shadow-sm ${(!formData.departure || !formData.arrival) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 8L22 12L18 16"></path>
@@ -226,12 +223,12 @@ const Homepage = () => {
               </div>
 
               <div className="flex-1">
-                <label className="block text-sm mb-2 text-gray-600 font-medium">To</label>
+                <label className="block text-sm mb-2.5 text-gray-700 font-medium">To</label>
                 <select 
                   name="arrival"
                   value={formData.arrival}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm"
                   required
                 >
                   <option value="">Select Arrival</option>
@@ -244,30 +241,30 @@ const Homepage = () => {
             </div>
 
             {/* Date Selection */}
-            <div className="col-span-1 flex space-x-2">
+            <div className="col-span-1 flex space-x-3">
               <div className="flex-1">
-                <label className="block text-sm mb-2 text-gray-600 font-medium">Departure Date</label>
+                <label className="block text-sm mb-2.5 text-gray-700 font-medium">Departure Date</label>
                 <input 
                   type="date" 
                   name="departureDate"
                   value={formData.departureDate}
                   min={today}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm"
                   required
                 />
               </div>
 
               {tripType === "round-trip" && (
                 <div className="flex-1">
-                  <label className="block text-sm mb-2 text-gray-600 font-medium">Return Date</label>
+                  <label className="block text-sm mb-2.5 text-gray-700 font-medium">Return Date</label>
                   <input 
                     type="date" 
                     name="returnDate"
                     value={formData.returnDate}
                     min={formData.departureDate || today}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                    className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm"
                     required={tripType === "round-trip"}
                   />
                 </div>
@@ -275,42 +272,42 @@ const Homepage = () => {
             </div>
 
             {/* Passengers and Search */}
-            <div className="col-span-1 flex space-x-2">
+            <div className="col-span-1 flex space-x-3">
               {/* Passengers Dropdown */}
               <div className="flex-1 relative">
-                <label className="block text-sm mb-2 text-gray-600 font-medium">Passengers</label>
+                <label className="block text-sm mb-2.5 text-gray-700 font-medium">Passengers</label>
                 <button
                   type="button"
                   onClick={togglePassengerModal}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 text-left flex justify-between items-center focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                  className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-left flex justify-between items-center focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm"
                 >
                   <span>{totalPassengers} Passenger{totalPassengers !== 1 ? 's' : ''}</span>
-                  <span>▼</span>
+                  <span className="text-[#06AED5]">▼</span>
                 </button>
                 
                 {/* Passenger Selection Modal */}
                 {showPassengerModal && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10 p-4">
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-10 p-5">
                     {/* Adult Passengers */}
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-5">
                       <div>
                         <div className="font-medium text-gray-800">Adults</div>
-                        <div className="text-xs text-gray-500">18+ years</div>
+                        <div className="text-xs text-gray-500 mt-0.5">18+ years</div>
                       </div>
                       <div className="flex items-center">
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('adult', -1)}
                           disabled={passengerDetails.adult <= 0}
-                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.adult <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                          className={`w-9 h-9 flex items-center justify-center rounded-full border ${passengerDetails.adult <= 0 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                         >
                           -
                         </button>
-                        <span className="mx-3 text-gray-800">{passengerDetails.adult}</span>
+                        <span className="mx-4 text-gray-800 font-medium">{passengerDetails.adult}</span>
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('adult', 1)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                          className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
                         >
                           +
                         </button>
@@ -318,25 +315,25 @@ const Homepage = () => {
                     </div>
                     
                     {/* Student Passengers */}
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-5">
                       <div>
                         <div className="font-medium text-gray-800">Students</div>
-                        <div className="text-xs text-gray-500">8-25 years</div>
+                        <div className="text-xs text-gray-500 mt-0.5">8-25 years</div>
                       </div>
                       <div className="flex items-center">
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('student', -1)}
                           disabled={passengerDetails.student <= 0}
-                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.student <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                          className={`w-9 h-9 flex items-center justify-center rounded-full border ${passengerDetails.student <= 0 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                         >
                           -
                         </button>
-                        <span className="mx-3 text-gray-800">{passengerDetails.student}</span>
+                        <span className="mx-4 text-gray-800 font-medium">{passengerDetails.student}</span>
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('student', 1)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                          className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
                         >
                           +
                         </button>
@@ -344,25 +341,25 @@ const Homepage = () => {
                     </div>
                     
                     {/* Senior Passengers */}
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-5">
                       <div>
                         <div className="font-medium text-gray-800">Seniors</div>
-                        <div className="text-xs text-gray-500">65+ years</div>
+                        <div className="text-xs text-gray-500 mt-0.5">65+ years</div>
                       </div>
                       <div className="flex items-center">
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('senior', -1)}
                           disabled={passengerDetails.senior <= 0}
-                          className={`w-8 h-8 flex items-center justify-center rounded-full border ${passengerDetails.senior <= 0 ? 'border-gray-300 text-gray-300' : 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'}`}
+                          className={`w-9 h-9 flex items-center justify-center rounded-full border ${passengerDetails.senior <= 0 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                         >
                           -
                         </button>
-                        <span className="mx-3 text-gray-800">{passengerDetails.senior}</span>
+                        <span className="mx-4 text-gray-800 font-medium">{passengerDetails.senior}</span>
                         <button 
                           type="button"
                           onClick={() => updatePassengerCount('senior', 1)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                          className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
                         >
                           +
                         </button>
@@ -373,7 +370,7 @@ const Homepage = () => {
                     <button 
                       type="button"
                       onClick={togglePassengerModal}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg mt-2 transition-colors"
+                      className="w-full bg-[#0D3A73] hover:bg-[#0D3A73]/90 text-white py-3 rounded-lg mt-3 transition-colors font-medium shadow-md"
                     >
                       Apply
                     </button>
@@ -385,10 +382,10 @@ const Homepage = () => {
               <div className="flex-1">
                 <button 
                   type="submit"
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors h-[46px] mt-8 relative overflow-hidden"
+                  className="w-full bg-[#F0C808] hover:bg-[#F0C808]/90 text-[#0D3A73] py-3.5 px-4 rounded-lg text-base font-semibold transition-colors h-[50px] mt-8 relative overflow-hidden shadow-md hover:shadow-lg"
                   style={{ whiteSpace: 'nowrap' }}
                 >
-                  {tripType === "one-way" ? "Search" : "Search"}
+                  {tripType === "one-way" ? "Search Tickets" : "Search Tickets"}
                 </button>
               </div>
             </div>
@@ -398,134 +395,115 @@ const Homepage = () => {
     </section>
 
       {/* Testimonials Section - New Addition */}
-      <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">What Our Customers Say</h2>
-          <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">Hear from travelers who have experienced our services</p>
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">What Our Customers Say</h2>
+          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Hear from travelers who have experienced our services</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Testimonial 1 */}
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-orange-500 font-bold text-xl">A</span>
+            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center mb-5">
+                <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-[#06AED5] font-bold text-xl">A</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Ahmet K.</h4>
-                  <div className="flex text-orange-500">
+                  <h4 className="font-semibold text-lg">Ahmet K.</h4>
+                  <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic">"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!"</p>
+              <p className="text-gray-600 italic leading-relaxed">"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!"</p>
             </div>
             
             {/* Testimonial 2 */}
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-orange-500 font-bold text-xl">M</span>
+            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center mb-5">
+                <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-[#06AED5] font-bold text-xl">M</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Mehmet Y.</h4>
-                  <div className="flex text-orange-500">
+                  <h4 className="font-semibold text-lg">Mehmet Y.</h4>
+                  <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic">"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful."</p>
+              <p className="text-gray-600 italic leading-relaxed">"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful."</p>
             </div>
             
             {/* Testimonial 3 */}
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-orange-500 font-bold text-xl">Z</span>
+            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center mb-5">
+                <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-[#06AED5] font-bold text-xl">Z</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Zeynep A.</h4>
-                  <div className="flex text-orange-500">
+                  <h4 className="font-semibold text-lg">Zeynep A.</h4>
+                  <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
+              <p className="text-gray-600 italic leading-relaxed">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Ferry Slider Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Explore Our Ferries</h2>
-          <p className="text-gray-600 mb-8">Check out our featured ferries and routes to find the perfect journey for you.</p>
+      <section className="py-20 bg-[#D1FFD7]/20">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">Explore Our Ferries</h2>
+          <p className="text-gray-600 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
           
           {/* Ferry Slider Component */}
-          <div className="relative z-10 w-full max-w-5xl mx-auto mt-6">
+          <div className="relative z-10 w-full max-w-5xl mx-auto mt-8">
             <FerrySlider />
           </div>
         </div>
       </section>
 
       {/* Features Section with Animated Cards */}
-      <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Why Choose SailMate</h2>
-          <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">Experience the best sea travel with our premium services and customer-focused approach</p>
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Why Choose SailMate</h2>
+          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 transform transition-transform hover:rotate-12">
-                <img src={creditCard} className="w-10 h-10" alt="Secure Payment" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={creditCard} className="w-12 h-12" alt="Secure Payment" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Secure Payment</h3>
-              <p className="text-gray-600">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Secure Payment</h3>
+              <p className="text-gray-600 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
             </div>
             
-            <div className="text-center p-8 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 transform transition-transform hover:rotate-12">
-                <img src={ship} className="w-10 h-10" alt="Modern Fleet" />
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={ship} className="w-12 h-12" alt="Modern Fleet" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Modern Fleet</h3>
-              <p className="text-gray-600">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Modern Fleet</h3>
+              <p className="text-gray-600 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
             </div>
             
-            <div className="text-center p-8 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 transform transition-transform hover:rotate-12">
-                <img src={passenger} className="w-10 h-10" alt="Customer Service" />
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={passenger} className="w-12 h-12" alt="Customer Service" />
               </div>
-              <h3 className="text-xl font-bold mb-3">24/7 Support</h3>
-              <p className="text-gray-600">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">24/7 Support</h3>
+              <p className="text-gray-600 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Latest Announcements */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Latest Announcements</h2>
+      <section className="py-20 bg-[#D1FFD7]/20">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">Latest Announcements</h2>
           <Cards />
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-orange-500 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Updated with SailMate</h2>
-          <p className="mb-8">Subscribe to our newsletter for exclusive deals, travel tips, and updates on new routes.</p>
-          
-          <div className="flex flex-col md:flex-row gap-2 max-w-xl mx-auto">
-            <input 
-              type="email" 
-              placeholder="Your email address" 
-              className="flex-1 p-3 rounded-lg text-gray-800 focus:outline-none"
-            />
-            <button className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              Subscribe
-            </button>
-          </div>
         </div>
       </section>
     </>

@@ -121,7 +121,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3>Our Location</h3>
-                <p>123 SailMate Avenue, Istanbul</p>
+                <p>Cibali, Kadir Has Cd., 34083 Cibali / Fatih/İstanbul</p>
               </div>
             </div>
             
@@ -282,13 +282,13 @@ const Contact = () => {
       {/* Map Section */}
       <div className="contact-map">
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d192697.79327595135!2d28.85173769238281!3d41.005495900000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1ccfe98bc01b0d0!2sIstanbul%2C%20Turkey!5e0!3m2!1sen!2sus!4v1623164931348!5m2!1sen!2sus" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3009.8022543483845!2d28.95722687651698!3d41.03662087134233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab989dc4c37c1%3A0x64c8680b5ac768e8!2sCibali%2C%20Kadir%20Has%20Cd.%2C%2034083%20Fatih%2F%C4%B0stanbul!5e0!3m2!1sen!2str!4v1710271335458!5m2!1sen!2str" 
           width="100%" 
           height="450" 
           style={{ border: 0 }} 
           allowFullScreen="" 
           loading="lazy"
-          title="SailMate Location"
+          title="Cibali, Kadir Has Cd., 34083 Cibali / Fatih/Fatih/İstanbul"
         ></iframe>
       </div>
     </div>
