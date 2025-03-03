@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import JourneyCatagory from "../components/PlanningPhase/JourneyCatagory.jsx";
-import TicketSum from "../components/seatSelectionPhase/TicketSum.jsx";
-import PaymentConfirmation from "./PaymentConfirmation.jsx";
+import JourneyCatagory from "../components/ferry-ticket-form/JourneyCatagory.jsx";
+import TicketSum from "../components/ferry-ticket-form/TicketSum.jsx";
+import PaymentConfirmation from "../components/ferry-ticket-form/PaymentConfirmation.jsx";
 import { FaClock } from 'react-icons/fa';
-import DepartureInfo from "../components/seatSelectionPhase/DepartureInfo.jsx";
-import TicketPurchase from "../components/seatSelectionPhase/TicketPurchase.jsx";
-import ThankYouPage from "../components/seatSelectionPhase/ThankYouPage.jsx";
+import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
+import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
+import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const steps = [
@@ -44,27 +44,101 @@ const ProgressBar = ({ currentStep, width }) => {
 };
 
 const FerryTicketForm = () => {
-
   const navigate = useNavigate();
-
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
+  
+  useEffect(() => {
+    // Extra protection: verify valid navigation on component mount
+    const isValidNavigation = location.state && 
+                             location.state.from === 'homepage' && 
+                             location.state.tripData;
+                             
+    if (!isValidNavigation) {
+      // Redirect to homepage if accessed improperly
+      navigate('/', { replace: true });
+    }
+    
+    // Block browser back button functionality while on this page
+    const blockBackNavigation = (e) => {
+      // This may not work in all browsers but provides an additional layer
+      e.preventDefault();
+      navigate('/', { replace: true });
+    };
+    
+    // Listen for attempts to navigate away using history
+    window.history.pushState(null, null, window.location.pathname);
+    window.addEventListener('popstate', blockBackNavigation);
+    
+    return () => {
+      window.removeEventListener('popstate', blockBackNavigation);
+    };
+  }, [navigate, location]);
+  
+  // Calculate total number of passengers based on passenger types
+  const calculateTotalPassengers = (passengerTypes) => {
+    if (!passengerTypes) return 0;
+    return (passengerTypes.adult || 0) + (passengerTypes.student || 0) + (passengerTypes.senior || 0);
+  };
+  
   const [formData, setFormData] = useState({
-    tripData: location.state?.tripData,
+    tripData: location.state?.tripData || {},
     planningData: null,
     selectedDeparture: undefined,
     selectedReturn: undefined,
     departureDetails: {
-      passengerCount: location.state?.tripData.passengers,
-      passengers: Array.from({ length: location.state?.tripData.passengers * (location.state?.tripData.returnDate === "" ? 1 : 2) }, () => ({
-        PassengerType: "Adult",
-        Name: "",
-        Surname: "",
-        Phone: "",
-        BirthDate: "",
-        Email: "",
-        isValid: false,
-      })),
+      passengerCount: location.state?.tripData?.passengerTypes ? 
+        calculateTotalPassengers(location.state.tripData.passengerTypes) : 0,
+      passengers: (() => {
+        const tripData = location.state?.tripData;
+        if (!tripData || !tripData.passengerTypes) return [];
+        
+        const isRoundTrip = tripData.returnDate !== "";
+        const passengerTypes = tripData.passengerTypes;
+        const passengerList = [];
+        
+        // Add adult passengers
+        for (let i = 0; i < (passengerTypes.adult || 0); i++) {
+          passengerList.push({
+            PassengerType: "Adult",
+            Name: "",
+            Surname: "",
+            Phone: "",
+            BirthDate: "",
+            Email: "",
+            isValid: false,
+          });
+        }
+        
+        // Add student passengers
+        for (let i = 0; i < (passengerTypes.student || 0); i++) {
+          passengerList.push({
+            PassengerType: "Student",
+            Name: "",
+            Surname: "",
+            Phone: "",
+            BirthDate: "",
+            Email: "",
+            isValid: false,
+          });
+        }
+        
+        // Add senior passengers
+        for (let i = 0; i < (passengerTypes.senior || 0); i++) {
+          passengerList.push({
+            PassengerType: "Senior",
+            Name: "",
+            Surname: "",
+            Phone: "",
+            BirthDate: "",
+            Email: "",
+            isValid: false,
+          });
+        }
+        
+        // For round trips, duplicate the passenger list
+        return isRoundTrip ? [...passengerList, ...passengerList] : passengerList;
+      })(),
     },
     creditCardDetails: {
       name: "",
@@ -82,6 +156,7 @@ const FerryTicketForm = () => {
 
   useEffect(() => {
     console.log("TripData:", formData.tripData);
+    console.log("Passengers:", formData.departureDetails.passengers);
   }, [location.state, formData.tripData]);
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
@@ -210,6 +285,10 @@ const FerryTicketForm = () => {
     }
   }, [currentStep, navigate]);
 
+  // Get the total count of passengers (one way)
+  const totalPassengers = formData.departureDetails.passengerCount || 0;
+  const isRoundTrip = formData.tripData && formData.tripData.returnDate !== "";
+
   return (
     currentStep === 4 ? (
       <ThankYouPage />
@@ -255,9 +334,12 @@ const FerryTicketForm = () => {
                     </div>
                   </div>
 
-                  {formData.departureDetails.passengers.map((_, index) =>
-                    index < formData.tripData.passengers ? (
+                  {formData.departureDetails.passengers.map((passenger, index) => (
+                    index < totalPassengers ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
+                        <div className="mb-3 text-lg font-semibold text-blue-600">
+                          Passenger {index + 1} - {passenger.PassengerType}
+                        </div>
                         <DepartureInfo 
                           passengerIndex={index} 
                           departureDetails={formData.departureDetails} 
@@ -266,9 +348,9 @@ const FerryTicketForm = () => {
                         />
                       </div>
                     ) : null
-                  )}
+                  ))}
 
-                  {formData.tripData.returnDate !== "" && (
+                  {isRoundTrip && (
                     <div className="p-4 border-b">
                       <div className="flex justify-between items-center">
                         <h2 className="text-red-800 text-xl font-bold">Return Travel Information</h2>
@@ -281,9 +363,12 @@ const FerryTicketForm = () => {
                     </div>
                   )}
 
-                  {formData.tripData.returnDate !== "" && formData.departureDetails.passengers.map((_, index) =>
-                    index >= formData.tripData.passengers && index < formData.tripData.passengers * 2 ? (
+                  {isRoundTrip && formData.departureDetails.passengers.map((passenger, index) => (
+                    index >= totalPassengers && index < totalPassengers * 2 ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
+                        <div className="mb-3 text-lg font-semibold text-red-600">
+                          Passenger {index - totalPassengers + 1} - {passenger.PassengerType}
+                        </div>
                         <DepartureInfo 
                           passengerIndex={index}
                           departureDetails={formData.departureDetails} 
@@ -292,7 +377,7 @@ const FerryTicketForm = () => {
                         />
                       </div>
                     ) : null
-                  )}
+                  ))}
 
                   <TicketPurchase
                     notifyBySMS={formData.notifyBySMS}
@@ -313,9 +398,11 @@ const FerryTicketForm = () => {
             )}
           </div>
 
-          <div className="w-1/3">
-            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} />
-          </div>
+          {currentStep !== 4 && (
+            <div className="w-1/3">
+              <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} />
+            </div>
+          )}
         </div>
 
         <div className="mt-4 flex justify-between">

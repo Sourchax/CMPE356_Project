@@ -4,20 +4,16 @@ import { AnimatePresence } from "framer-motion";
 import Homepage from "./pages/homepage";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
-import StationList from "./components/stationCard";
-import PaymentConfirmation from "./pages/PaymentConfirmation";
+import StationList from "./pages/StationsPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import CustomerLayout from "./layouts/customerLayout";
 import CustomSignIn from "./pages/customSignIn";
 import CustomSignUp from "./pages/customSignUp";
-import JourneyCatagory from "./components/PlanningPhase/JourneyCatagory";
 import AdminRBA from "./RBAcomponents/AdminRBA";
 import AdminLayout from "./layouts/adminLayout";
 import AdminStations from "./pages/Admin/adminStations";
@@ -31,6 +27,7 @@ import ManagerUsers from "./pages/Manager/managerUsers";
 import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
 import AdminVoyage from "./pages/Admin/adminVoyage";
+import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 
 
 import "./App.css";
@@ -52,7 +49,10 @@ const AnimatedRoutes = () => {
           <Route path="/ticket-check" element={<TicketCheck />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/ferry-ticket-form" element={<FerryTicketForm />} />
+          <Route 
+            path="/ferry-ticket-form" 
+            element={<ProtectedRoute element={<FerryTicketForm />} requiredSource="homepage" />} 
+          />
           <Route path="/sign-in" element={<CustomSignIn />} />
           <Route path="/sign-up" element={<CustomSignUp />} />
         </Route>

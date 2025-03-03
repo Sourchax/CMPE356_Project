@@ -6,13 +6,17 @@ import ship from "../assets/images/ship.png";
 import passenger from "../assets/images/passenger.png";
 import Contact from "./Contact.jsx";
 import FerrySlider from "../components/FerrySlider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { SignedIn, useSession } from "@clerk/clerk-react";
 
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const {isSignedIn} = useSession();
   
+  const location = useLocation();
   // Get today's date in YYYY-MM-DD format for min date validation
+
   const today = new Date().toISOString().split('T')[0];
   
   // Form state
@@ -20,10 +24,33 @@ const Homepage = () => {
   const [formData, setFormData] = useState({
     departure: "",
     arrival: "",
-    departureDate: "",
+    departureDate:"",
     returnDate: "",
     passengers: 1,
   });
+
+  useEffect(() => {
+    const voyageData = location.state?.voyage;
+    
+    if (voyageData) {
+      // Update form data with voyage details
+      setFormData({
+        departure: voyageData.from,
+        arrival: voyageData.to,
+        departureDate: voyageData.date,
+        returnDate: "",
+        passengers: 1
+      });
+      
+      // Set default passenger (1 adult)
+      setPassengerDetails({
+        adult: 1,
+        student: 0,
+        senior: 0
+      });
+      
+    }
+  }, [location.state]);
   
   // Passenger details state
   const [passengerDetails, setPassengerDetails] = useState({
@@ -99,7 +126,10 @@ const Homepage = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+    if(!isSignedIn) {
+      navigate("/sign-in");
+      return;
+    }
     // Check if departure and arrival are the same
     if (formData.departure === formData.arrival) {
       alert("Departure and arrival locations cannot be the same. Please select different locations.");
@@ -117,8 +147,13 @@ const Homepage = () => {
       passengerTypes: passengerDetails
     };
     
-    // Navigate to results page with form data
-    navigate('/ferry-ticket-form', { state: { tripData } });
+    navigate('/ferry-ticket-form', { 
+      state: { 
+        tripData,
+        from: 'homepage',
+        timestamp: Date.now()
+      } 
+    });
     console.log(tripData);
   };
   return (
@@ -498,8 +533,7 @@ const Homepage = () => {
           </div>
         </div>
       </section>
-
-      {/* Latest Announcements */}
+            {/* Latest Announcements */}
       <section className="py-20 bg-[#D1FFD7]/20">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">Latest Announcements</h2>

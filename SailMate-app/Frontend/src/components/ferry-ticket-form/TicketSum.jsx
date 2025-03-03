@@ -4,10 +4,16 @@ import { MapPin, Calendar, ChevronRight } from 'lucide-react';
 const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
   if (!ticketTripInfo) return <div>No ticket data available</div>;
 
-  const { departure, arrival, departureDate, returnDate, passengers } = ticketTripInfo;
+  const { departure, arrival, departureDate, returnDate, passengers, passengerTypes } = ticketTripInfo;
   const serviceFee = 10;
 
-  // Initialize totalPrice for both departure and return separately
+  // Discount rates
+  const discountRates = {
+    student: 0.10,  // 10% discount for students
+    senior: 0.20    // 20% discount for seniors
+  };
+
+  // Calculate initial prices (before discounts)
   let departureTotalPrice = serviceFee * passengers;
   let returnTotalPrice = serviceFee * passengers;
 
@@ -23,7 +29,52 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
     economy: "#34a693"
   };
 
-  let finalTotalPrice = 0;
+  const calculatePassengerPrices = (basePrice, passengerTypes) => {
+    if (!passengerTypes || basePrice === "N/A") return { total: "N/A", breakdown: {} };
+    
+    let total = 0;
+    const breakdown = {};
+    
+    // Calculate price for each passenger type with appropriate discounts
+    if (passengerTypes.adult) {
+      const adultPrice = basePrice * passengerTypes.adult;
+      total += adultPrice;
+      breakdown.adult = {
+        count: passengerTypes.adult,
+        unitPrice: basePrice,
+        discount: 0,
+        total: adultPrice
+      };
+    }
+    
+    if (passengerTypes.student) {
+      const studentUnitPrice = basePrice * (1 - discountRates.student);
+      const studentPrice = studentUnitPrice * passengerTypes.student;
+      total += studentPrice;
+      breakdown.student = {
+        count: passengerTypes.student,
+        unitPrice: basePrice,
+        discount: discountRates.student * 100,
+        discountedPrice: studentUnitPrice,
+        total: studentPrice
+      };
+    }
+    
+    if (passengerTypes.senior) {
+      const seniorUnitPrice = basePrice * (1 - discountRates.senior);
+      const seniorPrice = seniorUnitPrice * passengerTypes.senior;
+      total += seniorPrice;
+      breakdown.senior = {
+        count: passengerTypes.senior,
+        unitPrice: basePrice,
+        discount: discountRates.senior * 100,
+        discountedPrice: seniorUnitPrice,
+        total: seniorPrice
+      };
+    }
+    
+    return { total, breakdown };
+  };
 
   return (
     <>
@@ -49,11 +100,14 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
           selectedPrice = "N/A";
         }
 
-        // Update total price for departure and return separately
-        if (ticket.label === "ONE WAY" && selectedPrice !== "N/A") {
-          departureTotalPrice += selectedPrice * passengers;
-        } else if (ticket.label === "RETURN" && selectedPrice !== "N/A") {
-          returnTotalPrice += selectedPrice * passengers;
+        // Calculate prices with discounts
+        const passengerPrices = calculatePassengerPrices(selectedPrice, passengerTypes);
+        
+        // Update total prices for departure and return
+        if (ticket.label === "ONE WAY" && passengerPrices.total !== "N/A") {
+          departureTotalPrice = departureTotalPrice - (serviceFee * passengers) + passengerPrices.total + (serviceFee * passengers);
+        } else if (ticket.label === "RETURN" && passengerPrices.total !== "N/A") {
+          returnTotalPrice = returnTotalPrice - (serviceFee * passengers) + passengerPrices.total + (serviceFee * passengers);
         }
 
         // Set the overall color style based on the selected seat type
@@ -104,16 +158,56 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
 
             <div className="border-t my-2"></div>
 
-            <div className="flex justify-between items-center mb-2">
-              <div>{passengers} Passenger{passengers > 1 ? 's' : ''}</div>
-              <div className="font-bold" style={{ color: colorStyle }}>
-                ₺{selectedPrice !== "N/A" ? selectedPrice * passengers : "N/A"}
-              </div>
+            {/* Display passenger counts by type */}
+            <div className="mb-2">
+              <div className="font-medium mb-1">Passengers:</div>
+              {passengerTypes && (
+                <div className="space-y-1">
+                  {passengerTypes.adult > 0 && (
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-700">Adult × {passengerTypes.adult}</div>
+                      {passengerPrices.breakdown.adult && (
+                        <div className="font-bold" style={{ color: colorStyle }}>
+                          ₺{passengerPrices.breakdown.adult.total.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {passengerTypes.student > 0 && (
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-700">
+                        Student × {passengerTypes.student} 
+                        <span className="text-green-600 ml-1">(10% off)</span>
+                      </div>
+                      {passengerPrices.breakdown.student && (
+                        <div className="font-bold" style={{ color: colorStyle }}>
+                          ₺{passengerPrices.breakdown.student.total.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {passengerTypes.senior > 0 && (
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-700">
+                        Senior × {passengerTypes.senior}
+                        <span className="text-green-600 ml-1">(20% off)</span>
+                      </div>
+                      {passengerPrices.breakdown.senior && (
+                        <div className="font-bold" style={{ color: colorStyle }}>
+                          ₺{passengerPrices.breakdown.senior.total.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Display only the selected seat type's price */}
             <div className="flex justify-between items-center mb-2">
-              <div className="text-gray-600">Selected Price</div>
+              <div className="text-gray-600">Base Price</div>
               <div className="font-bold" style={{ color: colorStyle }}>
                 ₺{selectedPrice}
               </div>
@@ -133,11 +227,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
             <div className="bg-green-500 text-white p-2 flex justify-between items-center" style={{ backgroundColor: colorStyle }}>
               <div>TOTAL</div>
               <div>
-                {ticket.label === "ONE WAY" ? `₺${departureTotalPrice}` : `₺${returnTotalPrice}`}
+                {ticket.label === "ONE WAY" ? `₺${departureTotalPrice.toFixed(2)}` : `₺${returnTotalPrice.toFixed(2)}`}
               </div>
             </div>
-
-          
           </div>
         );
       })}
@@ -145,7 +237,11 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
       {/* Total Price at the end */}
       <div className="bg-green-600 text-white p-4 mt-6 rounded-md shadow-md flex justify-between items-center">
         <div className="text-lg font-bold">Grand Total</div>
-        <div className="text-xl font-bold">{returnDate === "" ? `₺${departureTotalPrice}` : `₺${departureTotalPrice + returnTotalPrice}`}</div>
+        <div className="text-xl font-bold">
+          {returnDate === "" ? 
+            `₺${departureTotalPrice.toFixed(2)}` : 
+            `₺${(departureTotalPrice + returnTotalPrice).toFixed(2)}`}
+        </div>
       </div>
     </>
   );

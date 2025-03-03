@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/styles/ticketcancel.css";
 
 const TicketCancel = () => {
@@ -7,6 +8,7 @@ const TicketCancel = () => {
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,6 +34,10 @@ const TicketCancel = () => {
       setReason("");
       setShowConfirmation(false);
     }, 1500);
+  };
+
+  const navigateToContact = () => {
+    navigate("/contact");
   };
 
   return (
@@ -161,7 +167,7 @@ const TicketCancel = () => {
           )}
           
           <div className="ticket-form-footer">
-            <p>Need help? <a href="/contact">Contact our support team</a></p>
+            <p>Need help? <button onClick={navigateToContact} className="text-link">Contact our support team</button></p>
           </div>
         </div>
       </div>

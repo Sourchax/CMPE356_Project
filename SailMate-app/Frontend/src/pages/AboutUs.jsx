@@ -194,33 +194,33 @@ const AboutUs = () => {
             viewport={{ once: true }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl text-white font-bold text-center mb-16">Our Values</h2>
+            <h2 className="text-4xl text-white font-bold text-center mb-16">The SailMate Difference</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 title: "Innovation",
-                icon: "💡",
-                description: "We constantly explore new ways to improve the ferry travel experience.",
+                icon: "⚓",
+                description: "We pioneer smart solutions to make ferry booking and travel seamlessly efficient.",
                 delay: 0
               },
               {
                 title: "Reliability",
-                icon: "🛡️",
-                description: "We build systems you can count on, in an industry where timing is everything.",
+                icon: "⏱️",
+                description: "Punctual departures and accurate schedules you can build your journey around.",
                 delay: 0.2
               },
               {
                 title: "Sustainability",
                 icon: "🌊",
-                description: "We're committed to supporting eco-friendly travel and protecting our waterways.",
+                description: "Eco-friendly vessels and practices that protect the beautiful waters we sail.",
                 delay: 0.4
               },
               {
-                title: "Community",
-                icon: "🤝",
-                description: "We strengthen connections between islands, coasts, and the people who call them home.",
+                title: "Comfort",
+                icon: "🛋️",
+                description: "Thoughtfully designed spaces and amenities for a relaxing journey across the water.",
                 delay: 0.6
               }
             ].map((value, index) => (
@@ -230,9 +230,9 @@ const AboutUs = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: value.delay }}
-                className="bg-white rounded-lg p-6 shadow-lg"
+                className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow"
               >
-                <div className="text-4xl mb-4">{value.icon}</div>
+                <div className="text-4xl mb-4 bg-[#D1FFD7] w-16 h-16 flex items-center justify-center rounded-full text-[#0D3A73]">{value.icon}</div>
                 <h3 className="text-xl font-bold text-[#0D3A73] mb-2">{value.title}</h3>
                 <p className="text-gray-700">{value.description}</p>
               </motion.div>

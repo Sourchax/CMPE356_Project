@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/styles/ticketcheck.css";
 
 const TicketCheck = () => {
   const [ticketId, setTicketId] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,6 +18,10 @@ const TicketCheck = () => {
       // Handle ticket check logic here
       alert("Ticket check functionality will be implemented soon.");
     }, 1500);
+  };
+
+  const navigateToContact = () => {
+    navigate("/contact");
   };
 
   return (
@@ -82,7 +88,7 @@ const TicketCheck = () => {
           </form>
           
           <div className="ticket-form-footer">
-            <p>Need help? <a href="/contact">Contact our support team</a></p>
+            <p>Need help? <button onClick={navigateToContact} className="text-link">Contact our support team</button></p>
           </div>
         </div>
       </div>

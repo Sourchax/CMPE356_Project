@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 const FaqItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,31 +42,27 @@ const FAQ = () => {
   const faqData = [
     {
       question: "How do I book a ferry ticket with SailMate?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      answer: "Booking with SailMate is simple! Visit our homepage and use the booking form to enter your departure and arrival locations, preferred dates, and number of passengers. After signing in to your account, you'll be able to select your preferred voyage time, choose any add-ons, and complete your payment securely. Once confirmed, your e-ticket will be sent to your email and will also be available in your account dashboard."
     },
     {
       question: "Can I cancel or modify my booking?",
-      answer: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      answer: "Yes, you can cancel or modify your booking up to 24 hours before departure. To do so, visit the 'Ticket Check' or 'Ticket Cancel' sections of our website and enter your booking reference number. For cancellations, refunds are processed according to our policy: full refund if canceled 7+ days before departure, 75% refund for 3-6 days, and 50% refund for 1-2 days before departure. Modifications are subject to availability and may incur additional fees if the new fare is higher."
     },
     {
       question: "How early should I arrive before departure?",
-      answer: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-    },
-    {
-      question: "Are pets allowed on the ferries?",
-      answer: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+      answer: "We recommend arriving at least 45 minutes before scheduled departure for foot passengers and at least 90 minutes for passengers with vehicles. This allows sufficient time for check-in, security procedures, and boarding. During peak season (June-August) or holidays, please consider arriving 30 minutes earlier than the recommended times to avoid any delays."
     },
     {
       question: "Do I need to print my ticket or can I use a mobile ticket?",
-      answer: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet."
+      answer: "SailMate supports both printed and mobile tickets. For most routes, you can simply show your e-ticket on your smartphone or tablet at check-in. The QR code on your ticket will be scanned for verification. If you prefer a printed ticket, you can print the PDF attachment from your confirmation email. We recommend having a digital backup available even if you bring a printed copy."
     },
     {
       question: "What happens in case of bad weather or cancellations?",
-      answer: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident."
+      answer: "In the event of cancellations due to severe weather or technical issues, we'll notify you via email and SMS as soon as possible. You'll be offered the choice of rebooking on the next available sailing at no extra cost, or receiving a full refund regardless of your ticket type. For significant delays (over 2 hours), we provide complimentary refreshments at our terminals. We recommend checking our website or contacting our customer service for real-time updates during adverse weather conditions."
     },
     {
       question: "Is there Wi-Fi available on board?",
-      answer: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus."
+      answer: "Yes, complimentary Wi-Fi is available on all our ferries. The connection quality may vary depending on your location at sea. Premium high-speed Wi-Fi is available for purchase on board for passengers who require faster connections for work or streaming. Most vessels also feature charging stations in common areas for your devices. Please note that during peak travel times, bandwidth may be limited due to high usage."
     }
   ];
 

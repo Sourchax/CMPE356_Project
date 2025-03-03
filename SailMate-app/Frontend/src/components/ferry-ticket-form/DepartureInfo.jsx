@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { User, GraduationCap, UserCheck } from "lucide-react"; // Import icons
 
-const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tripType, passengerType }) => {
+const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tripType }) => {
   const isDeparture = tripType === "departure";
   const bgColor = isDeparture ? "bg-blue-800" : "bg-red-800";
+  
+  // Get the passenger type from departureDetails based on passengerIndex
+  const passengerType = departureDetails.passengers[passengerIndex]?.PassengerType?.toLowerCase() || "adult";
 
   const [formData, setFormData] = useState({
     Name: "",
@@ -22,6 +25,13 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
   });
 
   const prevIsValidRef = useRef();
+
+  // Update validation when passenger type changes
+  useEffect(() => {
+    if (formData.BirthDate) {
+      validateInput("BirthDate", formData.BirthDate);
+    }
+  }, [passengerType]);
 
   useEffect(() => {
     const isValid =
@@ -61,11 +71,29 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
         else if (!/\d{4}-\d{2}-\d{2}/.test(value)) error = "Invalid date format. Use YYYY-MM-DD";
         else {
           const today = new Date();
+          const birthDate = new Date(value);
+          const age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          const dayDiff = today.getDate() - birthDate.getDate();
+          
+          const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+          
           const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0];
           const maxDate = today.toISOString().split("T")[0];
 
-          if (value > maxDate) error = "Birth date cannot be in the future";
-          else if (value < minDate) error = "Birth date cannot be older than 100 years";
+          if (value > maxDate) {
+            error = "Birth date cannot be in the future";
+          } else if (value < minDate) {
+            error = "Birth date cannot be older than 100 years";
+          } else if (passengerType === "student") {
+            if (adjustedAge > 25) {
+              error = "Student passengers must be 25 years old or younger";
+            } else if (adjustedAge < 10) {
+              error = "Student passengers must be at least 10 years old";
+            }
+          } else if (passengerType === "senior" && adjustedAge < 65) {
+            error = "Senior passengers must be 65 years old or older";
+          }
         }
         break;
       case "Email":
@@ -84,8 +112,8 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     switch (type) {
       case "student":
         return <GraduationCap size={24} className="text-white" />;
-      case "65+":
-        return <UserCheck size={24} className="text-white" />; // Replaced with UserCheck
+      case "senior":
+        return <UserCheck size={24} className="text-white" />;
       default:
         return <User size={24} className="text-white" />;
     }
@@ -95,10 +123,10 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     <div className="p-4 bg-white shadow-lg rounded-lg">
       <div className="flex items-center gap-3 text-gray-700">
         <div className={`${bgColor} text-white p-3 rounded-full`}>
-          {getPassengerIcon(passengerType)} {/* Display the icon based on passengerType */}
+          {getPassengerIcon(passengerType)}
         </div>
         <span className="font-medium text-lg">
-          {(passengerIndex % departureDetails.passengerCount) + 1}. Passenger
+          {(passengerIndex % departureDetails.passengerCount) + 1}. Passenger - {passengerType.charAt(0).toUpperCase() + passengerType.slice(1)}
         </span>
       </div>
 
@@ -134,8 +162,12 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
             }`}
             value={formData.BirthDate}
             onChange={(e) => handleInputChange("BirthDate", e.target.value)}
-            max={new Date().toISOString().split("T")[0]}
-            min={new Date(new Date().getFullYear() - 100, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
+            min={passengerType === "senior" ? 
+              new Date(new Date().getFullYear() - 100, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
+              new Date(new Date().getFullYear() - (passengerType === "student" ? 25 : 100), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
+            max={passengerType === "student" ? 
+              new Date(new Date().getFullYear() - 10, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
+              new Date(new Date().getFullYear() - 65, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
           />
           <div className="h-5 mt-1 text-sm text-red-500 transition-opacity duration-300">
             {errors["BirthDate"] || ""}

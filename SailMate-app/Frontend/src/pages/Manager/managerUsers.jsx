@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Trash2, User, Edit, Plus, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Trash2, User, Edit, Plus, X, AlertTriangle } from "lucide-react";
 
 const ManageUsers = () => {
     const [users, setUsers] = useState([
@@ -10,27 +10,88 @@ const ManageUsers = () => {
     const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({ name: "", email: "", role: "User" });
     const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
     
     // Available roles
     const roles = ["Admin", "Manager", "User"];
 
+    // Validate specific field
+    const validateField = (name, value) => {
+        switch (name) {
+            case "name":
+                if (!value.trim()) return "Name is required";
+                if (value.trim().length < 3) return "Name must be at least 3 characters";
+                if (value.trim().length > 50) return "Name must be less than 50 characters";
+                if (!/^[a-zA-Z\s'-]+$/.test(value)) return "Name can only contain letters, spaces, hyphens and apostrophes";
+                return "";
+            
+            case "email":
+                if (!value.trim()) return "Email is required";
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Invalid email format";
+                if (value.length > 100) return "Email must be less than 100 characters";
+                // Check for duplicate email (excluding the current user being edited)
+                const isDuplicate = users.some(user => 
+                    user.email.toLowerCase() === value.toLowerCase() && 
+                    (!editingUser || user.id !== editingUser.id)
+                );
+                if (isDuplicate) return "This email is already in use";
+                return "";
+            
+            case "role":
+                if (!value) return "Role is required";
+                if (!roles.includes(value)) return "Invalid role selected";
+                return "";
+            
+            default:
+                return "";
+        }
+    };
+
+    // Validate all form fields
     const validateForm = () => {
-        let newErrors = {};
-        if (!formData.name || formData.name.length < 3) newErrors.name = "User name must be at least 3 characters";
-        if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email address";
-        if (!formData.role) newErrors.role = "Please select a role";
+        const newErrors = {};
+        
+        Object.keys(formData).forEach(key => {
+            const error = validateField(key, formData[key]);
+            if (error) newErrors[key] = error;
+        });
+        
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+    // Handle input change with real-time validation
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        
+        // If field has been touched, validate it
+        if (touched[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({ ...prev, [name]: error }));
+        }
+    };
+
+    // Mark field as touched on blur and validate
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched({ ...touched, [name]: true });
+        
+        const error = validateField(name, value);
+        setErrors(prev => ({ ...prev, [name]: error }));
+    };
+
     const handleDelete = (id) => {
-        setUsers(users.filter((user) => user.id !== id));
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            setUsers(users.filter((user) => user.id !== id));
+        }
     };
 
     const handleEdit = (user) => {
         setEditingUser(user);
         setFormData({ name: user.name, email: user.email, role: user.role });
         setErrors({});
+        setTouched({});
         setIsModalOpen(true);
     };
 
@@ -38,11 +99,20 @@ const ManageUsers = () => {
         setEditingUser(null);
         setFormData({ name: "", email: "", role: "User" });
         setErrors({});
+        setTouched({});
         setIsModalOpen(true);
     };
 
     const handleSave = (event) => {
         event.preventDefault();
+        
+        // Mark all fields as touched
+        const allTouched = Object.keys(formData).reduce((acc, key) => {
+            acc[key] = true;
+            return acc;
+        }, {});
+        setTouched(allTouched);
+        
         if (!validateForm()) return;
 
         if (editingUser) {
@@ -55,6 +125,7 @@ const ManageUsers = () => {
         setEditingUser(null);
         setFormData({ name: "", email: "", role: "User" });
         setErrors({});
+        setTouched({});
     };
 
     const closeModal = () => {
@@ -62,6 +133,7 @@ const ManageUsers = () => {
         setEditingUser(null);
         setFormData({ name: "", email: "", role: "User" });
         setErrors({});
+        setTouched({});
     };
 
     const getRoleBadgeClass = (role) => {
@@ -100,36 +172,46 @@ const ManageUsers = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                                <td className="p-4 flex items-center">
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                                        <User size={16} className="text-gray-500" />
-                                    </div>
-                                    <span className="font-medium">{user.name}</span>
-                                </td>
-                                <td className="p-4 text-gray-600">{user.email}</td>
-                                <td className="p-4">
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeClass(user.role)}`}>
-                                        {user.role}
-                                    </span>
-                                </td>
-                                <td className="p-4 text-center flex justify-center gap-3">
-                                    <button 
-                                        onClick={() => handleEdit(user)} 
-                                        className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
-                                    >
-                                        <Edit size={16} />
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDelete(user.id)} 
-                                        className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
+                        {users.length > 0 ? (
+                            users.map((user) => (
+                                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td className="p-4 flex items-center">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                                            <User size={16} className="text-gray-500" />
+                                        </div>
+                                        <span className="font-medium">{user.name}</span>
+                                    </td>
+                                    <td className="p-4 text-gray-600">{user.email}</td>
+                                    <td className="p-4">
+                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeClass(user.role)}`}>
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 text-center flex justify-center gap-3">
+                                        <button 
+                                            onClick={() => handleEdit(user)} 
+                                            className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
+                                            aria-label={`Edit ${user.name}`}
+                                        >
+                                            <Edit size={16} />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(user.id)} 
+                                            className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
+                                            aria-label={`Delete ${user.name}`}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="p-4 text-center text-gray-500">
+                                    No users found. Click "Add User" to create a new user.
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -139,47 +221,91 @@ const ManageUsers = () => {
                     <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full animate-fade-in">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-semibold">{editingUser ? "Edit User" : "Add User"}</h2>
-                            <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 transition">
+                            <button 
+                                onClick={closeModal} 
+                                className="text-gray-500 hover:text-gray-700 transition"
+                                aria-label="Close modal"
+                            >
                                 <X size={24} />
                             </button>
                         </div>
-                        <form onSubmit={handleSave} className="space-y-4">
+                        <form onSubmit={handleSave} className="space-y-4" noValidate>
                             <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
+                                    Name <span className="text-red-500">*</span>
+                                </label>
                                 <input
+                                    id="name"
+                                    name="name"
                                     type="text"
                                     value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Enter name"
-                                    className="w-full border border-gray-300 p-2 rounded-md outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Enter full name"
+                                    className={`w-full border p-2 rounded-md outline-none transition ${
+                                        errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                    }`}
+                                    aria-invalid={errors.name ? "true" : "false"}
+                                    aria-describedby={errors.name ? "name-error" : undefined}
                                 />
-                                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                                {errors.name && (
+                                    <p id="name-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} /> {errors.name}
+                                    </p>
+                                )}
                             </div>
                             
                             <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+                                    Email <span className="text-red-500">*</span>
+                                </label>
                                 <input
+                                    id="email"
+                                    name="email"
                                     type="email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="Enter email"
-                                    className="w-full border border-gray-300 p-2 rounded-md outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Enter email address"
+                                    className={`w-full border p-2 rounded-md outline-none transition ${
+                                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                    }`}
+                                    aria-invalid={errors.email ? "true" : "false"}
+                                    aria-describedby={errors.email ? "email-error" : undefined}
                                 />
-                                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                                {errors.email && (
+                                    <p id="email-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} /> {errors.email}
+                                    </p>
+                                )}
                             </div>
                             
                             <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-1">Role</label>
+                                <label htmlFor="role" className="text-sm font-medium text-gray-700 mb-1">
+                                    Role <span className="text-red-500">*</span>
+                                </label>
                                 <select
+                                    id="role"
+                                    name="role"
                                     value={formData.role}
-                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                    className="w-full border border-gray-300 p-2 rounded-md outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={`w-full border p-2 rounded-md outline-none transition ${
+                                        errors.role ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                    }`}
+                                    aria-invalid={errors.role ? "true" : "false"}
+                                    aria-describedby={errors.role ? "role-error" : undefined}
                                 >
+                                    <option value="" disabled>Select a role</option>
                                     {roles.map((role) => (
                                         <option key={role} value={role}>{role}</option>
                                     ))}
                                 </select>
-                                {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role}</p>}
+                                {errors.role && (
+                                    <p id="role-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} /> {errors.role}
+                                    </p>
+                                )}
                             </div>
                             
                             <div className="flex justify-end gap-3 mt-6">

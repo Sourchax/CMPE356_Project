@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { MapPin, Phone, User, ExternalLink } from "lucide-react";
 
 const stations = [
-  { name: "Izmir Central", person: "Ali Kaya", phone: "+90 232 123 4567", address: "Konak, Izmir, Turkey", city: "Izmir" },
-  { name: "Istanbul Terminal", person: "Mehmet Yilmaz", phone: "+90 212 987 6543", address: "Besiktas, Istanbul, Turkey", city: "Istanbul" },
-  { name: "Bursa Hub", person: "Zeynep Demir", phone: "+90 224 321 7654", address: "Osmangazi, Bursa, Turkey", city: "Bursa" },
-  { name: "Izmir North", person: "Fatma Aydin", phone: "+90 232 555 7890", address: "Bornova, Izmir, Turkey", city: "Izmir" },
-  { name: "Istanbul South", person: "Hasan Koc", phone: "+90 212 888 1122", address: "Kadikoy, Istanbul, Turkey", city: "Istanbul" },
+  { name: "İzmir Marina", person: "Ali Kaya", phone: "+90 232 123 4567", address: "Bahçelerarası, 35330 Balçova/İzmir, Turkey", city: "Izmir" },
+  { name: "Yenikapı Terminal", person: "Mehmet Yilmaz", phone: "+90 212 987 6543", address: "Katip Kasım, Kennedy Cad., 34131 Fatih/İstanbul, Turkey", city: "Istanbul" },
+  { name: "Mudanya Hub", person: "Zeynep Demir", phone: "+90 224 321 7654", address: "Güzelyalı Eğitim, 16940 Mudanya/Bursa, Turkey", city: "Bursa" },
+  { name: "Foça Station", person: "Fatma Aydin", phone: "+90 232 555 7890", address: "Aşıklar Cd., 35680 Foça/İzmir, Turkey", city: "Izmir" },
+  { name: "Kadıköy Station", person: "Hasan Koc", phone: "+90 212 888 1122", address: "Caferağa, 34710 Kadıköy/İstanbul, Turkey", city: "Istanbul" },
 ];
 
 export default function StationCard() {

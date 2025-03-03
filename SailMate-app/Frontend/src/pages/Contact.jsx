@@ -9,11 +9,11 @@ import {
   Send,
   Tag
 } from "lucide-react";
-import { FaFacebookF, FaXTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
+import { FaFacebookF, FaXTwitter, FaInstagram} from 'react-icons/fa6';
 
 
 const Contact = () => {
-  // Form state management
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,12 +21,64 @@ const Contact = () => {
     message: ""
   });
   
-  // Validation state
+
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const validateField = (name, value) => {
+    let error = null;
+    
+    switch (name) {
+      case 'name':
+        if (!value.trim()) {
+          error = "Name is required";
+        } else if (value.trim().length < 2) {
+          error = "Name must be at least 2 characters";
+        } else if (value.trim().length > 50) {
+          error = "Name cannot exceed 50 characters";
+        } else if (!/^[a-zA-Z\s'-]+$/.test(value)) {
+          error = "Name can only contain letters, spaces, hyphens and apostrophes";
+        }
+        break;
+        
+      case 'email':
+        if (!value.trim()) {
+          error = "Email is required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = "Please enter a valid email address";
+        } else if (value.length > 100) {
+          error = "Email cannot exceed 100 characters";
+        }
+        break;
+        
+      case 'subject':
+        if (!value.trim()) {
+          error = "Subject is required";
+        } else if (value.trim().length < 3) {
+          error = "Subject must be at least 3 characters";
+        } else if (value.trim().length > 100) {
+          error = "Subject cannot exceed 100 characters";
+        }
+        break;
+        
+      case 'message':
+        if (!value.trim()) {
+          error = "Message is required";
+        } else if (value.trim().length < 10) {
+          error = "Message must be at least 10 characters";
+        } else if (value.trim().length > 1000) {
+          error = "Message cannot exceed 1000 characters";
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    return error;
+  };
   
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -34,7 +86,6 @@ const Contact = () => {
       [name]: value
     });
     
-    // Clear error when user types
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -43,42 +94,40 @@ const Contact = () => {
     }
   };
   
-  // Validate form
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    
+    setErrors({
+      ...errors,
+      [name]: error
+    });
+  };
+  
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-    
-    if (!formData.subject.trim()) {
-      newErrors.subject = "Subject is required";
-    }
-    
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters";
-    }
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+      }
+    });
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   
-  // Handle form submission
+  const getCharacterCount = () => {
+    return `${formData.message.length}/1000`;
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       setLoading(true);
       
-      // Simulate API call
       setTimeout(() => {
         setLoading(false);
         setSubmitted(true);
@@ -89,11 +138,16 @@ const Contact = () => {
           message: ""
         });
         
-        // Reset success message after 5 seconds
         setTimeout(() => {
           setSubmitted(false);
         }, 5000);
       }, 1500);
+    } else {
+      // Scroll to first error
+      const firstErrorField = Object.keys(errors).find(key => errors[key]);
+      if (firstErrorField) {
+        document.getElementById(firstErrorField)?.focus();
+      }
     }
   };
 
@@ -171,14 +225,6 @@ const Contact = () => {
                 <FaInstagram size={18} />
                 <span className="tooltip">Instagram</span>
               </a>
-              <a href="#" className="social-icon linkedin">
-                <FaLinkedinIn size={18} />
-                <span className="tooltip">LinkedIn</span>
-              </a>
-              <a href="#" className="social-icon youtube">
-                <FaYoutube size={18} />
-                <span className="tooltip">YouTube</span>
-              </a>
             </div>
           </div>
         </div>
@@ -194,9 +240,9 @@ const Contact = () => {
               </div>
             )}
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="form-group">
-                <label htmlFor="name">Full Name</label>
+                <label htmlFor="name">Full Name <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="text" 
@@ -204,16 +250,21 @@ const Contact = () => {
                     name="name" 
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Your name"
                     className={errors.name ? "error" : ""}
+                    aria-invalid={errors.name ? "true" : "false"}
+                    aria-describedby={errors.name ? "name-error" : undefined}
+                    maxLength={50}
+                    required
                   />
                   <User className="input-icon" size={18} />
                 </div>
-                {errors.name && <span className="error-message">{errors.name}</span>}
+                {errors.name && <span className="error-message" id="name-error">{errors.name}</span>}
               </div>
               
               <div className="form-group">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="email">Email Address <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="email" 
@@ -221,16 +272,21 @@ const Contact = () => {
                     name="email" 
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Your email"
                     className={errors.email ? "error" : ""}
+                    aria-invalid={errors.email ? "true" : "false"}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    maxLength={100}
+                    required
                   />
                   <Mail className="input-icon" size={18} />
                 </div>
-                {errors.email && <span className="error-message">{errors.email}</span>}
+                {errors.email && <span className="error-message" id="email-error">{errors.email}</span>}
               </div>
               
               <div className="form-group">
-                <label htmlFor="subject">Subject</label>
+                <label htmlFor="subject">Subject <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="text" 
@@ -238,28 +294,43 @@ const Contact = () => {
                     name="subject" 
                     value={formData.subject}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Message subject"
                     className={errors.subject ? "error" : ""}
+                    aria-invalid={errors.subject ? "true" : "false"}
+                    aria-describedby={errors.subject ? "subject-error" : undefined}
+                    maxLength={100}
+                    required
                   />
                   <Tag className="input-icon" size={18} />
                 </div>
-                {errors.subject && <span className="error-message">{errors.subject}</span>}
+                {errors.subject && <span className="error-message" id="subject-error">{errors.subject}</span>}
               </div>
               
               <div className="form-group">
-                <label htmlFor="message">Message</label>
+                <label htmlFor="message">Message <span className="required">*</span></label>
                 <div className="textarea-with-icon">
                   <textarea 
                     id="message" 
                     name="message" 
                     value={formData.message}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Your message"
                     className={errors.message ? "error" : ""}
+                    aria-invalid={errors.message ? "true" : "false"}
+                    aria-describedby={errors.message ? "message-error" : undefined}
+                    maxLength={1000}
+                    required
                   ></textarea>
                   <Send className="input-icon" size={18} />
+                  <div className="character-count">{getCharacterCount()}</div>
                 </div>
-                {errors.message && <span className="error-message">{errors.message}</span>}
+                {errors.message && <span className="error-message" id="message-error">{errors.message}</span>}
+              </div>
+              
+              <div className="form-note">
+                <span className="required">*</span> Required fields
               </div>
               
               <button 

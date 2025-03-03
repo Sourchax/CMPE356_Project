@@ -25,9 +25,6 @@ const Footer = () => {
                 <Link to="/about" className="text-white opacity-80 hover:opacity-100">About Us</Link>
               </li>
               <li>
-                <Link to="/careers" className="text-white opacity-80 hover:opacity-100">Careers</Link>
-              </li>
-              <li>
                 <Link to="/news" className="text-white opacity-80 hover:opacity-100">News</Link>
               </li>
               <li>
@@ -59,8 +56,8 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Contact</h3>
             <ul className="space-y-2 list-none">
-              <li className="text-white opacity-80">hello@sailmate.com</li>
-              <li className="text-white opacity-80">+1 (555) 123-4567</li>
+              <li className="text-white opacity-80">support@sailmate.com</li>
+              <li className="text-white opacity-80">+90 (212) 555-1234</li>
               <li className="text-white opacity-80">Cibali, Kadir Has Cd., 34083 Cibali / Fatih/İstanbul</li>
             </ul>
           </div>
@@ -90,10 +87,6 @@ const Footer = () => {
         </a>
       </div>
 
-      {/* Call Center */}
-      <div className="call-center text-center text-sm opacity-70 mt-6">
-        <p>Call Center: 0850 222 44 36 / 444 44 36</p>
-      </div>
     </footer>
   );
 };

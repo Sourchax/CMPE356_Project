@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom"; // Import useLocation hook
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { Link, useLocation } from "react-router-dom";
+import { SignedIn, SignedOut, UserButton, useClerk } from '@clerk/clerk-react';
 import sailMatelogo from "../assets/images/SailMate_logo.png";
-import { LogIn, Anchor, Menu, X, ChevronDown } from "lucide-react";
+import { LogIn, Anchor, Menu, X, ChevronDown, User } from "lucide-react";
 import CustomUserButton from "../pages/customUserButton";
+
+// Static placeholder component for Clerk authentication
+const AuthPlaceholder = () => (
+  <div className="flex items-center gap-2 px-5 py-2 bg-gray-100 text-gray-400 font-medium rounded-lg">
+    <User size={18} />
+    <span>Account</span>
+  </div>
+);
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 862);
-  const location = useLocation(); // Get current location/path
+  const location = useLocation();
+  const { loaded } = useClerk();
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,6 +31,10 @@ const Header = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [location]);
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -58,23 +71,16 @@ const Header = () => {
               Stations
             </NavLink>
 
-            {/* Dropdown for Tickets */}
-            <div className="relative group">
-              <button
-                className={`flex items-center px-3 py-2 text-[#0D3A73] font-medium rounded-md hover:bg-gray-100 hover:text-[#06AED5] transition-colors`}
-                onMouseEnter={() => setDropdownOpen(true)}
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+            {/* Tickets Dropdown - Simple CSS-only solution */}
+            <div className="group relative">
+              <NavLink 
+                className="flex items-center"
               >
                 Tickets
                 <ChevronDown size={16} className="ml-1" />
-              </button>
+              </NavLink>
               
-              <div 
-                className={`absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg overflow-hidden transition-all duration-200 ease-in-out z-10 ${
-                  dropdownOpen ? "opacity-100 transform scale-100" : "opacity-0 transform scale-95 pointer-events-none"
-                }`}
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
+              <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg overflow-hidden z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out">
                 <Link to="/ticket-cancel" 
                   className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors"
                   onClick={handleLinkClick}
@@ -101,21 +107,27 @@ const Header = () => {
             </NavLink>
           </nav>
 
-          {/* Sign In / User Button */}
+          {/* Sign In / User Button with Static Placeholder */}
           <div className="flex items-center">
-            <SignedOut>
-              <Link to="/sign-in">
-                <button className="flex items-center gap-2 px-5 py-2 bg-[#F0C808] text-[#0D3A73] font-medium rounded-lg shadow-sm hover:bg-yellow-400 transition-colors duration-200 transform hover:scale-105">
-                  <LogIn size={18} />
-                  <span>Sign In</span>
-                </button>
-              </Link>
-            </SignedOut>
-            <SignedIn>
-              <div className="ml-4">
-                <CustomUserButton />
-              </div>
-            </SignedIn>
+            {!loaded ? (
+              <AuthPlaceholder />
+            ) : (
+              <>
+                <SignedOut>
+                  <Link to="/sign-in">
+                    <button className="flex items-center gap-2 px-5 py-2 bg-[#F0C808] text-[#0D3A73] font-medium rounded-lg shadow-sm hover:bg-yellow-400 transition-colors duration-200 transform hover:scale-105">
+                      <LogIn size={18} />
+                      <span>Sign In</span>
+                    </button>
+                  </Link>
+                </SignedOut>
+                <SignedIn>
+                  <div className="ml-4">
+                    <CustomUserButton />
+                  </div>
+                </SignedIn>
+              </>
+            )}
           </div>
         </div>
 
@@ -149,10 +161,12 @@ const Header = () => {
   );
 };
 
-// Helper component for desktop navigation links
-const NavLink = ({ to, children, onClick }) => {
-  const location = useLocation();  // Get current location/path
-  const isActive = location.pathname === to; // Check if the current path matches the 'to' prop
+
+const NavLink = ({ to, children, onClick, className }) => {
+  const location = useLocation();
+  const isActive = 
+    (to === "/tickets" && location.pathname.includes("ticket")) || 
+    (to !== "/tickets" && location.pathname === to);
 
   return (
     <Link 
@@ -161,7 +175,7 @@ const NavLink = ({ to, children, onClick }) => {
         isActive
           ? "bg-[#0D3A73] text-white"
           : "text-[#0D3A73] hover:bg-gray-100 hover:text-[#06AED5]"
-      }`}
+      } ${className || ""}`}
       onClick={onClick}
     >
       {children}
@@ -169,7 +183,6 @@ const NavLink = ({ to, children, onClick }) => {
   );
 };
 
-// Helper component for mobile navigation links
 const MobileNavLink = ({ to, children, onClick }) => {
   return (
     <Link 

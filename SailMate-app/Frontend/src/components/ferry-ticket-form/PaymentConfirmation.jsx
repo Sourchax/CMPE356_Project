@@ -1,5 +1,5 @@
 ﻿import React, { useState } from "react";
-import "../assets/styles/paymentconfirmation.css";
+import "../../assets/styles/ferry-ticket-form/paymentconfirmation.css";
 
 const PaymentConfirmation = ({ onCCDataChange}) => {
   const [formData, setFormData] = useState({
