@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Ticket, Mail, MessageSquare } from 'lucide-react';
+import '../assets/styles/ticketcancel.css';
 
 const TicketCancel = () => {
   const [ticketId, setTicketId] = useState("");
@@ -85,10 +87,7 @@ const TicketCancel = () => {
                 <label htmlFor="ticket-id" className="block text-sm font-medium text-gray-700 font-sans">
                   Ticket ID / Reservation Number
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i className="fas fa-ticket-alt text-gray-400"></i>
-                  </div>
+                <div className="input-with-icon">
                   <input 
                     type="text" 
                     id="ticket-id" 
@@ -96,8 +95,9 @@ const TicketCancel = () => {
                     onChange={(e) => setTicketId(e.target.value)}
                     placeholder="Enter your ticket ID" 
                     required 
-                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                   />
+                  <Ticket className="input-icon" size={18} />
                 </div>
               </div>
               
@@ -105,10 +105,7 @@ const TicketCancel = () => {
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-sans">
                   Email Address
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i className="fas fa-envelope text-gray-400"></i>
-                  </div>
+                <div className="input-with-icon">
                   <input 
                     type="email" 
                     id="email" 
@@ -116,8 +113,9 @@ const TicketCancel = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter the email used for booking" 
                     required 
-                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                   />
+                  <Mail className="input-icon" size={18} />
                 </div>
               </div>
               
@@ -125,18 +123,16 @@ const TicketCancel = () => {
                 <label htmlFor="reason" className="block text-sm font-medium text-gray-700 font-sans">
                   Reason for Cancellation (Optional)
                 </label>
-                <div className="relative">
-                  <div className="absolute top-3 left-3 text-gray-400">
-                    <i className="fas fa-comment-alt"></i>
-                  </div>
+                <div className="input-with-icon">
                   <textarea 
                     id="reason" 
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Please let us know why you're cancelling" 
                     rows="3"
-                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none resize-none font-sans"
+                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none resize-none font-sans"
                   ></textarea>
+                  <MessageSquare className="input-icon" size={18} />
                 </div>
               </div>
               
