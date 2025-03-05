@@ -102,13 +102,13 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
           }
           break;
         case "Email":
-          if (!value.trim()) {
+          if (!value) {
             error = "Email is required";
-          } else if (value !== value.trim()) { 
-            // First check for leading or trailing spaces
+          } else if (value !== value.trim()) {
+            // Check specifically for leading or trailing spaces
             error = "Email cannot have leading or trailing spaces";
-          } else if (/\s/.test(value)) { 
-            // Then check for spaces anywhere in the email
+          } else if (/\s/.test(value)) {
+            // Check for spaces anywhere in the email
             error = "Email cannot contain spaces";
           } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
             error = "Invalid email address";
@@ -120,7 +120,8 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     }
 
     setErrors((prevErrors) => ({ ...prevErrors, [field]: error }));
-};
+  };
+
   // Function to select the icon based on passenger type
   const getPassengerIcon = (type) => {
     switch (type) {
@@ -158,6 +159,12 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
               }`}
               value={formData[field]}
               onChange={(e) => handleInputChange(field, e.target.value)}
+              onBlur={field === "Email" ? (e) => {
+                // Additional check on blur specifically for email to catch any trailing spaces
+                if (e.target.value !== e.target.value.trim()) {
+                  handleInputChange(field, e.target.value);
+                }
+              } : undefined}
             />
             <div className="h-5 mt-1 text-sm text-red-500 transition-opacity duration-300">
               {errors[field] || ""}

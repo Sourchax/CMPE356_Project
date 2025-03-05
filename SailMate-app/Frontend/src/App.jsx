@@ -30,6 +30,7 @@ import ManagerFinance from "./pages/Manager/managerFinance";
 import AdminVoyage from "./pages/Admin/adminVoyage";
 import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 import CustomerRBA from "./RBAcomponents/customerRBA";
+import NotFoundPage from "./pages/NotFound";
 
 
 import "./App.css";
@@ -76,14 +77,14 @@ const AnimatedRoutes = () => {
             </Route>
         </Route>
 
-      <Route element={<CustomerLayout/>}>
-        <Route element={<CustomerRBA/>}>
+      <Route element={<CustomerRBA/>}>
+        <Route element={<CustomerLayout/>}>
             <Route path="/my-tickets" element={<MyTickets />} />
         </Route>
       </Route>
 
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage/>} />
       </Routes>
     </AnimatePresence>
   );
