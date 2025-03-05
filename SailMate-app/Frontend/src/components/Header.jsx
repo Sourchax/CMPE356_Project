@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, UserButton, useClerk } from '@clerk/clerk-react';
 import sailMatelogo from "../assets/images/SailMate_logo.png";
 import { LogIn, Anchor, Menu, X, ChevronDown, User } from "lucide-react";
 import CustomUserButton from "../pages/customUserButton";
+import "../assets/styles/header.css";
 
 // Static placeholder component for Clerk authentication
 const AuthPlaceholder = () => (
@@ -82,16 +83,22 @@ const Header = () => {
               
               <div className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg overflow-hidden z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out">
                 <Link to="/ticket-cancel" 
-                  className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors"
+                  className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors no-underline"
                   onClick={handleLinkClick}
                 >
                   Cancel Ticket
                 </Link>
                 <Link to="/ticket-check" 
-                  className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors"
+                  className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors no-underline"
                   onClick={handleLinkClick}
                 >
                   Check Ticket
+                </Link>
+                <Link to="/my-tickets" 
+                  className="block px-4 py-3 text-sm text-[#0D3A73] hover:bg-[#06AED5] hover:text-white transition-colors no-underline"
+                  onClick={handleLinkClick}
+                >
+                  My Tickets
                 </Link>
               </div>
             </div>
@@ -144,6 +151,9 @@ const Header = () => {
               <MobileNavLink to="/ticket-check" onClick={handleLinkClick}>
                 Check Ticket
               </MobileNavLink>
+              <MobileNavLink to="/my-tickets" onClick={handleLinkClick}>
+                My Tickets
+              </MobileNavLink>
               <MobileNavLink to="/voyage-times" onClick={handleLinkClick}>
                 Voyage Times
               </MobileNavLink>
@@ -171,7 +181,7 @@ const NavLink = ({ to, children, onClick, className }) => {
   return (
     <Link 
       to={to}
-      className={`px-3 py-2 font-medium rounded-md transition-colors ${
+      className={`px-3 py-2 font-medium rounded-md transition-colors no-underline ${
         isActive
           ? "bg-[#0D3A73] text-white"
           : "text-[#0D3A73] hover:bg-gray-100 hover:text-[#06AED5]"
@@ -187,7 +197,7 @@ const MobileNavLink = ({ to, children, onClick }) => {
   return (
     <Link 
       to={to}
-      className="px-4 py-3 flex items-center text-[#0D3A73] hover:bg-gray-100 hover:text-[#06AED5] transition-colors"
+      className="px-4 py-3 flex items-center text-[#0D3A73] hover:bg-gray-100 hover:text-[#06AED5] transition-colors no-underline"
       onClick={onClick}
     >
       <span className="mr-2">

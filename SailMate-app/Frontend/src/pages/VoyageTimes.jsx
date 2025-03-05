@@ -55,8 +55,8 @@ const VoyageTimes = () => {
   // Status badge component with new color scheme
   const StatusBadge = ({ status }) => {
     const colorClass = status === "Normal" 
-      ? "bg-[#D1FFD7] text-[#0D3A73]" 
-      : "bg-red-100 text-red-800";
+      ? "bg-white/90 text-[#0D3A73] border border-[#0D3A73]" 
+      : "bg-red-100 text-red-800 border border-red-200";
     
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass} inline-flex items-center`}>
@@ -78,7 +78,7 @@ const VoyageTimes = () => {
   // Fuel badge component with new color scheme
   const FuelBadge = ({ fuel }) => {
     const colorClass = fuel === "LPG" 
-      ? "bg-[#06AED5] text-white" 
+      ? "bg-[#0D3A73] text-white" 
       : "bg-[#F0C808] text-[#0D3A73]";
     
     return (
@@ -89,19 +89,31 @@ const VoyageTimes = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-[#0D3A73] py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-3xl font-bold text-white">SailMate Voyages</h1>
-          <p className="text-[#06AED5]">Find and book your next sea journey</p>
-        </div>
+    <div className="flex flex-col min-h-screen relative overflow-hidden bg-white">
+      {/* Hero Background */}
+      <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0" 
+           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop')" }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40"></div>
       </div>
       
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* Wave Transition */}
+      <div className="absolute top-[35vh] left-0 w-full h-[10vh] z-[1] overflow-hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"
+             className="absolute w-full h-full fill-white">
+          <path d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,128C672,128,768,160,864,176C960,192,1056,192,1152,176C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+      </div>
+      
+      <div className="relative z-10 mt-[20vh] px-4 container mx-auto">
+        {/* Header */}
+        <div className="text-center text-white mb-5 animate-[fadeIn_0.8s_ease-out]">
+          <h1 className="text-4xl font-bold mb-1">SailMate Voyages</h1>
+          <p className="text-base opacity-90 max-w-[600px] mx-auto">Find and book your next sea journey</p>
+        </div>
+      
         {/* Filter Section */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="p-4 border-b bg-[#D1FFD7]">
+        <div className="bg-white rounded-lg shadow-lg p-5 mb-6 animate-[fadeIn_1s_ease-out]">
+          <div className="border-b border-[#0D3A73]/20 pb-3 mb-4">
             <span className="font-medium text-[#0D3A73] flex items-center">
               <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
@@ -110,14 +122,14 @@ const VoyageTimes = () => {
             </span>
           </div>
           
-          <div className="p-4">
+          <div className="p-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Departure</label>
                 <select 
                   value={selectedFrom} 
                   onChange={(e) => setSelectedFrom(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#06AED5] focus:border-[#06AED5]"
+                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                 >
                   <option value="">All Departures</option>
                   <option value="Yalova">Yalova</option>
@@ -132,7 +144,7 @@ const VoyageTimes = () => {
                 <select 
                   value={selectedTo} 
                   onChange={(e) => setSelectedTo(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#06AED5] focus:border-[#06AED5]"
+                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                 >
                   <option value="">All Arrivals</option>
                   <option value="Yalova">Yalova</option>
@@ -148,7 +160,7 @@ const VoyageTimes = () => {
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#06AED5] focus:border-[#06AED5]"
+                  className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                 />
               </div>
             </div>
@@ -156,8 +168,8 @@ const VoyageTimes = () => {
         </div>
         
         {/* Voyage List */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-4 py-3 border-b bg-[#06AED5]">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8 animate-[fadeIn_1.2s_ease-out]">
+          <div className="px-4 py-3 border-b bg-[#0D3A73]">
             <h2 className="text-lg font-medium text-white">Available Voyages</h2>
           </div>
           
@@ -172,9 +184,9 @@ const VoyageTimes = () => {
                 onClick={() => {
                   setSelectedFrom("");
                   setSelectedTo("");
-                  setSelectedDate("2025-02-22");
+                  setSelectedDate("2025-03-10");
                 }}
-                className="mt-4 px-4 py-2 rounded-md text-[#06AED5] bg-[#D1FFD7] hover:bg-[#06AED5] hover:text-white transition-colors"
+                className="mt-4 px-4 py-2 rounded-md bg-white text-[#0D3A73] border border-[#0D3A73] hover:bg-[#0D3A73] hover:text-white transition-colors duration-300"
               >
                 Reset Filters
               </button>
@@ -186,7 +198,7 @@ const VoyageTimes = () => {
                 {filteredVoyages.map((voyage, index) => (
                   <div 
                     key={index} 
-                    className={`rounded-lg border p-4 ${voyage.status === "Voyage Cancel" ? "border-red-200 bg-red-50" : "border-gray-200"}`}
+                    className={`rounded-lg border p-4 ${voyage.status === "Voyage Cancel" ? "border-red-200 bg-red-50" : "border-gray-200 hover:border-[#0D3A73]/50"}`}
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -206,7 +218,7 @@ const VoyageTimes = () => {
                       {voyage.available ? (
                         <button
                           onClick={() => handleBuyTicket(voyage)}
-                          className="px-3 py-1 rounded-md text-white bg-[#06AED5] hover:bg-[#0D3A73]"
+                          className="px-3 py-1 rounded-md text-white bg-[#0D3A73] hover:bg-[#06AED5] transition-colors duration-300 shadow-sm"
                         >
                           Buy Ticket
                         </button>
@@ -277,7 +289,7 @@ const VoyageTimes = () => {
                         {voyage.available ? (
                           <button
                             onClick={() => handleBuyTicket(voyage)}
-                            className="px-3 py-2 rounded-md text-white bg-[#06AED5] hover:bg-[#0D3A73]"
+                            className="px-3 py-2 rounded-md text-white bg-[#0D3A73] hover:bg-[#06AED5] transition-colors duration-300 shadow-sm"
                           >
                             Buy Ticket
                           </button>

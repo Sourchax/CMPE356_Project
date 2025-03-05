@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import VoyageTimes from "./pages/VoyageTimes";
 import TicketCancel from "./pages/TicketCancel";
 import TicketCheck from "./pages/TicketCheck";
+import MyTickets from "./pages/MyTickets";
 import StationList from "./pages/StationsPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -47,6 +48,7 @@ const AnimatedRoutes = () => {
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
+          <Route path="/my-tickets" element={<MyTickets />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route 

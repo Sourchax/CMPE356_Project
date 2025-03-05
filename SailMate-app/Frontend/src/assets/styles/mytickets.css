@@ -1,0 +1,356 @@
+/* Base Container Styles - similar to TicketCheck page */
+.ticket-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
+}
+
+/* Hero section with ocean background */
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  background-image: url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  z-index: -1;
+}
+
+/* Wave transition between ocean and white */
+.wave-transition {
+  position: absolute;
+  top: 35vh;
+  left: 0;
+  width: 100%;
+  height: 10vh;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.wave-transition svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  fill: white;
+}
+
+/* Main content area */
+.ticket-page-content {
+  position: relative;
+  z-index: 10;
+  margin-top: 20vh;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* Header styling */
+.ticket-page-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.ticket-page-header h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+.ticket-page-header p {
+  font-size: 1rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Tickets container */
+.tickets-container {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 950px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease-out;
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 47, 108, 0.1);
+  border-radius: 50%;
+  border-top-color: #0D3A73;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error state */
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: #cc0000;
+}
+
+.reload-button {
+  background-color: #0D3A73;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.7rem 1.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reload-button:hover {
+  background-color: #06AED5;
+}
+
+/* No tickets state */
+.no-tickets-message {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.cta-button {
+  background-color: #0D3A73;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.8rem 1.8rem;
+  margin-top: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #06AED5;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(6, 174, 213, 0.3);
+}
+
+/* Tickets list */
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Ticket card */
+.ticket-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ticket-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-header {
+  background-color: #f8f9fa;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.ticket-header h3 {
+  font-size: 1.2rem;
+  color: #0D3A73;
+  margin: 0;
+}
+
+.ticket-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ticket-status.active {
+  background-color: #e6f7e6;
+  color: #28a745;
+}
+
+.ticket-status.completed {
+  background-color: #e2e3e5;
+  color: #6c757d;
+}
+
+.ticket-status.cancelled {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.ticket-details {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ticket-info {
+  flex: 1;
+  min-width: 220px;
+}
+
+.ticket-info p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.ticket-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-self: center;
+}
+
+.action-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.view-button {
+  background-color: #e6f3ff;
+  color: #0D3A73;
+}
+
+.view-button:hover {
+  background-color: #0D3A73;
+  color: white;
+}
+
+.download-button {
+  background-color: #06AED5;
+  color: white;
+}
+
+.download-button:hover {
+  background-color: #058ba9;
+}
+
+/* Footer */
+.ticket-form-footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.text-link {
+  color: #06AED5;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.text-link:hover {
+  color: #0D3A73;
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .ticket-page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .ticket-page-header p {
+    font-size: 1rem;
+  }
+  
+  .tickets-container {
+    padding: 1.25rem;
+  }
+  
+  .ticket-details {
+    flex-direction: column;
+  }
+  
+  .ticket-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .action-button {
+    flex: 1;
+  }
+
+  .hero-background {
+    height: 35vh;
+  }
+
+  .wave-transition {
+    top: 30vh;
+  }
+
+  .ticket-page-content {
+    margin-top: 15vh;
+    padding: 1.5rem;
+  }
+} 

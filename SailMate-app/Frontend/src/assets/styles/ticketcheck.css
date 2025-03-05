@@ -13,7 +13,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 65vh;
+  height: 40vh;
   background-image: url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
@@ -35,10 +35,10 @@
 /* Wave transition between ocean and white */
 .wave-transition {
   position: absolute;
-  top: 60vh;
+  top: 35vh;
   left: 0;
   width: 100%;
-  height: 15vh;
+  height: 10vh;
   z-index: 1;
   overflow: hidden;
 }
@@ -50,47 +50,49 @@
   fill: white;
 }
 
+/* Main content area */
 .ticket-page-content {
-  flex-grow: 1;
+  position: relative;
+  z-index: 10;
+  margin-top: 20vh;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  position: relative;
-  z-index: 2;
+  flex-grow: 1;
 }
 
+/* Header styling */
 .ticket-page-header {
   text-align: center;
-  margin-bottom: 30px;
   color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .ticket-page-header h1 {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
+  margin-bottom: 0.25rem;
   font-weight: 700;
-  margin-bottom: 10px;
 }
 
 .ticket-page-header p {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  opacity: 0.9;
   max-width: 600px;
   margin: 0 auto;
-  opacity: 0.9;
 }
 
+/* Form container - reduced padding/margin */
 .ticket-form-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  overflow: hidden;
-  animation: fadeIn 0.5s ease-out;
-  margin-top: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease-out;
 }
 
 @keyframes fadeIn {
@@ -210,8 +212,20 @@
   text-decoration: underline;
 }
 
-/* Responsive adjustments */
+/* Responsive design */
 @media (max-width: 768px) {
+  .hero-background {
+    height: 35vh;
+  }
+
+  .wave-transition {
+    top: 30vh;
+  }
+
+  .ticket-page-content {
+    margin-top: 15vh;
+  }
+
   .ticket-page-header h1 {
     font-size: 2rem;
   }
@@ -222,14 +236,6 @@
   
   .ticket-form {
     padding: 20px;
-  }
-  
-  .hero-background {
-    height: 70vh;
-  }
-  
-  .wave-transition {
-    top: 65vh;
   }
 }
 
