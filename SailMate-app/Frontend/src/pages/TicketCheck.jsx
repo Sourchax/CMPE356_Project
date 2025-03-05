@@ -25,10 +25,27 @@ const TicketCheck = () => {
     navigate("/contact");
   };
 
+  /* You can also add this if you want a more dramatic effect */
+  const heroStyles = `
+    .hero-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+      z-index: -1;
+    }
+  `;
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white font-sans">
+      {/* Add the CSS */}
+      <style>{heroStyles}</style>
+      
       {/* Hero Background */}
-      <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0" 
+      <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0 hero-background" 
            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop')" }}>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/70"></div>
       </div>

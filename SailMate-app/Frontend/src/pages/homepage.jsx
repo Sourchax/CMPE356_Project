@@ -466,8 +466,62 @@ const Homepage = () => {
       </div>
     </section>
 
-      {/* Testimonials Section - New Addition */}
+      {/* Latest Announcements */}
       <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">Latest Announcements</h2>
+          <Cards />
+        </div>
+      </section>
+
+      {/* Features Section with Animated Cards */}
+      <section className="py-20 bg-[#D1FFD7]/20">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Why Choose SailMate</h2>
+          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={creditCard} className="w-12 h-12" alt="Secure Payment" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Secure Payment</h3>
+              <p className="text-gray-600 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
+            </div>
+            
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={ship} className="w-12 h-12" alt="Modern Fleet" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Modern Fleet</h3>
+              <p className="text-gray-600 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
+            </div>
+            
+            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+                <img src={passenger} className="w-12 h-12" alt="Customer Service" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">24/7 Support</h3>
+              <p className="text-gray-600 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ferry Slider Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">Explore Our Ferries</h2>
+          <p className="text-gray-600 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
+          
+          {/* Ferry Slider Component */}
+          <div className="relative z-10 w-full max-w-5xl mx-auto mt-8">
+            <FerrySlider />
+          </div>
+        </div>
+      </section>
+            {/* Testimonials Section - New Addition */}
+      <section className="py-20 bg-[#D1FFD7]/20">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">What Our Customers Say</h2>
           <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Hear from travelers who have experienced our services</p>
@@ -521,60 +575,6 @@ const Homepage = () => {
               <p className="text-gray-600 italic leading-relaxed">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Ferry Slider Section */}
-      <section className="py-20 bg-[#D1FFD7]/20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">Explore Our Ferries</h2>
-          <p className="text-gray-600 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
-          
-          {/* Ferry Slider Component */}
-          <div className="relative z-10 w-full max-w-5xl mx-auto mt-8">
-            <FerrySlider />
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section with Animated Cards */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Why Choose SailMate</h2>
-          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
-                <img src={creditCard} className="w-12 h-12" alt="Secure Payment" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Secure Payment</h3>
-              <p className="text-gray-600 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
-            </div>
-            
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
-                <img src={ship} className="w-12 h-12" alt="Modern Fleet" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Modern Fleet</h3>
-              <p className="text-gray-600 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
-            </div>
-            
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
-                <img src={passenger} className="w-12 h-12" alt="Customer Service" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">24/7 Support</h3>
-              <p className="text-gray-600 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-            {/* Latest Announcements */}
-      <section className="py-20 bg-[#D1FFD7]/20">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">Latest Announcements</h2>
-          <Cards />
         </div>
       </section>
     </>

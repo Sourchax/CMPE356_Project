@@ -50,8 +50,8 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Contact</h3>
             <ul className="space-y-2 list-none">
-              <li className="text-white opacity-80">support@sailmate.com</li>
-              <li className="text-white opacity-80">+90 (212) 555-1234</li>
+              <li className="text-white opacity-80">sailmatesup@hotmail.com</li>
+              <li className="text-white opacity-80">+90 546 434 20 22</li>
               <li className="text-white opacity-80">Cibali, Kadir Has Cd., 34083 Cibali / Fatih/İstanbul</li>
             </ul>
           </div>

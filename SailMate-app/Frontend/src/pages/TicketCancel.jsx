@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../assets/styles/ticketcancel.css';
-import { Ticket, Mail, MessageSquare } from 'lucide-react';
 
 const TicketCancel = () => {
   const [ticketId, setTicketId] = useState("");
@@ -41,10 +39,27 @@ const TicketCancel = () => {
     navigate("/contact");
   };
 
+  /* You can also add this if you want a more dramatic effect */
+  const heroStyles = `
+    .hero-background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+      z-index: -1;
+    }
+  `;
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white font-sans">
+      {/* Add the CSS */}
+      <style>{heroStyles}</style>
+      
       {/* Hero Background */}
-      <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0" 
+      <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0 hero-background" 
            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop')" }}>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/70"></div>
       </div>
@@ -70,7 +85,10 @@ const TicketCancel = () => {
                 <label htmlFor="ticket-id" className="block text-sm font-medium text-gray-700 font-sans">
                   Ticket ID / Reservation Number
                 </label>
-                <div className="input-with-icon">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fas fa-ticket-alt text-gray-400"></i>
+                  </div>
                   <input 
                     type="text" 
                     id="ticket-id" 
@@ -78,9 +96,8 @@ const TicketCancel = () => {
                     onChange={(e) => setTicketId(e.target.value)}
                     placeholder="Enter your ticket ID" 
                     required 
-                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                   />
-                  <Ticket className="input-icon" size={18} />
                 </div>
               </div>
               
@@ -88,7 +105,10 @@ const TicketCancel = () => {
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-sans">
                   Email Address
                 </label>
-                <div className="input-with-icon">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fas fa-envelope text-gray-400"></i>
+                  </div>
                   <input 
                     type="email" 
                     id="email" 
@@ -96,9 +116,8 @@ const TicketCancel = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter the email used for booking" 
                     required 
-                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                   />
-                  <Mail className="input-icon" size={18} />
                 </div>
               </div>
               
@@ -106,16 +125,18 @@ const TicketCancel = () => {
                 <label htmlFor="reason" className="block text-sm font-medium text-gray-700 font-sans">
                   Reason for Cancellation (Optional)
                 </label>
-                <div className="input-with-icon">
+                <div className="relative">
+                  <div className="absolute top-3 left-3 text-gray-400">
+                    <i className="fas fa-comment-alt"></i>
+                  </div>
                   <textarea 
                     id="reason" 
-                    rows="3" 
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Please let us know why you're cancelling" 
-                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none resize-none font-sans"
+                    rows="3"
+                    className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none resize-none font-sans"
                   ></textarea>
-                  <MessageSquare className="input-icon" size={18} />
                 </div>
               </div>
               
