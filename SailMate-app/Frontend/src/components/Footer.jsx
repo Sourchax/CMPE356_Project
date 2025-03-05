@@ -6,8 +6,11 @@ import "../assets/styles/footer.css";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-gray-900 text-white py-12 relative">
+      {/* Background Overlay - Similar to Contact page */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70 z-0"></div>
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-4 gap-12">
           {/* SailMate section */}
           <div>
@@ -25,9 +28,6 @@ const Footer = () => {
                 <Link to="/about" className="text-white opacity-80 hover:opacity-100">About Us</Link>
               </li>
               <li>
-                <Link to="/news" className="text-white opacity-80 hover:opacity-100">News</Link>
-              </li>
-              <li>
                 <Link to="/partners" className="text-white opacity-80 hover:opacity-100">Partners</Link>
               </li>
             </ul>
@@ -41,13 +41,7 @@ const Footer = () => {
                 <Link to="/faq" className="text-white opacity-80 hover:opacity-100">Frequently Asked Questions</Link>
               </li>
               <li>
-                <Link to="/blog" className="text-white opacity-80 hover:opacity-100">Blog</Link>
-              </li>
-              <li>
                 <Link to="/guides" className="text-white opacity-80 hover:opacity-100">Ferry Guides</Link>
-              </li>
-              <li>
-                <Link to="/api" className="text-white opacity-80 hover:opacity-100">API</Link>
               </li>
             </ul>
           </div>
@@ -56,8 +50,8 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Contact</h3>
             <ul className="space-y-2 list-none">
-              <li className="text-white opacity-80">support@sailmate.com</li>
-              <li className="text-white opacity-80">+90 (212) 555-1234</li>
+              <li className="text-white opacity-80">sailmatesup@hotmail.com</li>
+              <li className="text-white opacity-80">+90 546 434 20 22</li>
               <li className="text-white opacity-80">Cibali, Kadir Has Cd., 34083 Cibali / Fatih/İstanbul</li>
             </ul>
           </div>
@@ -69,13 +63,12 @@ const Footer = () => {
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link to="/terms-of-service" className="text-white opacity-70 hover:opacity-100">Terms</Link>
             <Link to="/privacy-policy" className="text-white opacity-70 hover:opacity-100">Privacy</Link>
-            <Link to="/cookies" className="text-white opacity-70 hover:opacity-100">Cookies</Link>
           </div>
         </div>
       </div>
 
       {/* Social Media Section (Vanilla CSS) */}
-      <div className="social-media flex justify-center space-x-6 mt-8">
+      <div className="social-media flex justify-center space-x-6 mt-8 relative z-10">
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="facebook text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
           <FaFacebookF />
         </a>
