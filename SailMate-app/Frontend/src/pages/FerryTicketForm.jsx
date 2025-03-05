@@ -17,20 +17,25 @@ const steps = [
 
 const ProgressBar = ({ currentStep, width }) => {
   return (
-    <div className="flex items-center justify-center mb-6">
-      {steps.map((step, index) => (
-        <div key={index} className="flex items-center">
-          <div
-            className={`flex items-center justify-center w-10 h-10 rounded-full text-white font-bold 
-              ${index <= currentStep ? "bg-blue-600" : "bg-gray-300"}`}
-          >
-            {step.icon}
+    <div className="flex flex-col items-center justify-center mb-6">
+      <div className="flex items-center justify-center w-full overflow-x-auto py-2 px-2 sm:px-0">
+        {steps.map((step, index) => (
+          <div key={index} className="flex items-center">
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full text-white font-bold text-xs sm:text-base
+                ${index <= currentStep ? "bg-blue-600" : "bg-gray-300"}`}
+            >
+              {step.icon}
+            </div>
+            <div className="hidden xs:block text-xs sm:text-sm ml-1 mr-1 font-medium">
+              {step.label}
+            </div>
+            {index < steps.length - 1 && (
+              <div className={`w-4 sm:w-8 md:w-16 h-1 ${index < currentStep ? "bg-blue-600" : "bg-gray-300"}`} />
+            )}
           </div>
-          {index < steps.length - 1 && (
-            <div className={`w-16 h-1 ${index < currentStep ? "bg-blue-600" : "bg-gray-300"}`} />
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
       {currentStep === 3 && (
         <div className="w-full bg-gray-300 rounded-full mt-4">
           <div
@@ -293,21 +298,24 @@ const FerryTicketForm = () => {
     currentStep === 4 ? (
       <ThankYouPage />
     ) : (
-      <div className="relative max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg min-h-[800px]">
+      <div className="relative max-w-7xl mx-auto p-3 sm:p-6 bg-white shadow-md rounded-lg min-h-[80vh]">
         {currentStep !== 4 && (
           <button 
             onClick={() => navigate("/")} 
-            className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 rounded-lg"
+            className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base"
           >
             Back to Homepage
           </button>
         )}
 
-        <ProgressBar currentStep={currentStep - 1} width={formData.progress} />
+        <div className="pt-8 sm:pt-4">
+          <ProgressBar currentStep={currentStep - 1} width={formData.progress} />
+        </div>
 
-        <div className="flex justify-between">
-          {/* Left side: Form Steps */}
-          <div className={`w-${currentStep === 3 ? "full" : "2/3"}`}>
+        {/* Use the same flex layout for all steps - just customize the inside */}
+        <div className="flex flex-col md:flex-row md:justify-between">
+          {/* Left Side - Changes based on step */}
+          <div className={`w-full ${currentStep === 3 ? 'md:w-2/3' : 'md:w-2/3'} mb-6 md:mb-0 ${currentStep === 3 ? 'md:pr-6' : ''}`}>
             {currentStep === 1 && (
               <div>
                 <JourneyCatagory tripData={formData.tripData} onSelectDeparture={handleSelectDeparture} onSelectReturn={handleSelectReturn} />
@@ -317,16 +325,16 @@ const FerryTicketForm = () => {
             {currentStep === 2 && (
               <div>
                 <div className="w-full bg-white rounded-md shadow-sm">
-                  <div className="flex justify-between items-center p-4 border-b">
-                    <div className="text-gray-600">
+                  <div className="flex justify-between items-center p-2 sm:p-4 border-b flex-wrap gap-2">
+                    <div className="text-gray-600 text-sm sm:text-base">
                       Your remaining time to complete the ticket purchase... <FaClock className="inline text-amber-500" /> {formatTime(time)}
                     </div>
                   </div>
 
-                  <div className="p-4 border-b">
-                    <div className="flex justify-between items-center">
-                      <h2 className="text-blue-800 text-xl font-bold">Departure Travel Information</h2>
-                      <div className="flex items-center gap-2">
+                  <div className="p-2 sm:p-4 border-b">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <h2 className="text-blue-800 text-lg sm:text-xl font-bold">Departure Travel Information</h2>
+                      <div className="flex items-center gap-2 text-sm sm:text-base">
                         <span>{formData.tripData.departure}</span>
                         <span className="bg-blue-800 text-white p-1 rounded-sm">&#8652;</span>
                         <span>{formData.tripData.arrival}</span>
@@ -336,8 +344,8 @@ const FerryTicketForm = () => {
 
                   {formData.departureDetails.passengers.map((passenger, index) => (
                     index < totalPassengers ? (
-                      <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
-                        <div className="mb-3 text-lg font-semibold text-blue-600">
+                      <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
+                        <div className="mb-3 text-base sm:text-lg font-semibold text-blue-600">
                           Passenger {index + 1} - {passenger.PassengerType}
                         </div>
                         <DepartureInfo 
@@ -351,10 +359,10 @@ const FerryTicketForm = () => {
                   ))}
 
                   {isRoundTrip && (
-                    <div className="p-4 border-b">
-                      <div className="flex justify-between items-center">
-                        <h2 className="text-red-800 text-xl font-bold">Return Travel Information</h2>
-                        <div className="flex items-center gap-2">
+                    <div className="p-2 sm:p-4 border-b">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <h2 className="text-red-800 text-lg sm:text-xl font-bold">Return Travel Information</h2>
+                        <div className="flex items-center gap-2 text-sm sm:text-base">
                           <span>{formData.tripData.arrival}</span>
                           <span className="bg-red-800 text-white p-1 rounded-sm">&#8652;</span>
                           <span>{formData.tripData.departure}</span>
@@ -365,8 +373,8 @@ const FerryTicketForm = () => {
 
                   {isRoundTrip && formData.departureDetails.passengers.map((passenger, index) => (
                     index >= totalPassengers && index < totalPassengers * 2 ? (
-                      <div key={index} className="bg-white rounded-md shadow-sm p-4 mb-4 border border-gray-300">
-                        <div className="mb-3 text-lg font-semibold text-red-600">
+                      <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
+                        <div className="mb-3 text-base sm:text-lg font-semibold text-red-600">
                           Passenger {index - totalPassengers + 1} - {passenger.PassengerType}
                         </div>
                         <DepartureInfo 
@@ -391,27 +399,32 @@ const FerryTicketForm = () => {
               </div>
             )}
 
+            {/* Payment form - now displayed in left column when on step 3 */}
             {currentStep === 3 && (
-              <div className="flex justify-center items-center w-full">
-                <PaymentConfirmation onCCDataChange={handleCCDataChange} handleFormSubmit={handleSubmit} />
-              </div>
+              <PaymentConfirmation onCCDataChange={handleCCDataChange} handleFormSubmit={handleSubmit} />
             )}
           </div>
 
-          {currentStep !== 4 && (
-            <div className="w-1/3">
-              <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} />
-            </div>
-          )}
+          {/* Right Side - Ticket Summary */}
+          <div className="w-full md:w-1/3 md:pl-6">
+            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} />
+          </div>
         </div>
 
         <div className="mt-4 flex justify-between">
-          {currentStep > 1 && currentStep !== 4 && <button onClick={handleBack} className="bg-gray-300 px-4 py-2">Back</button>}
+          {currentStep > 1 && currentStep !== 4 && 
+            <button 
+              onClick={handleBack} 
+              className="bg-gray-300 px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base"
+            >
+              Back
+            </button>
+          }
           
           {currentStep === 1 && (
             <button 
               onClick={handleNext} 
-              className={`px-4 py-2 rounded-lg ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
+              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
               disabled={isNextDisabled()}
             >
               Next
@@ -420,9 +433,9 @@ const FerryTicketForm = () => {
           
           {currentStep === 2 && (
             <button 
-            onClick={handleNext} 
-            className={`px-4 py-2 rounded-lg ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
-            disabled={isNextDisabled()}
+              onClick={handleNext} 
+              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
+              disabled={isNextDisabled()}
             >
               Next
             </button>

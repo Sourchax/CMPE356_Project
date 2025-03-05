@@ -149,78 +149,128 @@ const ManageUsers = () => {
         }
     };
 
+    // User card component for mobile view
+    const UserCard = ({ user }) => (
+        <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-4">
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                        <User size={16} className="text-gray-500" />
+                    </div>
+                    <span className="font-medium">{user.name}</span>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(user.role)}`}>
+                    {user.role}
+                </span>
+            </div>
+            
+            <p className="text-gray-600 text-sm mb-4 truncate">{user.email}</p>
+            
+            <div className="flex justify-end gap-2">
+                <button 
+                    onClick={() => handleEdit(user)} 
+                    className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
+                    aria-label={`Edit ${user.name}`}
+                >
+                    <Edit size={16} />
+                </button>
+                <button 
+                    onClick={() => handleDelete(user.id)} 
+                    className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
+                    aria-label={`Delete ${user.name}`}
+                >
+                    <Trash2 size={16} />
+                </button>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-gray-800">Manage Users</h1>
+        <div className="p-3 sm:p-4 md:p-6 max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Manage Users</h1>
                 <button 
                     onClick={handleAddUser}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition shadow-sm"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition shadow-sm"
                 >
                     <Plus size={18} /> Add User
                 </button>
             </div>
 
-            <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-                <table className="w-full border-collapse">
-                    <thead className="bg-gray-50 text-gray-700 border-b border-gray-200">
-                        <tr>
-                            <th className="p-4 text-left font-medium">Name</th>
-                            <th className="p-4 text-left font-medium">Email</th>
-                            <th className="p-4 text-left font-medium">Role</th>
-                            <th className="p-4 text-center font-medium">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.length > 0 ? (
-                            users.map((user) => (
-                                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                                    <td className="p-4 flex items-center">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                                            <User size={16} className="text-gray-500" />
-                                        </div>
-                                        <span className="font-medium">{user.name}</span>
-                                    </td>
-                                    <td className="p-4 text-gray-600">{user.email}</td>
-                                    <td className="p-4">
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeClass(user.role)}`}>
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-center flex justify-center gap-3">
-                                        <button 
-                                            onClick={() => handleEdit(user)} 
-                                            className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
-                                            aria-label={`Edit ${user.name}`}
-                                        >
-                                            <Edit size={16} />
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(user.id)} 
-                                            className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
-                                            aria-label={`Delete ${user.name}`}
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+            {/* Table view (hidden on mobile) */}
+            <div className="hidden sm:block bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                        <thead className="bg-gray-50 text-gray-700 border-b border-gray-200">
+                            <tr>
+                                <th className="p-3 md:p-4 text-left font-medium">Name</th>
+                                <th className="p-3 md:p-4 text-left font-medium">Email</th>
+                                <th className="p-3 md:p-4 text-left font-medium">Role</th>
+                                <th className="p-3 md:p-4 text-center font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {users.length > 0 ? (
+                                users.map((user) => (
+                                    <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                                        <td className="p-3 md:p-4 flex items-center">
+                                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                                                <User size={16} className="text-gray-500" />
+                                            </div>
+                                            <span className="font-medium">{user.name}</span>
+                                        </td>
+                                        <td className="p-3 md:p-4 text-gray-600">{user.email}</td>
+                                        <td className="p-3 md:p-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getRoleBadgeClass(user.role)}`}>
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 md:p-4 text-center flex justify-center gap-3">
+                                            <button 
+                                                onClick={() => handleEdit(user)} 
+                                                className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
+                                                aria-label={`Edit ${user.name}`}
+                                            >
+                                                <Edit size={16} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(user.id)} 
+                                                className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
+                                                aria-label={`Delete ${user.name}`}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="p-4 text-center text-gray-500">
+                                        No users found. Click "Add User" to create a new user.
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4" className="p-4 text-center text-gray-500">
-                                    No users found. Click "Add User" to create a new user.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Card view for mobile */}
+            <div className="sm:hidden">
+                {users.length > 0 ? (
+                    users.map(user => <UserCard key={user.id} user={user} />)
+                ) : (
+                    <div className="bg-white p-4 rounded-lg shadow border border-gray-200 text-center text-gray-500">
+                        No users found. Click "Add User" to create a new user.
+                    </div>
+                )}
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full animate-fade-in">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+                    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">{editingUser ? "Edit User" : "Add User"}</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">{editingUser ? "Edit User" : "Add User"}</h2>
                             <button 
                                 onClick={closeModal} 
                                 className="text-gray-500 hover:text-gray-700 transition"
@@ -249,8 +299,8 @@ const ManageUsers = () => {
                                     aria-describedby={errors.name ? "name-error" : undefined}
                                 />
                                 {errors.name && (
-                                    <p id="name-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                                        <AlertTriangle size={14} /> {errors.name}
+                                    <p id="name-error" className="text-red-500 text-xs sm:text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} className="flex-shrink-0" /> <span className="break-words">{errors.name}</span>
                                     </p>
                                 )}
                             </div>
@@ -274,8 +324,8 @@ const ManageUsers = () => {
                                     aria-describedby={errors.email ? "email-error" : undefined}
                                 />
                                 {errors.email && (
-                                    <p id="email-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                                        <AlertTriangle size={14} /> {errors.email}
+                                    <p id="email-error" className="text-red-500 text-xs sm:text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} className="flex-shrink-0" /> <span className="break-words">{errors.email}</span>
                                     </p>
                                 )}
                             </div>
@@ -302,23 +352,23 @@ const ManageUsers = () => {
                                     ))}
                                 </select>
                                 {errors.role && (
-                                    <p id="role-error" className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                                        <AlertTriangle size={14} /> {errors.role}
+                                    <p id="role-error" className="text-red-500 text-xs sm:text-sm mt-1 flex items-center gap-1">
+                                        <AlertTriangle size={14} className="flex-shrink-0" /> <span className="break-words">{errors.role}</span>
                                     </p>
                                 )}
                             </div>
                             
-                            <div className="flex justify-end gap-3 mt-6">
+                            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
                                 <button 
                                     type="button" 
                                     onClick={closeModal} 
-                                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition"
+                                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition w-full sm:w-auto"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit" 
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition w-full sm:w-auto"
                                 >
                                     {editingUser ? "Update" : "Add"} User
                                 </button>

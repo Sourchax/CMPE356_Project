@@ -22,6 +22,23 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
     return: null
   });
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check viewport width for responsive design
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    handleResize();
+    
+    // Listen for window resize
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const loadDepartureData = async () => {
@@ -84,28 +101,116 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   };
 
+  // Mobile view for trip card
+  const renderMobileCard = (trip, isReturn = false) => {
+    const duration = calculateDuration(trip.departure, trip.arrival);
+    
+    return (
+      <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Trip header with departure and arrival */}
+        <div className="p-4 bg-gray-50 flex justify-between items-center">
+          <div className="text-center">
+            <div className="text-lg font-bold">{trip.departure}</div>
+            <div className="text-xs text-gray-500">{tripData[isReturn ? "arrival" : "departure"]}</div>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <div className="text-xs text-gray-600 flex items-center">
+              <Clock size={12} className="mr-1" />
+              {duration}
+            </div>
+            <div className="w-16 h-1 bg-gray-300 my-1"></div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-lg font-bold">{trip.arrival}</div>
+            <div className="text-xs text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
+          </div>
+        </div>
+        
+        {/* Fare options */}
+        <div className="p-4 grid grid-cols-3 gap-2">
+          {/* Promo fare */}
+          <div 
+            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
+              selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
+              selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
+                ? "bg-[#f0c808]" 
+                : "bg-gray-100 hover:bg-[#f0c808]/60"
+            }`}
+            onClick={() => handleSelectTrip(trip, "promo", isReturn)}
+          >
+            <div className="text-xs font-medium mb-1">Promo</div>
+            <div className="text-base font-bold">{calculatePrice(trip.promo)}₺</div>
+            <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
+              <Users size={10} className="mr-1" />
+              {trip.availableSeats}
+            </div>
+          </div>
+          
+          {/* Economy fare */}
+          <div 
+            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
+              selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
+              selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
+                ? "bg-[#D1FFD7]" 
+                : "bg-gray-100 hover:bg-[#D1FFD7]/60"
+            }`}
+            onClick={() => handleSelectTrip(trip, "economy", isReturn)}
+          >
+            <div className="text-xs font-medium mb-1">Economy</div>
+            <div className="text-base font-bold">{calculatePrice(trip.economy)}₺</div>
+            <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
+              <Users size={10} className="mr-1" />
+              {trip.availableSeats}
+            </div>
+          </div>
+          
+          {/* Business fare */}
+          <div 
+            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
+              selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
+              selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
+                ? "bg-[#F05D5E] text-white" 
+                : "bg-gray-100 hover:bg-[#F05D5E]/60"
+            }`}
+            onClick={() => handleSelectTrip(trip, "business", isReturn)}
+          >
+            <div className="text-xs font-medium mb-1">Business</div>
+            <div className="text-base font-bold">{calculatePrice(trip.business)}₺</div>
+            <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
+              <Users size={10} className="mr-1" />
+              {trip.availableSeats}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Desktop table view
   const renderTable = (trips, isReturn = false) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse shadow-lg rounded-lg overflow-hidden">
         <thead>
-          <tr className="text-blue text-xl bg-gray-50">
-            <th className="p-6" style={{ textAlign: 'center', fontSize: '1.25rem' }}>
+          <tr className="text-blue bg-gray-50">
+            <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
               <div className="flex items-center justify-center space-x-2">
-                <Clock size={20} className="text-gray-600" />
+                <Clock size={16} className="text-gray-600" />
                 <span>Departure</span>
               </div>
             </th>
-            <th className="p-6" style={{ textAlign: 'center', fontSize: '1.25rem' }}>
+            <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
               <div className="flex items-center justify-center space-x-2">
-                <Clock size={20} className="text-gray-600" />
+                <Clock size={16} className="text-gray-600" />
                 <span>Arrival</span>
               </div>
             </th>
-            <th className="p-6" style={{ backgroundImage: `url(${PromoLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1.25rem' }}>
+            <th className="p-3 md:p-6" style={{ backgroundImage: `url(${PromoLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
             </th>
-            <th className="p-6" style={{ backgroundImage: `url(${EconomyLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1.25rem' }}>
+            <th className="p-3 md:p-6" style={{ backgroundImage: `url(${EconomyLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
             </th>
-            <th className="p-6" style={{ backgroundImage: `url(${BusinessLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1.25rem' }}>
+            <th className="p-3 md:p-6" style={{ backgroundImage: `url(${BusinessLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
             </th>
           </tr>
         </thead>
@@ -115,16 +220,16 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
             
             return (
               <tr key={index} className={`text-center border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                <td className="p-5">
+                <td className="p-3 md:p-5">
                   <div className="flex flex-col items-center">
-                    <div className="text-xl font-bold">{trip.departure}</div>
-                    <div className="text-sm text-gray-500">{tripData[isReturn ? "arrival" : "departure"]}</div>
+                    <div className="text-base md:text-xl font-bold">{trip.departure}</div>
+                    <div className="text-xs md:text-sm text-gray-500">{tripData[isReturn ? "arrival" : "departure"]}</div>
                   </div>
                 </td>
-                <td className="p-5">
+                <td className="p-3 md:p-5">
                   <div className="flex flex-col items-center">
-                    <div className="text-xl font-bold">{trip.arrival}</div>
-                    <div className="text-sm text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
+                    <div className="text-base md:text-xl font-bold">{trip.arrival}</div>
+                    <div className="text-xs md:text-sm text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
                     <div className="flex items-center mt-1 text-xs">
                       <div className="bg-blue-50 text-blue-700 rounded-full px-2 py-1 flex items-center">
                         <Clock size={12} className="mr-1" />
@@ -134,7 +239,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   </div>
                 </td>
                 <td
-                  className={`p-5 cursor-pointer transition-colors relative ${
+                  className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "bg-[#f0c808]" 
@@ -142,7 +247,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   }`}
                   onClick={() => handleSelectTrip(trip, "promo", isReturn)}
                 >
-                  <div className={`text-xl font-medium ${
+                  <div className={`text-base md:text-xl font-medium ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "text-black" 
@@ -166,7 +271,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   </div>
                 </td>
                 <td
-                  className={`p-5 cursor-pointer transition-colors relative ${
+                  className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "bg-[#D1FFD7]" 
@@ -174,7 +279,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   }`}
                   onClick={() => handleSelectTrip(trip, "economy", isReturn)}
                 >
-                  <div className={`text-xl font-medium ${
+                  <div className={`text-base md:text-xl font-medium ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "text-black" 
@@ -198,7 +303,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   </div>
                 </td>
                 <td
-                  className={`p-5 cursor-pointer transition-colors relative ${
+                  className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "bg-[#F05D5E]" 
@@ -206,7 +311,7 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
                   }`}
                   onClick={() => handleSelectTrip(trip, "business", isReturn)}
                 >
-                  <div className={`text-xl font-medium ${
+                  <div className={`text-base md:text-xl font-medium ${
                     selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
                     selectedOption[isReturn ? "return" : "departure"]?.departure === trip.departure
                       ? "text-white" 
@@ -237,26 +342,37 @@ const PlanningPhase = ({ tripData, onSelectDeparture, onSelectReturn }) => {
     </div>
   );
 
+  // Render mobile cards for each trip
+  const renderMobileView = (trips, isReturn = false) => (
+    <div className="space-y-4">
+      {trips.map((trip, index) => (
+        <div key={index}>
+          {renderMobileCard(trip, isReturn)}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="p-8">
-      <div className="flex items-center mb-6">
-        <Ship className="text-[#0D3A73] mr-2" size={28} />
-        <h2 className="text-3xl font-bold text-[#0D3A73]">Journey Planning</h2>
+    <div className="p-4 md:p-8">
+      <div className="flex items-center mb-4 md:mb-6">
+        <Ship className="text-[#0D3A73] mr-2" size={24} />
+        <h2 className="text-xl md:text-3xl font-bold text-[#0D3A73]">Journey Planning</h2>
       </div>
       
-      <h3 className="text-2xl font-bold text-[#0D3A73] mb-4">Departure Trip</h3>
+      <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mb-3 md:mb-4">Departure Trip</h3>
       {loading ? (
         <div className="flex justify-center items-center h-40">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        renderTable(departureTrips)
+        isMobile ? renderMobileView(departureTrips) : renderTable(departureTrips)
       )}
       
       {tripData.returnDate && (
         <>
-          <h3 className="text-2xl font-bold text-[#0D3A73] mt-8 mb-4">Return Trip</h3>
-          {renderTable(returnTrips, true)}
+          <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mt-6 md:mt-8 mb-3 md:mb-4">Return Trip</h3>
+          {isMobile ? renderMobileView(returnTrips, true) : renderTable(returnTrips, true)}
         </>
       )}
     </div>

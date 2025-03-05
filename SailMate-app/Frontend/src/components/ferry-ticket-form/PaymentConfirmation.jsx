@@ -1,7 +1,13 @@
 ﻿import React, { useState } from "react";
 import "../../assets/styles/ferry-ticket-form/paymentconfirmation.css";
 
-const PaymentConfirmation = ({ onCCDataChange}) => {
+
+const PaymentConfirmation = ({ onCCDataChange }) => {
+  const termsText = `SailMate Payment Terms & Conditions
+
+By proceeding with payment on SailMate, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions`;
+
+  
   const [formData, setFormData] = useState({
     name: "",
     cardNumber: "",
@@ -13,6 +19,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const formatCardNumber = (value) => {
     const digits = value.replace(/\D/g, '');
@@ -100,6 +107,9 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
           if (!fieldValue.trim()) {
             newErrors.name = "Name is required";
             formIsValid = false;
+          } else if (/\d/.test(fieldValue)) {
+            newErrors.name = "Name should not contain numbers";
+            formIsValid = false;
           }
           break;
         case "cardNumber":
@@ -159,18 +169,27 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
     }
   };
 
+  const handleTermsClick = (e) => {
+    e.preventDefault();
+    setShowTermsModal(true);
+  };
+
+  const closeTermsModal = () => {
+    setShowTermsModal(false);
+  };
+
   return (
-    <div className="py-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
-        <div className="border-b pb-4 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Complete Your Purchase</h1>
+    <div className="py-4 sm:py-8 w-full max-w-full">
+      <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-4 sm:p-6">
+        <div className="border-b pb-3 sm:pb-4 mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Complete Your Purchase</h1>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-gray-600">Transaction #38291</span>
+            <span className="text-sm sm:text-base text-gray-600">Transaction #38291</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
               <input
@@ -181,11 +200,11 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="As shown on card"
-                className={`w-full px-4 py-3 rounded-lg border ${touched.name && errors.name ? "border-red-300 bg-red-50" : touched.name && !errors.name ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.name && errors.name ? "border-red-300 bg-red-50" : touched.name && !errors.name ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
               />
               {touched.name && errors.name && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   {errors.name}
@@ -204,11 +223,11 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                 onBlur={handleBlur}
                 placeholder="1234 5678 9012 3456"
                 maxLength="19"
-                className={`w-full px-4 py-3 rounded-lg border ${touched.cardNumber && errors.cardNumber ? "border-red-300 bg-red-50" : touched.cardNumber && !errors.cardNumber ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cardNumber && errors.cardNumber ? "border-red-300 bg-red-50" : touched.cardNumber && !errors.cardNumber ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
               />
               {touched.cardNumber && errors.cardNumber && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   {errors.cardNumber}
@@ -216,7 +235,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div className="col-span-1">
                 <label htmlFor="expiryMonth" className="block text-sm font-medium text-gray-700 mb-1">Month</label>
                 <select
@@ -225,7 +244,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   value={formData.expiryMonth}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`w-full px-3 py-3 rounded-lg border ${touched.expiryMonth && errors.expiryMonth ? "border-red-300 bg-red-50" : touched.expiryMonth && !errors.expiryMonth ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryMonth && errors.expiryMonth ? "border-red-300 bg-red-50" : touched.expiryMonth && !errors.expiryMonth ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
                 >
                   <option value="">MM</option>
                   {Array.from({ length: 12 }, (_, i) => {
@@ -234,7 +253,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   })}
                 </select>
                 {touched.expiryMonth && errors.expiryMonth && (
-                  <p className="mt-1 text-sm text-red-600">{errors.expiryMonth}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.expiryMonth}</p>
                 )}
               </div>
 
@@ -246,7 +265,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   value={formData.expiryYear}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`w-full px-3 py-3 rounded-lg border ${touched.expiryYear && errors.expiryYear ? "border-red-300 bg-red-50" : touched.expiryYear && !errors.expiryYear ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryYear && errors.expiryYear ? "border-red-300 bg-red-50" : touched.expiryYear && !errors.expiryYear ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
                 >
                   <option value="">YY</option>
                   {Array.from({ length: 10 }, (_, i) => {
@@ -255,7 +274,7 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   })}
                 </select>
                 {touched.expiryYear && errors.expiryYear && (
-                  <p className="mt-1 text-sm text-red-600">{errors.expiryYear}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.expiryYear}</p>
                 )}
               </div>
 
@@ -270,10 +289,10 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   onBlur={handleBlur}
                   maxLength="3"
                   placeholder="123"
-                  className={`w-full px-4 py-3 rounded-lg border ${touched.cvv && errors.cvv ? "border-red-300 bg-red-50" : touched.cvv && !errors.cvv ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cvv && errors.cvv ? "border-red-300 bg-red-50" : touched.cvv && !errors.cvv ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
                 />
                 {touched.cvv && errors.cvv && (
-                  <p className="mt-1 text-sm text-red-600">{errors.cvv}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.cvv}</p>
                 )}
               </div>
             </div>
@@ -287,26 +306,58 @@ const PaymentConfirmation = ({ onCCDataChange}) => {
                   onChange={handleCheckboxChange}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-600">
-                  I accept the <a href="#" className="text-blue-600">terms and conditions</a>
+                <span className="text-xs sm:text-sm text-gray-600">
+                  I accept the <a href="#" onClick={handleTermsClick} className="text-blue-600">terms and conditions</a>
                 </span>
               </label>
               {touched.termsAccepted && errors.termsAccepted && (
-                <p className="mt-1 text-sm text-red-600">{errors.termsAccepted}</p>
+                <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.termsAccepted}</p>
               )}
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-6 sm:mt-8">
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className="w-full py-2 sm:py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm sm:text-base"
             >
               Confirm Payment
             </button>
           </div>
         </form>
       </div>
+
+      {/* Terms and Conditions Modal */}
+      {showTermsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-96 overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Terms and Conditions</h2>
+                <button 
+                  onClick={closeTermsModal}
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="text-sm sm:text-base text-gray-600">
+                {termsText || "Please provide terms text via the termsText prop."}
+              </div>
+              <div className="mt-6 text-right">
+                <button
+                  onClick={closeTermsModal}
+                  className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm sm:text-base"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

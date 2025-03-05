@@ -29,6 +29,7 @@ import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
 import AdminVoyage from "./pages/Admin/adminVoyage";
 import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
+import CustomerRBA from "./RBAcomponents/customerRBA";
 
 
 import "./App.css";
@@ -48,7 +49,6 @@ const AnimatedRoutes = () => {
           <Route path="/voyage-times" element={<VoyageTimes />} />
           <Route path="/ticket-cancel" element={<TicketCancel />} />
           <Route path="/ticket-check" element={<TicketCheck />} />
-          <Route path="/my-tickets" element={<MyTickets />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route 
@@ -76,6 +76,11 @@ const AnimatedRoutes = () => {
             </Route>
         </Route>
 
+      <Route element={<CustomerLayout/>}>
+        <Route element={<CustomerRBA/>}>
+            <Route path="/my-tickets" element={<MyTickets />} />
+        </Route>
+      </Route>
 
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
         <Route path="*" element={<Navigate to="/" replace />} />

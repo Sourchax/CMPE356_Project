@@ -56,57 +56,71 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
 
   const validateInput = (field, value) => {
     let error = "";
-    switch (field) {
-      case "Name":
-      case "Surname":
-        if (!value) error = `${field} is required`;
-        else if (!/^[a-zA-Z\s]+$/.test(value)) error = `${field} invalid entry`;
-        break;
-      case "Phone":
-        if (!value) error = "Phone is required";
-        else if (!/^\+?[1-9]\d{9,14}$/.test(value)) error = "Invalid phone number";
-        break;
-      case "BirthDate":
-        if (!value) error = "Birth Date is required";
-        else if (!/\d{4}-\d{2}-\d{2}/.test(value)) error = "Invalid date format. Use YYYY-MM-DD";
-        else {
-          const today = new Date();
-          const birthDate = new Date(value);
-          const age = today.getFullYear() - birthDate.getFullYear();
-          const monthDiff = today.getMonth() - birthDate.getMonth();
-          const dayDiff = today.getDate() - birthDate.getDate();
-          
-          const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
-          
-          const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0];
-          const maxDate = today.toISOString().split("T")[0];
+    
+    // Check for spaces or tabs as standalone input
+    if (/^\s+$/.test(value)) {
+      error = `${field} cannot be empty or contain only spaces/tabs`;
+    } else {
+      switch (field) {
+        case "Name":
+        case "Surname":
+          if (!value.trim()) error = `${field} is required`;
+          else if (!/^[a-zA-Z\s]+$/.test(value.trim())) error = `${field} invalid entry`;
+          break;
+        case "Phone":
+          if (!value.trim()) error = "Phone is required";
+          else if (!/^\+?[1-9]\d{9,14}$/.test(value.trim())) error = "Invalid phone number";
+          break;
+        case "BirthDate":
+          if (!value.trim()) error = "Birth Date is required";
+          else if (!/\d{4}-\d{2}-\d{2}/.test(value.trim())) error = "Invalid date format. Use YYYY-MM-DD";
+          else {
+            const today = new Date();
+            const birthDate = new Date(value.trim());
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            const dayDiff = today.getDate() - birthDate.getDate();
+            
+            const adjustedAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+            
+            const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+            const maxDate = today.toISOString().split("T")[0];
 
-          if (value > maxDate) {
-            error = "Birth date cannot be in the future";
-          } else if (value < minDate) {
-            error = "Birth date cannot be older than 100 years";
-          } else if (passengerType === "student") {
-            if (adjustedAge > 25) {
-              error = "Student passengers must be 25 years old or younger";
-            } else if (adjustedAge < 10) {
-              error = "Student passengers must be at least 10 years old";
+            if (value.trim() > maxDate) {
+              error = "Birth date cannot be in the future";
+            } else if (value.trim() < minDate) {
+              error = "Birth date cannot be older than 100 years";
+            } else if (passengerType === "student") {
+              if (adjustedAge > 25) {
+                error = "Student passengers must be 25 years old or younger";
+              } else if (adjustedAge < 10) {
+                error = "Student passengers must be at least 10 years old";
+              }
+            } else if (passengerType === "senior" && adjustedAge < 65) {
+              error = "Senior passengers must be 65 years old or older";
             }
-          } else if (passengerType === "senior" && adjustedAge < 65) {
-            error = "Senior passengers must be 65 years old or older";
           }
-        }
-        break;
-      case "Email":
-        if (!value) error = "Email is required";
-        else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) error = "Invalid email address";
-        break;
-      default:
-        break;
+          break;
+        case "Email":
+          if (!value.trim()) {
+            error = "Email is required";
+          } else if (value !== value.trim()) { 
+            // First check for leading or trailing spaces
+            error = "Email cannot have leading or trailing spaces";
+          } else if (/\s/.test(value)) { 
+            // Then check for spaces anywhere in the email
+            error = "Email cannot contain spaces";
+          } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+            error = "Invalid email address";
+          }
+          break;
+        default:
+          break;
+      }
     }
 
     setErrors((prevErrors) => ({ ...prevErrors, [field]: error }));
-  };
-
+};
   // Function to select the icon based on passenger type
   const getPassengerIcon = (type) => {
     switch (type) {
@@ -167,7 +181,7 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
               new Date(new Date().getFullYear() - (passengerType === "student" ? 25 : 100), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
             max={passengerType === "student" ? 
               new Date(new Date().getFullYear() - 10, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
-              new Date(new Date().getFullYear() - 65, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
+              new Date(new Date().getFullYear() - (passengerType === "senior" ? 65 : 20), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
           />
           <div className="h-5 mt-1 text-sm text-red-500 transition-opacity duration-300">
             {errors["BirthDate"] || ""}

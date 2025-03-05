@@ -170,44 +170,74 @@ const Homepage = () => {
       <section className="relative h-[65vh] md:h-[75vh] flex items-center justify-center overflow-hidden">
         {/* Background Image Slider with Enhanced Overlay */}
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full relative">
-            <div 
-              className="w-full h-full bg-cover bg-center absolute inset-0" 
-              style={{ 
-                backgroundImage: `url(${ferry1})`,
-                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
-                animation: "slideAnimation 21s infinite"
-              }}
-            ></div>
-            <div 
-              className="w-full h-full bg-cover bg-center absolute inset-0" 
-              style={{ 
-                backgroundImage: `url(${ferry3})`,
-                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
-                animation: "slideAnimation 21s infinite 7s"
-              }}
-            ></div>
-            <div 
-              className="w-full h-full bg-cover bg-center absolute inset-0" 
-              style={{ 
-                backgroundImage: `url(${ferry4})`,
-                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
-                animation: "slideAnimation 21s infinite 14s"
-              }}
-            ></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0D3A73]/50 via-[#0D3A73]/20 to-[#730D3A]/60"></div>
-          </div>
+        <div className="w-full h-full relative">
+          {/* First slide */}
+          <div 
+            className="w-full h-full bg-cover bg-center absolute inset-0 opacity-100 animate-slide1" 
+            style={{ 
+              backgroundImage: `url(${ferry1})`,
+              filter: "brightness(0.85) saturate(1.2) contrast(1.1)"
+            }}
+          ></div>
+          
+          {/* Second slide */}
+          <div 
+            className="w-full h-full bg-cover bg-center absolute inset-0 opacity-0 animate-slide2" 
+            style={{ 
+              backgroundImage: `url(${ferry3})`,
+              filter: "brightness(0.85) saturate(1.2) contrast(1.1)"
+            }}
+          ></div>
+          
+          {/* Third slide */}
+          <div 
+            className="w-full h-full bg-cover bg-center absolute inset-0 opacity-0 animate-slide3" 
+            style={{ 
+              backgroundImage: `url(${ferry4})`,
+              filter: "brightness(0.85) saturate(1.2) contrast(1.1)"
+            }}
+          ></div>
+          
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-900/50 via-blue-900/20 to-pink-900/60"></div>
         </div>
+      </div>
+      
+      {/* Animation keyframes using style tag */}
+      <style>{`
+        @keyframes slide1 {
+          0%, 30% { opacity: 1; }
+          33%, 96% { opacity: 0; }
+          97%, 100% { opacity: 1; }
+        }
+        
+        @keyframes slide2 {
+          0%, 30% { opacity: 0; }
+          33%, 63% { opacity: 1; }
+          66%, 100% { opacity: 0; }
+        }
+        
+        @keyframes slide3 {
+          0%, 63% { opacity: 0; }
+          66%, 96% { opacity: 1; }
+          97%, 100% { opacity: 0; }
+        }
+        
+        .animate-slide1 {
+          animation: slide1 21s infinite;
+        }
+        
+        .animate-slide2 {
+          animation: slide2 21s infinite;
+        }
+        
+        .animate-slide3 {
+          animation: slide3 21s infinite;
+        }
+      `}</style>
         
         {/* Add some CSS for the slider animation */}
-        <style jsx>{`
-          @keyframes slideAnimation {
-            0%, 30% { opacity: 1; }
-            33%, 63% { opacity: 0; }
-            66%, 96% { opacity: 0; }
-            100% { opacity: 1; }
-          }
-        `}</style>
+
         
         {/* Enhanced Hero Content with Improved Typography */}
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto transform -translate-y-6">
