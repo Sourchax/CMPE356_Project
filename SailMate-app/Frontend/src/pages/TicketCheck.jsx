@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// Remove CSS import as we'll be using Tailwind
-// import "../assets/styles/ticketcheck.css";
 
 const TicketCheck = () => {
   const [ticketId, setTicketId] = useState("");
@@ -26,7 +24,7 @@ const TicketCheck = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-white">
+    <div className="flex flex-col min-h-screen relative overflow-hidden bg-white font-sans">
       {/* Hero Background */}
       <div className="absolute top-0 left-0 w-full h-[40vh] bg-cover bg-center z-0" 
            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=2070&auto=format&fit=crop')" }}>
@@ -43,8 +41,8 @@ const TicketCheck = () => {
 
       <div className="relative z-10 mt-[20vh] px-4 flex flex-col items-center flex-grow">
         <div className="text-center text-white mb-5 animate-[fadeIn_0.8s_ease-out]">
-          <h1 className="text-4xl font-bold mb-1">Check Your Ticket Status</h1>
-          <p className="text-base opacity-90 max-w-[600px] mx-auto">Enter your ticket details below to view your booking information</p>
+          <h1 className="text-4xl font-bold mb-1 font-sans">Check Your Ticket Status</h1>
+          <p className="text-base opacity-90 max-w-[600px] mx-auto font-sans">Enter your ticket details below to view your booking information</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg w-full max-w-[500px] p-6 mb-8 animate-[fadeIn_1s_ease-out]">
@@ -64,7 +62,7 @@ const TicketCheck = () => {
                   onChange={(e) => setTicketId(e.target.value)}
                   placeholder="Enter your ticket ID" 
                   required 
-                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
+                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                 />
               </div>
             </div>
@@ -84,14 +82,14 @@ const TicketCheck = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter the email used for booking" 
                   required 
-                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
+                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                 />
               </div>
             </div>
             
             <button 
               type="submit" 
-              className={`w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ${loading ? 'relative' : ''}`}
+              className={`w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-sans ${loading ? 'relative' : ''}`}
               disabled={loading}
             >
               {loading ? (
@@ -105,7 +103,7 @@ const TicketCheck = () => {
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600 font-sans">
               Need help?{" "}
               <span 
                 onClick={navigateToContact} 

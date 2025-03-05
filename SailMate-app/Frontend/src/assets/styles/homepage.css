@@ -28,6 +28,74 @@
     font-size: 18px;
   }
   
+  /* Animations for modern hero section */
+  @keyframes slow-zoom {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+  }
+  
+  @keyframes float-slow {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+  }
+  
+  @keyframes float-medium {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes float-fast {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+  }
+  
+  @keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+  }
+  
+  .animate-slow-zoom {
+    animation: slow-zoom 30s ease-in-out infinite alternate;
+  }
+  
+  .animate-float-slow {
+    animation: float-slow 9s ease-in-out infinite;
+  }
+  
+  .animate-float-medium {
+    animation: float-medium 6s ease-in-out infinite;
+  }
+  
+  .animate-float-fast {
+    animation: float-fast 4s ease-in-out infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 1.2s ease-out forwards;
+  }
+  
   .ticket-search {
     display: flex;
     justify-content: center;

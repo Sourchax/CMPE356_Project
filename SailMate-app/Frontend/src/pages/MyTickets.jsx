@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // Remove CSS import as we'll be using Tailwind
 // import "../assets/styles/mytickets.css";
+// Add import for Button component
+import Button from "../components/Button";
 
 const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -96,19 +98,25 @@ const MyTickets = () => {
             </div>
           ) : error ? (
             <div className="text-center py-8 text-red-600">
-              <p className="text-gray-600 mb-4">{error}</p>
-              <button onClick={() => window.location.reload()} 
-                      className="bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+              <p className="text-gray-600 mb-8">There was an error loading your tickets. Please try again.</p>
+              <Button 
+                onClick={() => window.location.reload()} 
+                variant="primary"
+                size="lg"
+              >
                 Try Again
-              </button>
+              </Button>
             </div>
           ) : tickets.length === 0 ? (
             <div className="text-center py-12 px-4">
               <p className="text-gray-600 mb-4">You don't have any tickets yet.</p>
-              <button onClick={() => navigate("/")} 
-                      className="bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+              <Button 
+                onClick={() => navigate("/")} 
+                variant="primary"
+                size="lg"
+              >
                 Book a Ferry
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col gap-6">
@@ -136,18 +144,20 @@ const MyTickets = () => {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 md:items-center">
-                      <button 
+                      <Button 
                         onClick={() => handleViewDetails(ticket.id)} 
-                        className="bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                        variant="primary"
+                        size="md"
                       >
                         View Details
-                      </button>
-                      <button 
+                      </Button>
+                      <Button 
                         onClick={() => handleDownloadTicket(ticket.id)} 
-                        className="border-2 border-[#0D3A73] text-[#0D3A73] hover:bg-blue-50 font-medium py-3 px-6 rounded-lg transition-all duration-300"
+                        variant="outline"
+                        size="md"
                       >
                         Download
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>

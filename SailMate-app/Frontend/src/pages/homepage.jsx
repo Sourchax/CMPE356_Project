@@ -8,6 +8,14 @@ import Contact from "./Contact.jsx";
 import FerrySlider from "../components/FerrySlider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SignedIn, useSession } from "@clerk/clerk-react";
+import shipIcon from "../assets/images/ship.png";
+import calendarIcon from "../assets/images/calendars.png";
+import clockIcon from "../assets/images/clock.png";
+import passengerIcon from "../assets/images/passenger.png";
+import ferry1 from "../assets/images/ferry1.png";
+import ferry3 from "../assets/images/ferry3.png";
+import ferry4 from "../assets/images/ferry4.png";
+import Button from "../components/Button";
 
 
 const Homepage = () => {
@@ -158,40 +166,69 @@ const Homepage = () => {
   };
   return (
     <>
-      {/* Hero Section with Background Image and Animated Elements */}
-      <section className="relative h-[45vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
+      {/* Modern Hero Section with Dynamic Elements */}
+      <section className="relative h-[65vh] md:h-[75vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image Slider with Enhanced Overlay */}
         <div className="absolute inset-0 z-0">
-          <div 
-            className="w-full h-full bg-cover bg-center animate-slow-zoom" 
-            style={{ 
-              backgroundImage: "url('https://images.unsplash.com/photo-1605281317010-fe5ffe798166?q=80&w=2048&auto=format&fit=crop')", 
-              filter: "brightness(0.7)"
-            }}
-          ></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+          <div className="w-full h-full relative">
+            <div 
+              className="w-full h-full bg-cover bg-center absolute inset-0" 
+              style={{ 
+                backgroundImage: `url(${ferry1})`,
+                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
+                animation: "slideAnimation 21s infinite"
+              }}
+            ></div>
+            <div 
+              className="w-full h-full bg-cover bg-center absolute inset-0" 
+              style={{ 
+                backgroundImage: `url(${ferry3})`,
+                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
+                animation: "slideAnimation 21s infinite 7s"
+              }}
+            ></div>
+            <div 
+              className="w-full h-full bg-cover bg-center absolute inset-0" 
+              style={{ 
+                backgroundImage: `url(${ferry4})`,
+                filter: "brightness(0.85) saturate(1.2) contrast(1.1)",
+                animation: "slideAnimation 21s infinite 14s"
+              }}
+            ></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0D3A73]/50 via-[#0D3A73]/20 to-[#730D3A]/60"></div>
+          </div>
         </div>
         
-        {/* Animated Wave Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 z-[1] opacity-30">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full">
-            <path fill="#ffffff" fillOpacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-          </svg>
-        </div>
+        {/* Add some CSS for the slider animation */}
+        <style jsx>{`
+          @keyframes slideAnimation {
+            0%, 30% { opacity: 1; }
+            33%, 63% { opacity: 0; }
+            66%, 96% { opacity: 0; }
+            100% { opacity: 1; }
+          }
+        `}</style>
         
-        {/* Hero Content with Animation */}
-        <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 drop-shadow-lg tracking-tight leading-tight">Sail with Comfort & Style</h1>
-          <p className="text-base md:text-lg mb-2 drop-shadow-md font-light max-w-3xl mx-auto leading-relaxed">Discover the easiest way to travel across the sea with SailMate</p>
+        {/* Enhanced Hero Content with Improved Typography */}
+        <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto transform -translate-y-6">
+          <div className="animate-fade-in-up">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-lg tracking-tight leading-tight">
+              Sail with Comfort <span className="text-[#F0C808]">&</span> Style
+            </h1>
+            <div className="w-24 h-1 bg-[#F0C808] mx-auto mb-4"></div>
+            <p className="text-base md:text-xl mb-2 drop-shadow-md font-light max-w-3xl mx-auto leading-relaxed opacity-90">
+              Fast, reliable ferry service across Turkey's most beautiful waters
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Booking Section */}
-      <section id="booking" className="relative -mt-20 mb-40 px-4">
+      {/* Booking Section - updated positioning to work with new hero height */}
+      <section id="booking" className="relative -mt-40 md:-mt-48 mb-40 px-4 z-20">
       <div className="max-w-6xl mx-auto">
         {/* Ferry Tickets Header */}
         <div className="bg-[#0D3A73] text-white rounded-t-xl shadow-lg">
-          <div className="py-5 px-8 text-center font-semibold text-lg">
+          <div className="py-5 px-8 flex items-center justify-center font-semibold text-lg">
             <i className="fas fa-ship mr-2"></i> Ferry Tickets
           </div>
         </div>
@@ -417,7 +454,7 @@ const Homepage = () => {
               <div className="flex-1">
                 <button 
                   type="submit"
-                  className="w-full bg-[#F0C808] hover:bg-[#F0C808]/90 text-[#0D3A73] py-3.5 px-4 rounded-lg text-base font-semibold transition-colors h-[50px] mt-8 relative overflow-hidden shadow-md hover:shadow-lg"
+                  className="w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white py-3.5 px-4 rounded-lg text-base font-semibold transition-all duration-300 ease-in-out h-[50px] mt-8 relative overflow-hidden shadow-md hover:shadow-lg transform hover:translate-y-[-2px]"
                   style={{ whiteSpace: 'nowrap' }}
                 >
                   {tripType === "one-way" ? "Search Tickets" : "Search Tickets"}
