@@ -3,8 +3,8 @@ import { Trash2, User, MessageSquare, Send, CheckCircle, Clock, AlertCircle } fr
 
 const ManageComplaints = () => {
     const [complaints, setComplaints] = useState([
-        { id: 1, name: "Alice Brown", email: "sailmatesup@hotmail.com", complaint: "System is running slow.", reply: "", status: "pending" },
-        { id: 2, name: "Bob White", email: "sailmatesup@hotmail.com", complaint: "Unable to reset password.", reply: "", status: "pending" },
+        { id: 1, name: "Alice Brown", email: "alice@example.com", complaint: "System is running slow.", reply: "", status: "pending" },
+        { id: 2, name: "Bob White", email: "bob@example.com", complaint: "Unable to reset password.", reply: "", status: "pending" },
     ]);
     const [replyData, setReplyData] = useState({ id: null, message: "" });
     const [expandedComplaint, setExpandedComplaint] = useState(null);

@@ -77,7 +77,7 @@ const ThankYouPage = () => {
             
             <div className="pt-4 border-t border-gray-100 w-full">
               <p className="text-sm text-gray-500">
-                Have questions? Contact our support at sailmatesup@hotmail.com
+                Have questions? Contact our support at support@sailmate.com
               </p>
             </div>
           </div>

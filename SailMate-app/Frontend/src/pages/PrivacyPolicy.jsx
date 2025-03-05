@@ -21,7 +21,7 @@ const PrivacyPolicy = () => {
                                 At SailMate, we value your privacy and are committed to minimal data collection.
                                 We only collect what's necessary to provide our ferry booking services.
                             </p>
-                            <div className="text-sm text-gray-500 pt-2">Last Updated: March 2025</div>
+                            <div className="text-sm text-gray-500 pt-2">Last Updated: March 2023</div>
                             <a href="mailto:privacy@sailmate.com" className="mt-2 text-blue-600 hover:text-blue-800 inline-flex items-center gap-2 text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />

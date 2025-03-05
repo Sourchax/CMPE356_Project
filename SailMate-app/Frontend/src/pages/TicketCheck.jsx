@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Ticket, Mail } from 'lucide-react';
+import '../assets/styles/ticketcheck.css';
 
 const TicketCheck = () => {
   const [ticketId, setTicketId] = useState("");
@@ -51,10 +53,7 @@ const TicketCheck = () => {
               <label htmlFor="ticket-id" className="block text-sm font-medium text-gray-700">
                 Ticket ID / Reservation Number
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i className="fas fa-ticket-alt text-gray-400"></i>
-                </div>
+              <div className="input-with-icon">
                 <input 
                   type="text" 
                   id="ticket-id" 
@@ -62,8 +61,9 @@ const TicketCheck = () => {
                   onChange={(e) => setTicketId(e.target.value)}
                   placeholder="Enter your ticket ID" 
                   required 
-                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                  className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
                 />
+                <Ticket className="input-icon" size={18} />
               </div>
             </div>
             
@@ -71,10 +71,7 @@ const TicketCheck = () => {
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email Address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i className="fas fa-envelope text-gray-400"></i>
-                </div>
+              <div className="input-with-icon">
                 <input 
                   type="email" 
                   id="email" 
@@ -82,8 +79,9 @@ const TicketCheck = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter the email used for booking" 
                   required 
-                  className="pl-10 w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
+                  className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
                 />
+                <Mail className="input-icon" size={18} />
               </div>
             </div>
             

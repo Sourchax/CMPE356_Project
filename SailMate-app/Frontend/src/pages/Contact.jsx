@@ -186,7 +186,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3>Phone Number</h3>
-                <p>+90 546 434 20 22</p>
+                <p>+90 (212) 555-1234</p>
               </div>
             </div>
             
@@ -196,7 +196,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3>Email Address</h3>
-                <p>sailmatesup@hotmail.com</p>
+                <p>support@sailmate.com</p>
               </div>
             </div>
             

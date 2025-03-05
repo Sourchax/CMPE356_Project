@@ -21,7 +21,7 @@ const BookingConditions = () => {
                                 Please read these terms carefully before using SailMate's ferry booking services.
                                 By using our services, you agree to be bound by these terms.
                             </p>
-                            <div className="text-sm text-gray-500 pt-2">Last Updated: March 2025</div>
+                            <div className="text-sm text-gray-500 pt-2">Last Updated: March 2023</div>
                         </div>
                     </div>
                 </div>
