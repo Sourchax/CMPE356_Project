@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Trash2, Edit, Plus, Search, X, Check, RefreshCcw } from 'lucide-react';
+import { Trash2, Edit, Plus, Search, X, Check, RefreshCcw, AlertCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const adminVoyage = () => {
+  const location = useLocation();
+  
   // Sample initial data - in a real app, this would come from an API
   const initialVoyages = [
     {
@@ -65,6 +68,21 @@ const adminVoyage = () => {
     shipType: '',
     lpg: ''
   });
+
+  // Delete confirmation states
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [voyageToDelete, setVoyageToDelete] = useState(null);
+
+  // Set loaded state after component mounts to trigger animations
+  useEffect(() => {
+    // Check for openAddModal in location state (from quick action)
+    if (location.state?.openAddModal) {
+      openAddModal();
+      // Clean up the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+      location.state.openAddModal = false;
+    }
+  }, [location]);
 
   // Apply filters whenever filters or voyages change
   useEffect(() => {
@@ -260,10 +278,18 @@ const adminVoyage = () => {
     ));
   };
 
+  // Open delete confirmation
+  const openDeleteConfirmation = (voyage) => {
+    setVoyageToDelete(voyage);
+    setDeleteModalOpen(true);
+  };
+
   // Delete voyage
-  const deleteVoyage = (id) => {
-    if (window.confirm('Are you sure you want to delete this voyage?')) {
-      setVoyages(voyages.filter(voyage => voyage.id !== id));
+  const deleteVoyage = () => {
+    if (voyageToDelete) {
+      setVoyages(voyages.filter(voyage => voyage.id !== voyageToDelete.id));
+      setDeleteModalOpen(false);
+      setVoyageToDelete(null);
     }
   };
 
@@ -278,7 +304,7 @@ const adminVoyage = () => {
             <h2 className="text-xl font-semibold mb-4 lg:mb-0">Filters</h2>
             <button 
               onClick={openAddModal}
-              className="bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center"
+              className="bg-[#06AED5] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-[#058aaa] transition"
             >
               <Plus size={18} className="mr-2" />
               Add New Voyage
@@ -297,7 +323,7 @@ const adminVoyage = () => {
                   value={filters.search}
                   onChange={handleFilterChange}
                   placeholder="Search cities..."
-                  className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                  className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                 />
               </div>
             </div>
@@ -308,7 +334,7 @@ const adminVoyage = () => {
                 name="date"
                 value={filters.date}
                 onChange={handleFilterChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               />
             </div>
             
@@ -317,7 +343,7 @@ const adminVoyage = () => {
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
                 <option value="">All Statuses</option>
                 <option value="normal">Normal</option>
@@ -330,7 +356,7 @@ const adminVoyage = () => {
                 name="shipType"
                 value={filters.shipType}
                 onChange={handleFilterChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
                 <option value="">All Ship Types</option>
                 <option value="ferry">Ferry</option>
@@ -343,7 +369,7 @@ const adminVoyage = () => {
                 name="lpg"
                 value={filters.lpg}
                 onChange={handleFilterChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
                 <option value="">All LPG</option>
                 <option value="true">LPG Available</option>
@@ -367,15 +393,15 @@ const adminVoyage = () => {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-[#06AED5]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ship Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LPG</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Route</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Time</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Ship Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">LPG</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -419,13 +445,13 @@ const adminVoyage = () => {
                           )}
                           <button 
                             onClick={() => openEditModal(voyage)}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="text-[#06AED5] hover:text-[#058aaa]"
                             title="Edit Voyage"
                           >
                             <Edit size={18} />
                           </button>
                           <button 
-                            onClick={() => deleteVoyage(voyage.id)}
+                            onClick={() => openDeleteConfirmation(voyage)}
                             className="text-red-600 hover:text-red-900"
                             title="Delete Voyage"
                           >
@@ -467,10 +493,10 @@ const adminVoyage = () => {
                     name="departureCity"
                     value={currentVoyage.departureCity}
                     onChange={handleInputChange}
-                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:ring-opacity-50 ${
+                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-[#06AED5] focus:ring-opacity-50 ${
                       validationErrors.departureCity 
                         ? 'border-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-300 focus:border-[#06AED5]'
                     }`}
                     required
                   />
@@ -488,10 +514,10 @@ const adminVoyage = () => {
                     name="arrivalCity"
                     value={currentVoyage.arrivalCity}
                     onChange={handleInputChange}
-                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:ring-opacity-50 ${
+                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-[#06AED5] focus:ring-opacity-50 ${
                       validationErrors.arrivalCity 
                         ? 'border-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-300 focus:border-[#06AED5]'
                     }`}
                     required
                   />
@@ -509,10 +535,10 @@ const adminVoyage = () => {
                     name="departureTime"
                     value={currentVoyage.departureTime}
                     onChange={handleInputChange}
-                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:ring-opacity-50 ${
+                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-[#06AED5] focus:ring-opacity-50 ${
                       validationErrors.departureTime 
                         ? 'border-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-300 focus:border-[#06AED5]'
                     }`}
                     required
                   />
@@ -530,10 +556,10 @@ const adminVoyage = () => {
                     name="arrivalTime"
                     value={currentVoyage.arrivalTime}
                     onChange={handleInputChange}
-                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:ring-opacity-50 ${
+                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-[#06AED5] focus:ring-opacity-50 ${
                       validationErrors.arrivalTime 
                         ? 'border-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-300 focus:border-[#06AED5]'
                     }`}
                     required
                   />
@@ -551,10 +577,10 @@ const adminVoyage = () => {
                     name="date"
                     value={currentVoyage.date}
                     onChange={handleInputChange}
-                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:ring-opacity-50 ${
+                    className={`w-full rounded-md shadow-sm focus:ring focus:ring-[#06AED5] focus:ring-opacity-50 ${
                       validationErrors.date 
                         ? 'border-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-300 focus:border-[#06AED5]'
                     }`}
                     required
                   />
@@ -571,7 +597,7 @@ const adminVoyage = () => {
                     name="status"
                     value={currentVoyage.status}
                     onChange={handleInputChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                   >
                     <option value="normal">Normal</option>
                     <option value="cancelled">Cancelled</option>
@@ -586,7 +612,7 @@ const adminVoyage = () => {
                     name="shipType"
                     value={currentVoyage.shipType}
                     onChange={handleInputChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                   >
                     <option value="ferry">Ferry</option>
                     <option value="sea bus">Sea Bus</option>
@@ -602,7 +628,7 @@ const adminVoyage = () => {
                     name="lpg"
                     checked={currentVoyage.lpg}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                    className="h-4 w-4 text-[#06AED5] border-gray-300 rounded focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                   />
                 </div>
               </div>
@@ -616,7 +642,7 @@ const adminVoyage = () => {
                 </button>
                 <button
                   onClick={saveVoyage}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-4 py-2 bg-[#06AED5] text-white rounded-md hover:bg-[#058aaa]"
                   disabled={Object.keys(validationErrors).length > 0 && Object.values(validationErrors).some(error => error !== null)}
                 >
                   {isEditing ? 'Update' : 'Add'} Voyage
@@ -636,6 +662,40 @@ const adminVoyage = () => {
                   </ul>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && voyageToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle size={24} className="text-red-600" />
+              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+            </div>
+            
+            <p className="mb-4">
+              Are you sure you want to delete the voyage from <span className="font-semibold">{voyageToDelete.departureCity}</span> to <span className="font-semibold">{voyageToDelete.arrivalCity}</span> on <span className="font-semibold">{voyageToDelete.date}</span>? This action cannot be undone.
+            </p>
+            
+            <div className="flex justify-end gap-3 mt-5">
+              <button 
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setVoyageToDelete(null);
+                }} 
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={deleteVoyage} 
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>

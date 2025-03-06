@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Edit, Trash } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit, Trash, AlertCircle } from "lucide-react";
 import placeholder from "../../assets/images/placeholder.jpg";
+import { useLocation } from "react-router-dom";
 
 const initialAnnouncements = [
   {
@@ -20,11 +21,26 @@ const initialAnnouncements = [
 ];
 
 export default function AdminAnnounce() {
+  const location = useLocation();
   const [announcements, setAnnouncements] = useState(initialAnnouncements);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ id: null, title: "", image: "placeholder", description: "", details: "" });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  
+  // Delete confirmation modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+  
+  // Check for openAddModal in location state (from quick action)
+  useEffect(() => {
+    if (location.state?.openAddModal) {
+      openEdit({ id: null, title: "", image: "placeholder", description: "", details: "" });
+      // Clean up the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+      location.state.openAddModal = false;
+    }
+  }, [location]);
 
   const openEdit = (announcement) => {
     setErrors({});
@@ -154,9 +170,16 @@ export default function AdminAnnounce() {
     setTouched({});
   };
 
-  const deleteAnnouncement = (id) => {
-    if (window.confirm("Are you sure you want to delete this announcement?")) {
-      setAnnouncements(announcements.filter(a => a.id !== id));
+  const openDeleteConfirmation = (announcement) => {
+    setAnnouncementToDelete(announcement);
+    setDeleteModalOpen(true);
+  };
+
+  const deleteAnnouncement = () => {
+    if (announcementToDelete) {
+      setAnnouncements(announcements.filter(a => a.id !== announcementToDelete.id));
+      setDeleteModalOpen(false);
+      setAnnouncementToDelete(null);
     }
   };
 
@@ -175,7 +198,7 @@ export default function AdminAnnounce() {
   };
 
   const getFieldClassName = (fieldName) => {
-    const baseClass = "w-full p-3 border rounded-lg mb-1 text-[#0D3A73] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f0c808] ";
+    const baseClass = "w-full p-3 border rounded-lg mb-1 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#06AED5] resize-y ";
     return baseClass + (touched[fieldName] && errors[fieldName] ? "border-red-500" : "");
   };
 
@@ -185,19 +208,19 @@ export default function AdminAnnounce() {
   };
 
   return (
-    <div className="bg-[#f5f5f5] p-8 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-[#0D3A73] mb-6">Manage Announcements</h1>
+    <div className=" p-8 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage Announcements</h1>
       <button
         onClick={() => openEdit({ id: null, title: "", image: "placeholder", description: "", details: "" })}
-        className="px-6 py-3 bg-[#0D3A73] text-white rounded-lg hover:bg-[#f0c808] transition duration-300 mb-6"
+        className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-6"
       >
         Add Announcement
       </button>
       <div className="space-y-6">
         {announcements.map((announcement) => (
-          <div key={announcement.id} className="p-4 border rounded-lg flex justify-between items-center shadow hover:shadow-lg transition duration-300">
+          <div key={announcement.id} className="p-4 border rounded-lg flex justify-between items-center shadow transition duration-300">
             <div>
-              <h2 className="text-xl font-semibold text-[#0D3A73]">{announcement.title}</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{announcement.title}</h2>
               <p className="text-gray-500">{announcement.description}</p>
               <img
                 src={announcement.image || placeholder}
@@ -206,10 +229,10 @@ export default function AdminAnnounce() {
               />
             </div>
             <div className="space-x-4 flex">
-              <button onClick={() => openEdit(announcement)} className="text-[#0D3A73] hover:text-[#f0c808] transition duration-300">
+              <button onClick={() => openEdit(announcement)} className="text-[#06AED5] transition duration-300">
                 <Edit size={22} />
               </button>
-              <button onClick={() => deleteAnnouncement(announcement.id)} className="text-red-600 hover:text-red-700 transition duration-300">
+              <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
                 <Trash size={22} />
               </button>
             </div>
@@ -217,10 +240,11 @@ export default function AdminAnnounce() {
         ))}
       </div>
 
+      {/* Edit/Add Modal */}
       {selected && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6 text-[#0D3A73]">{form.id ? "Edit Announcement" : "Add Announcement"}</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">{form.id ? "Edit Announcement" : "Add Announcement"}</h2>
             
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -255,7 +279,7 @@ export default function AdminAnnounce() {
                 type="file"
                 onChange={handleImageChange}
                 accept="image/jpeg, image/png, image/gif, image/webp"
-                className="w-full p-3 border rounded-lg mb-2 text-[#0D3A73] file:border-0 file:bg-[#f0c808] file:text-white focus:outline-none"
+                className="w-full p-3 border rounded-lg mb-2 text-gray-800 file:border-0 file:bg-[#06AED5] file:text-white focus:outline-none"
               />
               {form.image && form.image !== "placeholder" ? (
                 <div className="mb-2">
@@ -319,15 +343,49 @@ export default function AdminAnnounce() {
             <div className="flex justify-end space-x-4">
               <button 
                 onClick={() => setSelected(null)} 
-                className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition duration-300"
+                className="px-6 py-2 bg-gray-300 rounded-lg transition duration-300"
               >
                 Cancel
               </button>
               <button 
                 onClick={form.id ? saveAnnouncement : addAnnouncement} 
-                className="px-6 py-2 bg-[#f0c808] text-white rounded-lg hover:bg-[#0D3A73] transition duration-300"
+                className="px-6 py-2 bg-[#06AED5] text-white rounded-lg transition duration-300"
               >
                 {form.id ? "Save Changes" : "Add Announcement"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && announcementToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle size={24} className="text-red-600" />
+              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+            </div>
+            
+            <p className="mb-4">
+              Are you sure you want to delete the announcement <span className="font-semibold">"{announcementToDelete.title}"</span>? This action cannot be undone.
+            </p>
+            
+            <div className="flex justify-end gap-3 mt-5">
+              <button 
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setAnnouncementToDelete(null);
+                }} 
+                className="px-4 py-2 border border-gray-300 rounded-md transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={deleteAnnouncement} 
+                className="px-4 py-2 bg-red-600 text-white rounded-md transition"
+              >
+                Delete
               </button>
             </div>
           </div>

@@ -169,7 +169,8 @@ const CustomUserButton = () => {
                 onClick={() => {
                   if (location.pathname === "/adminStations" || 
                       location.pathname === "/adminAnnounce" || 
-                      location.pathname === "/adminVoyage") {
+                      location.pathname === "/adminVoyage"   ||
+                      location.pathname === "/adminDashboard") {
                     navigate("/");
                   } else {
                     navigate("/adminStations");
@@ -181,7 +182,8 @@ const CustomUserButton = () => {
                 <span>
                   {location.pathname === "/adminStations" || 
                    location.pathname === "/adminAnnounce" || 
-                   location.pathname === "/adminVoyage" 
+                   location.pathname === "/adminVoyage"   ||
+                   location.pathname === "/adminDashboard"
                     ? "Switch to User Mode" 
                     : "Switch to Admin Dashboard"}
                 </span>

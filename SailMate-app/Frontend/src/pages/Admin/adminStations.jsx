@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const AdminStations = () => {
+  const location = useLocation();
   const [stations, setStations] = useState([
     { id:1, name: "İzmir Marina", person: "Ali Kaya", phone: "+90 232 123 4567", address: "Bahçelerarası, 35330 Balçova/İzmir, Turkey", city: "Izmir" },
     { id:2, name: "Yenikapı Terminal", person: "Mehmet Yilmaz", phone: "+90 212 987 6543", address: "Katip Kasım, Kennedy Cad., 34131 Fatih/İstanbul, Turkey", city: "Istanbul" },
@@ -14,8 +16,30 @@ const AdminStations = () => {
   const [editingStation, setEditingStation] = useState(null);
   const [formData, setFormData] = useState({ name: "", person: "", phone: "", city: "", address: "" });
   const [errors, setErrors] = useState({});
+  
+  // For delete confirmation modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [stationToDelete, setStationToDelete] = useState(null);
 
   const icons = [MapPin, User, Phone, Building, Home];
+  
+  // Check for openAddModal in location state (from quick action)
+  useEffect(() => {
+    if (location.state?.openAddModal) {
+      openAddModal();
+      // Clean up the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+      location.state.openAddModal = false;
+    }
+  }, [location]);
+  
+  // Function to open add modal
+  const openAddModal = () => {
+    setIsModalOpen(true);
+    setEditingStation(null);
+    setFormData({ name: "", person: "", phone: "", city: "", address: "" });
+    setErrors({});
+  };
 
   const validateForm = () => {
     let newErrors = {};
@@ -59,8 +83,18 @@ const AdminStations = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleDelete = (id) => {
-    setStations(stations.filter((station) => station.id !== id));
+  const openDeleteConfirmation = (id) => {
+    const station = stations.find(s => s.id === id);
+    setStationToDelete(station);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (stationToDelete) {
+      setStations(stations.filter((station) => station.id !== stationToDelete.id));
+      setDeleteModalOpen(false);
+      setStationToDelete(null);
+    }
   };
 
   const handleEdit = (station) => {
@@ -116,10 +150,10 @@ const AdminStations = () => {
         </div>
       </div>
       <div className="flex justify-end gap-4 mt-3">
-        <button onClick={() => handleEdit(station)} className="text-blue-600 hover:text-blue-800 transition">
+        <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
           <Edit size={18} />
         </button>
-        <button onClick={() => handleDelete(station.id)} className="text-red-600 hover:text-red-800 transition">
+        <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
           <Trash2 size={18} />
         </button>
       </div>
@@ -131,13 +165,8 @@ const AdminStations = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Manage Stations</h1>
         <button 
-          onClick={() => { 
-            setIsModalOpen(true); 
-            setEditingStation(null); 
-            setFormData({ name: "", person: "", phone: "", city: "", address: "" }); 
-            setErrors({}); 
-          }} 
-          className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition w-full sm:w-auto justify-center sm:justify-start"
+          onClick={openAddModal} 
+          className="flex items-center gap-2 bg-[#06AED5] text-white px-3 py-2 rounded-md hover:bg-[#058aaa] transition w-full sm:w-auto justify-center sm:justify-start"
         >
           <Plus size={18} /> Add Station
         </button>
@@ -147,7 +176,7 @@ const AdminStations = () => {
       <div className="hidden md:block bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
-            <thead className="bg-blue-600 text-white">
+            <thead className="bg-[#06AED5] text-white">
               <tr>
                 <th className="p-3 text-left">Title</th>
                 <th className="p-3 text-left">Contact Person</th>
@@ -166,10 +195,10 @@ const AdminStations = () => {
                   <td className="p-3">{station.city}</td>
                   <td className="p-3">{station.address}</td>
                   <td className="p-3 flex justify-center gap-4">
-                    <button onClick={() => handleEdit(station)} className="text-blue-600 hover:text-blue-800 transition">
+                    <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
                       <Edit size={18} />
                     </button>
-                    <button onClick={() => handleDelete(station.id)} className="text-red-600 hover:text-red-800 transition">
+                    <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
                       <Trash2 size={18} />
                     </button>
                   </td>
@@ -187,6 +216,7 @@ const AdminStations = () => {
         ))}
       </div>
 
+      {/* Edit/Add Station Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -219,12 +249,44 @@ const AdminStations = () => {
                 </button>
                 <button 
                   type="submit" 
-                  className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-md hover:bg-blue-700 transition text-sm sm:text-base flex-1"
+                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1"
                 >
                   Save
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && stationToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle size={24} className="text-red-600" />
+              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+            </div>
+            
+            <p className="mb-4">Are you sure you want to delete the station <span className="font-semibold">{stationToDelete.name}</span>? This action cannot be undone.</p>
+            
+            <div className="flex justify-end gap-3 mt-5">
+              <button 
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setStationToDelete(null);
+                }} 
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDelete} 
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

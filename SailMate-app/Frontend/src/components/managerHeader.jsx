@@ -44,7 +44,7 @@ const ManagerHeader = () => {
     };
 
     return (
-        <header className="bg-blue-600 text-white shadow-lg">
+        <header className="bg-[#D1FFD7] text-gray-800 shadow-lg">
             <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 py-3 flex justify-between items-center gap-2 md:gap-3 lg:gap-4">
                 {/* Left Side: Logo & Title */}
                 <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
@@ -93,7 +93,7 @@ const ManagerHeader = () => {
                     {/* Mobile Menu Button */}
                     <button
                         id="menu-button"
-                        className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-white focus:outline-none focus:ring-2 focus:ring-white rounded-md"
+                        className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300 rounded-md"
                         onClick={() => setMenuOpen(!menuOpen)}
                         aria-expanded={menuOpen}
                         aria-controls="mobile-menu"
@@ -111,7 +111,7 @@ const ManagerHeader = () => {
                     menuOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
                 }`}
             >
-                <div className="flex flex-col px-4 py-2 gap-2 bg-blue-700 rounded-lg">
+                <div className="flex flex-col px-4 py-2 gap-2 bg-[#B2EFB9] rounded-lg">
                     <NavLink to="/managerLogs" icon={MapPin} text="Logs" mobile={true} />
                     <NavLink to="/managerUsers" icon={Clock} text="Users" mobile={true} />
                     <NavLink to="/managerComplaints" icon={Bell} text="Complaints" mobile={true} />
@@ -126,12 +126,12 @@ const NavLink = ({ to, icon: Icon, text, mobile, className = '' }) => {
     return (
         <Link 
             to={to} 
-            className={`flex items-center gap-1 md:gap-1 lg:gap-2 px-2 md:px-2 lg:px-3 py-1 md:py-2 rounded-md text-white hover:bg-blue-700 transition-colors duration-200 ${
+            className={`flex items-center gap-1 md:gap-1 lg:gap-2 px-2 md:px-2 lg:px-3 py-1 md:py-2 rounded-md text-gray-800 hover:bg-[#B2EFB9] transition-colors duration-200 ${
                 mobile ? 'w-full' : ''
             } ${className}`}
             onClick={() => mobile && window.innerWidth < 768 ? setMenuOpen(false) : null}
         >
-            <Icon size={16} className="text-white flex-shrink-0" strokeWidth={2.5} />
+            <Icon size={16} className="text-gray-800 flex-shrink-0" strokeWidth={2.5} />
             <span className="whitespace-nowrap">{text}</span>
         </Link>
     );

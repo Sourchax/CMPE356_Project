@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MapPin, Clock, Bell, Menu, X } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
@@ -9,6 +9,12 @@ const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { signOut } = useClerk();
   const { user } = useUser();
+  const location = useLocation();
+  
+  // Get current path for active link highlighting - more reliable method
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   // Close mobile menu when screen size changes to desktop view
   useEffect(() => {
@@ -44,11 +50,11 @@ const AdminHeader = () => {
   };
 
   return (
-    <header className="bg-blue-600 text-white shadow-md">
+    <header className="bg-[#06AED5] text-white shadow-md">
       {/* Fixed-height container to prevent layout shifts */}
       <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 py-3 flex justify-between items-center gap-2 md:gap-3 lg:gap-4">
         {/* Left Side: Logo & Title - with minimum width to prevent squishing */}
-        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
+        <Link to="/adminDashboard" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline">
           <img 
             src={SailMateLogo} 
             alt="SailMate Logo" 
@@ -56,8 +62,8 @@ const AdminHeader = () => {
             width={128} 
             height={32} 
           />
-          <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold whitespace-nowrap">Admin</h1>
-        </div>
+          <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white whitespace-nowrap">Admin</h1>
+        </Link>
 
         {/* Desktop Navigation - better spacing with breakpoint adjustments */}
         <nav className="hidden md:flex md:space-x-1 lg:space-x-4 overflow-x-auto">
@@ -67,6 +73,7 @@ const AdminHeader = () => {
             text="Stations" 
             fullText="Edit Stations"
             className="md:text-xs lg:text-sm xl:text-base"
+            isActive={isActive("/adminStations")}
           />
           <NavLink 
             to="/adminVoyage" 
@@ -74,6 +81,7 @@ const AdminHeader = () => {
             text="Voyages" 
             fullText="Voyage Times"
             className="md:text-xs lg:text-sm xl:text-base"
+            isActive={isActive("/adminVoyage")}
           />
           <NavLink 
             to="/adminAnnounce" 
@@ -81,6 +89,7 @@ const AdminHeader = () => {
             text="Announcements" 
             fullText="Announcements"
             className="md:text-xs lg:text-sm xl:text-base"
+            isActive={isActive("/adminAnnounce")}
           />
         </nav>
 
@@ -109,17 +118,35 @@ const AdminHeader = () => {
           menuOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="flex flex-col px-4 py-2 gap-2 bg-blue-700">
-          <NavLink to="/adminStations" icon={MapPin} text="Edit Stations" mobile={true} />
-          <NavLink to="/adminVoyage" icon={Clock} text="Voyage Times" mobile={true} />
-          <NavLink to="/adminAnnounce" icon={Bell} text="Announcements" mobile={true} />
+        <div className="flex flex-col px-4 py-2 gap-2 bg-[#0599bc]">
+          <NavLink 
+            to="/adminStations" 
+            icon={MapPin} 
+            text="Edit Stations" 
+            mobile={true} 
+            isActive={isActive("/adminStations")}
+          />
+          <NavLink 
+            to="/adminVoyage" 
+            icon={Clock} 
+            text="Voyage Times" 
+            mobile={true} 
+            isActive={isActive("/adminVoyage")}
+          />
+          <NavLink 
+            to="/adminAnnounce" 
+            icon={Bell} 
+            text="Announcements" 
+            mobile={true} 
+            isActive={isActive("/adminAnnounce")}
+          />
         </div>
       </div>
     </header>
   );
 };
 
-const NavLink = ({ to, icon: Icon, text, fullText, mobile, className = '' }) => {
+const NavLink = ({ to, icon: Icon, text, fullText, mobile, className = '', isActive }) => {
   // Use shorter text for medium screens, full text for larger screens
   const displayText = fullText ? (
     <span className="whitespace-nowrap">
@@ -133,13 +160,18 @@ const NavLink = ({ to, icon: Icon, text, fullText, mobile, className = '' }) => 
   return (
     <Link 
       to={to} 
-      className={`flex items-center gap-1 md:gap-1 lg:gap-2 px-2 md:px-2 lg:px-3 py-1 md:py-2 rounded-md text-white hover:bg-blue-700 transition-colors duration-200 ${
+      className={`flex items-center gap-1 md:gap-1 lg:gap-2 px-2 md:px-2 lg:px-3 py-1 md:py-2 rounded-md text-white hover:bg-[#0599bc] transition-colors duration-200 relative no-underline ${
         mobile ? 'w-full' : ''
       } ${className}`}
       onClick={() => mobile && window.innerWidth < 768 ? setMenuOpen(false) : null}
     >
       <Icon size={16} className="text-white flex-shrink-0" strokeWidth={2.5} />
       {displayText}
+      
+      {/* Active indicator - positioned absolute for better control */}
+      {isActive && (
+        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#F0C808]" />
+      )}
     </Link>
   );
 };

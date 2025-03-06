@@ -31,6 +31,7 @@ import AdminVoyage from "./pages/Admin/adminVoyage";
 import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 import CustomerRBA from "./RBAcomponents/customerRBA";
 import NotFoundPage from "./pages/NotFound";
+import AdminDashboard from "./pages/Admin/adminDashboard";
 import "./App.css";
 
 
@@ -61,6 +62,7 @@ const AnimatedRoutes = () => {
 
         <Route element={<AdminRBA />}>
           <Route element={<AdminLayout />}>
+            <Route path="/adminDashboard" element={<AdminDashboard />} />
             <Route path="/adminStations" element={<AdminStations />} />
             <Route path="/adminAnnounce" element={<AdminAnnounce />} />
             <Route path="/adminVoyage" element={<AdminVoyage />} />
