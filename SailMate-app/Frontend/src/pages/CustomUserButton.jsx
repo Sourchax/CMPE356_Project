@@ -173,7 +173,7 @@ const CustomUserButton = () => {
                       location.pathname === "/adminDashboard") {
                     navigate("/");
                   } else {
-                    navigate("/adminStations");
+                    navigate("/adminDashboard");
                   }
                   handleMenuClose();
                 }}
