@@ -69,13 +69,13 @@ const Footer = () => {
 
       {/* Social Media Section (Vanilla CSS) */}
       <div className="social-media flex justify-center space-x-6 mt-8 relative z-10">
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="facebook text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
+        <a href="https://www.facebook.com/profile.php?id=61573753716618" target="_blank" rel="noopener noreferrer" className="facebook text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
           <FaFacebookF />
         </a>
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="instagram text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
           <FaInstagram />
         </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="x text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
+        <a href="https://x.com/sailmate221538" target="_blank" rel="noopener noreferrer" className="x text-2xl text-gray-300 hover:text-[#F0C808] transition duration-300">
           <FaXTwitter />
         </a>
       </div>

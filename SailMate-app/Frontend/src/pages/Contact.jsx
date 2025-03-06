@@ -214,11 +214,11 @@ const Contact = () => {
           <div className="contact-social">
             <h3>Follow Us</h3>
             <div className="social-icons">
-              <a href="#" className="social-icon facebook">
+              <a href="https://www.facebook.com/profile.php?id=61573753716618" className="social-icon facebook">
                 <FaFacebookF size={18} />
                 <span className="tooltip">Facebook</span>
               </a>
-              <a href="#" className="social-icon twitter">
+              <a href="https://x.com/sailmate221538" className="social-icon twitter">
                 <FaXTwitter size={18} />
                 <span className="tooltip">X</span>
               </a>
