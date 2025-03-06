@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Trash2, User, MessageSquare, Send, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Trash2, User, MessageSquare, Send, CheckCircle, Clock, AlertCircle, X } from "lucide-react";
 
 const ManageComplaints = () => {
     const [complaints, setComplaints] = useState([
@@ -8,9 +8,23 @@ const ManageComplaints = () => {
     ]);
     const [replyData, setReplyData] = useState({ id: null, message: "" });
     const [expandedComplaint, setExpandedComplaint] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-    const handleDelete = (id) => {
-        setComplaints(complaints.filter((complaint) => complaint.id !== id));
+    const handleDeleteRequest = (id) => {
+        // Show the delete confirmation popup
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const handleDeleteConfirm = () => {
+        // Actually delete the complaint
+        setComplaints(complaints.filter((complaint) => complaint.id !== deleteConfirm.id));
+        // Hide the popup
+        setDeleteConfirm({ show: false, id: null });
+    };
+
+    const handleDeleteCancel = () => {
+        // Hide the popup without deleting
+        setDeleteConfirm({ show: false, id: null });
     };
 
     const handleReply = (id) => {
@@ -54,6 +68,40 @@ const ManageComplaints = () => {
 
     return (
         <div className="p-6 max-w-6xl mx-auto">
+            {/* Delete Confirmation Popup */}
+            {deleteConfirm.show && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Confirm Delete</h3>
+                            <button 
+                                onClick={handleDeleteCancel}
+                                className="text-gray-400 hover:text-gray-500"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="mb-5">
+                            <p className="text-gray-700">Are you sure you want to delete this complaint? This action cannot be undone.</p>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={handleDeleteCancel}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-semibold text-gray-800">Customer Complaints</h1>
                 <div className="flex items-center gap-2">
@@ -77,7 +125,7 @@ const ManageComplaints = () => {
                             <div className="flex items-center gap-3">
                                 {getStatusBadge(complaint.status)}
                                 <button 
-                                    onClick={() => handleDelete(complaint.id)} 
+                                    onClick={() => handleDeleteRequest(complaint.id)} 
                                     className="text-gray-400 hover:text-red-600 transition p-1 rounded-full hover:bg-red-50"
                                 >
                                     <Trash2 size={18} />
@@ -87,7 +135,7 @@ const ManageComplaints = () => {
                         
                         <div className="p-4">
                             <div 
-                                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg mb-4"
+                                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg mb-4 cursor-pointer"
                                 onClick={() => toggleExpandComplaint(complaint.id)}
                             >
                                 <MessageSquare size={18} className="text-gray-500 mt-1" />

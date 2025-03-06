@@ -27,7 +27,7 @@ const useWindowSize = () => {
       // Update state
       setWindowSize({
         width,
-        isMobile: width <= 862,
+        isMobile: width <= 940, // Changed from 862 to 912 to show burger menu 50px earlier
         isMaxZoom: width <= 400
       });
     }

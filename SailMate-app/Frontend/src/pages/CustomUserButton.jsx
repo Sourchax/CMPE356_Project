@@ -195,13 +195,14 @@ const CustomUserButton = () => {
               <li
                 className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
-                  if (location.pathname === "/managerLogs" || 
+                  if (location.pathname === "/managerDashboard" || 
+                      location.pathname === "/managerLogs" || 
                       location.pathname === "/managerUsers" || 
                       location.pathname === "/managerComplaints" || 
                       location.pathname === "/managerFinance") {
                     navigate("/");
                   } else {
-                    navigate("/managerLogs");
+                    navigate("/managerDashboard");
                   }
                   handleMenuClose();
                 }}
@@ -211,7 +212,8 @@ const CustomUserButton = () => {
                   {location.pathname === "/managerLogs" || 
                    location.pathname === "/managerUsers" || 
                    location.pathname === "/managerComplaints" || 
-                   location.pathname === "/managerFinance" 
+                   location.pathname === "/managerFinance" ||
+                   location.pathname === "/managerDashboard"
                     ? "Switch to User Mode" 
                     : "Switch to Manager Dashboard"}
                 </span>

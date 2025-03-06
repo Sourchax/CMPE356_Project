@@ -1,22 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, Clock, Bell, ArrowRight, Plus, Calendar, Compass } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { 
+  MapPin, 
+  Clock, 
+  Bell, 
+  DollarSign, 
+  TrendingUp, 
+  Users, 
+  AlertTriangle,
+  Activity,
+  Calendar,
+  ArrowRight,
+  Plus
+} from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 
-const AdminDashboard = () => {
-
-  const [loaded, setLoaded] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+const ManagerDashboard = () => {
   const { user } = useUser();
-  
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [loaded, setLoaded] = useState(false);
 
-
-
-
+  // Set loaded to true when component mounts
   useEffect(() => {
     setLoaded(true);
   }, []);
 
+  // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -25,6 +34,7 @@ const AdminDashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Get current time to display personalized greeting
   const getCurrentGreeting = () => {
     const hour = currentTime.getHours();
     if (hour < 12) return "Good morning";
@@ -32,44 +42,92 @@ const AdminDashboard = () => {
     return "Good evening";
   };
 
+  // Fake stats for the dashboard
+  const stats = {
+    activeUsers: 42,
+    pendingComplaints: 3,
+    totalLogs: 156,
+    ticketTypes: 8
+  };
+
+  // Summary stats array
+  const statItems = [
+    { label: "Active Users", value: stats.activeUsers, icon: Users },
+    { label: "Pending Complaints", value: stats.pendingComplaints, icon: AlertTriangle },
+    { label: "Total Logs", value: stats.totalLogs, icon: Activity },
+    { label: "Ticket Types", value: stats.ticketTypes, icon: DollarSign }
+  ];
+
+  // Card data
   const cards = [
     {
-      title: "Manage Stations",
-      description: "Add, edit or remove stations and their contact information",
-      icon: MapPin,
-      path: "/adminStations",
-      count: 5, // Example count of items
-      color: "#06AED5"
+      title: "User Management",
+      description: "Manage user accounts, roles and permissions",
+      icon: Users,
+      iconColor: "#8B5CF6",
+      bgColor: "#F5F3FF",
+      borderColor: "border-purple-200",
+      path: "/managerUsers",
+      count: stats.activeUsers
     },
     {
-      title: "Voyage Times",
-      description: "Schedule and manage voyage routes, times and status",
-      icon: Clock,
-      path: "/adminVoyage",
-      count: 3, // Example count of items
-      color: "#06AED5"
-    },
-    {
-      title: "Announcements",
-      description: "Create and publish important announcements for users",
+      title: "Complaint Center",
+      description: "Review and respond to customer complaints",
       icon: Bell,
-      path: "/adminAnnounce",
-      count: 2, // Example count of items
-      color: "#06AED5"
+      iconColor: "#F59E0B",
+      bgColor: "#FFF7ED",
+      borderColor: "border-amber-200",
+      path: "/managerComplaints",
+      count: stats.pendingComplaints
+    },
+    {
+      title: "Activity Logs",
+      description: "Track user activity and system events",
+      icon: MapPin,
+      iconColor: "#3B82F6",
+      bgColor: "#EFF6FF",
+      borderColor: "border-blue-200",
+      path: "/managerLogs",
+      count: stats.totalLogs
+    },
+    {
+      title: "Ticket Pricing",
+      description: "Manage and update ticket prices and types",
+      icon: DollarSign,
+      iconColor: "#10B981",
+      bgColor: "#ECFDF5",
+      borderColor: "border-green-200",
+      path: "/managerFinance",
+      count: stats.ticketTypes
     }
   ];
 
-  // Summary statistics - would typically come from an API
-  const stats = [
-    { label: "Total Stations", value: 5 },
-    { label: "Active Voyages", value: 12 },
-    { label: "Current Announcements", value: 2 }
+  // Quick actions
+  const quickActions = [
+    {
+      title: "Add New User",
+      description: "Create a new user account",
+      path: "/managerUsers",
+      state: { openAddModal: true }
+    },
+    {
+      title: "Process Complaint",
+      description: "Handle a pending customer complaint",
+      path: "/managerComplaints",
+      state: { openQueue: true }
+    },
+    {
+      title: "Update Pricing",
+      description: "Modify ticket pricing structure",
+      path: "/managerFinance",
+      state: { openPriceEditor: true }
+    }
   ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        {/* Welcome Section - Updated Style */}
+        {/* Welcome Section */}
         <div 
           className={`bg-white rounded-lg shadow p-6 mb-6 transition-all duration-700 transform ${
             loaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
@@ -77,16 +135,16 @@ const AdminDashboard = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
-              {getCurrentGreeting()}, {user?.firstName || "Manager"}
-            </h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
+                {getCurrentGreeting()}, {user?.firstName || "Manager"}
+              </h1>
               <p className="text-gray-600 mt-2">
-                Welcome to your administration portal. Here's an overview of your system.
+                Welcome to your management dashboard. Here's an overview of your system.
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
-                <Compass className="text-[#06AED5] mr-2" size={20} />
+                <Calendar className="text-green-600 mr-2" size={20} />
                 <div>
                   <p className="text-xs text-gray-500">Current Date</p>
                   <p className="font-medium text-sm">
@@ -100,7 +158,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
-                <Clock className="text-[#06AED5] mr-2" size={20} />
+                <Clock className="text-green-600 mr-2" size={20} />
                 <div>
                   <p className="text-xs text-gray-500">Current Time</p>
                   <p className="font-medium text-sm">
@@ -120,34 +178,35 @@ const AdminDashboard = () => {
               <h2 className="text-lg font-semibold text-gray-800">Quick Overview</h2>
               <span className="text-xs text-gray-500">Last updated: Today at {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {stats.map((stat, index) => (
-                <div 
-                  key={index} 
-                  className={`bg-gray-50 p-3 rounded-lg border border-gray-200 transition-all duration-500 ${
-                    loaded ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  style={{ transitionDelay: `${index * 150}ms` }}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-xs text-gray-500">{stat.label}</p>
-                      <p className="text-xl font-bold text-gray-800">{stat.value}</p>
-                    </div>
-                    <div className="bg-[#06AED5] bg-opacity-15 p-2 rounded-full">
-                      {index === 0 && <MapPin size={18} className="text-[#06AED5]" />}
-                      {index === 1 && <Clock size={18} className="text-[#06AED5]" />}
-                      {index === 2 && <Bell size={18} className="text-[#06AED5]" />}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {statItems.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <div 
+                    key={index} 
+                    className={`bg-gray-50 p-3 rounded-lg border border-gray-200 transition-all duration-500 ${
+                      loaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    style={{ transitionDelay: `${index * 150}ms` }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-gray-500">{stat.label}</p>
+                        <p className="text-xl font-bold text-gray-800">{stat.value}</p>
+                      </div>
+                      <div className="bg-green-100 p-2 rounded-full">
+                        <Icon size={18} className="text-green-700" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Admin Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Main Navigation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {cards.map((card, index) => {
             const Icon = card.icon;
             return (
@@ -163,21 +222,21 @@ const AdminDashboard = () => {
               >
                 <div 
                   className="p-1" 
-                  style={{ backgroundColor: card.color }}
+                  style={{ backgroundColor: card.iconColor }}
                 ></div>
                 <div className="p-6 flex-grow">
                   <div className="flex justify-between items-start mb-4">
                     <div 
                       className="w-12 h-12 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${card.color}15` }} // 15% opacity of the color
+                      style={{ backgroundColor: card.bgColor }}
                     >
-                      <Icon size={24} color={card.color} />
+                      <Icon size={24} color={card.iconColor} />
                     </div>
                     <div className="text-2xl font-bold text-gray-800">{card.count}</div>
                   </div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">{card.title}</h2>
                   <p className="text-gray-500 mb-4">{card.description}</p>
-                  <div className="flex items-center text-[#06AED5] text-sm font-medium mt-auto">
+                  <div className="flex items-center text-green-600 text-sm font-medium mt-auto">
                     <span>Manage</span>
                     <ArrowRight size={16} className="ml-1" />
                   </div>
@@ -196,33 +255,17 @@ const AdminDashboard = () => {
         >
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { 
-                to: "/adminStations", 
-                title: "Add New Station", 
-                description: "Create a new station for voyages" 
-              },
-              { 
-                to: "/adminVoyage", 
-                title: "Schedule Voyage", 
-                description: "Create a new voyage schedule" 
-              },
-              { 
-                to: "/adminAnnounce", 
-                title: "Create Announcement", 
-                description: "Publish a new announcement" 
-              }
-            ].map((action, index) => (
+            {quickActions.map((action, index) => (
               <Link 
                 key={index}
-                to={action.to} 
-                state={{ openAddModal: true }} 
+                to={action.path} 
+                state={action.state} 
                 className={`p-3 border border-gray-200 rounded-lg text-left transition-all duration-500 no-underline flex items-center transform ${
                   loaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
                 }`}
                 style={{ transitionDelay: `${700 + (index * 100)}ms` }}
               >
-                <div className="w-8 h-8 rounded-full bg-[#06AED5] flex items-center justify-center mr-3 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center mr-3 flex-shrink-0">
                   <Plus size={18} color="white" />
                 </div>
                 <div>
@@ -238,4 +281,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ManagerDashboard;

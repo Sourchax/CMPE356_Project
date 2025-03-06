@@ -11,6 +11,7 @@ const ManageUsers = () => {
     const [formData, setFormData] = useState({ name: "", email: "", role: "User" });
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
     
     // Available roles
     const roles = ["Admin", "Manager", "User"];
@@ -81,10 +82,17 @@ const ManageUsers = () => {
         setErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            setUsers(users.filter((user) => user.id !== id));
-        }
+    const handleDeleteRequest = (id) => {
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const handleDeleteConfirm = () => {
+        setUsers(users.filter((user) => user.id !== deleteConfirm.id));
+        setDeleteConfirm({ show: false, id: null });
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirm({ show: false, id: null });
     };
 
     const handleEdit = (user) => {
@@ -154,8 +162,8 @@ const ManageUsers = () => {
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-4">
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                        <User size={16} className="text-gray-500" />
+                    <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
+                        <User size={16} className="text-green-700" />
                     </div>
                     <span className="font-medium">{user.name}</span>
                 </div>
@@ -169,13 +177,13 @@ const ManageUsers = () => {
             <div className="flex justify-end gap-2">
                 <button 
                     onClick={() => handleEdit(user)} 
-                    className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
+                    className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full"
                     aria-label={`Edit ${user.name}`}
                 >
                     <Edit size={16} />
                 </button>
                 <button 
-                    onClick={() => handleDelete(user.id)} 
+                    onClick={() => handleDeleteRequest(user.id)} 
                     className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
                     aria-label={`Delete ${user.name}`}
                 >
@@ -187,11 +195,45 @@ const ManageUsers = () => {
 
     return (
         <div className="p-3 sm:p-4 md:p-6 max-w-4xl mx-auto">
+            {/* Delete Confirmation Popup */}
+            {deleteConfirm.show && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-medium text-gray-900">Confirm Delete</h3>
+                            <button 
+                                onClick={handleDeleteCancel}
+                                className="text-gray-400 hover:text-gray-500"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="mb-5">
+                            <p className="text-gray-700">Are you sure you want to delete this user? This action cannot be undone.</p>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={handleDeleteCancel}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Manage Users</h1>
                 <button 
                     onClick={handleAddUser}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition shadow-sm"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition shadow-sm"
                 >
                     <Plus size={18} /> Add User
                 </button>
@@ -201,7 +243,7 @@ const ManageUsers = () => {
             <div className="hidden sm:block bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
-                        <thead className="bg-gray-50 text-gray-700 border-b border-gray-200">
+                        <thead className="bg-[#D1FFD7] text-green-800 border-b border-green-200">
                             <tr>
                                 <th className="p-3 md:p-4 text-left font-medium">Name</th>
                                 <th className="p-3 md:p-4 text-left font-medium">Email</th>
@@ -212,10 +254,10 @@ const ManageUsers = () => {
                         <tbody>
                             {users.length > 0 ? (
                                 users.map((user) => (
-                                    <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <tr key={user.id} className="border-b border-gray-100 hover:bg-[#F5FFF6] transition">
                                         <td className="p-3 md:p-4 flex items-center">
-                                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                                                <User size={16} className="text-gray-500" />
+                                            <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
+                                                <User size={16} className="text-green-700" />
                                             </div>
                                             <span className="font-medium">{user.name}</span>
                                         </td>
@@ -228,13 +270,13 @@ const ManageUsers = () => {
                                         <td className="p-3 md:p-4 text-center flex justify-center gap-3">
                                             <button 
                                                 onClick={() => handleEdit(user)} 
-                                                className="text-blue-600 hover:text-blue-800 transition bg-blue-50 p-2 rounded-full"
+                                                className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full"
                                                 aria-label={`Edit ${user.name}`}
                                             >
                                                 <Edit size={16} />
                                             </button>
                                             <button 
-                                                onClick={() => handleDelete(user.id)} 
+                                                onClick={() => handleDeleteRequest(user.id)} 
                                                 className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
                                                 aria-label={`Delete ${user.name}`}
                                             >
@@ -293,7 +335,7 @@ const ManageUsers = () => {
                                     onBlur={handleBlur}
                                     placeholder="Enter full name"
                                     className={`w-full border p-2 rounded-md outline-none transition ${
-                                        errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                        errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
                                     }`}
                                     aria-invalid={errors.name ? "true" : "false"}
                                     aria-describedby={errors.name ? "name-error" : undefined}
@@ -318,7 +360,7 @@ const ManageUsers = () => {
                                     onBlur={handleBlur}
                                     placeholder="Enter email address"
                                     className={`w-full border p-2 rounded-md outline-none transition ${
-                                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
                                     }`}
                                     aria-invalid={errors.email ? "true" : "false"}
                                     aria-describedby={errors.email ? "email-error" : undefined}
@@ -341,7 +383,7 @@ const ManageUsers = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     className={`w-full border p-2 rounded-md outline-none transition ${
-                                        errors.role ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                        errors.role ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
                                     }`}
                                     aria-invalid={errors.role ? "true" : "false"}
                                     aria-describedby={errors.role ? "role-error" : undefined}
@@ -368,7 +410,7 @@ const ManageUsers = () => {
                                 </button>
                                 <button 
                                     type="submit" 
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition w-full sm:w-auto"
+                                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition w-full sm:w-auto"
                                 >
                                     {editingUser ? "Update" : "Add"} User
                                 </button>

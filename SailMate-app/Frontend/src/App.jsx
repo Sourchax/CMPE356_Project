@@ -32,6 +32,7 @@ import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 import CustomerRBA from "./RBAcomponents/customerRBA";
 import NotFoundPage from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin/adminDashboard";
+import ManagerDashboard from "./pages/Manager/managerDashboard";
 import "./App.css";
 
 
@@ -71,6 +72,7 @@ const AnimatedRoutes = () => {
 
         <Route element={<ManagerRBA />}>
             <Route element={<ManagerLayout />}>
+                <Route path="/managerDashboard" element={<ManagerDashboard />} />
                 <Route path="/managerLogs" element={<ManagerLogs />} />
                 <Route path="/managerUsers" element={<ManagerUsers />} />
                 <Route path="/managerComplaints" element={<ManagerComplaints />} />
