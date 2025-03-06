@@ -27,7 +27,7 @@ const BookingConditions = () => {
                         Please read these terms carefully before using SailMate's ferry ticketing platform.
                         By using our services, you agree to these terms and conditions for booking ferry travel.
                     </p>
-                    <div className="mt-3 text-sm text-gray-500">Last Updated: June 2023</div>
+                    <div className="mt-3 text-sm text-gray-500">Last Updated: March 2025</div>
                 </div>
                 
                 {/* Content */}
@@ -132,7 +132,7 @@ const BookingConditions = () => {
                         </div>
 
                         {/* Disclaimer of Warranties */}
-                        <div className="pl-4 border-l-4 border-[#F05D5E]">
+                        <div>
                             <h2 className="mb-6 text-2xl font-bold text-[#0D3A73]">6. Disclaimer of Warranties</h2>
                             <div className="space-y-4 text-base text-gray-700 leading-relaxed">
                                 <p className="font-medium">

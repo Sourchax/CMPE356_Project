@@ -23,7 +23,6 @@ const MyTickets = () => {
           departureDate: "2023-07-15",
           departureTime: "09:30",
           passenger: "John Doe",
-          seat: "A12",
           status: "Active",
           price: "$25.00"
         },
@@ -33,7 +32,6 @@ const MyTickets = () => {
           departureDate: "2023-07-20",
           departureTime: "14:45",
           passenger: "John Doe",
-          seat: "B08",
           status: "Active",
           price: "$25.00"
         },
@@ -43,7 +41,6 @@ const MyTickets = () => {
           departureDate: "2023-06-10",
           departureTime: "10:15",
           passenger: "John Doe",
-          seat: "C04",
           status: "Completed",
           price: "$18.50"
         }
@@ -141,7 +138,6 @@ const MyTickets = () => {
                       <p className="text-gray-600"><span className="font-medium text-gray-700">Ticket ID:</span> {ticket.id}</p>
                       <p className="text-gray-600"><span className="font-medium text-gray-700">Departure:</span> {ticket.departureDate}, {ticket.departureTime}</p>
                       <p className="text-gray-600"><span className="font-medium text-gray-700">Passenger:</span> {ticket.passenger}</p>
-                      <p className="text-gray-600"><span className="font-medium text-gray-700">Seat:</span> {ticket.seat}</p>
                       <p className="text-gray-600"><span className="font-medium text-gray-700">Price:</span> {ticket.price}</p>
                     </div>
                     

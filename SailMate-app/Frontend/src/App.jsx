@@ -31,9 +31,8 @@ import AdminVoyage from "./pages/Admin/adminVoyage";
 import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 import CustomerRBA from "./RBAcomponents/customerRBA";
 import NotFoundPage from "./pages/NotFound";
-
-
 import "./App.css";
+
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -56,8 +55,8 @@ const AnimatedRoutes = () => {
             path="/ferry-ticket-form" 
             element={<ProtectedRoute element={<FerryTicketForm />} requiredSource="homepage" />} 
           />
-          <Route path="/sign-in" element={<CustomSignIn />} />
-          <Route path="/sign-up" element={<CustomSignUp />} />
+          <Route path="/sign-in/*" element={<CustomSignIn />} />
+          <Route path="/sign-up/*" element={<CustomSignUp />} />
         </Route>
 
         <Route element={<AdminRBA />}>
@@ -84,7 +83,7 @@ const AnimatedRoutes = () => {
       </Route>
 
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-        <Route path="*" element={<NotFoundPage/>} />
+        <Route path="/*" element={<NotFoundPage/>} />
       </Routes>
     </AnimatePresence>
   );

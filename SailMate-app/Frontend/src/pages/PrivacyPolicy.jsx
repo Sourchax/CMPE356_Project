@@ -27,7 +27,7 @@ const PrivacyPolicy = () => {
                         At SailMate, we value your privacy and are committed to protecting your personal information.
                         We only collect what's necessary to provide our ferry ticketing and booking services.
                     </p>
-                    <div className="mt-3 text-sm text-gray-500">Last Updated: June 2023</div>
+                    <div className="mt-3 text-sm text-gray-500">Last Updated: March 2025</div>
                 </div>
                 
                 {/* Content */}
