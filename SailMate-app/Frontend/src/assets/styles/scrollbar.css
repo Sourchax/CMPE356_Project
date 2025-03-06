@@ -1,0 +1,157 @@
+/* SailMate Custom Scrollbar Styles */
+
+/* For Webkit browsers (Chrome, Safari, newer versions of Opera) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(240, 240, 240, 0.8);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0D3A73;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #06AED5;
+  box-shadow: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #0D3A73 rgba(240, 240, 240, 0.8);
+}
+
+/* For Edge and IE */
+body {
+  -ms-overflow-style: none;  /* For old IE */
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for dropdown menus */
+.dropdown-menu,
+.dropdown-content,
+.react-select__menu-list,
+.modal-content,
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #0D3A73 rgba(240, 240, 240, 0.8);
+}
+
+.dropdown-menu::-webkit-scrollbar,
+.dropdown-content::-webkit-scrollbar,
+.react-select__menu-list::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb,
+.dropdown-content::-webkit-scrollbar-thumb,
+.react-select__menu-list::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.overflow-auto::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #0D3A73;
+  border-radius: 0;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover,
+.dropdown-content::-webkit-scrollbar-thumb:hover,
+.react-select__menu-list::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover,
+.overflow-auto::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #06AED5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  /* Smaller scrollbar for mobile devices to ensure touch-friendliness */
+  .dropdown-menu::-webkit-scrollbar,
+  .dropdown-content::-webkit-scrollbar,
+  .react-select__menu-list::-webkit-scrollbar,
+  .modal-content::-webkit-scrollbar,
+  .overflow-auto::-webkit-scrollbar,
+  .overflow-y-auto::-webkit-scrollbar,
+  .overflow-x-auto::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Customize scrollbar corner */
+::-webkit-scrollbar-corner {
+  background: rgba(240, 240, 240, 0.8);
+}
+
+/* Custom scrollbar for textareas and select elements */
+textarea, 
+select,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  scrollbar-width: thin;
+  scrollbar-color: #0D3A73 rgba(240, 240, 240, 0.8);
+}
+
+textarea::-webkit-scrollbar, 
+select::-webkit-scrollbar,
+input[type="text"]::-webkit-scrollbar,
+input[type="email"]::-webkit-scrollbar,
+input[type="password"]::-webkit-scrollbar {
+  width: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb, 
+select::-webkit-scrollbar-thumb,
+input[type="text"]::-webkit-scrollbar-thumb,
+input[type="email"]::-webkit-scrollbar-thumb,
+input[type="password"]::-webkit-scrollbar-thumb {
+  background: #0D3A73;
+  border-radius: 0;
+}
+
+textarea::-webkit-scrollbar-thumb:hover, 
+select::-webkit-scrollbar-thumb:hover,
+input[type="text"]::-webkit-scrollbar-thumb:hover,
+input[type="email"]::-webkit-scrollbar-thumb:hover,
+input[type="password"]::-webkit-scrollbar-thumb:hover {
+  background: #06AED5;
+}
+
+/* Special styling for the passenger selection dropdown */
+.passenger-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.passenger-dropdown::-webkit-scrollbar-thumb {
+  background: #0D3A73;
+  border-radius: 0;
+}
+
+.passenger-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #06AED5;
+} 
