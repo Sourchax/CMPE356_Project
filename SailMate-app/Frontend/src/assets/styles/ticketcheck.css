@@ -173,14 +173,14 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .submit-button:hover {
-  background-color: #0055aa;
+  filter: brightness(90%);
   transform: translateY(-2px);
 }
 
@@ -265,4 +265,34 @@
 
 .text-link:hover {
   text-decoration: none;
+}
+
+/* Applying Contact page button styles to TicketCheck buttons */
+.ticketcheck-button {
+  background-color: #0D3A73;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ticketcheck-button:hover {
+  filter: brightness(90%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.ticketcheck-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ticketcheck-button.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
 }

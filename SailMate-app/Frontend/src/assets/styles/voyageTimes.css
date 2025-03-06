@@ -1,7 +1,7 @@
-/* Homepage Button Styles */
+/* VoyageTimes.css */
 
-/* Applying Contact page button styles to Search Tickets button */
-.homepage-button {
+/* Applying Contact page button styles to VoyageTimes buttons */
+.voyage-button {
   background-color: #0D3A73;
   color: white;
   border: none;
@@ -14,18 +14,18 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.homepage-button:hover {
+.voyage-button:hover {
   filter: brightness(90%);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-.homepage-button:active {
+.voyage-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.homepage-button.loading {
+.voyage-button.loading {
   opacity: 0.8;
   cursor: not-allowed;
-}
+} 

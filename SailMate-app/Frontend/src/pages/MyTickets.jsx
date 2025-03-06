@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // Remove CSS import as we'll be using Tailwind
-// import "../assets/styles/mytickets.css";
+import "../assets/styles/mytickets.css";
 // Add import for Button component
 import Button from "../components/Button";
 
@@ -103,6 +103,7 @@ const MyTickets = () => {
                 onClick={() => window.location.reload()} 
                 variant="primary"
                 size="lg"
+                className="reload-button mytickets-button"
               >
                 Try Again
               </Button>
@@ -114,6 +115,7 @@ const MyTickets = () => {
                 onClick={() => navigate("/")} 
                 variant="primary"
                 size="lg"
+                className="cta-button mytickets-button"
               >
                 Book a Ferry
               </Button>
@@ -144,19 +146,21 @@ const MyTickets = () => {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 md:items-center">
-                      <Button 
-                        onClick={() => handleViewDetails(ticket.id)} 
+                      <Button
+                        onClick={() => handleViewDetails(ticket.id)}
                         variant="primary"
-                        size="md"
+                        size="sm"
+                        className="view-button mytickets-button"
                       >
                         View Details
                       </Button>
-                      <Button 
-                        onClick={() => handleDownloadTicket(ticket.id)} 
+                      <Button
+                        onClick={() => handleDownloadTicket(ticket.id)}
                         variant="outline"
-                        size="md"
+                        size="sm"
+                        className="download-button mytickets-button"
                       >
-                        Download
+                        Download Ticket
                       </Button>
                     </div>
                   </div>

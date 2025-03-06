@@ -26,14 +26,14 @@ const Button = ({
   className = '',
   ...rest 
 }) => {
-  const baseClasses = 'rounded-lg transition-all duration-300 font-medium';
+  const baseClasses = 'rounded-lg transition-all duration-300 ease-in-out font-medium';
   
   const variantClasses = {
-    primary: 'bg-[#0D3A73] hover:bg-[#06AED5] focus:bg-[#06AED5] active:bg-[#0597b9] text-white',
-    secondary: 'bg-[#06AED5] hover:bg-[#0D3A73] focus:bg-[#0D3A73] active:bg-[#082a5c] text-white',
-    outline: 'border-2 border-[#0D3A73] text-[#0D3A73] hover:bg-[#e6f5f8] focus:bg-[#e6f5f8] active:bg-[#d0edf3] bg-transparent',
-    danger: 'bg-[#06AED5] hover:bg-[#0597b9] focus:bg-[#0597b9] active:bg-[#04829f] text-white',
-    success: 'bg-green-600 hover:bg-[#06AED5] focus:bg-[#06AED5] active:bg-[#0597b9] text-white',
+    primary: 'bg-[#0D3A73] hover:brightness-90 hover:translate-y-[-2px] focus:brightness-90 active:brightness-80 active:translate-y-0 text-white',
+    secondary: 'bg-[#06AED5] hover:brightness-90 hover:translate-y-[-2px] focus:brightness-90 active:brightness-80 active:translate-y-0 text-white',
+    outline: 'border-2 border-[#0D3A73] text-[#0D3A73] hover:brightness-90 hover:translate-y-[-2px] focus:brightness-90 active:brightness-80 active:translate-y-0 bg-transparent',
+    danger: 'bg-[#06AED5] hover:brightness-90 hover:translate-y-[-2px] focus:brightness-90 active:brightness-80 active:translate-y-0 text-white',
+    success: 'bg-green-600 hover:brightness-90 hover:translate-y-[-2px] focus:brightness-90 active:brightness-80 active:translate-y-0 text-white',
   };
   
   const sizeClasses = {
@@ -44,7 +44,7 @@ const Button = ({
   
   const widthClass = fullWidth ? 'w-full' : '';
   const disabledClass = disabled ? 'opacity-60 cursor-not-allowed' : '';
-  const shadowClass = variant !== 'outline' ? 'shadow-md hover:shadow-lg' : '';
+  const shadowClass = variant !== 'outline' ? 'shadow-md hover:shadow-lg active:shadow-sm' : '';
   
   const classes = `
     ${baseClasses}

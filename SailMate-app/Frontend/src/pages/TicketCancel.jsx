@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Ticket, Mail, MessageSquare } from 'lucide-react';
+import Button from "../components/Button";
 import '../assets/styles/ticketcancel.css';
 
 const TicketCancel = () => {
@@ -136,19 +137,17 @@ const TicketCancel = () => {
                 </div>
               </div>
               
-              <button 
+              <Button 
                 type="submit" 
-                className={`w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-sans ${loading ? 'relative' : ''}`}
+                variant="primary"
+                fullWidth
+                size="lg"
+                loading={loading}
                 disabled={loading}
+                className="ticketcancel-button"
               >
-                {loading ? (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  </div>
-                ) : (
-                  'Continue to Cancel'
-                )}
-              </button>
+                Continue to Cancel
+              </Button>
               
               <div className="bg-blue-50 text-blue-700 p-4 rounded-md mt-4">
                 <p className="flex items-start text-sm text-gray-600 font-sans">
@@ -182,26 +181,20 @@ const TicketCancel = () => {
               </div>
               
               <div className="flex gap-4 mt-6">
-                <button 
-                  onClick={() => setShowConfirmation(false)} 
-                  className="flex-1 border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300 font-sans"
-                  disabled={loading}
+                <Button 
+                  onClick={() => setShowConfirmation(false)}
+                  variant="outline"
+                  className="ticketcancel-button"
                 >
                   Go Back
-                </button>
-                <button 
-                  onClick={handleConfirm} 
-                  className={`flex-1 bg-[#0D3A73] hover:bg-[#06AED5] text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg font-medium transition-all duration-300 font-sans ${loading ? 'relative' : ''}`}
-                  disabled={loading}
+                </Button>
+                <Button 
+                  onClick={handleConfirm}
+                  variant="primary"
+                  className="ticketcancel-button"
                 >
-                  {loading ? (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    </div>
-                  ) : (
-                    'Confirm Cancellation'
-                  )}
-                </button>
+                  Confirm Cancellation
+                </Button>
               </div>
             </div>
           )}
@@ -211,7 +204,7 @@ const TicketCancel = () => {
               Need help?{" "}
               <span 
                 onClick={navigateToContact} 
-                className="text-[#0D3A73] font-medium hover:text-[#06AED5] underline cursor-pointer transition-colors duration-300 font-sans"
+                className="text-[#0D3A73] font-medium hover:brightness-90 underline cursor-pointer transition-all duration-300 ease-in-out font-sans"
               >
                 Contact our support team
               </span>

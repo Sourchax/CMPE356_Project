@@ -156,13 +156,13 @@ const Header = () => {
             ) : (
               <>
                 <SignedOut>
-                  <Link to="/sign-in" className="flex-shrink-0">
+                  <Link to="/sign-in" className="flex-shrink-0 no-underline">
                     <button 
                       className={`flex items-center ${isMaxZoom ? 'p-1' : 'gap-1 px-2 sm:px-3 md:px-5 py-2'} bg-[#F0C808] text-[#0D3A73] font-medium rounded-lg shadow-sm hover:bg-yellow-400 transition-colors duration-200 transform hover:scale-105 text-xs sm:text-sm md:text-base`}
                       title="Sign In"
                     >
                       <LogIn size={isMaxZoom ? 20 : (isMobile ? 16 : 18)} className="flex-shrink-0" />
-                      {!isMaxZoom && <span className="whitespace-nowrap">Sign In</span>}
+                      {!isMaxZoom && <span className="whitespace-nowrap no-underline">Sign In</span>}
                     </button>
                   </Link>
                 </SignedOut>

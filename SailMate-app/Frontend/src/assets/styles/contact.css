@@ -393,7 +393,7 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -401,7 +401,7 @@
 }
 
 .contact-form button:hover {
-  background-color: #06AED5;
+  filter: brightness(90%);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }

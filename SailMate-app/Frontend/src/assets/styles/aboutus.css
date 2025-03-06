@@ -20,3 +20,27 @@
   .aboutus-main {
     flex-grow: 1;
   }
+
+  /* Button styling to match Contact page */
+  .aboutus-button-container {
+    display: inline-block;
+  }
+
+  .cta-button {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    padding: 14px 30px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease-in-out !important;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+    filter: brightness(90%) !important;
+  }
+
+  .cta-button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }

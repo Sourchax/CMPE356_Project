@@ -6,6 +6,16 @@
   user-select: none;
 }
 
+/* Remove underline from Sign In button text */
+.flex-shrink-0 a, 
+.flex-shrink-0 button, 
+.flex-shrink-0 span, 
+a[href="/sign-in"], 
+a[href="/sign-in"] *, 
+button:has(span) span {
+  text-decoration: none !important;
+}
+
 .out-package{
   background: rgba(0, 47, 108, 0.95);
 }
@@ -121,13 +131,17 @@
 }
 
 .auth-buttons button {
-  padding: 8px 15px;
-  border-radius: 5px;
+  color: #ffffff;
+  background-color: #0D3A73;
   border: none;
-  font-size: 14px;
-  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
 }
 
 /* General Button Styles */
@@ -164,6 +178,7 @@
 
 /* Hover effects for all buttons */
 .auth-buttons button:hover {
+  filter: brightness(90%);
   transform: scale(1.1);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
   background: linear-gradient(45deg, #f0c808, #f05d5e);

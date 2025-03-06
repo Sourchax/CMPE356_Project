@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { motion } from 'framer-motion';
 import commerImage from '../assets/images/commer.png';
+import Button from "../components/Button";
+import "../assets/styles/aboutus.css"; // Make sure CSS is imported
 
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -312,9 +314,16 @@ const AboutUs = () => {
             <p className="text-xl text-[#0D3A73] mb-8">
               Join thousands of travelers who have discovered a better way to sail.
             </p>
-            <button className="bg-[#0D3A73] text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg hover:bg-opacity-90 transition-all transform hover:scale-105"  onClick={handleClick}>
-              Get Started Today
-            </button>
+            <div className="aboutus-button-container">
+              <Button 
+                variant="primary"
+                size="lg"
+                className="cta-button"
+                onClick={handleClick}
+              >
+                Get Started Today
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Ticket, Mail } from 'lucide-react';
+import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
 
 const TicketCheck = () => {
@@ -102,19 +103,17 @@ const TicketCheck = () => {
               </div>
             </div>
             
-            <button 
+            <Button 
               type="submit" 
-              className={`w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-sans ${loading ? 'relative' : ''}`}
+              variant="primary"
+              fullWidth
+              size="lg"
+              loading={loading}
               disabled={loading}
+              className="submit-button ticketcheck-button"
             >
-              {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-                </div>
-              ) : (
-                'Check Ticket Status'
-              )}
-            </button>
+              Check Ticket Status
+            </Button>
           </form>
           
           <div className="mt-6 text-center">
@@ -122,7 +121,7 @@ const TicketCheck = () => {
               Need help?{" "}
               <span 
                 onClick={navigateToContact} 
-                className="text-[#0D3A73] font-medium hover:text-[#06AED5] underline cursor-pointer transition-colors duration-300"
+                className="text-[#0D3A73] font-medium hover:brightness-90 underline cursor-pointer transition-all duration-300 ease-in-out font-sans"
               >
                 Contact our support team
               </span>

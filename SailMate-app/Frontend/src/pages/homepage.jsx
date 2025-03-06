@@ -484,7 +484,7 @@ const Homepage = () => {
               <div className="flex-1">
                 <button 
                   type="submit"
-                  className="w-full bg-[#0D3A73] hover:bg-[#06AED5] text-white py-2 sm:py-3.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm md:text-base font-semibold transition-all duration-300 ease-in-out h-auto min-h-[40px] sm:min-h-[50px] mt-4 sm:mt-8 relative overflow-hidden shadow-md hover:shadow-lg transform hover:translate-y-[-2px]"
+                  className="w-full bg-[#0D3A73] text-white py-2 sm:py-3.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm md:text-base font-semibold transition-all duration-300 ease-in-out h-auto min-h-[40px] sm:min-h-[50px] mt-4 sm:mt-8 relative overflow-hidden homepage-button"
                 >
                   <span className="block truncate">Search Tickets</span>
                 </button>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useClerk, useSession } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import "../assets/styles/voyageTimes.css";
 
 const VoyageTimes = () => {
   const allVoyages = [
@@ -177,7 +178,7 @@ const VoyageTimes = () => {
                 }}
                 variant="primary"
                 size="md"
-                className="mt-4"
+                className="mt-4 voyage-button"
               >
                 Reset Filters
               </Button>
@@ -211,6 +212,7 @@ const VoyageTimes = () => {
                           onClick={() => handleBuyTicket(voyage)}
                           variant="primary"
                           size="sm"
+                          className="voyage-button"
                         >
                           Buy Ticket
                         </Button>
@@ -283,6 +285,7 @@ const VoyageTimes = () => {
                             onClick={() => handleBuyTicket(voyage)}
                             variant="primary"
                             size="sm"
+                            className="voyage-button"
                           >
                             Buy Ticket
                           </Button>

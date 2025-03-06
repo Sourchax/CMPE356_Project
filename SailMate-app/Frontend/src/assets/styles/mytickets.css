@@ -157,13 +157,13 @@
   margin-top: 1.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .cta-button:hover {
-  background-color: #06AED5;
+  filter: brightness(90%);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(6, 174, 213, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Tickets list */
@@ -272,13 +272,23 @@
   color: white;
 }
 
-.download-button {
+/* Keep original colors for download button */
+.download-button.mytickets-button {
   background-color: #06AED5;
   color: white;
 }
 
-.download-button:hover {
-  background-color: #058ba9;
+.download-button.mytickets-button:hover {
+  background-color: #06AED5;
+  filter: brightness(90%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.download-button.mytickets-button:active {
+  background-color: #06AED5;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Footer */
@@ -353,4 +363,34 @@
     margin-top: 15vh;
     padding: 1.5rem;
   }
+}
+
+/* Applying Contact page button styles to MyTickets buttons */
+.mytickets-button {
+  background-color: #0D3A73;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mytickets-button:hover {
+  filter: brightness(90%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.mytickets-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mytickets-button.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
 } 

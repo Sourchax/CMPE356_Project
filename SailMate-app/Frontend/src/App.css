@@ -16,3 +16,11 @@ body {
     max-width: 80rem;
     margin: 0 auto;
   }
+
+/* Remove all underlines from sign-in elements */
+a[href="/sign-in"],
+a[href="/sign-in"] *,
+.flex-shrink-0 span,
+.no-underline {
+  text-decoration: none !important;
+}
