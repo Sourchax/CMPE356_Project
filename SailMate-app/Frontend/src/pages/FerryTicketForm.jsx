@@ -7,7 +7,7 @@ import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
 import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
 import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { useAuth } from "@clerk/clerk-react";
 const steps = [
   { label: "Select Voyage", icon: "📅" },
   { label: "Passenger Details", icon: "🧑" },
@@ -52,6 +52,14 @@ const FerryTicketForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
+  const { userId, isLoaded } = useAuth();
+  
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    if (isLoaded && !userId) {
+      navigate('/sign-in', { replace: true });
+    }
+  }, [isLoaded, userId, navigate]);
   
   useEffect(() => {
     // Extra protection: verify valid navigation on component mount

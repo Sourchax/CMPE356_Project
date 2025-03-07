@@ -66,8 +66,6 @@ const Homepage = () => {
     student: 0,
     senior: 0
   });
-
-  const [withVehicle, setWithVehicle] = useState(false);
   
   // Calculate total passengers
   const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior;

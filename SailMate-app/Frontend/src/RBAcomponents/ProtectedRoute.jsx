@@ -12,13 +12,23 @@ const ProtectedRoute = ({ element, requiredSource }) => {
     
 
     if (isDirectAccess) {
-      navigate('/', { replace: true });
+      navigate('/', { 
+        state: { 
+          from: 'protected',
+          timestamp: Date.now()
+        } 
+      }, { replace: true });
     }
     
 
     const handlePopState = () => {
 
-      navigate('/', { replace: true });
+      navigate('/', { 
+        state: { 
+          from: 'protected',
+          timestamp: Date.now()
+        } 
+      }, { replace: true });
     };
     
 
