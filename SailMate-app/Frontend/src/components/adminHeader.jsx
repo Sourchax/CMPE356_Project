@@ -16,6 +16,24 @@ const AdminHeader = () => {
     return location.pathname === path;
   };
 
+  // Update document title based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    let title = "Admin | SailMate";
+    
+    if (path === "/adminDashboard") {
+      title = "Admin Dashboard | SailMate";
+    } else if (path === "/adminStations") {
+      title = "Stations | SailMate";
+    } else if (path === "/adminVoyage") {
+      title = "Voyage Times | SailMate";
+    } else if (path === "/adminAnnounce") {
+      title = "Announcements | SailMate";
+    }
+    
+    document.title = title;
+  }, [location.pathname]);
+
   // Close mobile menu when screen size changes to desktop view
   useEffect(() => {
     const handleResize = () => {

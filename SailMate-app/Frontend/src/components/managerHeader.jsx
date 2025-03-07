@@ -11,6 +11,26 @@ const ManagerHeader = () => {
     const { user } = useUser();
     const location = useLocation();
 
+    // Update document title based on current route
+    useEffect(() => {
+        const path = location.pathname;
+        let title = "Manager | SailMate";
+        
+        if (path === "/managerDashboard") {
+            title = "Manager Dashboard | SailMate";
+        } else if (path === "/managerLogs") {
+            title = "Activity Logs | SailMate";
+        } else if (path === "/managerUsers") {
+            title = "User Management | SailMate";
+        } else if (path === "/managerComplaints") {
+            title = "Complaints | SailMate";
+        } else if (path === "/managerFinance") {
+            title = "Finance | SailMate";
+        }
+        
+        document.title = title;
+    }, [location.pathname]);
+
     // Close mobile menu when screen size changes to desktop view
     useEffect(() => {
         const handleResize = () => {

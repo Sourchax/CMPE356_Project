@@ -18,6 +18,17 @@ const AdminLayout = () => {
       behavior: "smooth",
     });
   }, [location]);
+  
+  // Fallback title update if component doesn't handle it
+  useEffect(() => {
+    const path = location.pathname;
+    
+    // Set default title if not set by the specific page component
+    // This will be overridden by the more specific titles in AdminHeader
+    if (!document.title.includes('SailMate')) {
+      document.title = "Admin | SailMate";
+    }
+  }, [location.pathname]);
 
   return (
     <>

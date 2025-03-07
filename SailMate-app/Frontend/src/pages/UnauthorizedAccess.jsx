@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../assets/styles/UnauthorizedAccess.css";
 
 const UnauthorizedAccess = () => {
+  // Set document title
+  useEffect(() => {
+    document.title = "Unauthorized Access | SailMate";
+  }, []);
+
   return (
     <div className="unauthorized-container">
       <div className="unauthorized-content">

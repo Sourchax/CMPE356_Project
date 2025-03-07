@@ -16,6 +16,9 @@ const NotFoundPage = () => {
       setRadarAngle(prev => (prev + 3) % 360);
     }, 50);
     
+    // Set page title
+    document.title = "Page Not Found | SailMate";
+    
     return () => clearInterval(radarInterval);
   }, []);
 
