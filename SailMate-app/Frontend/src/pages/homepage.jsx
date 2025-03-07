@@ -628,7 +628,7 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">A</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Ahmet K.</h4>
+                  <h4 className="font-semibold text-lg">Emir Ö.</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
@@ -644,7 +644,7 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">M</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Mehmet Y.</h4>
+                  <h4 className="font-semibold text-lg">Ozan K.</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
@@ -660,7 +660,7 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">Z</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Zeynep A.</h4>
+                  <h4 className="font-semibold text-lg">Ekin A.</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
                   </div>

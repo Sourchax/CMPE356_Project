@@ -11,9 +11,9 @@ const ManagerFinance = () => {
 
 
   const [ticketClasses, setTicketClasses] = useState([
-    { id: 1, name: "Promo", basePrice: 200, color: "#8B5CF6" },
-    { id: 2, name: "Economy", basePrice: 250, color: "#3B82F6" },
-    { id: 3, name: "Business", basePrice: 350, color: "#10B981" }
+    { id: 1, name: "Promo", basePrice: 200, color: "#F0C909" },
+    { id: 2, name: "Economy", basePrice: 250, color: "#34A792" },
+    { id: 3, name: "Business", basePrice: 350, color: "#C74646" }
   ]);
 
   // Ensure discounts have default values and cannot be empty

@@ -57,10 +57,10 @@ const ThankYouPage = () => {
               <CheckCircle size={36} className="text-blue-600" />
             </div>
             
-            <h1 className="text-2xl font-bold text-gray-800">Thank You for Your Purchase!</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Success! Your Voyage is Booked!</h1>
             
             <p className="text-gray-600">
-              Your SailMate application has been successfully delivered. We appreciate your business!
+              Your SailMate ticket has been successfully issued. Smooth sailing ahead and thank you for choosing our fleet!
             </p>
             
             <div className="w-full mt-4 mb-2">
@@ -71,13 +71,13 @@ const ThankYouPage = () => {
                 />
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                Redirecting to homepage in {Math.ceil(progress/33)} seconds...
+                Navigating to homepage in {Math.ceil(progress/33)} seconds...
               </p>
             </div>
             
             <div className="pt-4 border-t border-gray-100 w-full">
               <p className="text-sm text-gray-500">
-                Have questions? Contact our support at sailmatesup@gmail.com
+                Need assistance? Our crew is standing by at sailmatesup@gmail.com
               </p>
             </div>
           </div>

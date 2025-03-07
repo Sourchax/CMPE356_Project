@@ -180,18 +180,25 @@ const TicketCancel = () => {
                 <p className="text-red-600 text-sm italic font-sans">This action cannot be undone. Refund policies will apply according to your ticket terms.</p>
               </div>
               
-              <div className="flex gap-4 mt-6">
+              <div className="grid grid-cols-2 gap-4 mt-6">
                 <Button 
-                  onClick={() => setShowConfirmation(false)}
+                  onClick={() => {
+                    setShowConfirmation(false);
+                    setTicketId("");
+                    setEmail("");
+                    setReason("");
+                  }}
                   variant="outline"
-                  className="ticketcancel-button"
+                  size="lg"
+                  className="ticketcancel-button px-4 py-3 text-base w-full"
                 >
                   Go Back
                 </Button>
                 <Button 
                   onClick={handleConfirm}
                   variant="primary"
-                  className="ticketcancel-button"
+                  size="lg"
+                  className="ticketcancel-button px-4 py-3 text-base w-full"
                 >
                   Confirm Cancellation
                 </Button>
