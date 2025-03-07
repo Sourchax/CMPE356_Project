@@ -276,11 +276,11 @@ const Homepage = () => {
         {/* Enhanced Hero Content with Improved Typography */}
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto transform -translate-y-6">
           <div className="animate-fade-in-up">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-lg tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-xl tracking-tight leading-tight">
               Sail with Comfort <span className="text-[#F0C808]">&</span> Style
             </h1>
             <div className="w-24 h-1 bg-[#F0C808] mx-auto mb-4"></div>
-            <p className="text-base md:text-xl mb-2 drop-shadow-md font-light max-w-3xl mx-auto leading-relaxed opacity-90">
+            <p className="text-base md:text-xl mb-2 drop-shadow-lg font-light max-w-3xl mx-auto leading-relaxed">
               Fast, reliable ferry service across Turkey's most beautiful waters
             </p>
           </div>
@@ -455,7 +455,7 @@ const Homepage = () => {
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <div className="font-medium text-gray-800">Adults</div>
-                    <div className="text-xs text-gray-500 mt-0.5">18+ years</div>
+                    <div className="text-xs text-gray-500 mt-0.5">20+ years</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -481,7 +481,7 @@ const Homepage = () => {
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <div className="font-medium text-gray-800">Students</div>
-                    <div className="text-xs text-gray-500 mt-0.5">8-25 years</div>
+                    <div className="text-xs text-gray-500 mt-0.5">10-25 years</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -564,34 +564,34 @@ const Homepage = () => {
       </section>
 
       {/* Features Section with Animated Cards */}
-      <section className="py-20 bg-[#D1FFD7]/20">
+      <section className="py-20 bg-[#C5EFC9]/30">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Why Choose SailMate</h2>
-          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
+          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={creditCard} className="w-12 h-12" alt="Secure Payment" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Secure Payment</h3>
-              <p className="text-gray-600 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">Secure Payment</h3>
+              <p className="text-gray-700 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
             </div>
             
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={ship} className="w-12 h-12" alt="Modern Fleet" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">Modern Fleet</h3>
-              <p className="text-gray-600 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">Modern Fleet</h3>
+              <p className="text-gray-700 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
             </div>
             
-            <div className="text-center p-10 rounded-xl hover:bg-[#D1FFD7]/10 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl border border-gray-100 group">
-              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8 transform transition-transform group-hover:rotate-12 group-hover:bg-[#06AED5]/20">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={passenger} className="w-12 h-12" alt="Customer Service" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73]">24/7 Support</h3>
-              <p className="text-gray-600 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">24/7 Support</h3>
+              <p className="text-gray-700 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
             </div>
           </div>
         </div>
@@ -601,7 +601,7 @@ const Homepage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">Explore Our Ferries</h2>
-          <p className="text-gray-600 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
+          <p className="text-gray-700 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
           
           {/* Ferry Slider Component */}
           <div className="relative z-10 w-full max-w-5xl mx-auto mt-8">
@@ -610,14 +610,14 @@ const Homepage = () => {
         </div>
       </section>
             {/* Testimonials Section - New Addition */}
-      <section className="py-20 bg-[#D1FFD7]/20">
+      <section className="py-20 bg-[#C5EFC9]/30">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">What Our Customers Say</h2>
-          <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Hear from travelers who have experienced our services</p>
+          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Hear from travelers who have experienced our services</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Testimonial 1 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
                   <span className="text-[#06AED5] font-bold text-xl">A</span>
@@ -629,11 +629,11 @@ const Homepage = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic leading-relaxed">"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!"</p>
+              <p className="text-gray-700 italic leading-relaxed">"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!"</p>
             </div>
             
             {/* Testimonial 2 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
                   <span className="text-[#06AED5] font-bold text-xl">M</span>
@@ -645,11 +645,11 @@ const Homepage = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic leading-relaxed">"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful."</p>
+              <p className="text-gray-700 italic leading-relaxed">"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful."</p>
             </div>
             
             {/* Testimonial 3 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
                   <span className="text-[#06AED5] font-bold text-xl">Z</span>
@@ -661,7 +661,7 @@ const Homepage = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 italic leading-relaxed">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
+              <p className="text-gray-700 italic leading-relaxed">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
             </div>
           </div>
         </div>

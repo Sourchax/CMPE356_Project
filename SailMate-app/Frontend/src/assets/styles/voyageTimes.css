@@ -1,31 +1,291 @@
-/* VoyageTimes.css */
+/* VoyageTimes.css - Enhanced with proper scaling */
 
-/* Applying Contact page button styles to VoyageTimes buttons */
+/* CSS Variables for consistent scaling */
+:root {
+  /* Colors */
+  --primary: #0D3A73;
+  --secondary: #06AED5;
+  --accent: #F0C808;
+  --success: #D1FFD7;
+  --danger: #FFD1D1;
+  --light: #F5F7FA;
+  --white: #FFFFFF;
+  --gray: #6B7280;
+  
+  /* Typography */
+  --font-s: clamp(12px, 0.75rem + 0.25vw, 14px);
+  --font-m: clamp(14px, 0.875rem + 0.25vw, 16px);
+  --font-l: clamp(16px, 1rem + 0.5vw, 20px);
+  --font-xl: clamp(20px, 1.25rem + 1vw, 32px);
+  
+  /* Spacing */
+  --space-xs: clamp(4px, 0.25rem + 0.25vw, 8px);
+  --space-s: clamp(8px, 0.5rem + 0.25vw, 12px);
+  --space-m: clamp(12px, 0.75rem + 0.5vw, 20px);
+  --space-l: clamp(20px, 1.25rem + 0.5vw, 32px);
+  --space-xl: clamp(32px, 2rem + 1vw, 48px);
+  
+  /* Dimensions */
+  --border-radius-s: clamp(4px, 0.25rem, 6px);
+  --border-radius-m: clamp(8px, 0.5rem, 12px);
+  --button-height: clamp(32px, 2rem + 0.5vh, 40px);
+  --button-font-size: clamp(13px, 0.8rem + 0.25vw, 15px);
+  
+  /* Effects */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Page layout */
+.voyage-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.voyage-header {
+  padding: clamp(1rem, 3vh, 2rem) clamp(1rem, 5vw, 2rem);
+}
+
+.voyage-header h1 {
+  font-size: var(--font-xl);
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+}
+
+.voyage-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 5vw, 2rem);
+}
+
+.voyage-section {
+  margin-bottom: var(--space-l);
+}
+
+/* Filter cards */
+.filter-card {
+  border-radius: var(--border-radius-m);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  height: 100%;
+  background-color: var(--white);
+  transition: box-shadow 0.3s ease;
+}
+
+.filter-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.filter-header {
+  padding: var(--space-m);
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+}
+
+.filter-body {
+  padding: var(--space-m);
+}
+
+.filter-row {
+  display: grid;
+  gap: var(--space-m);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.filter-group {
+  margin-bottom: var(--space-s);
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-s);
+  font-weight: 500;
+}
+
+.filter-select, 
+.filter-input {
+  width: 100%;
+  height: var(--button-height);
+  padding: 0 var(--space-s);
+  border-radius: var(--border-radius-s);
+  border: 1px solid #D1D5DB;
+  font-size: var(--font-m);
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px rgba(6, 174, 213, 0.2);
+  outline: none;
+}
+
+/* Voyage cards and tables */
+.voyages-card {
+  border-radius: var(--border-radius-m);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background-color: var(--white);
+}
+
+.voyages-header {
+  padding: var(--space-m);
+}
+
+.voyages-empty {
+  padding: var(--space-xl) var(--space-m);
+  text-align: center;
+}
+
+.voyages-empty-icon {
+  width: clamp(40px, 8vw, 64px);
+  height: clamp(40px, 8vw, 64px);
+  margin: 0 auto var(--space-m);
+  color: var(--gray);
+}
+
+.voyage-card {
+  padding: var(--space-m);
+  border-radius: var(--border-radius-m);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.voyage-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.voyage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-s);
+}
+
+.voyage-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.voyage-table th {
+  padding: var(--space-s) var(--space-m);
+  font-size: var(--font-s);
+  font-weight: 500;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.voyage-table td {
+  padding: var(--space-m);
+  vertical-align: middle;
+  font-size: var(--font-m);
+}
+
+.voyage-table tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-s);
+  border-radius: 9999px;
+  font-size: var(--font-s);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.status-badge svg {
+  width: 0.875em;
+  height: 0.875em;
+  margin-right: var(--space-xs);
+}
+
+.fuel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-s);
+  border-radius: 9999px;
+  font-size: var(--font-s);
+  font-weight: 500;
+}
+
+/* Button styles */
 .voyage-button {
-  background-color: #0D3A73;
+  height: var(--button-height);
+  padding: 0 clamp(12px, 0.9rem, 16px);
+  background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-s);
+  font-size: var(--button-font-size);
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  display: flex;
+  transition: all 0.3s ease;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  min-width: clamp(80px, 6rem, 100px);
 }
 
 .voyage-button:hover {
-  filter: brightness(90%);
+  background-color: #0A2E5D;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
 }
 
 .voyage-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .voyage-button.loading {
   opacity: 0.8;
   cursor: not-allowed;
+} 
+
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+  .voyage-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .voyage-card {
+    margin-bottom: var(--space-s);
+    border: 1px solid #E5E7EB;
+  }
+}
+
+@media (max-width: 640px) {
+  .voyage-header {
+    padding: var(--space-m);
+  }
+  
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .voyage-button {
+    height: clamp(30px, 1.8rem + 0.5vh, 36px);
+    padding: 0 clamp(10px, 0.7rem, 14px);
+    font-size: clamp(12px, 0.75rem + 0.2vw, 14px);
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 } 

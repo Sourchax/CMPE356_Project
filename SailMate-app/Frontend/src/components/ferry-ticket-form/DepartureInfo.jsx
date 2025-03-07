@@ -98,6 +98,8 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
               }
             } else if (passengerType === "senior" && adjustedAge < 65) {
               error = "Senior passengers must be 65 years old or older";
+            } else if (passengerType === "adult" && adjustedAge < 20) {
+              error = "Adult passengers must be 20 years old or older";
             }
           }
           break;
