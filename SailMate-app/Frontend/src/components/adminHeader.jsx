@@ -100,7 +100,7 @@ const AdminHeader = () => {
           {/* Mobile Menu Button with improved tap target */}
           <button 
             id="menu-button"
-            className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-white focus:outline-none focus:ring-2 focus:ring-white rounded-md"
+            className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300 rounded-md"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
