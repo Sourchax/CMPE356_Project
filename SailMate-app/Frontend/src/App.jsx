@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Homepage from "./pages/homepage";
 import AboutUs from "./pages/AboutUs";
@@ -33,8 +33,8 @@ import CustomerRBA from "./RBAcomponents/customerRBA";
 import NotFoundPage from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin/adminDashboard";
 import ManagerDashboard from "./pages/Manager/managerDashboard";
+import TravellingRules from "./pages/TravellingRules"; // Yeni eklenen bileşen
 import "./App.css";
-
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -53,6 +53,7 @@ const AnimatedRoutes = () => {
           <Route path="/ticket-check" element={<TicketCheck />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/travelling-rules" element={<TravellingRules />} /> {/* Yeni eklenen rota */}
           <Route 
             path="/ferry-ticket-form" 
             element={<ProtectedRoute element={<FerryTicketForm />} requiredSource="homepage" />} 
@@ -71,23 +72,23 @@ const AnimatedRoutes = () => {
         </Route>
 
         <Route element={<ManagerRBA />}>
-            <Route element={<ManagerLayout />}>
-                <Route path="/managerDashboard" element={<ManagerDashboard />} />
-                <Route path="/managerLogs" element={<ManagerLogs />} />
-                <Route path="/managerUsers" element={<ManagerUsers />} />
-                <Route path="/managerComplaints" element={<ManagerComplaints />} />
-                <Route path="/managerFinance" element={<ManagerFinance />} />
-            </Route>
+          <Route element={<ManagerLayout />}>
+            <Route path="/managerDashboard" element={<ManagerDashboard />} />
+            <Route path="/managerLogs" element={<ManagerLogs />} />
+            <Route path="/managerUsers" element={<ManagerUsers />} />
+            <Route path="/managerComplaints" element={<ManagerComplaints />} />
+            <Route path="/managerFinance" element={<ManagerFinance />} />
+          </Route>
         </Route>
 
-      <Route element={<CustomerRBA/>}>
-        <Route element={<CustomerLayout/>}>
+        <Route element={<CustomerRBA />}>
+          <Route element={<CustomerLayout />}>
             <Route path="/my-tickets" element={<MyTickets />} />
+          </Route>
         </Route>
-      </Route>
 
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-        <Route path="/*" element={<NotFoundPage/>} />
+        <Route path="/*" element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
   );

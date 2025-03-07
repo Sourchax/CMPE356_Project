@@ -43,6 +43,10 @@ const Footer = () => {
               <li>
                 <Link to="/guides" className="text-white opacity-80 hover:opacity-100">Ferry Guides</Link>
               </li>
+              {/* Travelling Rules */}
+              <li>
+                <Link to="/travelling-rules" className="text-white opacity-80 hover:opacity-100">Travelling Rules</Link>
+              </li>
             </ul>
           </div>
 
@@ -79,7 +83,6 @@ const Footer = () => {
           <FaXTwitter />
         </a>
       </div>
-
     </footer>
   );
 };
