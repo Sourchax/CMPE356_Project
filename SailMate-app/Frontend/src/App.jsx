@@ -33,7 +33,9 @@ import CustomerRBA from "./RBAcomponents/customerRBA";
 import NotFoundPage from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin/adminDashboard";
 import ManagerDashboard from "./pages/Manager/managerDashboard";
-import TravellingRules from "./pages/TravellingRules"; // Yeni eklenen bileşen
+import TravellingRules from "./pages/TravellingRules";
+import Accessibility from "./pages/Accessibility";
+import Sustainability from "./pages/Sustainability";
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -53,7 +55,9 @@ const AnimatedRoutes = () => {
           <Route path="/ticket-check" element={<TicketCheck />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/travelling-rules" element={<TravellingRules />} /> {/* Yeni eklenen rota */}
+          <Route path="/travelling-rules" element={<TravellingRules />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/sustainability" element={<Sustainability />} />
           <Route 
             path="/ferry-ticket-form" 
             element={<ProtectedRoute element={<FerryTicketForm />} requiredSource="homepage" />} 

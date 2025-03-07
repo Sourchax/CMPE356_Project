@@ -13,9 +13,6 @@ const CustomSignIn = () => {
     setLoaded(clerk.loaded);
     
     // Add fade-in animation effect
-    if (clerk.loaded) {
-      setTimeout(() => setFadeIn(true), 100);
-    }
   }, [clerk.loaded]);
 
   return (

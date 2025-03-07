@@ -28,7 +28,7 @@ const Footer = () => {
                 <Link to="/about" className="text-white opacity-80 hover:opacity-100">About Us</Link>
               </li>
               <li>
-                <Link to="/partners" className="text-white opacity-80 hover:opacity-100">Partners</Link>
+                <Link to="/sustainability" className="text-white opacity-80 hover:opacity-100">Sustainability</Link>
               </li>
             </ul>
           </div>
@@ -41,11 +41,10 @@ const Footer = () => {
                 <Link to="/faq" className="text-white opacity-80 hover:opacity-100">Frequently Asked Questions</Link>
               </li>
               <li>
-                <Link to="/guides" className="text-white opacity-80 hover:opacity-100">Ferry Guides</Link>
-              </li>
-              {/* Travelling Rules */}
-              <li>
                 <Link to="/travelling-rules" className="text-white opacity-80 hover:opacity-100">Travelling Rules</Link>
+              </li>
+              <li>
+                <Link to="/accessibility" className="text-white opacity-80 hover:opacity-100">Accessibility</Link>
               </li>
             </ul>
           </div>
