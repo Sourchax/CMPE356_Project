@@ -222,7 +222,7 @@ const Contact = () => {
                 <FaXTwitter size={18} />
                 <span className="tooltip">X</span>
               </a>
-              <a href="#" className="social-icon instagram">
+              <a href="https://www.instagram.com/sailmate_/" className="social-icon instagram">
                 <FaInstagram size={18} />
                 <span className="tooltip">Instagram</span>
               </a>
