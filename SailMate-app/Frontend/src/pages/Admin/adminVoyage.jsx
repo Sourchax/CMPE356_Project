@@ -8,39 +8,116 @@ const adminVoyage = () => {
   // Sample initial data - in a real app, this would come from an API
   const initialVoyages = [
     {
-      id: 1,
-      departureCity: 'Istanbul',
-      arrivalCity: 'Bursa',
-      departureTime: '09:00',
-      arrivalTime: '11:30',
-      date: '2025-03-05',
-      status: 'normal',
-      shipType: 'ferry',
-      lpg: true
+      "id": 1,
+      "departureCity": "Mudanya",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "14:00",
+      "arrivalTime": "16:30",
+      "date": "2025-03-22",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": false
     },
     {
-      id: 2,
-      departureCity: 'Izmir',
-      arrivalCity: 'Bodrum',
-      departureTime: '08:00',
-      arrivalTime: '12:00',
-      date: '2025-03-06',
-      status: 'normal',
-      shipType: 'sea bus',
-      lpg: false
+      "id": 2,
+      "departureCity": "İzmir",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "08:00",
+      "arrivalTime": "10:30",
+      "date": "2025-03-28",
+      "status": "cancelled",
+      "shipType": "sea bus",
+      "lpg": true
     },
     {
-      id: 3,
-      departureCity: 'Antalya',
-      arrivalCity: 'Fethiye',
-      departureTime: '10:30',
-      arrivalTime: '14:00',
-      date: '2025-03-07',
-      status: 'cancelled',
-      shipType: 'ferry',
-      lpg: true
+      "id": 3,
+      "departureCity": "Yenikapı",
+      "arrivalCity": "Kadıköy",
+      "departureTime": "19:00",
+      "arrivalTime": "21:30",
+      "date": "2025-03-24",
+      "status": "normal",
+      "shipType": "sea bus",
+      "lpg": true
+    },
+    {
+      "id": 4,
+      "departureCity": "Mudanya",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "14:00",
+      "arrivalTime": "16:30",
+      "date": "2025-03-12",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": true
+    },
+    {
+      "id": 5,
+      "departureCity": "Foça",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "11:00",
+      "arrivalTime": "13:30",
+      "date": "2025-03-17",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": true
+    },
+    {
+      "id": 6,
+      "departureCity": "İzmir",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "08:00",
+      "arrivalTime": "10:30",
+      "date": "2025-03-17",
+      "status": "cancelled",
+      "shipType": "sea bus",
+      "lpg": true
+    },
+    {
+      "id": 7,
+      "departureCity": "Kadıköy",
+      "arrivalCity": "İzmir",
+      "departureTime": "06:00",
+      "arrivalTime": "08:30",
+      "date": "2025-03-29",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": true
+    },
+    {
+      "id": 8,
+      "departureCity": "Foça",
+      "arrivalCity": "Mudanya",
+      "departureTime": "07:30",
+      "arrivalTime": "10:00",
+      "date": "2025-03-18",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": false
+    },
+    {
+      "id": 9,
+      "departureCity": "Foça",
+      "arrivalCity": "Kadıköy",
+      "departureTime": "07:30",
+      "arrivalTime": "10:00",
+      "date": "2025-03-20",
+      "status": "cancelled",
+      "shipType": "sea bus",
+      "lpg": true
+    },
+    {
+      "id": 10,
+      "departureCity": "Kadıköy",
+      "arrivalCity": "Yenikapı",
+      "departureTime": "19:00",
+      "arrivalTime": "21:30",
+      "date": "2025-03-11",
+      "status": "normal",
+      "shipType": "ferry",
+      "lpg": false
     }
-  ];
+  ]
 
   // State management
   const [voyages, setVoyages] = useState(initialVoyages);

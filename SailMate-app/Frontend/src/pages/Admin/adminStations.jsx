@@ -161,46 +161,48 @@ const AdminStations = () => {
   );
 
   return (
-    <div className="p-2 sm:p-4 md:p-6 max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Manage Stations</h1>
+    <div className="p-2 sm:p-4 md:p-6 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 sm:gap-0">
+      <h1 className="text-xl sm:text-3xl font-semibold text-gray-800">Manage Stations</h1>
         <button 
-          onClick={openAddModal} 
-          className="flex items-center gap-2 bg-[#06AED5] text-white px-3 py-2 rounded-md hover:bg-[#058aaa] transition w-full sm:w-auto justify-center sm:justify-start"
-        >
-          <Plus size={18} /> Add Station
-        </button>
+        onClick={openAddModal} 
+        className="flex items-center gap-2 bg-[#06AED5] text-white px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition w-full sm:w-auto justify-center sm:justify-start"
+      >
+        <Plus size={20} /> Add Station
+      </button>
       </div>
 
-      {/* Table view for larger screens */}
-      <div className="hidden md:block bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="hidden md:block bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#06AED5] text-white">
-              <tr>
-                <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left">Contact Person</th>
-                <th className="p-3 text-left">Phone No.</th>
-                <th className="p-3 text-left">City</th>
-                <th className="p-3 text-left">Address</th>
-                <th className="p-3 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stations.map((station) => (
-                <tr key={station.id} className="border-b hover:bg-gray-100 transition">
-                  <td className="p-3">{station.name}</td>
-                  <td className="p-3">{station.person}</td>
-                  <td className="p-3">{station.phone}</td>
-                  <td className="p-3">{station.city}</td>
-                  <td className="p-3">{station.address}</td>
-                  <td className="p-3 flex justify-center gap-4">
-                    <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
-                      <Edit size={18} />
-                    </button>
-                    <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
-                      <Trash2 size={18} />
-                    </button>
+        <table className="w-full border-collapse">
+          <thead className="bg-[#06AED5] text-white">
+            <tr>
+              <th className="p-4 text-left font-semibold text-base">Title</th>
+              <th className="p-4 text-left font-semibold text-base">Contact Person</th>
+              <th className="p-4 text-left font-semibold text-base">Phone No.</th>
+              <th className="p-4 text-left font-semibold text-base">City</th>
+              <th className="p-4 text-left font-semibold text-base">Address</th>
+              <th className="p-4 text-center font-semibold text-base">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stations.map((station) => (
+              <tr key={station.id} className="border-b hover:bg-gray-100 transition">
+                <td className="p-4 text-base">{station.name}</td>
+                <td className="p-4 text-base">{station.person}</td>
+                <td className="p-4 text-base">{station.phone}</td>
+                <td className="p-4 text-base">{station.city}</td>
+                <td className="p-4 text-base">{station.address}</td>
+                <td className="p-4 flex justify-center gap-5">
+                  {/* Increased padding from p-3 to p-4, increased text size with text-base, increased gap from gap-4 to gap-5 */}
+                  <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
+                    <Edit size={20} />
+                    {/* Increased icon size from 18 to 20 */}
+                  </button>
+                  <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
+                    <Trash2 size={20} />
+                    {/* Increased icon size from 18 to 20 */}
+                  </button>
                   </td>
                 </tr>
               ))}

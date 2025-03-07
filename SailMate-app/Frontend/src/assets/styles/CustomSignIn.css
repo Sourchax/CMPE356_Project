@@ -3,70 +3,85 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px;
+    padding: 24px 36px;
 }
 
 .signin-box {
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .signin-content {
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .signin-card {
     background: rgba(255, 255, 255, 0.95);
-    padding: 24px;
-    border-radius: 12px;
-    border: 2px solid #f0c808;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 36px;
+    border-radius: 16px;
+    border: 3px solid #f0c808;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.25);
+    width: 100%;
 }
 
 .signin-title {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: rgba(0, 47, 108, 0.95);
+    margin-bottom: 12px;
+    text-align: center;
 }
 
 .signin-subtitle {
-    margin-top: 8px;
-    font-size: 14px;
+    margin-top: 12px;
+    font-size: 16px;
     color: #002f6c;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .social-buttons {
     width: 100%;
+    margin-bottom: 24px;
 }
 
 .form-input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 14px 16px;
     border: 2px solid rgba(0, 47, 108, 0.95);
-    border-radius: 8px;
-    font-size: 14px;
+    border-radius: 10px;
+    font-size: 16px;
     outline: none;
     background: rgba(255, 255, 255, 0.9);
     transition: border 0.3s ease-in-out;
+    margin-bottom: 16px;
 }
 
 .form-input:focus {
     border-color: #f0c808;
+    box-shadow: 0 0 0 2px rgba(240, 200, 8, 0.3);
 }
 
 .form-button {
     width: 100%;
-    padding: 12px;
+    padding: 16px;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 18px;
     font-weight: 600;
     color: rgba(0, 47, 108, 0.95);
     background-color: #f0c808;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    margin-top: 10px;
 }
 
 .form-button:hover {
@@ -76,5 +91,132 @@
 
 .form-button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(240, 200, 8, 0.5);
+    box-shadow: 0 0 0 4px rgba(240, 200, 8, 0.5);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+    opacity: 0;
+    align-self: center;
+}
+
+.back-link.visible {
+    opacity: 1;
+}
+
+.back-link:hover {
+    transform: translateX(-5px);
+    text-decoration: underline;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid rgba(0, 47, 108, 0.2);
+    border-top: 5px solid #f0c808;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #002f6c;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-label {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+    text-align: left;
+    color: #002f6c;
+}
+
+.signin-footer-action {
+    margin-top: 16px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.signin-alert {
+    background-color: rgba(255, 236, 236, 0.8);
+    border-left: 4px solid #ff3b30;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #d63031;
+    text-align: center;
+}
+
+.signin-identity-preview {
+    padding: 16px;
+    border-radius: 10px;
+    background-color: rgba(240, 200, 8, 0.1);
+    border: 2px solid rgba(240, 200, 8, 0.3);
+    text-align: center;
+}
+
+.signin-logo-box {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    .signin-box,
+    .signin-content {
+        max-width: 100%;
+    }
+    
+    .signin-card {
+        padding: 28px;
+    }
+    
+    .signin-title {
+        font-size: 28px;
+    }
+    
+    .form-input,
+    .form-button {
+        font-size: 16px;
+        padding: 14px;
+    }
 }

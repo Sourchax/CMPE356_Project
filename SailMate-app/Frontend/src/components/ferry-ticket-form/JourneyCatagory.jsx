@@ -8,9 +8,11 @@ import { Ship, Clock, Users } from "lucide-react";
 const fetchFerryData = async (route, date) => {
   console.log(`Fetching data for route: ${route}, date: ${date}`);
   return [
-    { departure: "08:00", arrival: "08:45", promo: 195, economy: 225, business: 250, availableSeats: 42 },
-    { departure: "10:00", arrival: "10:45", promo: 195, economy: 225, business: 250, availableSeats: 28 },
-    { departure: "12:00", arrival: "12:45", promo: 195, economy: 225, business: 250, availableSeats: 56 },
+    { departure: "08:00", arrival: "08:45", promo: 200, economy: 250, business: 350, availableSeats: 42 },
+    { departure: "10:00", arrival: "10:45", promo: 200, economy: 250, business: 350, availableSeats: 28 },
+    { departure: "12:00", arrival: "12:45", promo: 200, economy: 250, business: 350, availableSeats: 56 },
+    { departure: "14:00", arrival: "14:45", promo: 200, economy: 250, business: 350, availableSeats: 28 },
+    { departure: "15:00", arrival: "15:45", promo: 200, economy: 250, business: 350, availableSeats: 56 },
   ];
 };
 

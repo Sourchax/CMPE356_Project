@@ -66,6 +66,8 @@ const Homepage = () => {
     student: 0,
     senior: 0
   });
+
+  const [withVehicle, setWithVehicle] = useState(false);
   
   // Calculate total passengers
   const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior;
@@ -469,8 +471,9 @@ const Homepage = () => {
                     <span className="mx-4 text-gray-800 font-medium">{passengerDetails.adult}</span>
                     <button 
                       type="button"
+                      disabled={totalPassengers === 8}
                       onClick={() => updatePassengerCount('adult', 1)}
-                      className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${totalPassengers === 8 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                     >
                       +
                     </button>
@@ -495,8 +498,9 @@ const Homepage = () => {
                     <span className="mx-4 text-gray-800 font-medium">{passengerDetails.student}</span>
                     <button 
                       type="button"
+                      disabled={totalPassengers === 8}
                       onClick={() => updatePassengerCount('student', 1)}
-                      className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${totalPassengers === 8 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                     >
                       +
                     </button>
@@ -522,7 +526,8 @@ const Homepage = () => {
                     <button 
                       type="button"
                       onClick={() => updatePassengerCount('senior', 1)}
-                      className="w-9 h-9 flex items-center justify-center rounded-full border border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white"
+                      disabled={totalPassengers === 8}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${totalPassengers === 8 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
                     >
                       +
                     </button>

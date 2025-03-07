@@ -11,11 +11,12 @@ const ManagerFinance = () => {
 
 
   const [ticketClasses, setTicketClasses] = useState([
-    { id: 1, name: "Promo", basePrice: 149.99, color: "#8B5CF6" },
-    { id: 2, name: "Economy", basePrice: 199.99, color: "#3B82F6" },
-    { id: 3, name: "Business", basePrice: 449.99, color: "#10B981" }
+    { id: 1, name: "Promo", basePrice: 200, color: "#8B5CF6" },
+    { id: 2, name: "Economy", basePrice: 250, color: "#3B82F6" },
+    { id: 3, name: "Business", basePrice: 350, color: "#10B981" }
   ]);
 
+  // Ensure discounts have default values and cannot be empty
   const [discounts, setDiscounts] = useState([
     { id: 1, name: "Student", percentage: 15, icon: Users },
     { id: 2, name: "Senior (65+)", percentage: 20, icon: User }
@@ -42,6 +43,11 @@ const ManagerFinance = () => {
 
 
   const validateDiscount = (percentage) => {
+    // If empty, return error
+    if (percentage === "" || percentage === null) {
+      return "Discount cannot be empty";
+    }
+    // Check if it's a number between 0-100
     if (isNaN(percentage) || percentage < 0 || percentage > 100) {
       return "Discount must be between 0-100%";
     }
@@ -50,48 +56,48 @@ const ManagerFinance = () => {
 
 
   const handlePriceChange = (id, newPrice) => {
-    const updatedErrors = { ...errors };
-    
-
-    const error = validatePrice(newPrice);
-    if (error) {
-      updatedErrors.ticketClasses[id] = error;
-      setErrors(updatedErrors);
+    // If the input is empty, don't update the value and return - keep previous value
+    if (newPrice === "" || newPrice === null) {
       return;
     }
     
-
-    delete updatedErrors.ticketClasses[id];
-    setErrors(updatedErrors);
+    // Parse the input value as a number
+    let numValue = parseFloat(newPrice);
     
-
+    // Ensure the value is positive
+    if (isNaN(numValue) || numValue <= 0) {
+      numValue = 0.01; // Set to smallest positive value
+    }
+    
+    // Update the ticket class with the validated value
     setTicketClasses(
       ticketClasses.map(ticketClass => 
-        ticketClass.id === id ? { ...ticketClass, basePrice: parseFloat(newPrice) } : ticketClass
+        ticketClass.id === id ? { ...ticketClass, basePrice: numValue } : ticketClass
       )
     );
   };
 
 
   const handleDiscountChange = (id, newPercentage) => {
-    const updatedErrors = { ...errors };
-    
-
-    const error = validateDiscount(newPercentage);
-    if (error) {
-      updatedErrors.discounts[id] = error;
-      setErrors(updatedErrors);
+    // If the input is empty, don't update the value and return - keep previous value
+    if (newPercentage === "" || newPercentage === null) {
       return;
     }
     
-
-    delete updatedErrors.discounts[id];
-    setErrors(updatedErrors);
+    // Parse the input value as a number
+    let numValue = parseFloat(newPercentage);
     
-
+    // Ensure the value is within 0-100 range
+    if (isNaN(numValue) || numValue < 0) {
+      numValue = 0;
+    } else if (numValue > 100) {
+      numValue = 100;
+    }
+    
+    // Update the discount with the validated value
     setDiscounts(
       discounts.map(discount => 
-        discount.id === id ? { ...discount, percentage: parseFloat(newPercentage) } : discount
+        discount.id === id ? { ...discount, percentage: numValue } : discount
       )
     );
   };
@@ -106,28 +112,47 @@ const ManagerFinance = () => {
   };
 
   const handleServiceFeeChange = (newFee) => {
-    const updatedErrors = { ...errors };
-    
-    if (isNaN(newFee) || newFee < 0) {
-      updatedErrors.serviceFee = "Service fee must be a non-negative number";
-      setErrors(updatedErrors);
+    // If the input is empty, don't update the value and return - keep previous value
+    if (newFee === "" || newFee === null) {
       return;
     }
     
-    updatedErrors.serviceFee = null;
-    setErrors(updatedErrors);
+    // Parse the input value as a number
+    let numValue = parseFloat(newFee);
     
-    setServiceFee(parseFloat(newFee));
+    // Ensure the value is non-negative
+    if (isNaN(numValue) || numValue < 0) {
+      numValue = 0;
+    }
+    
+    // Update the service fee with the validated value
+    setServiceFee(numValue);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Check if any discount is empty
+    const hasEmptyDiscount = discounts.some(discount => 
+      discount.percentage === "" || discount.percentage === null
+    );
+    
     if (
       Object.keys(errors.ticketClasses).length > 0 || 
       Object.keys(errors.discounts).length > 0 || 
-      errors.serviceFee
+      errors.serviceFee || 
+      hasEmptyDiscount
     ) {
+      // If any discount is empty, add error for it
+      if (hasEmptyDiscount) {
+        const updatedErrors = { ...errors };
+        discounts.forEach(discount => {
+          if (discount.percentage === "" || discount.percentage === null) {
+            updatedErrors.discounts[discount.id] = "Discount cannot be empty";
+          }
+        });
+        setErrors(updatedErrors);
+      }
       return;
     }
     
@@ -180,7 +205,7 @@ const ManagerFinance = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price ($)</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price (₺)</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -199,7 +224,7 @@ const ManagerFinance = () => {
                           <div>
                             <div className="relative mt-1 rounded-md shadow-sm">
                               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span className="text-gray-500 sm:text-sm">$</span>
+                                <span className="text-gray-500 sm:text-sm">₺</span>
                               </div>
                               <input
                                 type="number"
@@ -248,7 +273,7 @@ const ManagerFinance = () => {
               <div className="max-w-md">
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="text-gray-500 sm:text-sm">$</span>
+                    <span className="text-gray-500 sm:text-sm">₺</span>
                   </div>
                   <input
                     type="number"
@@ -323,9 +348,13 @@ const ManagerFinance = () => {
                                 max="100"
                                 value={discount.percentage}
                                 onChange={(e) => handleDiscountChange(discount.id, e.target.value)}
-                                className={`block w-full rounded-md border border-gray-300 pr-12 py-2 focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
-                                  errors.discounts[discount.id] ? "border-red-500 ring-red-500" : ""
-                                }`}
+                                onBlur={(e) => {
+                                  // If empty on blur, restore previous value
+                                  if (e.target.value === "") {
+                                    handleDiscountChange(discount.id, discount.percentage);
+                                  }
+                                }}
+                                className="block w-full rounded-md border border-gray-300 pr-12 py-2 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                               />
                               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                 <span className="text-gray-500 sm:text-sm">%</span>
@@ -374,18 +403,18 @@ const ManagerFinance = () => {
                     <div className="p-5">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-gray-900">{ticketClass.name}</h3>
-                        <div className="text-2xl font-bold text-gray-900">${ticketClass.basePrice.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-gray-900">₺{ticketClass.basePrice.toFixed(2)}</div>
                       </div>
                       <p className="text-sm text-gray-500 mb-4">Base price before any discounts or fees</p>
                       <div className="mt-4 pt-4 border-t border-gray-100">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">With discounts:</h4>
-                        <ul className="space-y-3">
+                        <div className="space-y-3">
                           {discounts.map((discount) => {
                             const discountedPrice = calculateDiscountedPrice(ticketClass.basePrice, discount.percentage);
                             const totalPrice = calculateTotalPrice(discountedPrice);
                             const Icon = discount.icon;
                             return (
-                              <li key={discount.id} className="text-sm">
+                              <div key={discount.id} className="text-sm">
                                 <div className="flex items-center mb-1">
                                   <Icon size={14} className="text-gray-500 mr-1.5" />
                                   <span className="text-gray-600">{discount.name}</span>
@@ -393,23 +422,23 @@ const ManagerFinance = () => {
                                 <div className="flex justify-between items-center bg-gray-50 p-2 rounded">
                                   <div>
                                     <div className="text-xs text-gray-500">Discounted:</div>
-                                    <div className="font-medium text-green-600">${discountedPrice}</div>
+                                    <div className="font-medium text-green-600">₺{discountedPrice}</div>
                                   </div>
                                   <ArrowRight size={14} className="text-gray-400 mx-1" />
                                   <div>
                                     <div className="text-xs text-gray-500">With fee:</div>
-                                    <div className="font-medium text-blue-600">${totalPrice}</div>
+                                    <div className="font-medium text-blue-600">₺{totalPrice}</div>
                                   </div>
                                 </div>
-                              </li>
+                              </div>
                             );
                           })}
-                        </ul>
+                        </div>
                         <div className="mt-4 pt-3 border-t border-gray-100">
                           <div className="flex justify-between items-center bg-gray-50 p-2 rounded">
                             <span className="text-sm text-gray-600">Regular price + fee:</span>
                             <span className="font-bold text-gray-900">
-                              ${calculateTotalPrice(ticketClass.basePrice.toFixed(2))}
+                              ₺{calculateTotalPrice(ticketClass.basePrice.toFixed(2))}
                             </span>
                           </div>
                         </div>

@@ -198,7 +198,17 @@ export default function AdminAnnounce() {
   };
 
   const getFieldClassName = (fieldName) => {
-    const baseClass = "w-full p-3 border rounded-lg mb-1 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#06AED5] resize-y ";
+    // Define resize behavior based on field type
+    let resizeClass = "";
+    if (fieldName === "description") {
+      resizeClass = "resize-y min-h-[80px] max-h-[160px] "; // Vertical resize with limits
+    } else if (fieldName === "details") {
+      resizeClass = "resize-y min-h-[120px] max-h-[300px] "; // Vertical resize with limits
+    } else {
+      resizeClass = "resize-none "; // No resize for other inputs
+    }
+    
+    const baseClass = `w-full p-3 border rounded-lg mb-1 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${resizeClass}`;
     return baseClass + (touched[fieldName] && errors[fieldName] ? "border-red-500" : "");
   };
 
@@ -208,32 +218,34 @@ export default function AdminAnnounce() {
   };
 
   return (
-    <div className=" p-8 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage Announcements</h1>
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">Manage Announcements</h1>
       <button
         onClick={() => openEdit({ id: null, title: "", image: "placeholder", description: "", details: "" })}
-        className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-6"
+        className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-8 text-lg"
       >
         Add Announcement
       </button>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {announcements.map((announcement) => (
-          <div key={announcement.id} className="p-4 border rounded-lg flex justify-between items-center shadow transition duration-300">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">{announcement.title}</h2>
-              <p className="text-gray-500">{announcement.description}</p>
+          <div key={announcement.id} className="p-6 border rounded-lg flex justify-between items-center shadow-md hover:shadow-lg transition duration-300">
+            <div className="flex gap-6 items-center flex-1">
               <img
                 src={announcement.image || placeholder}
                 alt="Announcement"
-                className="w-20 h-20 object-cover rounded-lg mt-3"
+                className="w-28 h-28 object-cover rounded-lg"
               />
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">{announcement.title}</h2>
+                <p className="text-gray-500 text-lg max-w-2xl">{announcement.description}</p>
+              </div>
             </div>
-            <div className="space-x-4 flex">
+            <div className="space-x-6 flex ml-4">
               <button onClick={() => openEdit(announcement)} className="text-[#06AED5] transition duration-300">
-                <Edit size={22} />
+                <Edit size={24} />
               </button>
               <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
-                <Trash size={22} />
+                <Trash size={24} />
               </button>
             </div>
           </div>
@@ -242,8 +254,8 @@ export default function AdminAnnounce() {
 
       {/* Edit/Add Modal */}
       {selected && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-8 rounded-lg w-full max-w-lg shadow-xl">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">{form.id ? "Edit Announcement" : "Add Announcement"}</h2>
             
             <div className="mb-4">

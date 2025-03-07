@@ -2,9 +2,35 @@ import React, { useState, useEffect } from "react";
 import { Trash2, User, Edit, Plus, X, AlertTriangle } from "lucide-react";
 
 const ManageUsers = () => {
+    // Filter states
+    const [filters, setFilters] = useState({
+        name: "",
+        email: "",
+        role: ""
+    });
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    
     const [users, setUsers] = useState([
         { id: 1, name: "Alice Brown", email: "alice@example.com", role: "Admin" },
         { id: 2, name: "Bob White", email: "bob@example.com", role: "User" },
+        { id: 3, name: "Carol Davis", email: "carol@example.com", role: "Manager" },
+        { id: 4, name: "David Smith", email: "david@example.com", role: "User" },
+        { id: 5, name: "Eva Johnson", email: "eva@example.com", role: "Manager" },
+        { id: 6, name: "Frank Miller", email: "frank@example.com", role: "User" },
+        { id: 7, name: "Grace Wilson", email: "grace@example.com", role: "Admin" },
+        { id: 8, name: "Henry Clark", email: "henry@example.com", role: "User" },
+        { id: 9, name: "Isabel Martinez", email: "isabel@example.com", role: "Manager" },
+        { id: 10, name: "Jack Thompson", email: "jack@example.com", role: "User" },
+        { id: 11, name: "Katherine Lewis", email: "katherine@example.com", role: "Admin" },
+        { id: 12, name: "Leo Garcia", email: "leo@example.com", role: "User" },
+        { id: 13, name: "Maria Rodriguez", email: "maria@example.com", role: "Manager" },
+        { id: 14, name: "Nathan Parker", email: "nathan@example.com", role: "User" },
+        { id: 15, name: "Olivia Taylor", email: "olivia@example.com", role: "Manager" },
+        { id: 16, name: "Paul Anderson", email: "paul@example.com", role: "User" },
+        { id: 17, name: "Quinn Jackson", email: "quinn@example.com", role: "Admin" },
+        { id: 18, name: "Rachel Moore", email: "rachel@example.com", role: "User" },
+        { id: 19, name: "Samuel Harris", email: "samuel@example.com", role: "Manager" },
+        { id: 20, name: "Tina Robinson", email: "tina@example.com", role: "User" },
     ]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -15,6 +41,37 @@ const ManageUsers = () => {
     
     // Available roles
     const roles = ["Admin", "Manager", "User"];
+    
+    // Filter users based on filter criteria
+    useEffect(() => {
+        const result = users.filter(user => {
+            const nameMatch = user.name.toLowerCase().includes(filters.name.toLowerCase());
+            const emailMatch = user.email.toLowerCase().includes(filters.email.toLowerCase());
+            const roleMatch = filters.role === "" || user.role === filters.role;
+            
+            return nameMatch && emailMatch && roleMatch;
+        });
+        
+        setFilteredUsers(result);
+    }, [filters, users]);
+    
+    // Handle filter change
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+    
+    // Clear all filters
+    const clearFilters = () => {
+        setFilters({
+            name: "",
+            email: "",
+            role: ""
+        });
+    };
 
     // Validate specific field
     const validateField = (name, value) => {
@@ -160,7 +217,7 @@ const ManageUsers = () => {
     // User card component for mobile view
     const UserCard = ({ user }) => (
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-4">
-            <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
                         <User size={16} className="text-green-700" />
@@ -177,14 +234,14 @@ const ManageUsers = () => {
             <div className="flex justify-end gap-2">
                 <button 
                     onClick={() => handleEdit(user)} 
-                    className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full"
+                    className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full shadow-sm"
                     aria-label={`Edit ${user.name}`}
                 >
                     <Edit size={16} />
                 </button>
                 <button 
                     onClick={() => handleDeleteRequest(user.id)} 
-                    className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
+                    className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full shadow-sm"
                     aria-label={`Delete ${user.name}`}
                 >
                     <Trash2 size={16} />
@@ -194,7 +251,7 @@ const ManageUsers = () => {
     );
 
     return (
-        <div className="p-3 sm:p-4 md:p-6 max-w-4xl mx-auto">
+        <div className="p-3 sm:p-4 md:p-6 max-w-6xl mx-auto">
             {/* Delete Confirmation Popup */}
             {deleteConfirm.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -230,20 +287,98 @@ const ManageUsers = () => {
             )}
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">Manage Users</h1>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Manage Users</h1>
                 <button 
                     onClick={handleAddUser}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition shadow-sm"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-md transition shadow-sm"
                 >
-                    <Plus size={18} /> Add User
+                    <Plus size={20} /> Add User
                 </button>
+            </div>
+            
+            <div className="bg-[#F9FFF9] p-4 rounded-lg mb-6 border border-green-200 shadow-sm">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <p className="text-green-800">
+                        <strong>Total Users:</strong> {filteredUsers.length} / {users.length} 
+                        <span className="mx-2">•</span>
+                        <strong>Admins:</strong> {filteredUsers.filter(u => u.role === "Admin").length}
+                        <span className="mx-2">•</span>
+                        <strong>Managers:</strong> {filteredUsers.filter(u => u.role === "Manager").length}
+                        <span className="mx-2">•</span>
+                        <strong>Regular Users:</strong> {filteredUsers.filter(u => u.role === "User").length}
+                    </p>
+                    <button 
+                        onClick={clearFilters}
+                        className={`text-sm px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center gap-1 ${Object.values(filters).every(v => v === "") ? "hidden" : ""}`}
+                    >
+                        <X size={14} /> Clear Filters
+                    </button>
+                </div>
+            </div>
+            
+            {/* Filters section */}
+            <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 mb-6">
+                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                    <h2 className="text-lg font-medium text-gray-700">Filters</h2>
+                </div>
+                <div className="p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label htmlFor="name-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                                Filter by Name
+                            </label>
+                            <input
+                                id="name-filter"
+                                name="name"
+                                type="text"
+                                value={filters.name}
+                                onChange={handleFilterChange}
+                                placeholder="Search by name"
+                                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label htmlFor="email-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                                Filter by Email
+                            </label>
+                            <input
+                                id="email-filter"
+                                name="email"
+                                type="text"
+                                value={filters.email}
+                                onChange={handleFilterChange}
+                                placeholder="Search by email"
+                                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label htmlFor="role-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                                Filter by Role
+                            </label>
+                            <select
+                                id="role-filter"
+                                name="role"
+                                value={filters.role}
+                                onChange={handleFilterChange}
+                                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            >
+                                <option value="">All Roles</option>
+                                {roles.map((role) => (
+                                    <option key={role} value={role}>{role}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Table view (hidden on mobile) */}
-            <div className="hidden sm:block bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+            <div className="hidden sm:block bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 mb-1">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
-                        <thead className="bg-[#D1FFD7] text-green-800 border-b border-green-200">
+                        <thead className="bg-gradient-to-r from-green-50 to-[#D1FFD7] text-green-800 border-b border-green-200">
                             <tr>
                                 <th className="p-3 md:p-4 text-left font-medium">Name</th>
                                 <th className="p-3 md:p-4 text-left font-medium">Email</th>
@@ -252,8 +387,8 @@ const ManageUsers = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.length > 0 ? (
-                                users.map((user) => (
+                            {filteredUsers.length > 0 ? (
+                                filteredUsers.map((user) => (
                                     <tr key={user.id} className="border-b border-gray-100 hover:bg-[#F5FFF6] transition">
                                         <td className="p-3 md:p-4 flex items-center">
                                             <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
@@ -270,14 +405,14 @@ const ManageUsers = () => {
                                         <td className="p-3 md:p-4 text-center flex justify-center gap-3">
                                             <button 
                                                 onClick={() => handleEdit(user)} 
-                                                className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full"
+                                                className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full shadow-sm"
                                                 aria-label={`Edit ${user.name}`}
                                             >
                                                 <Edit size={16} />
                                             </button>
                                             <button 
                                                 onClick={() => handleDeleteRequest(user.id)} 
-                                                className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full"
+                                                className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full shadow-sm"
                                                 aria-label={`Delete ${user.name}`}
                                             >
                                                 <Trash2 size={16} />
@@ -288,24 +423,60 @@ const ManageUsers = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="4" className="p-4 text-center text-gray-500">
-                                        No users found. Click "Add User" to create a new user.
+                                        {users.length > 0 
+                                            ? "No users match your current filters. Try adjusting your search criteria."
+                                            : "No users found. Click \"Add User\" to create a new user."
+                                        }
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
+                <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <div className="text-sm text-gray-600">
+                        Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                            Previous
+                        </button>
+                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
+                            Next
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Card view for mobile */}
             <div className="sm:hidden">
-                {users.length > 0 ? (
-                    users.map(user => <UserCard key={user.id} user={user} />)
+                {filteredUsers.length > 0 ? (
+                    filteredUsers.map(user => <UserCard key={user.id} user={user} />)
                 ) : (
                     <div className="bg-white p-4 rounded-lg shadow border border-gray-200 text-center text-gray-500">
-                        No users found. Click "Add User" to create a new user.
+                        {users.length > 0 
+                            ? "No users match your current filters. Try adjusting your search criteria."
+                            : "No users found. Click \"Add User\" to create a new user."
+                        }
                     </div>
                 )}
+                <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 flex justify-between items-center">
+                    <div className="text-sm text-gray-600">
+                        Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                            Previous
+                        </button>
+                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
+                            Next
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {isModalOpen && (
@@ -404,13 +575,13 @@ const ManageUsers = () => {
                                 <button 
                                     type="button" 
                                     onClick={closeModal} 
-                                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition w-full sm:w-auto"
+                                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition w-full sm:w-auto shadow-sm"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit" 
-                                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition w-full sm:w-auto"
+                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition w-full sm:w-auto shadow-sm"
                                 >
                                     {editingUser ? "Update" : "Add"} User
                                 </button>
