@@ -153,7 +153,7 @@ const AboutUs = () => {
             {
               name: "Ekmel Beyza Akın",
               title: "CTO",
-              image: "/api/placeholder/300/300",
+              image: "https://media.licdn.com/dms/image/v2/D4E03AQHmr1LdBZgADg/profile-displayphoto-shrink_400_400/B4EZVwleEIHgAs-/0/1741350626025?e=1746662400&v=beta&t=4QwnausWSr2XGT1MCBNM0vy3MGkjg6b8gcsq0ov7iAs",
               delay: 0.2
             },
             {
