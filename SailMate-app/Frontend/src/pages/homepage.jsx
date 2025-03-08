@@ -623,7 +623,7 @@ const Homepage = () => {
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-[#06AED5] font-bold text-xl">A</span>
+                  <span className="text-[#06AED5] font-bold text-xl">E</span>
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Emir Ö.</h4>
@@ -639,7 +639,7 @@ const Homepage = () => {
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-[#06AED5] font-bold text-xl">M</span>
+                  <span className="text-[#06AED5] font-bold text-xl">K</span>
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Ozan K.</h4>
@@ -655,7 +655,7 @@ const Homepage = () => {
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center mb-5">
                 <div className="w-14 h-14 bg-[#06AED5]/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-[#06AED5] font-bold text-xl">Z</span>
+                  <span className="text-[#06AED5] font-bold text-xl">E</span>
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Ekin A.</h4>
