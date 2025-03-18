@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import "../assets/styles/homepage.css";
 import Cards from "../components/cards.jsx";
 import creditCard from "../assets/images/secure-payment.png";
@@ -21,6 +22,16 @@ import Button from "../components/Button";
 const Homepage = () => {
   const navigate = useNavigate();
   const {isSignedIn} = useSession();
+  const [data, setData] = useState(null); 
+  useEffect(() => {
+    axios.get("http://localhost:8080")
+      .then(response => {
+        setData(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
   
   const location = useLocation();
   // Get today's date in YYYY-MM-DD format for min date validation
