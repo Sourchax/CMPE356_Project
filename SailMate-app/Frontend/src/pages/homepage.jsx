@@ -65,7 +65,8 @@ const Homepage = () => {
       setPassengerDetails({
         adult: 1,
         student: 0,
-        senior: 0
+        senior: 0,
+        child: 0
       });
       
     }
@@ -75,11 +76,12 @@ const Homepage = () => {
   const [passengerDetails, setPassengerDetails] = useState({
     adult: 0,
     student: 0,
-    senior: 0
+    senior: 0,
+    child: 0
   });
   
   // Calculate total passengers
-  const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior;
+  const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior + passengerDetails.child;
   
   // Update formData when passenger details change
   useEffect(() => {
@@ -159,6 +161,10 @@ const Homepage = () => {
       return;
     }
     
+    if(passengerDetails.child != 0 && (passengerDetails.adult === 0 && passengerDetails.senior === 0)){
+      alert("There should be at least 1 adult passenger for children!");
+      return;
+    }
     // Create trip data to pass via location state
     const tripData = {
       ...formData,
@@ -493,7 +499,7 @@ const Homepage = () => {
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <div className="font-medium text-gray-800">Students</div>
-                    <div className="text-xs text-gray-500 mt-0.5">10-25 years</div>
+                    <div className="text-xs text-gray-500 mt-0.5">8-25 years</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -541,8 +547,32 @@ const Homepage = () => {
                       +
                     </button>
                   </div>
+                </div>          
+                <div className="flex justify-between items-center mb-5">
+                  <div>
+                    <div className="font-medium text-gray-800">Child</div>
+                    <div className="text-xs text-gray-500 mt-0.5">0 - 8 years</div>
+                  </div>
+                  <div className="flex items-center">
+                    <button 
+                      type="button"
+                      onClick={() => updatePassengerCount('child', -1)}
+                      disabled={passengerDetails.child <= 0}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${passengerDetails.child <= 0 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
+                    >
+                      -
+                    </button>
+                    <span className="mx-4 text-gray-800 font-medium">{passengerDetails.child}</span>
+                    <button 
+                      type="button"
+                      onClick={() => updatePassengerCount('child', 1)}
+                      disabled={totalPassengers === 8}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${totalPassengers === 8 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-                
                 {/* Apply Button */}
                 <button 
                   type="button"

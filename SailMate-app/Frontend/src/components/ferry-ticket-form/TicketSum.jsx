@@ -10,7 +10,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
   // Discount rates
   const discountRates = {
     student: 0.10,  // 10% discount for students
-    senior: 0.20    // 20% discount for seniors
+    senior: 0.20,  // 20% discount for seniors
+    child: 1.00     //Free 
   };
 
   // Calculate initial prices (before discounts)
@@ -70,6 +71,18 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
         discount: discountRates.senior * 100,
         discountedPrice: seniorUnitPrice,
         total: seniorPrice
+      };
+    }
+    if (passengerTypes.child) {
+      const childUnitPrice = basePrice * (1 - discountRates.child);
+      const childPrice = childUnitPrice * passengerTypes.child;
+      total += childPrice;
+      breakdown.child = {
+        count: passengerTypes.child,
+        unitPrice: basePrice,
+        discount: discountRates.child * 100,
+        discountedPrice: childUnitPrice,
+        total: childPrice
       };
     }
     
@@ -201,7 +214,20 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
                       )}
                     </div>
                   )}
-                </div>
+                  {passengerTypes.child > 0 && (
+                    <div className="flex justify-between items-center">
+                      <div className="text-gray-700">
+                        Child × {passengerTypes.child}
+                        <span className="text-green-600 ml-1">(100% off)</span>
+                      </div>
+                      {passengerPrices.breakdown.child && (
+                        <div className="font-bold" style={{ color: colorStyle }}>
+                          ₺0.00
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>              
               )}
             </div>
 

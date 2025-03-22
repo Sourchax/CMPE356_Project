@@ -91,7 +91,7 @@ const FerryTicketForm = () => {
   // Calculate total number of passengers based on passenger types
   const calculateTotalPassengers = (passengerTypes) => {
     if (!passengerTypes) return 0;
-    return (passengerTypes.adult || 0) + (passengerTypes.student || 0) + (passengerTypes.senior || 0);
+    return (passengerTypes.adult || 0) + (passengerTypes.student || 0) + (passengerTypes.senior || 0) + (passengerTypes.child || 0);
   };
   
   const [formData, setFormData] = useState({
@@ -145,6 +145,17 @@ const FerryTicketForm = () => {
             Phone: "",
             BirthDate: "",
             Email: "",
+            isValid: false,
+          });
+        }
+
+        // Add child passengers
+        for (let i = 0; i < (passengerTypes.child || 0); i++) {
+          passengerList.push({
+            PassengerType: "Child",
+            Name: "",
+            Surname: "",
+            BirthDate: "",
             isValid: false,
           });
         }
