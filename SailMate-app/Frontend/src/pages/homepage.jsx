@@ -18,19 +18,39 @@ import ferry3 from "../assets/images/ferry3.png";
 import ferry4 from "../assets/images/ferry4.png";
 import Button from "../components/Button";
 
+const API_URL = "http://localhost:8080/api";
 
 const Homepage = () => {
   const navigate = useNavigate();
   const {isSignedIn} = useSession();
-  const [data, setData] = useState(null); 
+
+  const [stations, setStations] = useState([]);
+  const [stationsLoaded, setStationsLoaded] = useState(false);
+  
+  // Fetch stations on component mount
   useEffect(() => {
-    axios.get("http://localhost:8080")
-      .then(response => {
-        setData(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
+    const fetchStations = async () => {
+      try {
+        // First try to get data from the API
+        const response = await axios.get(`${API_URL}/stations/titles`);
+        
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          setStations(response.data);
+        } else {
+          // Fallback to hardcoded values if API returns empty array
+          console.log("API returned empty array, using hardcoded stations");
+          setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+        }
+      } catch (err) {
+        console.error("Error fetching stations:", err);
+        // Fallback to hardcoded stations if API fails
+        setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+      } finally {
+        setStationsLoaded(true);
+      }
+    };
+    
+    fetchStations();
   }, []);
   
   const location = useLocation();
@@ -351,10 +371,15 @@ const Homepage = () => {
                 required
               >
                 <option value="">Select Departure</option>
-                <option value="Yenikapı" disabled={formData.arrival === "Yenikapı"}>Yenikapı</option>
-                <option value="Bursa" disabled={formData.arrival === "Bursa"}>Bursa</option>
-                <option value="Bandırma" disabled={formData.arrival === "Bandırma"}>Bandırma</option>
-                <option value="Yalova" disabled={formData.arrival === "Yalova"}>Yalova</option>
+                {stations.map(station => (
+                  <option 
+                    key={station} 
+                    value={station}
+                    disabled={formData.arrival === station}
+                  >
+                    {station}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -387,10 +412,15 @@ const Homepage = () => {
                 required
               >
                 <option value="">Select Arrival</option>
-                <option value="Yenikapı" disabled={formData.departure === "Yenikapı"}>Yenikapı</option>
-                <option value="Bursa" disabled={formData.departure === "Bursa"}>Bursa</option>
-                <option value="Bandırma" disabled={formData.departure === "Bandırma"}>Bandırma</option>
-                <option value="Yalova" disabled={formData.departure === "Yalova"}>Yalova</option>
+                {stations.map(station => (
+                  <option 
+                    key={station} 
+                    value={station}
+                    disabled={formData.departure === station}
+                  >
+                    {station}
+                  </option>
+                ))}
               </select>
             </div>
 

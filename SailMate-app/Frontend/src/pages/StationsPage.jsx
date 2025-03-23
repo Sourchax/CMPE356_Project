@@ -1,17 +1,28 @@
 import { useState, useEffect } from "react";
 import { MapPin, Phone, User, ExternalLink } from "lucide-react";
-
-const stations = [
-  { name: "İzmir Marina", person: "Ali Kaya", phone: "+90 232 123 4567", address: "Bahçelerarası, 35330 Balçova/İzmir, Turkey", city: "Izmir" },
-  { name: "Yenikapı Terminal", person: "Mehmet Yilmaz", phone: "+90 212 987 6543", address: "Katip Kasım, Kennedy Cad., 34131 Fatih/İstanbul, Turkey", city: "Istanbul" },
-  { name: "Mudanya Hub", person: "Zeynep Demir", phone: "+90 224 321 7654", address: "Güzelyalı Eğitim, 16940 Mudanya/Bursa, Turkey", city: "Bursa" },
-  { name: "Foça Station", person: "Fatma Aydin", phone: "+90 232 555 7890", address: "Aşıklar Cd., 35680 Foça/İzmir, Turkey", city: "Izmir" },
-  { name: "Kadıköy Station", person: "Hasan Koc", phone: "+90 212 888 1122", address: "Caferağa, 34710 Kadıköy/İstanbul, Turkey", city: "Istanbul" },
-];
+import axios from "axios";
 
 export default function StationCard() {
+  const [stations, setStations] = useState([]);
   const [filter, setFilter] = useState("All");
   const [animateCards, setAnimateCards] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
+  // Fetch stations from API
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/stations");
+        setStations(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching stations:", error);
+        setLoading(false);
+      }
+    };
+    
+    fetchStations();
+  }, []);
   
   useEffect(() => {
     // Trigger animation after filter change
@@ -67,7 +78,7 @@ export default function StationCard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
         {filteredStations.map((station, index) => (
           <div
-            key={station.name}
+            key={station.id}
             className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 transform 
               ${animateCards ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
               hover:shadow-2xl`}
@@ -76,7 +87,7 @@ export default function StationCard() {
             {/* Card Header */}
             <div className="bg-[#0D3A73] py-4 px-6 relative">
               <div className="absolute top-0 right-0 w-24 h-24 bg-[#F0C808] rounded-full opacity-20 transform translate-x-8 -translate-y-10"></div>
-              <h2 className="text-xl font-bold text-white relative z-10">{station.name}</h2>
+              <h2 className="text-xl font-bold text-white relative z-10">{station.title}</h2>
               <p className="text-[#D1FFD7] text-sm relative z-10">{station.city}, Turkey</p>
             </div>
             
@@ -84,11 +95,11 @@ export default function StationCard() {
             <div className="p-6">
               <div className="flex items-center mb-3">
                 <User size={18} className="text-[#06AED5] mr-3" />
-                <p className="text-gray-700">{station.person}</p>
+                <p className="text-gray-700">{station.personnel}</p>
               </div>
               <div className="flex items-center mb-3">
                 <Phone size={18} className="text-[#06AED5] mr-3" />
-                <p className="text-gray-700">{station.phone}</p>
+                <p className="text-gray-700">{station.phoneno}</p>
               </div>
               <div className="flex items-start mb-6">
                 <MapPin size={18} className="text-[#06AED5] mr-3 mt-1" />
@@ -109,7 +120,7 @@ export default function StationCard() {
       </div>
       
       {/* Empty State */}
-      {filteredStations.length === 0 && (
+      {filteredStations.length === 0 && !loading && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="w-24 h-24 bg-[#D1FFD7] rounded-full flex items-center justify-center mb-6">
             <MapPin size={36} className="text-[#0D3A73]" />
