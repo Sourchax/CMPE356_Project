@@ -206,12 +206,10 @@ const AdminStations = () => {
 
   if (loading) {
     return (
-      <div className="p-6 max-w-6xl mx-auto flex justify-center items-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#06AED5] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading stations...</p>
+        <div className="text-center py-8">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
+          <p className="mt-2 text-gray-600">Loading Stations...</p>
         </div>
-      </div>
     );
   }
 

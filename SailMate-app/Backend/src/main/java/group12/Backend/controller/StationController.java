@@ -129,4 +129,9 @@ public class StationController {
         station.setStatus(stationDTO.getStatus());
         return station;
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getStationCount() {
+        return ResponseEntity.ok(stationService.getStationCount());
+    }
 }

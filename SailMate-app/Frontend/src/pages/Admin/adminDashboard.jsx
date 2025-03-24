@@ -4,14 +4,51 @@ import { MapPin, Clock, Bell, ArrowRight, Plus, Calendar, Compass } from 'lucide
 import { useUser } from "@clerk/clerk-react";
 
 const AdminDashboard = () => {
-
   const [loaded, setLoaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const { user } = useUser();
   
+  // States for API data
+  const [stationCount, setStationCount] = useState(0);
+  const [voyageCount, setVoyageCount] = useState(0);
+  const [announcementCount, setAnnouncementCount] = useState(0);
 
+  // Fetch announcement count from API
+  useEffect(() => {
+    const fetchAnnouncementCount = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/announcements/count');
+        if (response.ok) {
+          const count = await response.json();
+          setAnnouncementCount(count);
+        } else {
+          console.error('Failed to fetch announcement count');
+        }
+      } catch (error) {
+        console.error('Error fetching announcement count:', error);
+      }
+    };
+  
+    fetchAnnouncementCount();
+  }, []);
 
-
+  useEffect(() => {
+    const fetchStationCount = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/stations/count');
+        if (response.ok) {
+          const count = await response.json();
+          setStationCount(count);
+        } else {
+          console.error('Failed to fetch announcement count');
+        }
+      } catch (error) {
+        console.error('Error fetching announcement count:', error);
+      }
+    };
+  
+    fetchStationCount();
+  }, []);
 
   useEffect(() => {
     setLoaded(true);
@@ -37,33 +74,33 @@ const AdminDashboard = () => {
       title: "Manage Stations",
       description: "Add, edit or remove stations and their contact information",
       icon: MapPin,
-      path: "/adminStations",
-      count: 5, // Example count of items
+      path: "/admin/Stations",
+      count: stationCount || 5, // Use API count when available, fallback to example count
       color: "#06AED5"
     },
     {
       title: "Voyage Times",
       description: "Schedule and manage voyage routes, times and status",
       icon: Clock,
-      path: "/adminVoyage",
-      count: 3, // Example count of items
+      path: "/admin/Voyage",
+      count: voyageCount || 3, // Use API count when available, fallback to example count
       color: "#06AED5"
     },
     {
       title: "Announcements",
       description: "Create and publish important announcements for users",
       icon: Bell,
-      path: "/adminAnnounce",
-      count: 2, // Example count of items
+      path: "/admin/Announce",
+      count: announcementCount || 2, // Use API count when available, fallback to example count
       color: "#06AED5"
     }
   ];
 
-  // Summary statistics - would typically come from an API
+  // Summary statistics - using API data with fallbacks
   const stats = [
-    { label: "Total Stations", value: 5 },
-    { label: "Active Voyages", value: 12 },
-    { label: "Current Announcements", value: 2 }
+    { label: "Total Stations", value: stationCount || 5 },
+    { label: "Active Voyages", value: voyageCount || 12 },
+    { label: "Current Announcements", value: announcementCount || 2 }
   ];
 
   return (
@@ -198,17 +235,17 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { 
-                to: "/adminStations", 
+                to: "/admin/Stations", 
                 title: "Add New Station", 
                 description: "Create a new station for voyages" 
               },
               { 
-                to: "/adminVoyage", 
+                to: "/admin/Voyage", 
                 title: "Schedule Voyage", 
                 description: "Create a new voyage schedule" 
               },
               { 
-                to: "/adminAnnounce", 
+                to: "/admin/Announce", 
                 title: "Create Announcement", 
                 description: "Publish a new announcement" 
               }

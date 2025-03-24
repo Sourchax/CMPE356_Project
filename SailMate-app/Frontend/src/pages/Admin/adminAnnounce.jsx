@@ -2,29 +2,25 @@ import { useState, useEffect } from "react";
 import { Edit, Trash, AlertCircle } from "lucide-react";
 import placeholder from "../../assets/images/placeholder.jpg";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 
-const initialAnnouncements = [
-  {
-    id: 1,
-    title: "Schedule Update",
-    image: placeholder,
-    description: "We have updated our ferry schedules for the upcoming season.",
-    details: "Our new schedule includes additional trips on weekends...",
-  },
-  {
-    id: 2,
-    title: "New Route Added",
-    image: placeholder,
-    description: "Introducing a new route connecting more destinations.",
-    details: "Starting next month, we will operate a new route...",
-  },
-];
+// API base URL
+const API_BASE_URL = "http://localhost:8080/api/announcements";
 
 export default function AdminAnnounce() {
   const location = useLocation();
-  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
-  const [form, setForm] = useState({ id: null, title: "", image: "placeholder", description: "", details: "" });
+  const [form, setForm] = useState({ 
+    id: null, 
+    title: "", 
+    imageBase64: "", 
+    image: null, // For file object
+    description: "", 
+    details: "" 
+  });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   
@@ -32,10 +28,34 @@ export default function AdminAnnounce() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [announcementToDelete, setAnnouncementToDelete] = useState(null);
   
+  // Fetch announcements from API
+  const fetchAnnouncements = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(API_BASE_URL);
+      // Make sure we're setting an array, even if the API returns something else
+      const data = response.data || [];
+      setAnnouncements(Array.isArray(data) ? data : []);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching announcements:", err);
+      setError("Failed to load announcements. Please try again later.");
+      // Initialize with empty array on error
+      setAnnouncements([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load announcements on component mount
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+  
   // Check for openAddModal in location state (from quick action)
   useEffect(() => {
     if (location.state?.openAddModal) {
-      openEdit({ id: null, title: "", image: "placeholder", description: "", details: "" });
+      openEdit({ id: null, title: "", imageBase64: "", description: "", details: "" });
       // Clean up the state to prevent reopening on refresh
       window.history.replaceState({}, document.title);
       location.state.openAddModal = false;
@@ -45,7 +65,16 @@ export default function AdminAnnounce() {
   const openEdit = (announcement) => {
     setErrors({});
     setTouched({});
-    setForm(announcement);
+    
+    // Create a copy of the announcement to edit
+    const formData = { ...announcement };
+    
+    // Initialize preview URL if there's an image
+    if (announcement.imageBase64) {
+      formData.imagePreview = `data:image/jpeg;base64,${announcement.imageBase64}`;
+    }
+    
+    setForm(formData);
     setSelected(true);
   };
 
@@ -83,7 +112,20 @@ export default function AdminAnnounce() {
         return;
       }
       
-      setForm({ ...form, image: URL.createObjectURL(file) });
+      // Read the file as base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Extract the base64 data part (remove data:image/jpeg;base64, prefix)
+        const base64String = reader.result.split(',')[1];
+        
+        setForm({
+          ...form, 
+          image: file,
+          imageBase64: base64String,
+          imagePreview: reader.result
+        });
+      };
+      reader.readAsDataURL(file);
       setTouched({ ...touched, image: true });
     }
   };
@@ -113,7 +155,7 @@ export default function AdminAnnounce() {
         break;
         
       case "details":
-        if (value.trim().length > 1000) {
+        if (value && value.trim().length > 1000) {
           error = "Details must be less than 1000 characters";
         }
         break;
@@ -133,8 +175,8 @@ export default function AdminAnnounce() {
     formErrors.title = validateField("title", form.title);
     formErrors.description = validateField("description", form.description);
     
-    // Special validation for image
-    if (form.image === "placeholder") {
+    // Image validation - only require for new announcements
+    if (!form.id && !form.imageBase64) {
       formErrors.image = "Image is required";
     }
     
@@ -158,16 +200,35 @@ export default function AdminAnnounce() {
     return formErrors;
   };
 
-  const saveAnnouncement = () => {
+  const saveAnnouncement = async () => {
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       return;
     }
     
-    setAnnouncements(announcements.map(a => a.id === form.id ? form : a));
-    setSelected(null);
-    setErrors({});
-    setTouched({});
+    try {
+      const announcementData = {
+        id: form.id,
+        title: form.title,
+        description: form.description,
+        details: form.details || "",
+        imageBase64: form.imageBase64
+      };
+      
+      const response = await axios.put(`${API_BASE_URL}/${form.id}`, announcementData);
+      
+      // Update the announcements list with the updated item
+      setAnnouncements(prevAnnouncements => 
+        prevAnnouncements.map(a => a.id === form.id ? response.data : a)
+      );
+      
+      setSelected(null);
+      setErrors({});
+      setTouched({});
+    } catch (err) {
+      console.error("Error updating announcement:", err);
+      setErrors({ submit: "Failed to update announcement. Please try again." });
+    }
   };
 
   const openDeleteConfirmation = (announcement) => {
@@ -175,26 +236,52 @@ export default function AdminAnnounce() {
     setDeleteModalOpen(true);
   };
 
-  const deleteAnnouncement = () => {
+  const deleteAnnouncement = async () => {
     if (announcementToDelete) {
-      setAnnouncements(announcements.filter(a => a.id !== announcementToDelete.id));
-      setDeleteModalOpen(false);
-      setAnnouncementToDelete(null);
+      try {
+        await axios.delete(`${API_BASE_URL}/${announcementToDelete.id}`);
+        
+        // Update the UI after successful deletion
+        setAnnouncements(prevAnnouncements => 
+          prevAnnouncements.filter(a => a.id !== announcementToDelete.id)
+        );
+        setDeleteModalOpen(false);
+        setAnnouncementToDelete(null);
+      } catch (err) {
+        console.error("Error deleting announcement:", err);
+        setErrors({ submit: "Failed to delete announcement. Please try again." });
+      }
     }
   };
 
-  const addAnnouncement = () => {
+  const addAnnouncement = async () => {
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       return;
     }
     
-    const newAnnouncement = { ...form, id: Date.now() };
-    setAnnouncements([...announcements, newAnnouncement]);
-    setForm({ id: null, title: "", image: "placeholder", description: "", details: "" });
-    setSelected(null);
-    setErrors({});
-    setTouched({});
+    try {
+      const announcementData = {
+        title: form.title,
+        description: form.description,
+        details: form.details || "",
+        imageBase64: form.imageBase64
+      };
+      
+      const response = await axios.post(API_BASE_URL, announcementData);
+      
+      // Add the new announcement to the list
+      setAnnouncements(prevAnnouncements => [...prevAnnouncements, response.data]);
+      
+      // Reset form and close modal
+      setForm({ id: null, title: "", imageBase64: "", description: "", details: "" });
+      setSelected(null);
+      setErrors({});
+      setTouched({});
+    } catch (err) {
+      console.error("Error adding announcement:", err);
+      setErrors({ submit: "Failed to add announcement. Please try again." });
+    }
   };
 
   const getFieldClassName = (fieldName) => {
@@ -221,42 +308,82 @@ export default function AdminAnnounce() {
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Manage Announcements</h1>
       <button
-        onClick={() => openEdit({ id: null, title: "", image: "placeholder", description: "", details: "" })}
+        onClick={() => openEdit({ id: null, title: "", imageBase64: "", description: "", details: "" })}
         className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-8 text-lg"
       >
         Add Announcement
       </button>
-      <div className="space-y-8">
-        {announcements.map((announcement) => (
-          <div key={announcement.id} className="p-6 border rounded-lg flex justify-between items-center shadow-md hover:shadow-lg transition duration-300">
-            <div className="flex gap-6 items-center flex-1">
-              <img
-                src={announcement.image || placeholder}
-                alt="Announcement"
-                className="w-28 h-28 object-cover rounded-lg"
-              />
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">{announcement.title}</h2>
-                <p className="text-gray-500 text-lg max-w-2xl">{announcement.description}</p>
+      
+      {/* Error message */}
+      {error && (
+        <div className="p-4 mb-6 bg-red-100 border border-red-400 text-red-800 rounded-lg flex items-center">
+          <AlertCircle size={20} className="mr-2" />
+          <span>{error}</span>
+        </div>
+      )}
+      
+      {/* Loading indicator */}
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
+          <p className="mt-2 text-gray-600">Loading announcements...</p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {!Array.isArray(announcements) ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-500 text-lg">Error: Invalid response format</p>
+              <p className="text-gray-400">Please contact the administrator</p>
+            </div>
+          ) : announcements.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-500 text-lg">No announcements found</p>
+              <p className="text-gray-400">Create a new announcement to get started</p>
+            </div>
+          ) : (
+            announcements.map((announcement) => (
+              <div key={announcement.id} className="p-6 border rounded-lg flex justify-between items-center shadow-md hover:shadow-lg transition duration-300">
+                <div className="flex gap-6 items-center flex-1">
+                  <img
+                    src={announcement.imageBase64 ? `data:image/jpeg;base64,${announcement.imageBase64}` : placeholder}
+                    alt="Announcement"
+                    className="w-28 h-28 object-cover rounded-lg"
+                    onError={(e) => {
+                      console.log("Image failed to load, using placeholder");
+                      e.target.src = placeholder;
+                    }}
+                  />
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">{announcement.title}</h2>
+                    <p className="text-gray-500 text-lg max-w-2xl">{announcement.description}</p>
+                  </div>
+                </div>
+                <div className="space-x-6 flex ml-4">
+                  <button onClick={() => openEdit(announcement)} className="text-[#06AED5] transition duration-300">
+                    <Edit size={24} />
+                  </button>
+                  <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
+                    <Trash size={24} />
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="space-x-6 flex ml-4">
-              <button onClick={() => openEdit(announcement)} className="text-[#06AED5] transition duration-300">
-                <Edit size={24} />
-              </button>
-              <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
-                <Trash size={24} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Edit/Add Modal */}
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
           <div className="bg-white p-8 rounded-lg w-full max-w-lg shadow-xl">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">{form.id ? "Edit Announcement" : "Add Announcement"}</h2>
+            
+            {/* General error message */}
+            {errors.submit && (
+              <div className="p-3 mb-4 bg-red-100 border border-red-400 text-red-800 rounded-lg">
+                {errors.submit}
+              </div>
+            )}
             
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -283,7 +410,7 @@ export default function AdminAnnounce() {
 
             <div className="mb-4">
               <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                Image <span className="text-red-500">*</span>
+                Image {!form.id && <span className="text-red-500">*</span>}
               </label>
               <input
                 id="image"
@@ -293,9 +420,17 @@ export default function AdminAnnounce() {
                 accept="image/jpeg, image/png, image/gif, image/webp"
                 className="w-full p-3 border rounded-lg mb-2 text-gray-800 file:border-0 file:bg-[#06AED5] file:text-white focus:outline-none"
               />
-              {form.image && form.image !== "placeholder" ? (
+              {(form.imagePreview || (form.imageBase64 && !form.imagePreview)) ? (
                 <div className="mb-2">
-                  <img src={form.image} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
+                  <img 
+                    src={form.imagePreview || `data:image/jpeg;base64,${form.imageBase64}`} 
+                    alt="Preview" 
+                    className="w-24 h-24 object-cover rounded-lg" 
+                    onError={(e) => {
+                      console.log("Preview image failed to load");
+                      e.target.src = placeholder;
+                    }}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-gray-500 mb-2">No image selected</p>
@@ -335,7 +470,7 @@ export default function AdminAnnounce() {
               <textarea
                 id="details"
                 name="details"
-                value={form.details}
+                value={form.details || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="Enter detailed information (optional)"

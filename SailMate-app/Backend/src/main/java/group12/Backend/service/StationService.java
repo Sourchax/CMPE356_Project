@@ -91,4 +91,9 @@ public class StationService {
     public boolean existsById(Integer id) {
         return stationRepository.existsById(id);
     }
+
+    // Get count of all announcements
+    public long getStationCount() {
+        return stationRepository.count();
+    }
 }
