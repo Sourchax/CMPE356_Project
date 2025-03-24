@@ -45,7 +45,7 @@ CREATE TABLE tickets (
     voyage_id INTEGER,
     total_price INTEGER UNSIGNED NOT NULL,
     purchaser_name VARCHAR(255) NOT NULL,
-    ticketData JSON NOT NULL,
+    barcode_image LONGBLOB,
     PRIMARY KEY(id),
     
     -- Only update voyage_id on voyage updates (No deletion cascade)

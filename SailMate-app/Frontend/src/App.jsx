@@ -36,6 +36,7 @@ import ManagerDashboard from "./pages/Manager/managerDashboard";
 import TravellingRules from "./pages/TravellingRules";
 import Accessibility from "./pages/Accessibility";
 import Sustainability from "./pages/Sustainability";
+import BarcodeViewer from './pages/BarcodeViewer';
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -90,7 +91,7 @@ const AnimatedRoutes = () => {
             <Route path="/my-tickets" element={<MyTickets />} />
           </Route>
         </Route>
-
+        <Route path="/barcode/:ticketCode" element={<BarcodeViewer />} /> {/*test*/}
         <Route path="/unauthorized" element={<UnauthorizedAccess />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>
