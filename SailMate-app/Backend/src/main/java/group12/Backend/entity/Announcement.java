@@ -17,7 +17,7 @@ public class Announcement {
     private Integer id;
     
     @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGBLOB", nullable = false)
     private byte[] image;
     
     @Column(length = 255, nullable = false)

@@ -3,6 +3,7 @@ import { useClerk, useSession } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import "../assets/styles/voyageTimes.css";
+import axios from "axios"; // Make sure to install axios if not already installed
 
 const VoyageTimes = () => {
   // Set up viewport and document title
@@ -17,40 +18,96 @@ const VoyageTimes = () => {
     }
   }, []);
 
-  const allVoyages = [
-    { departure: "07:00", arrival: "07:45", date: "2025-03-10", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Yalova", to: "Yenikapı" },
-    { departure: "08:00", arrival: "08:45", date: "2025-03-10", status: "Voyage Cancel", type: "Sea Bus", fuel: "No LPG", available: false, from: "Bandırma", to: "Yenikapı" },
-    { departure: "09:00", arrival: "09:45", date: "2025-03-10", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Bursa", to: "Yalova" },
-    { departure: "11:00", arrival: "11:45", date: "2025-03-10", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Yenikapı", to: "Yalova" },
-    { departure: "13:00", arrival: "13:45", date: "2025-03-10", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Bandırma", to: "Bursa" },
-    { departure: "15:00", arrival: "15:45", date: "2025-03-10", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Yenikapı", to: "Bandırma" },
-    { departure: "07:00", arrival: "07:45", date: "2025-03-11", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Yalova", to: "Bursa" },
-    { departure: "08:00", arrival: "08:45", date: "2025-03-11", status: "Voyage Cancel", type: "Sea Bus", fuel: "No LPG", available: false, from: "Bursa", to: "Yenikapı" },
-    { departure: "09:00", arrival: "09:45", date: "2025-03-11", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Bandırma", to: "Yalova" },
-    { departure: "11:00", arrival: "11:45", date: "2025-03-11", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Yenikapı", to: "Bandırma" },
-    { departure: "13:00", arrival: "13:45", date: "2025-03-11", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Yalova", to: "Yenikapı" },
-    { departure: "15:00", arrival: "15:45", date: "2025-03-11", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Bursa", to: "Yenikapı" },
-    { departure: "15:00", arrival: "15:45", date: "2025-03-12", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Bandırma", to: "Bursa" },
-    { departure: "07:00", arrival: "07:45", date: "2025-03-12", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Yalova", to: "Yenikapı" },
-    { departure: "08:00", arrival: "08:45", date: "2025-03-12", status: "Voyage Cancel", type: "Sea Bus", fuel: "No LPG", available: false, from: "Bandırma", to: "Yenikapı" },
-    { departure: "09:00", arrival: "09:45", date: "2025-03-12", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Bursa", to: "Yalova" },
-    { departure: "11:00", arrival: "11:45", date: "2025-03-12", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Yenikapı", to: "Yalova" },
-    { departure: "13:00", arrival: "13:45", date: "2025-03-12", status: "Voyage Cancel", type: "Fast Ferry FC", fuel: "LPG", available: false, from: "Bandırma", to: "Bursa" },
-    { departure: "15:00", arrival: "15:45", date: "2025-03-12", status: "Normal", type: "Fast Ferry FC", fuel: "LPG", available: true, from: "Yenikapı", to: "Bandırma" },
-  ];
-
   const { isSignedIn } = useSession();
   const navigate = useNavigate();
 
-  const [selectedDate, setSelectedDate] = useState("2025-03-10");
+  // State variables
+  const [voyages, setVoyages] = useState([]);
+  const [stations, setStations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Filter states
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Default to current date
   const [selectedFrom, setSelectedFrom] = useState("");
   const [selectedTo, setSelectedTo] = useState("");
 
-  const filteredVoyages = allVoyages.filter((voyage) =>
-    (selectedDate === "" || voyage.date === selectedDate) &&
-    (selectedFrom === "" || voyage.from === selectedFrom) &&
-    (selectedTo === "" || voyage.to === selectedTo)
-  );
+  // API base URL
+  const API_BASE_URL = "http://localhost:8080";
+
+  // Fetch stations for dropdown
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/stations/active`);
+        setStations(response.data);
+      } catch (err) {
+        console.error("Error fetching stations:", err);
+        setError("Failed to load stations. Please try again later.");
+      }
+    };
+
+    fetchStations();
+  }, []);
+
+  // Fetch voyages based on filter criteria
+  useEffect(() => {
+    const fetchVoyages = async () => {
+      setLoading(true);
+      try {
+        // Make sure we have a date value - use current date if selectedDate is empty
+        const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+        
+        let url;
+        
+        // If both from and to stations are selected
+        if (selectedFrom && selectedTo) {
+          // Find station IDs from selected titles
+          const fromStation = stations.find(station => station.title === selectedFrom);
+          const toStation = stations.find(station => station.title === selectedTo);
+          
+          if (fromStation && toStation) {
+            url = `${API_BASE_URL}/api/voyages/search?fromStationId=${fromStation.id}&toStationId=${toStation.id}&departureDate=${dateToUse}`;
+          } else {
+            // If stations not found, get all voyages for date
+            url = `${API_BASE_URL}/api/voyages/future`;
+          }
+        } else {
+          // Otherwise, get all future voyages and filter client-side
+          url = `${API_BASE_URL}/api/voyages/future`;
+        }
+        
+        const response = await axios.get(url);
+        setVoyages(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching voyages:", err);
+        setError("Failed to load voyages. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    if (stations.length > 0) {
+      fetchVoyages();
+    }
+  }, [selectedDate, selectedFrom, selectedTo, stations]);
+
+  // Filter voyages client-side when needed
+  const filteredVoyages = voyages.filter((voyage) => {
+    // Make sure we have a date value - use current date if selectedDate is empty
+    const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+    
+    // Filter by date
+    const dateMatch = voyage.departureDate === dateToUse;
+    
+    // Filter by from station if selected
+    const fromMatch = !selectedFrom || voyage.fromStationTitle === selectedFrom;
+    
+    // Filter by to station if selected
+    const toMatch = !selectedTo || voyage.toStationTitle === selectedTo;
+    
+    return dateMatch && fromMatch && toMatch;
+  });
 
   const handleBuyTicket = (voyage) => {
     if (!isSignedIn) {
@@ -66,40 +123,59 @@ const VoyageTimes = () => {
     }
   };
 
-  // Status badge component with new color scheme
+  // Status badge component
   const StatusBadge = ({ status }) => {
-    const colorClass = status === "Normal" 
+    const isActive = status === "active";
+    const colorClass = isActive 
       ? "bg-[#D1FFD7] text-[#0D3A73]" 
       : "bg-red-100 text-red-800";
     
+    const statusText = isActive ? "Normal" : "Voyage Cancel";
+    
     return (
       <span className={`status-badge ${colorClass}`}>
-        {status === "Normal" && (
+        {isActive && (
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
         )}
-        {status !== "Normal" && (
+        {!isActive && (
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         )}
-        {status}
+        {statusText}
       </span>
     );
   };
 
-  // Fuel badge component with new color scheme
+  // Fuel badge component
   const FuelBadge = ({ fuel }) => {
-    const colorClass = fuel === "LPG" 
+    const fuelText = fuel ? "LPG" : "No LPG";
+    const colorClass = fuel 
       ? "bg-[#06AED5] text-white" 
       : "bg-[#F0C808] text-[#0D3A73]";
     
     return (
       <span className={`fuel-badge ${colorClass}`}>
-        {fuel}
+        {fuelText}
       </span>
     );
+  };
+
+  // Format time (from LocalTime to HH:MM)
+  const formatTime = (time) => {
+    if (!time) return "";
+    return time.substring(0, 5); // Extract HH:MM from HH:MM:SS
+  };
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   return (
@@ -133,10 +209,9 @@ const VoyageTimes = () => {
                     className="filter-select focus:ring-[#06AED5] focus:border-[#06AED5]"
                   >
                     <option value="">All Departures</option>
-                    <option value="Yalova">Yalova</option>
-                    <option value="Bandırma">Bandırma</option>
-                    <option value="Yenikapı">Yenikapı</option>
-                    <option value="Bursa">Bursa</option>
+                    {stations.map(station => (
+                      <option key={`from-${station.id}`} value={station.title}>{station.title}</option>
+                    ))}
                   </select>
                 </div>
                 
@@ -148,10 +223,9 @@ const VoyageTimes = () => {
                     className="filter-select focus:ring-[#06AED5] focus:border-[#06AED5]"
                   >
                     <option value="">All Arrivals</option>
-                    <option value="Yalova">Yalova</option>
-                    <option value="Bandırma">Bandırma</option>
-                    <option value="Yenikapı">Yenikapı</option>
-                    <option value="Bursa">Bursa</option>
+                    {stations.map(station => (
+                      <option key={`to-${station.id}`} value={station.title}>{station.title}</option>
+                    ))}
                   </select>
                 </div>
                 
@@ -176,7 +250,28 @@ const VoyageTimes = () => {
               <h2 className="text-lg font-medium text-white">Available Voyages</h2>
             </div>
             
-            {filteredVoyages.length === 0 ? (
+            {loading ? (
+              <div className="voyages-empty">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#06AED5]"></div>
+                <p className="mt-4 text-gray-600">Loading voyages...</p>
+              </div>
+            ) : error ? (
+              <div className="voyages-empty">
+                <svg className="voyages-empty-icon text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-sm font-medium text-gray-900">Error loading voyages</h3>
+                <p className="mt-1 text-sm text-gray-500">{error}</p>
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="primary"
+                  size="md"
+                  className="mt-4 voyage-button"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : filteredVoyages.length === 0 ? (
               <div className="voyages-empty">
                 <svg className="voyages-empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -187,7 +282,7 @@ const VoyageTimes = () => {
                   onClick={() => {
                     setSelectedFrom("");
                     setSelectedTo("");
-                    setSelectedDate("2025-03-10");
+                    setSelectedDate(new Date().toISOString().split('T')[0]);
                   }}
                   variant="primary"
                   size="md"
@@ -203,24 +298,21 @@ const VoyageTimes = () => {
                   {filteredVoyages.map((voyage, index) => (
                     <div 
                       key={index} 
-                      className={`voyage-card ${voyage.status === "Voyage Cancel" ? "border-red-200 bg-red-50" : "border border-gray-200"}`}
+                      className={`voyage-card ${voyage.status !== "active" ? "border-red-200 bg-red-50" : "border border-gray-200"}`}
                     >
                       <div className="voyage-row">
                         <div>
-                          <div className="font-medium text-[#0D3A73]">{voyage.from} to {voyage.to}</div>
+                          <div className="font-medium text-[#0D3A73]">{voyage.fromStationTitle} to {voyage.toStationTitle}</div>
                           <div className="text-sm text-gray-500">
-                            {new Date(voyage.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                            {formatDate(voyage.departureDate)}
                           </div>
                         </div>
                         <StatusBadge status={voyage.status} />
                       </div>
                       
                       <div className="voyage-row">
-                        <div>{voyage.departure} - {voyage.arrival}</div>
-                        {voyage.available ? (
+                        <div>{formatTime(voyage.departureTime)} - {formatTime(voyage.arrivalTime)}</div>
+                        {voyage.status === "active" ? (
                           <Button
                             onClick={() => handleBuyTicket(voyage)}
                             variant="primary"
@@ -255,32 +347,29 @@ const VoyageTimes = () => {
                       {filteredVoyages.map((voyage, index) => (
                         <tr 
                           key={index} 
-                          className={`${voyage.status === "Voyage Cancel" ? "bg-red-50" : "hover:bg-gray-50"}`}
+                          className={`${voyage.status !== "active" ? "bg-red-50" : "hover:bg-gray-50"}`}
                         >
                           <td className="font-medium text-[#0D3A73]">
-                            {voyage.from} - {voyage.to}
+                            {voyage.fromStationTitle} - {voyage.toStationTitle}
                           </td>
                           <td className="text-gray-700">
-                            <div>Dep: {voyage.departure}</div>
-                            <div>Arr: {voyage.arrival}</div>
+                            <div>Dep: {formatTime(voyage.departureTime)}</div>
+                            <div>Arr: {formatTime(voyage.arrivalTime)}</div>
                           </td>
                           <td className="text-gray-700">
-                            {new Date(voyage.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                            {formatDate(voyage.departureDate)}
                           </td>
                           <td>
                             <StatusBadge status={voyage.status} />
                           </td>
                           <td className="text-gray-700">
-                            {voyage.type}
+                            {voyage.shipType || "Fast Ferry FC"}
                           </td>
                           <td>
-                            <FuelBadge fuel={voyage.fuel} />
+                            <FuelBadge fuel={voyage.fuelType} />
                           </td>
                           <td>
-                            {voyage.available ? (
+                            {voyage.status === "active" ? (
                               <Button
                                 onClick={() => handleBuyTicket(voyage)}
                                 variant="primary"

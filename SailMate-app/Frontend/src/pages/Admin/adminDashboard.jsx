@@ -75,7 +75,7 @@ const AdminDashboard = () => {
       description: "Add, edit or remove stations and their contact information",
       icon: MapPin,
       path: "/admin/Stations",
-      count: stationCount || 5, // Use API count when available, fallback to example count
+      count: stationCount || 0, // Use API count when available, fallback to example count
       color: "#06AED5"
     },
     {
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
       description: "Create and publish important announcements for users",
       icon: Bell,
       path: "/admin/Announce",
-      count: announcementCount || 2, // Use API count when available, fallback to example count
+      count: announcementCount || 0, // Use API count when available, fallback to example count
       color: "#06AED5"
     }
   ];

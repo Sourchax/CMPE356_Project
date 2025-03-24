@@ -74,9 +74,9 @@ const Homepage = () => {
     if (voyageData) {
       // Update form data with voyage details
       setFormData({
-        departure: voyageData.from,
-        arrival: voyageData.to,
-        departureDate: voyageData.date,
+        departure: voyageData.fromStationTitle,
+        arrival: voyageData.toStationTitle,
+        departureDate: voyageData.departureDate,
         returnDate: "",
         passengers: 1
       });
