@@ -1,7 +1,6 @@
 package group12.Backend.repository;
 
 import group12.Backend.entity.Voyage;
-import group12.Backend.entity.VoyageTemplate;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,9 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VoyageRepository extends JpaRepository<Voyage, Integer> {
-    
-    // Find all voyages for a specific template
-    List<Voyage> findByTemplate(VoyageTemplate template);
     
     // Find voyages by departure date range
     List<Voyage> findByDepartureDateBetween(LocalDate startDate, LocalDate endDate);
@@ -25,21 +21,26 @@ public interface VoyageRepository extends JpaRepository<Voyage, Integer> {
     List<Voyage> findByFromStation_IdAndToStation_IdAndDepartureDate(
         Integer fromStationId, Integer toStationId, LocalDate departureDate);
     
-    // Find voyages by template and departure date range
-    List<Voyage> findByTemplateAndDepartureDateBetween(
-        VoyageTemplate template, LocalDate startDate, LocalDate endDate);
+    // Find voyages by departure station
+    List<Voyage> findByFromStation_Id(Integer stationId);
+    
+    // Find voyages by arrival station
+    List<Voyage> findByToStation_Id(Integer stationId);
+    
+    // Find voyages that depart from or arrive at a station
+    @Query("SELECT v FROM Voyage v WHERE v.fromStation.id = :stationId OR v.toStation.id = :stationId")
+    List<Voyage> findByStationId(@Param("stationId") Integer stationId);
     
     // Find future voyages (from today onwards)
     @Query("SELECT v FROM Voyage v WHERE v.departureDate >= CURRENT_DATE ORDER BY v.departureDate, v.departureTime")
     List<Voyage> findAllFutureVoyages();
     
-    // Find non-modified voyages by template and departure date range
-    @Query("SELECT v FROM Voyage v WHERE v.template = :template AND v.departureDate >= :startDate AND v.isModified = false")
-    List<Voyage> findUnmodifiedVoyagesByTemplateFromDate(
-        @Param("template") VoyageTemplate template, @Param("startDate") LocalDate startDate);
+    // Find active future voyages
+    @Query("SELECT v FROM Voyage v WHERE v.departureDate >= CURRENT_DATE AND v.status = 'active' ORDER BY v.departureDate, v.departureTime")
+    List<Voyage> findActiveFutureVoyages();
     
     // Find the furthest scheduled voyage date
-    @Query("SELECT MAX(v.departureDate) FROM Voyage v")
+    @Query("SELECT MAX(v.departureDate) FROM Voyage v WHERE v.status = 'active'")
     LocalDate findFurthestScheduledDate();
     
     // Find voyages with available seats
@@ -49,6 +50,19 @@ public interface VoyageRepository extends JpaRepository<Voyage, Integer> {
            "ORDER BY v.departureDate, v.departureTime")
     List<Voyage> findAvailableVoyages();
     
-    // Count voyages by template
-    long countByTemplate(VoyageTemplate template);
+    // Find voyages by status and departure date range
+    List<Voyage> findByStatusAndDepartureDateBetween(
+        Voyage.VoyageStatus status, LocalDate startDate, LocalDate endDate);
+    
+    // Count voyages by status
+    int countByStatus(Voyage.VoyageStatus status);
+    
+    // Cancel voyages by route and date range
+    @Query("UPDATE Voyage v SET v.status = 'cancel' WHERE v.fromStation.id = :fromId AND v.toStation.id = :toId " +
+           "AND v.departureDate BETWEEN :startDate AND :endDate AND v.status = 'active'")
+    int cancelVoyagesByRoute(
+        @Param("fromId") Integer fromStationId, 
+        @Param("toId") Integer toStationId,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
 }

@@ -3,15 +3,13 @@ package group12.Backend.service;
 import group12.Backend.dto.VoyageDTO;
 import group12.Backend.entity.Station;
 import group12.Backend.entity.Voyage;
-import group12.Backend.entity.VoyageTemplate;
 import group12.Backend.repository.StationRepository;
 import group12.Backend.repository.VoyageRepository;
-import group12.Backend.repository.VoyageTemplateRepository;
-import java.time.DayOfWeek;
+
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,9 +22,6 @@ public class VoyageService {
     
     @Autowired
     private VoyageRepository voyageRepository;
-    
-    @Autowired
-    private VoyageTemplateRepository templateRepository;
     
     @Autowired
     private StationRepository stationRepository;
@@ -64,9 +59,19 @@ public class VoyageService {
     @Transactional
     public VoyageDTO createVoyage(VoyageDTO voyageDTO) {
         Voyage voyage = convertToEntity(voyageDTO);
-        voyage.setIsModified(true); // Mark as modified since it's manually created
         Voyage savedVoyage = voyageRepository.save(voyage);
         return convertToDTO(savedVoyage);
+    }
+    
+    // Create multiple voyages at once
+    @Transactional
+    public int createBulkVoyages(List<VoyageDTO> voyageDTOs) {
+        List<Voyage> voyages = voyageDTOs.stream()
+                .map(this::convertToEntity)
+                .collect(Collectors.toList());
+        
+        List<Voyage> savedVoyages = voyageRepository.saveAll(voyages);
+        return savedVoyages.size();
     }
     
     // Update a voyage
@@ -126,9 +131,6 @@ public class VoyageService {
                 voyage.setEconomySeats(voyageDTO.getEconomySeats());
             }
             
-            // Mark as modified
-            voyage.setIsModified(true);
-            
             // Save the updated voyage
             Voyage updatedVoyage = voyageRepository.save(voyage);
             return convertToDTO(updatedVoyage);
@@ -145,12 +147,28 @@ public class VoyageService {
         if (voyage.isPresent()) {
             Voyage v = voyage.get();
             v.setStatus(Voyage.VoyageStatus.cancel);
-            v.setIsModified(true);
             voyageRepository.save(v);
             return true;
         }
         
         return false;
+    }
+    
+    // Cancel voyages by route and date range
+    @Transactional
+    public int cancelVoyagesByRoute(Integer fromStationId, Integer toStationId, LocalDate startDate, LocalDate endDate) {
+        List<Voyage> voyagesToCancel = voyageRepository.findByFromStation_IdAndToStation_Id(fromStationId, toStationId)
+                .stream()
+                .filter(v -> v.getStatus() == Voyage.VoyageStatus.active)
+                .filter(v -> !v.getDepartureDate().isBefore(startDate) && !v.getDepartureDate().isAfter(endDate))
+                .collect(Collectors.toList());
+                
+        for (Voyage voyage : voyagesToCancel) {
+            voyage.setStatus(Voyage.VoyageStatus.cancel);
+        }
+        
+        voyageRepository.saveAll(voyagesToCancel);
+        return voyagesToCancel.size();
     }
     
     // Delete a voyage
@@ -159,125 +177,51 @@ public class VoyageService {
         Optional<Voyage> voyage = voyageRepository.findById(id);
         
         if (voyage.isPresent()) {
-            Voyage v = voyage.get();
-            v.setStatus(Voyage.VoyageStatus.delete);
-            v.setIsModified(true);
-            voyageRepository.save(v);
+            voyageRepository.delete(voyage.get());
             return true;
         }
         
         return false;
     }
     
-    // Generate voyages from templates for a date range
-    @Transactional
-    public int generateVoyages(LocalDate startDate, LocalDate endDate) {
-        List<VoyageTemplate> activeTemplates = templateRepository.findByIsActiveTrue();
-        int generatedCount = 0;
-        
-        for (VoyageTemplate template : activeTemplates) {
-            LocalDate currentDate = startDate;
-            
-            // Find the first occurrence of the template's day of week on or after startDate
-            DayOfWeek templateDay = DayOfWeek.of(template.getDayOfWeek() + 1); // Adjust from 0-6 to 1-7
-            currentDate = startDate.with(TemporalAdjusters.nextOrSame(templateDay));
-            
-            // Generate voyages for each week until endDate
-            while (currentDate.isBefore(endDate) || currentDate.isEqual(endDate)) {
-                // Check if voyage already exists for this template and date
-                boolean voyageExists = voyageRepository.findByTemplateAndDepartureDateBetween(
-                        template, currentDate, currentDate).size() > 0;
-                
-                if (!voyageExists) {
-                    // Create new voyage from template
-                    Voyage voyage = new Voyage();
-                    voyage.setTemplate(template);
-                    voyage.setFromStation(template.getFromStation());
-                    voyage.setToStation(template.getToStation());
-                    voyage.setDepartureDate(currentDate);
-                    voyage.setDepartureTime(template.getDepartureTime());
-                    voyage.setArrivalTime(template.getArrivalTime());
-                    voyage.setShipType(template.getShipType());
-                    voyage.setFuelType(template.getFuelType());
-                    voyage.setBusinessSeats(template.getBusinessSeats());
-                    voyage.setPromoSeats(template.getPromoSeats());
-                    voyage.setEconomySeats(template.getEconomySeats());
-                    voyage.setStatus(Voyage.VoyageStatus.active);
-                    voyage.setIsModified(false);
-                    
-                    voyageRepository.save(voyage);
-                    generatedCount++;
-                }
-                
-                // Move to next week
-                currentDate = currentDate.plusWeeks(1);
-            }
-        }
-        
-        return generatedCount;
+    // Get voyages by date range
+    public List<VoyageDTO> getVoyagesByDateRange(LocalDate startDate, LocalDate endDate) {
+        return voyageRepository.findByDepartureDateBetween(startDate, endDate)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
-    // Check if voyages are generated for at least 3 months in the future
-    public boolean checkScheduleHealth() {
-        LocalDate furthestDate = voyageRepository.findFurthestScheduledDate();
-        LocalDate threeMonthsLater = LocalDate.now().plusMonths(3);
-        
-        return furthestDate != null && !furthestDate.isBefore(threeMonthsLater);
+    // Get voyages by departure station
+    public List<VoyageDTO> getVoyagesByDepartureStation(Integer stationId) {
+        return voyageRepository.findByFromStation_Id(stationId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
-    // Ensure voyages are scheduled at least 3 months in advance
-    @Transactional
-    public int ensureThreeMonthSchedule() {
-        LocalDate furthestDate = voyageRepository.findFurthestScheduledDate();
-        LocalDate threeMonthsLater = LocalDate.now().plusMonths(3);
-        
-        // If no voyages or voyages don't extend to 3 months
-        if (furthestDate == null || furthestDate.isBefore(threeMonthsLater)) {
-            LocalDate startDate = (furthestDate != null) ? furthestDate.plusDays(1) : LocalDate.now();
-            return generateVoyages(startDate, threeMonthsLater);
-        }
-        
-        return 0; // No need to generate voyages
+    // Get voyages by arrival station
+    public List<VoyageDTO> getVoyagesByArrivalStation(Integer stationId) {
+        return voyageRepository.findByToStation_Id(stationId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
-    // Update future voyages from template
-    @Transactional
-    public int updateFutureVoyagesFromTemplate(Integer templateId, LocalDate startDate) {
-        Optional<VoyageTemplate> template = templateRepository.findById(templateId);
-        
-        if (template.isPresent()) {
-            List<Voyage> voyages = voyageRepository.findUnmodifiedVoyagesByTemplateFromDate(
-                    template.get(), startDate);
-            
-            for (Voyage voyage : voyages) {
-                voyage.setFromStation(template.get().getFromStation());
-                voyage.setToStation(template.get().getToStation());
-                voyage.setDepartureTime(template.get().getDepartureTime());
-                voyage.setArrivalTime(template.get().getArrivalTime());
-                voyage.setShipType(template.get().getShipType());
-                voyage.setFuelType(template.get().getFuelType());
-                voyage.setBusinessSeats(template.get().getBusinessSeats());
-                voyage.setPromoSeats(template.get().getPromoSeats());
-                voyage.setEconomySeats(template.get().getEconomySeats());
-                
-                voyageRepository.save(voyage);
-            }
-            
-            return voyages.size();
-        }
-        
-        return 0;
+    // Get voyages by station (either departure or arrival)
+    public List<VoyageDTO> getVoyagesByStation(Integer stationId) {
+        return voyageRepository.findByStationId(stationId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
+    
     
     // Convert Voyage entity to VoyageDTO
     private VoyageDTO convertToDTO(Voyage voyage) {
         VoyageDTO dto = new VoyageDTO();
         
         dto.setId(voyage.getId());
-        
-        if (voyage.getTemplate() != null) {
-            dto.setTemplateId(voyage.getTemplate().getId());
-        }
         
         dto.setFromStationId(voyage.getFromStation().getId());
         dto.setFromStationCity(voyage.getFromStation().getCity());
@@ -296,7 +240,8 @@ public class VoyageService {
         dto.setBusinessSeats(voyage.getBusinessSeats());
         dto.setPromoSeats(voyage.getPromoSeats());
         dto.setEconomySeats(voyage.getEconomySeats());
-        dto.setIsModified(voyage.getIsModified());
+        dto.setCreatedAt(voyage.getCreatedAt());
+        dto.setUpdatedAt(voyage.getUpdatedAt());
         
         return dto;
     }
@@ -307,10 +252,6 @@ public class VoyageService {
         
         if (dto.getId() != null) {
             voyage.setId(dto.getId());
-        }
-        
-        if (dto.getTemplateId() != null) {
-            templateRepository.findById(dto.getTemplateId()).ifPresent(voyage::setTemplate);
         }
         
         Station fromStation = stationRepository.findById(dto.getFromStationId())
@@ -339,10 +280,10 @@ public class VoyageService {
         voyage.setPromoSeats(dto.getPromoSeats());
         voyage.setEconomySeats(dto.getEconomySeats());
         
-        if (dto.getIsModified() != null) {
-            voyage.setIsModified(dto.getIsModified());
-        }
-        
         return voyage;
+    }
+    
+    public int countActiveVoyages() {
+        return voyageRepository.countByStatus(Voyage.VoyageStatus.active);
     }
 }

@@ -3,15 +3,12 @@ import { useClerk, useSession } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import "../assets/styles/voyageTimes.css";
-import axios from "axios"; // Make sure to install axios if not already installed
+import axios from "axios";
 
 const VoyageTimes = () => {
-  // Set up viewport and document title
   useEffect(() => {
-    // Set page title
     document.title = "Voyage Times | SailMate";
     
-    // Ensure proper viewport settings for responsive scaling
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (viewportMeta) {
       viewportMeta.content = "width=device-width, initial-scale=1.0, viewport-fit=cover";
@@ -21,21 +18,22 @@ const VoyageTimes = () => {
   const { isSignedIn } = useSession();
   const navigate = useNavigate();
 
-  // State variables
   const [voyages, setVoyages] = useState([]);
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Filter states
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Default to current date
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+    return date.toISOString().split('T')[0];
+  });
   const [selectedFrom, setSelectedFrom] = useState("");
   const [selectedTo, setSelectedTo] = useState("");
 
-  // API base URL
   const API_BASE_URL = "http://localhost:8080";
 
-  // Fetch stations for dropdown
   useEffect(() => {
     const fetchStations = async () => {
       try {
@@ -50,30 +48,22 @@ const VoyageTimes = () => {
     fetchStations();
   }, []);
 
-  // Fetch voyages based on filter criteria
   useEffect(() => {
     const fetchVoyages = async () => {
       setLoading(true);
       try {
-        // Make sure we have a date value - use current date if selectedDate is empty
-        const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
-        
         let url;
         
-        // If both from and to stations are selected
         if (selectedFrom && selectedTo) {
-          // Find station IDs from selected titles
           const fromStation = stations.find(station => station.title === selectedFrom);
           const toStation = stations.find(station => station.title === selectedTo);
           
           if (fromStation && toStation) {
-            url = `${API_BASE_URL}/api/voyages/search?fromStationId=${fromStation.id}&toStationId=${toStation.id}&departureDate=${dateToUse}`;
+            url = `${API_BASE_URL}/api/voyages/future`;
           } else {
-            // If stations not found, get all voyages for date
             url = `${API_BASE_URL}/api/voyages/future`;
           }
         } else {
-          // Otherwise, get all future voyages and filter client-side
           url = `${API_BASE_URL}/api/voyages/future`;
         }
         
@@ -90,15 +80,27 @@ const VoyageTimes = () => {
     if (stations.length > 0) {
       fetchVoyages();
     }
-  }, [selectedDate, selectedFrom, selectedTo, stations]);
+  }, [selectedFrom, selectedTo, stations]);
 
-  // Filter voyages client-side when needed
-  const filteredVoyages = voyages.filter((voyage) => {
-    // Make sure we have a date value - use current date if selectedDate is empty
-    const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+  const handleDateChange = (e, setter) => {
+    const newDate = e.target.value;
+    setter(newDate);
     
-    // Filter by date
-    const dateMatch = voyage.departureDate === dateToUse;
+    // Ensure end date is not before start date
+    if (setter === setStartDate && newDate > endDate) {
+      setEndDate(newDate);
+    }
+    
+    // Ensure start date is not after end date
+    if (setter === setEndDate && newDate < startDate) {
+      setStartDate(newDate);
+    }
+  };
+
+  const filteredVoyages = voyages.filter((voyage) => {
+    // Filter by date range
+    const voyageDate = voyage.departureDate;
+    const dateInRange = voyageDate >= startDate && voyageDate <= endDate;
     
     // Filter by from station if selected
     const fromMatch = !selectedFrom || voyage.fromStationTitle === selectedFrom;
@@ -106,24 +108,22 @@ const VoyageTimes = () => {
     // Filter by to station if selected
     const toMatch = !selectedTo || voyage.toStationTitle === selectedTo;
     
-    return dateMatch && fromMatch && toMatch;
+    return dateInRange && fromMatch && toMatch;
   });
 
   const handleBuyTicket = (voyage) => {
     if (!isSignedIn) {
       navigate("/sign-in");
     } else {
-      // Navigate to homepage with voyage data in state
       navigate("/", { 
         state: { 
           voyage,
-          from: 'voyage-times' // For route protection
+          from: 'voyage-times'
         }
       });
     }
   };
 
-  // Status badge component
   const StatusBadge = ({ status }) => {
     const isActive = status === "active";
     const colorClass = isActive 
@@ -149,7 +149,6 @@ const VoyageTimes = () => {
     );
   };
 
-  // Fuel badge component
   const FuelBadge = ({ fuel }) => {
     const fuelText = fuel ? "LPG" : "No LPG";
     const colorClass = fuel 
@@ -163,13 +162,11 @@ const VoyageTimes = () => {
     );
   };
 
-  // Format time (from LocalTime to HH:MM)
   const formatTime = (time) => {
     if (!time) return "";
-    return time.substring(0, 5); // Extract HH:MM from HH:MM:SS
+    return time.substring(0, 5);
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -180,7 +177,6 @@ const VoyageTimes = () => {
 
   return (
     <div className="voyage-page bg-gray-50">
-      {/* Header */}
       <div className="voyage-header bg-[#0D3A73]">
         <div className="voyage-container">
           <h1 className="text-white">SailMate Voyages</h1>
@@ -189,7 +185,6 @@ const VoyageTimes = () => {
       </div>
       
       <div className="voyage-container">
-        {/* Filter Section */}
         <section className="voyage-section">
           <div className="filter-card">
             <div className="filter-header bg-[#D1FFD7]">
@@ -228,13 +223,27 @@ const VoyageTimes = () => {
                     ))}
                   </select>
                 </div>
-                
+              </div>
+              
+              <div className="filter-row mt-3">
                 <div className="filter-group">
-                  <label className="filter-label text-gray-700">Date</label>
+                  <label className="filter-label text-gray-700">Start Date</label>
                   <input
                     type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    value={startDate}
+                    onChange={(e) => handleDateChange(e, setStartDate)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="filter-input focus:ring-[#06AED5] focus:border-[#06AED5]"
+                  />
+                </div>
+                
+                <div className="filter-group">
+                  <label className="filter-label text-gray-700">End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => handleDateChange(e, setEndDate)}
+                    min={startDate}
                     className="filter-input focus:ring-[#06AED5] focus:border-[#06AED5]"
                   />
                 </div>
@@ -243,7 +252,6 @@ const VoyageTimes = () => {
           </div>
         </section>
         
-        {/* Voyage List */}
         <section className="voyage-section">
           <div className="voyages-card">
             <div className="voyages-header bg-[#06AED5]">
@@ -282,7 +290,11 @@ const VoyageTimes = () => {
                   onClick={() => {
                     setSelectedFrom("");
                     setSelectedTo("");
-                    setSelectedDate(new Date().toISOString().split('T')[0]);
+                    const today = new Date().toISOString().split('T')[0];
+                    setStartDate(today);
+                    const nextWeek = new Date();
+                    nextWeek.setDate(nextWeek.getDate() + 7);
+                    setEndDate(nextWeek.toISOString().split('T')[0]);
                   }}
                   variant="primary"
                   size="md"
@@ -293,7 +305,6 @@ const VoyageTimes = () => {
               </div>
             ) : (
               <>
-                {/* Mobile view (card-based) */}
                 <div className="md:hidden p-4 space-y-3">
                   {filteredVoyages.map((voyage, index) => (
                     <div 
@@ -329,7 +340,6 @@ const VoyageTimes = () => {
                   ))}
                 </div>
                 
-                {/* Desktop view (table-based) */}
                 <div className="voyage-table-container hidden md:block">
                   <table className="voyage-table">
                     <thead className="bg-gray-50">

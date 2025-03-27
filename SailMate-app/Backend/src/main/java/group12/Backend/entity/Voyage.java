@@ -12,10 +12,6 @@ public class Voyage {
     private Integer id;
     
     @ManyToOne
-    @JoinColumn(name = "template_id")
-    private VoyageTemplate template;
-    
-    @ManyToOne
     @JoinColumn(name = "from_station")
     private Station fromStation;
     
@@ -51,12 +47,26 @@ public class Voyage {
     @Column(name = "economy_seats")
     private Long economySeats;
     
-    @Column(name = "is_modified")
-    private Boolean isModified = false;
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private java.time.LocalDateTime updatedAt;
     
     // Enum for voyage status
     public enum VoyageStatus {
-        active, cancel, delete
+        active, cancel
+    }
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = java.time.LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = java.time.LocalDateTime.now();
     }
     
     // Getters and Setters
@@ -66,14 +76,6 @@ public class Voyage {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public VoyageTemplate getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(VoyageTemplate template) {
-        this.template = template;
     }
 
     public Station getFromStation() {
@@ -164,11 +166,11 @@ public class Voyage {
         this.economySeats = economySeats;
     }
 
-    public Boolean getIsModified() {
-        return isModified;
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setIsModified(Boolean isModified) {
-        this.isModified = isModified;
+    public java.time.LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

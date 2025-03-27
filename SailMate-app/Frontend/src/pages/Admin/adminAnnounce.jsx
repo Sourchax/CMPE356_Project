@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Edit, Trash, AlertCircle } from "lucide-react";
+import { Edit, Trash2, AlertCircle } from "lucide-react";
 import placeholder from "../../assets/images/placeholder.jpg";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -363,7 +363,7 @@ export default function AdminAnnounce() {
                     <Edit size={24} />
                   </button>
                   <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
-                    <Trash size={24} />
+                    <Trash2 size={24} />
                   </button>
                 </div>
               </div>

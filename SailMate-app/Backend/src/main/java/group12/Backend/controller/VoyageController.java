@@ -61,6 +61,20 @@ public class VoyageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(voyageService.createVoyage(voyageDTO));
     }
     
+    // Create multiple voyages at once
+    @PostMapping("/bulk")
+    public ResponseEntity<Map<String, Object>> createBulkVoyages(
+            @RequestBody List<VoyageDTO> voyageDTOs) {
+        int createdCount = voyageService.createBulkVoyages(voyageDTOs);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("createdCount", createdCount);
+        response.put("message", createdCount + " voyages created successfully");
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    
     // Update a voyage
     @PutMapping("/{id}")
     public ResponseEntity<VoyageDTO> updateVoyage(@PathVariable Integer id, @RequestBody VoyageDTO voyageDTO) {
@@ -90,15 +104,33 @@ public class VoyageController {
         }
     }
     
-    // Delete a voyage
-    @PutMapping("/{id}/delete")
+    // Cancel voyages by route and date range
+    @PutMapping("/cancel-by-route")
+    public ResponseEntity<Map<String, Object>> cancelVoyagesByRoute(
+            @RequestParam Integer fromStationId,
+            @RequestParam Integer toStationId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        
+        int cancelledCount = voyageService.cancelVoyagesByRoute(fromStationId, toStationId, startDate, endDate);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("cancelledCount", cancelledCount);
+        response.put("message", cancelledCount + " voyages cancelled successfully");
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    // Delete a voyage (soft delete by marking as inactive)
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteVoyage(@PathVariable Integer id) {
         boolean success = voyageService.deleteVoyage(id);
         Map<String, Object> response = new HashMap<>();
         
         if (success) {
             response.put("success", true);
-            response.put("message", "Voyage marked as deleted successfully");
+            response.put("message", "Voyage deleted successfully");
             return ResponseEntity.ok(response);
         } else {
             response.put("success", false);
@@ -107,54 +139,33 @@ public class VoyageController {
         }
     }
     
-    // Generate voyages from templates
-    @PostMapping("/generate")
-    public ResponseEntity<Map<String, Object>> generateVoyages(
+    // Get voyages by date range
+    @GetMapping("/by-date-range")
+    public ResponseEntity<List<VoyageDTO>> getVoyagesByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-            
-        int generatedCount = voyageService.generateVoyages(startDate, endDate);
         
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("generatedCount", generatedCount);
-        response.put("message", generatedCount + " voyages generated successfully");
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(voyageService.getVoyagesByDateRange(startDate, endDate));
     }
     
-    // Check schedule health
-    @GetMapping("/schedule-health")
-    public ResponseEntity<Map<String, Object>> checkScheduleHealth() {
-        boolean isHealthy = voyageService.checkScheduleHealth();
+    // Get voyages by station
+    @GetMapping("/by-station/{stationId}")
+    public ResponseEntity<List<VoyageDTO>> getVoyagesByStation(
+            @PathVariable Integer stationId,
+            @RequestParam(required = false) Boolean isDeparture) {
         
-        Map<String, Object> response = new HashMap<>();
-        response.put("healthy", isHealthy);
-        
-        if (isHealthy) {
-            response.put("message", "Voyages are scheduled at least 3 months in advance");
+        if (isDeparture != null && isDeparture) {
+            return ResponseEntity.ok(voyageService.getVoyagesByDepartureStation(stationId));
+        } else if (isDeparture != null && !isDeparture) {
+            return ResponseEntity.ok(voyageService.getVoyagesByArrivalStation(stationId));
         } else {
-            response.put("message", "Voyages are not scheduled for the next 3 months");
+            return ResponseEntity.ok(voyageService.getVoyagesByStation(stationId));
         }
-        
-        return ResponseEntity.ok(response);
     }
-    
-    // Ensure schedule extends 3 months
-    @PostMapping("/ensure-schedule")
-    public ResponseEntity<Map<String, Object>> ensureThreeMonthSchedule() {
-        int generatedCount = voyageService.ensureThreeMonthSchedule();
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("generatedCount", generatedCount);
-        
-        if (generatedCount > 0) {
-            response.put("message", generatedCount + " voyages generated to ensure 3-month schedule");
-        } else {
-            response.put("message", "Schedule already extends 3 months, no action taken");
-        }
-        
-        return ResponseEntity.ok(response);
+
+    @GetMapping("/count-active")
+    public ResponseEntity<Integer> countActiveVoyages() {
+        int count = voyageService.countActiveVoyages();
+        return ResponseEntity.ok(count);
     }
 }

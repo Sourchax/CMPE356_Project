@@ -32,6 +32,7 @@ const AdminDashboard = () => {
     fetchAnnouncementCount();
   }, []);
 
+  // Fetch station count from API
   useEffect(() => {
     const fetchStationCount = async () => {
       try {
@@ -40,14 +41,33 @@ const AdminDashboard = () => {
           const count = await response.json();
           setStationCount(count);
         } else {
-          console.error('Failed to fetch announcement count');
+          console.error('Failed to fetch station count');
         }
       } catch (error) {
-        console.error('Error fetching announcement count:', error);
+        console.error('Error fetching station count:', error);
       }
     };
   
     fetchStationCount();
+  }, []);
+
+  // Fetch voyage count from API
+  useEffect(() => {
+    const fetchVoyageCount = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/voyages/count-active');
+        if (response.ok) {
+          const count = await response.json();
+          setVoyageCount(count);
+        } else {
+          console.error('Failed to fetch voyage count');
+        }
+      } catch (error) {
+        console.error('Error fetching voyage count:', error);
+      }
+    };
+  
+    fetchVoyageCount();
   }, []);
 
   useEffect(() => {
@@ -75,7 +95,7 @@ const AdminDashboard = () => {
       description: "Add, edit or remove stations and their contact information",
       icon: MapPin,
       path: "/admin/Stations",
-      count: stationCount || 0, // Use API count when available, fallback to example count
+      count: stationCount || 0,
       color: "#06AED5"
     },
     {
@@ -83,7 +103,7 @@ const AdminDashboard = () => {
       description: "Schedule and manage voyage routes, times and status",
       icon: Clock,
       path: "/admin/Voyage",
-      count: voyageCount || 3, // Use API count when available, fallback to example count
+      count: voyageCount || 0,
       color: "#06AED5"
     },
     {
@@ -91,16 +111,16 @@ const AdminDashboard = () => {
       description: "Create and publish important announcements for users",
       icon: Bell,
       path: "/admin/Announce",
-      count: announcementCount || 0, // Use API count when available, fallback to example count
+      count: announcementCount || 0,
       color: "#06AED5"
     }
   ];
 
   // Summary statistics - using API data with fallbacks
   const stats = [
-    { label: "Total Stations", value: stationCount || 5 },
-    { label: "Active Voyages", value: voyageCount || 12 },
-    { label: "Current Announcements", value: announcementCount || 2 }
+    { label: "Total Stations", value: stationCount || 0 },
+    { label: "Active Voyages", value: voyageCount || 0 },
+    { label: "Current Announcements", value: announcementCount || 0 }
   ];
 
   return (
@@ -206,7 +226,7 @@ const AdminDashboard = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div 
                       className="w-12 h-12 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${card.color}15` }} // 15% opacity of the color
+                      style={{ backgroundColor: `${card.color}15` }}
                     >
                       <Icon size={24} color={card.color} />
                     </div>

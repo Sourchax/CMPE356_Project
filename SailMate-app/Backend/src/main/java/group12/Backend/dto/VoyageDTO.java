@@ -6,7 +6,6 @@ import java.time.LocalTime;
 
 public class VoyageDTO {
     private Integer id;
-    private Integer templateId;
     private Integer fromStationId;
     private String fromStationCity;
     private String fromStationTitle;
@@ -22,7 +21,8 @@ public class VoyageDTO {
     private Long businessSeats;
     private Long promoSeats;
     private Long economySeats;
-    private Boolean isModified;
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime updatedAt;
     
     // Getters and Setters
     public Integer getId() {
@@ -31,14 +31,6 @@ public class VoyageDTO {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(Integer templateId) {
-        this.templateId = templateId;
     }
 
     public Integer getFromStationId() {
@@ -160,12 +152,20 @@ public class VoyageDTO {
     public void setEconomySeats(Long economySeats) {
         this.economySeats = economySeats;
     }
-
-    public Boolean getIsModified() {
-        return isModified;
+    
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
     }
-
-    public void setIsModified(Boolean isModified) {
-        this.isModified = isModified;
+    
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public java.time.LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(java.time.LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
