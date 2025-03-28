@@ -5,13 +5,28 @@ import EconomyLogo from "../../assets/images/Economy.png";
 import BusinessLogo from "../../assets/images/Business.png";
 import { Ship, Clock, Users, ChevronUp, ChevronDown, Calendar, ArrowRight } from "lucide-react";
 
-const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectReturn }) => {
+const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectReturn, prices }) => {
+
   const [departureTrips, setDepartureTrips] = useState([]);
   const [returnTrips, setReturnTrips] = useState([]);
   const [selectedOption, setSelectedOption] = useState({
     departure: null,
     return: null
   });
+
+  // Get price values from the price prop
+  const getPrice = (className) => {
+    const priceItem = prices.find(price => price.className.toLowerCase() === className.toLowerCase());
+    return priceItem ? priceItem.value : 0;
+  };
+
+  // Get all required prices from props
+  const promoPrice = getPrice("Promo")*tripData.passengers;
+  const economyPrice = getPrice("Economy")*tripData.passengers;
+  const businessPrice = getPrice("Business")*tripData.passengers;
+  
+
+
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [collapsedDeparture, setCollapsedDeparture] = useState(false);
@@ -43,12 +58,13 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         // For one-way trip
         if (!Array.isArray(availableVoyages[0])) {
           // Transform API voyage data to match the component's expected format
+          // Use prices from props instead of voyage data
           const transformedDepartureData = availableVoyages.map(voyage => ({
             departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
             arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: voyage.promoFare || 200,
-            economy: voyage.economyFare || 250,
-            business: voyage.businessFare || 350,
+            promo: promoPrice,
+            economy: economyPrice,
+            business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
             voyageId: voyage.id
           }));
@@ -58,24 +74,24 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         } 
         // For round trip
         else if (Array.isArray(availableVoyages[0]) && Array.isArray(availableVoyages[1])) {
-          // Transform departure voyages
+          // Transform departure voyages with prices from props
           const transformedDepartureData = availableVoyages[0].map(voyage => ({
             departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
             arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: voyage.promoFare || 200,
-            economy: voyage.economyFare || 250,
-            business: voyage.businessFare || 350,
+            promo: promoPrice,
+            economy: economyPrice,
+            business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
             voyageId: voyage.id
           }));
           
-          // Transform return voyages
+          // Transform return voyages with prices from props
           const transformedReturnData = availableVoyages[1].map(voyage => ({
             departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
             arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: voyage.promoFare || 200,
-            economy: voyage.economyFare || 250,
-            business: voyage.businessFare || 350,
+            promo: promoPrice,
+            economy: economyPrice,
+            business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
             voyageId: voyage.id
           }));
@@ -93,7 +109,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     } finally {
       setLoading(false);
     }
-  }, [availableVoyages]);
+  }, [availableVoyages, promoPrice, economyPrice, businessPrice]);
 
   const handleSelectTrip = (trip, type, isReturn = false) => {
     const selectedTrip = { ...trip, type };
@@ -123,19 +139,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     return (basePrice * passengersCount).toFixed(0);
   };
 
-  const calculateDuration = (departure, arrival) => {
-    const [departHours, departMinutes] = departure.split(":").map(Number);
-    const [arriveHours, arriveMinutes] = arrival.split(":").map(Number);
-    
-    let durationMinutes = (arriveHours * 60 + arriveMinutes) - (departHours * 60 + departMinutes);
-    if (durationMinutes < 0) durationMinutes += 24 * 60; // Handle crossing midnight
-    
-    const hours = Math.floor(durationMinutes / 60);
-    const minutes = durationMinutes % 60;
-    
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  };
-
   const getClassForType = (type) => {
     switch (type) {
       case "promo":
@@ -151,7 +154,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
 
   // Mobile view for trip card
   const renderMobileCard = (trip, isReturn = false) => {
-    const duration = calculateDuration(trip.departure, trip.arrival);
     
     return (
       <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
@@ -163,10 +165,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
           </div>
           
           <div className="flex flex-col items-center">
-            <div className="text-xs text-gray-600 flex items-center">
-              <Clock size={12} className="mr-1" />
-              {duration}
-            </div>
             <div className="w-16 h-1 bg-gray-300 my-1"></div>
           </div>
           
@@ -265,7 +263,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         <tbody>
           {trips.length > 0 ? (
             trips.map((trip, index) => {
-              const duration = calculateDuration(trip.departure, trip.arrival);
               
               return (
                 <tr key={trip.voyageId || index} className={`text-center border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
@@ -280,10 +277,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                       <div className="text-base md:text-xl font-bold">{trip.arrival}</div>
                       <div className="text-xs md:text-sm text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
                       <div className="flex items-center mt-1 text-xs">
-                        <div className="bg-blue-50 text-blue-700 rounded-full px-2 py-1 flex items-center">
-                          <Clock size={12} className="mr-1" />
-                          {duration}
-                        </div>
                       </div>
                     </div>
                   </td>

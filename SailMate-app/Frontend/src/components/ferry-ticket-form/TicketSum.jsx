@@ -1,18 +1,27 @@
 import React from "react";
 import { MapPin, Calendar, ChevronRight } from 'lucide-react';
 
-const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
+const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
   if (!ticketTripInfo) return <div>No ticket data available</div>;
 
   const { departure, arrival, departureDate, returnDate, passengers, passengerTypes } = ticketTripInfo;
-  const serviceFee = 10;
 
-  // Discount rates
-  const discountRates = {
-    student: 0.10,  // 10% discount for students
-    senior: 0.20,  // 20% discount for seniors
-    child: 1.00     //Free 
+  // Get prices from props instead of hardcoded values
+  const getPrice = (className) => {
+    const priceItem = prices.find(price => price.className.toLowerCase() === className.toLowerCase());
+    return priceItem ? priceItem.value : 0;
   };
+
+  // Get all the necessary prices
+  const promoPrice = getPrice("Promo");
+  const economyPrice = getPrice("Economy");
+  const businessPrice = getPrice("Business");
+  const serviceFee = getPrice("Fee");
+  
+  // Discount rates from database
+  const studentDiscount = getPrice("Student") / 100; // Convert percentage to decimal
+  const seniorDiscount = getPrice("Senior") / 100;   // Convert percentage to decimal
+  const childDiscount = 1.00; // 100% discount for children
 
   // Calculate initial prices (before discounts)
   let departureTotalPrice = serviceFee * passengers;
@@ -49,38 +58,39 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
     }
     
     if (passengerTypes.student) {
-      const studentUnitPrice = basePrice * (1 - discountRates.student);
+      const studentUnitPrice = basePrice * (1 - studentDiscount);
       const studentPrice = studentUnitPrice * passengerTypes.student;
       total += studentPrice;
       breakdown.student = {
         count: passengerTypes.student,
         unitPrice: basePrice,
-        discount: discountRates.student * 100,
+        discount: studentDiscount * 100,
         discountedPrice: studentUnitPrice,
         total: studentPrice
       };
     }
     
     if (passengerTypes.senior) {
-      const seniorUnitPrice = basePrice * (1 - discountRates.senior);
+      const seniorUnitPrice = basePrice * (1 - seniorDiscount);
       const seniorPrice = seniorUnitPrice * passengerTypes.senior;
       total += seniorPrice;
       breakdown.senior = {
         count: passengerTypes.senior,
         unitPrice: basePrice,
-        discount: discountRates.senior * 100,
+        discount: seniorDiscount * 100,
         discountedPrice: seniorUnitPrice,
         total: seniorPrice
       };
     }
+    
     if (passengerTypes.child) {
-      const childUnitPrice = basePrice * (1 - discountRates.child);
+      const childUnitPrice = basePrice * (1 - childDiscount);
       const childPrice = childUnitPrice * passengerTypes.child;
       total += childPrice;
       breakdown.child = {
         count: passengerTypes.child,
         unitPrice: basePrice,
-        discount: discountRates.child * 100,
+        discount: childDiscount * 100,
         discountedPrice: childUnitPrice,
         total: childPrice
       };
@@ -96,9 +106,6 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
         const planning = ticket.planningInfo || {};
         const depTime = planning?.departure || "N/A";
         const arrTime = planning?.arrival || "N/A";
-        const businessPrice = planning?.business || "N/A";
-        const promoPrice = planning?.promo || "N/A";
-        const economyPrice = planning?.economy || "N/A";
         const seatType = planning?.type || "N/A";
 
         // Set price based on selected seat type
@@ -191,7 +198,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
                         Student × {passengerTypes.student} 
-                        <span className="text-green-600 ml-1">(10% off)</span>
+                        <span className="text-green-600 ml-1">({studentDiscount * 100}% off)</span>
                       </div>
                       {passengerPrices.breakdown.student && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -205,7 +212,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo }) => {
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
                         Senior × {passengerTypes.senior}
-                        <span className="text-green-600 ml-1">(20% off)</span>
+                        <span className="text-green-600 ml-1">({seniorDiscount * 100}% off)</span>
                       </div>
                       {passengerPrices.breakdown.senior && (
                         <div className="font-bold" style={{ color: colorStyle }}>
