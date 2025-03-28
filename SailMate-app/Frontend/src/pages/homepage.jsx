@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import "../assets/styles/homepage.css";
 import Cards from "../components/cards.jsx";
 import creditCard from "../assets/images/secure-payment.png";
@@ -17,10 +18,44 @@ import ferry3 from "../assets/images/ferry3.png";
 import ferry4 from "../assets/images/ferry4.png";
 import Button from "../components/Button";
 
+const API_URL = "http://localhost:8080/api";
 
 const Homepage = () => {
   const navigate = useNavigate();
   const {isSignedIn} = useSession();
+
+  const [stations, setStations] = useState([]);
+  const [stationsLoaded, setStationsLoaded] = useState(false);
+  const [stationsArray, setStationsArray] = useState([]);
+  
+
+  // Fetch stations on component mount
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        // First try to get data from the API
+        const response = await axios.get(`${API_URL}/stations`);
+        
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const stationTitles = response.data.map(station => station.title);
+          setStationsArray(response.data);
+          setStations(stationTitles);
+        } else {
+          // Fallback to hardcoded values if API returns empty array
+          console.log("API returned empty array, using hardcoded stations");
+          setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+        }
+      } catch (err) {
+        console.error("Error fetching stations:", err);
+        // Fallback to hardcoded stations if API fails
+        setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+      } finally {
+        setStationsLoaded(true);
+      }
+    };
+    
+    fetchStations();
+  }, []);
   
   const location = useLocation();
   // Get today's date in YYYY-MM-DD format for min date validation
@@ -29,6 +64,7 @@ const Homepage = () => {
   
   // Form state
   const [tripType, setTripType] = useState("one-way");
+  const [availableVoyages, setAvailableVoyages] = useState();
   const [formData, setFormData] = useState({
     departure: "",
     arrival: "",
@@ -43,9 +79,9 @@ const Homepage = () => {
     if (voyageData) {
       // Update form data with voyage details
       setFormData({
-        departure: voyageData.from,
-        arrival: voyageData.to,
-        departureDate: voyageData.date,
+        departure: voyageData.fromStationTitle,
+        arrival: voyageData.toStationTitle,
+        departureDate: voyageData.departureDate,
         returnDate: "",
         passengers: 1
       });
@@ -54,7 +90,8 @@ const Homepage = () => {
       setPassengerDetails({
         adult: 1,
         student: 0,
-        senior: 0
+        senior: 0,
+        child: 0
       });
       
     }
@@ -64,11 +101,12 @@ const Homepage = () => {
   const [passengerDetails, setPassengerDetails] = useState({
     adult: 0,
     student: 0,
-    senior: 0
+    senior: 0,
+    child: 0
   });
   
   // Calculate total passengers
-  const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior;
+  const totalPassengers = passengerDetails.adult + passengerDetails.student + passengerDetails.senior + passengerDetails.child;
   
   // Update formData when passenger details change
   useEffect(() => {
@@ -132,7 +170,7 @@ const Homepage = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if(!isSignedIn) {
       navigate("/sign-in");
@@ -147,24 +185,82 @@ const Homepage = () => {
       alert("Please enter a valid number of passengers.");
       return;
     }
-    
-    // Create trip data to pass via location state
-    const tripData = {
-      ...formData,
-      tripType,
-      passengerTypes: passengerDetails
-    };
-    
-    navigate('/ferry-ticket-form', { 
-      state: { 
-        tripData,
-        from: 'homepage',
-        timestamp: Date.now()
-      } 
-    });
-    console.log(tripData);
-  };
 
+    if(passengerDetails.child != 0 && (passengerDetails.adult === 0 && passengerDetails.senior === 0)){
+      alert("There should be at least 1 adult passenger for children!");
+      return;
+    }
+
+    try {
+      // Create trip data to pass via location state
+      const tripData = {
+        ...formData,
+        tripType,
+        passengerTypes: passengerDetails,
+      };
+    
+      let voyageData; // Create a local variable to store the response data
+    
+      if(formData.returnDate != ""){
+        const response1 = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            departureDate: formData.departureDate
+          }
+        });
+        const response2 = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            departureDate: formData.returnDate
+          }
+        });
+    
+        if(response1.data.length === 0 || response2.data.length === 0){
+          alert("No voyages available for your selected route and date. Please try different options.");
+          return;
+        } else {
+          voyageData = [response1.data, response2.data];
+          setAvailableVoyages(voyageData);
+        }
+      }
+      else {
+        const response = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            departureDate: formData.departureDate
+          }
+        });
+        console.log(response);
+        // Check if there are any voyages available
+        if (!response.data || response.data.length === 0) {
+          alert("No voyages available for your selected route and date. Please try different options.");
+          return;
+        }
+        else {
+          voyageData = response.data;
+          setAvailableVoyages(voyageData);
+        }
+      }
+    
+      // Use the local variable instead of the state variable that hasn't updated yet
+      navigate('/ferry-ticket-form', { 
+        state: { 
+          tripData,
+          availableVoyages: voyageData, // Use the local variable here
+          from: 'homepage',
+          timestamp: Date.now()
+        } 
+      });
+      console.log(tripData);
+    } catch (error) {
+      console.error("Error searching for voyages:", error);
+      alert("There was a problem searching for voyages. Please try again later.");
+    }
+  };
+  
   // Add this useEffect hook near your other hooks at the top of the component
   const [dropdownPosition, setDropdownPosition] = useState('bottom');
 
@@ -334,10 +430,15 @@ const Homepage = () => {
                 required
               >
                 <option value="">Select Departure</option>
-                <option value="Yenikapı" disabled={formData.arrival === "Yenikapı"}>Yenikapı</option>
-                <option value="Bursa" disabled={formData.arrival === "Bursa"}>Bursa</option>
-                <option value="Bandırma" disabled={formData.arrival === "Bandırma"}>Bandırma</option>
-                <option value="Yalova" disabled={formData.arrival === "Yalova"}>Yalova</option>
+                {stations.map(station => (
+                  <option 
+                    key={station} 
+                    value={station}
+                    disabled={formData.arrival === station}
+                  >
+                    {station}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -370,10 +471,15 @@ const Homepage = () => {
                 required
               >
                 <option value="">Select Arrival</option>
-                <option value="Yenikapı" disabled={formData.departure === "Yenikapı"}>Yenikapı</option>
-                <option value="Bursa" disabled={formData.departure === "Bursa"}>Bursa</option>
-                <option value="Bandırma" disabled={formData.departure === "Bandırma"}>Bandırma</option>
-                <option value="Yalova" disabled={formData.departure === "Yalova"}>Yalova</option>
+                {stations.map(station => (
+                  <option 
+                    key={station} 
+                    value={station}
+                    disabled={formData.departure === station}
+                  >
+                    {station}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -482,7 +588,7 @@ const Homepage = () => {
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <div className="font-medium text-gray-800">Students</div>
-                    <div className="text-xs text-gray-500 mt-0.5">10-25 years</div>
+                    <div className="text-xs text-gray-500 mt-0.5">8-25 years</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -530,8 +636,32 @@ const Homepage = () => {
                       +
                     </button>
                   </div>
+                </div>          
+                <div className="flex justify-between items-center mb-5">
+                  <div>
+                    <div className="font-medium text-gray-800">Child</div>
+                    <div className="text-xs text-gray-500 mt-0.5">0 - 8 years</div>
+                  </div>
+                  <div className="flex items-center">
+                    <button 
+                      type="button"
+                      onClick={() => updatePassengerCount('child', -1)}
+                      disabled={passengerDetails.child <= 0}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${passengerDetails.child <= 0 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
+                    >
+                      -
+                    </button>
+                    <span className="mx-4 text-gray-800 font-medium">{passengerDetails.child}</span>
+                    <button 
+                      type="button"
+                      onClick={() => updatePassengerCount('child', 1)}
+                      disabled={totalPassengers === 8}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full border ${totalPassengers === 8 ? 'border-gray-300 text-gray-300' : 'border-[#06AED5] text-[#06AED5] hover:bg-[#06AED5] hover:text-white'}`}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-                
                 {/* Apply Button */}
                 <button 
                   type="button"
