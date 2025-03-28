@@ -21,13 +21,13 @@ const AdminHeader = () => {
     const path = location.pathname;
     let title = "Admin | SailMate";
     
-    if (path === "/adminDashboard") {
+    if (path === "/admin") {
       title = "Admin Dashboard | SailMate";
-    } else if (path === "/adminStations") {
+    } else if (path === "/admin/Stations") {
       title = "Stations | SailMate";
-    } else if (path === "/adminVoyage") {
+    } else if (path === "/admin/Voyage") {
       title = "Voyage Times | SailMate";
-    } else if (path === "/adminAnnounce") {
+    } else if (path === "/admin/Announce") {
       title = "Announcements | SailMate";
     }
     
@@ -72,7 +72,7 @@ const AdminHeader = () => {
       {/* Fixed-height container to prevent layout shifts */}
       <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 py-3 flex justify-between items-center gap-2 md:gap-3 lg:gap-4">
         {/* Left Side: Logo & Title - with minimum width to prevent squishing */}
-        <Link to="/adminDashboard" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline">
+        <Link to="/admin" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline">
           <img 
             src={SailMateLogo} 
             alt="SailMate Logo" 
@@ -86,28 +86,28 @@ const AdminHeader = () => {
         {/* Desktop Navigation - better spacing with breakpoint adjustments */}
         <nav className="hidden md:flex md:space-x-1 lg:space-x-4 overflow-x-auto">
           <NavLink 
-            to="/adminStations" 
+            to="/admin/Stations" 
             icon={MapPin} 
             text="Stations" 
             fullText="Edit Stations"
             className="md:text-xs lg:text-sm xl:text-base"
-            isActive={isActive("/adminStations")}
+            isActive={isActive("/admin/Stations")}
           />
           <NavLink 
-            to="/adminVoyage" 
+            to="/admin/Voyage" 
             icon={Clock} 
             text="Voyages" 
             fullText="Voyage Times"
             className="md:text-xs lg:text-sm xl:text-base"
-            isActive={isActive("/adminVoyage")}
+            isActive={isActive("/admin/Voyage")}
           />
           <NavLink 
-            to="/adminAnnounce" 
+            to="/admin/Announce" 
             icon={Bell} 
             text="Announcements" 
             fullText="Announcements"
             className="md:text-xs lg:text-sm xl:text-base"
-            isActive={isActive("/adminAnnounce")}
+            isActive={isActive("/admin/Announce")}
           />
         </nav>
 
@@ -138,25 +138,25 @@ const AdminHeader = () => {
       >
         <div className="flex flex-col px-4 py-2 gap-2 bg-[#0599bc]">
           <NavLink 
-            to="/adminStations" 
+            to="/admin/Stations" 
             icon={MapPin} 
             text="Edit Stations" 
             mobile={true} 
-            isActive={isActive("/adminStations")}
+            isActive={isActive("/admin/Stations")}
           />
           <NavLink 
-            to="/adminVoyage" 
+            to="/admin/Voyage" 
             icon={Clock} 
             text="Voyage Times" 
             mobile={true} 
-            isActive={isActive("/adminVoyage")}
+            isActive={isActive("/admin/Voyage")}
           />
           <NavLink 
-            to="/adminAnnounce" 
+            to="/admin/Announce" 
             icon={Bell} 
             text="Announcements" 
             mobile={true} 
-            isActive={isActive("/adminAnnounce")}
+            isActive={isActive("/admin/Announce")}
           />
         </div>
       </div>

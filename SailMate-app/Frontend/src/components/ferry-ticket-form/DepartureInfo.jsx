@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { User, GraduationCap, UserCheck } from "lucide-react"; // Import icons
+import { User, GraduationCap, UserCheck, Baby } from "lucide-react"; // Import icons
 
 const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tripType }) => {
   const isDeparture = tripType === "departure";
@@ -7,6 +7,7 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
   
   // Get the passenger type from departureDetails based on passengerIndex
   const passengerType = departureDetails.passengers[passengerIndex]?.PassengerType?.toLowerCase() || "adult";
+  const isChild = passengerType === "child";
 
   const [formData, setFormData] = useState({
     Name: "",
@@ -34,15 +35,19 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
   }, [passengerType]);
 
   useEffect(() => {
+    // For child passenger type, we only validate Name, Surname, and BirthDate
+    const requiredFields = isChild ? ['Name', 'Surname', 'BirthDate'] : 
+      ['Name', 'Surname', 'Phone', 'BirthDate', 'Email'];
+    
     const isValid =
-      Object.values(errors).every((err) => err === "") &&
-      Object.values(formData).every((val) => val !== "");
+      requiredFields.every(field => errors[field] === "") &&
+      requiredFields.every(field => formData[field] !== "");
 
     if (isValid !== prevIsValidRef.current) {
       prevIsValidRef.current = isValid;
       onPassengerChange(passengerIndex, "isValid", isValid);
     }
-  }, [errors, formData, passengerIndex, onPassengerChange]);
+  }, [errors, formData, passengerIndex, onPassengerChange, isChild]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
@@ -68,8 +73,10 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
           else if (!/^[a-zA-Z\s]+$/.test(value.trim())) error = `${field} invalid entry`;
           break;
         case "Phone":
-          if (!value.trim()) error = "Phone is required";
-          else if (!/^\+?[1-9]\d{9,14}$/.test(value.trim())) error = "Invalid phone number";
+          if (!isChild) { // Skip validation for child
+            if (!value.trim()) error = "Phone is required";
+            else if (!/^\+?[1-9]\d{9,14}$/.test(value.trim())) error = "Invalid phone number";
+          }
           break;
         case "BirthDate":
           if (!value.trim()) error = "Birth Date is required";
@@ -100,20 +107,24 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
               error = "Senior passengers must be 65 years old or older";
             } else if (passengerType === "adult" && adjustedAge < 20) {
               error = "Adult passengers must be 20 years old or older";
+            } else if (passengerType === "child" && adjustedAge >= 8) {
+              error = "Child passengers must be under 8 years old";
             }
           }
           break;
         case "Email":
-          if (!value) {
-            error = "Email is required";
-          } else if (value !== value.trim()) {
-            // Check specifically for leading or trailing spaces
-            error = "Email cannot have leading or trailing spaces";
-          } else if (/\s/.test(value)) {
-            // Check for spaces anywhere in the email
-            error = "Email cannot contain spaces";
-          } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-            error = "Invalid email address";
+          if (!isChild) { // Skip validation for child
+            if (!value) {
+              error = "Email is required";
+            } else if (value !== value.trim()) {
+              // Check specifically for leading or trailing spaces
+              error = "Email cannot have leading or trailing spaces";
+            } else if (/\s/.test(value)) {
+              // Check for spaces anywhere in the email
+              error = "Email cannot contain spaces";
+            } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+              error = "Invalid email address";
+            }
           }
           break;
         default:
@@ -131,10 +142,15 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
         return <GraduationCap size={24} className="text-white" />;
       case "senior":
         return <UserCheck size={24} className="text-white" />;
+      case "child":
+        return <Baby size={24} className="text-white" />;
       default:
         return <User size={24} className="text-white" />;
     }
   };
+
+  // Determine which fields to display based on passenger type
+  const fieldsToShow = isChild ? ["Name", "Surname"] : ["Name", "Surname", "Phone", "Email"];
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg">
@@ -148,7 +164,7 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-        {["Name", "Surname", "Phone", "Email"].map((field) => (
+        {fieldsToShow.map((field) => (
           <div key={field} className="relative">
             <label className="block text-gray-700 font-medium mb-1">
               {field} <span className="text-red-500">*</span>
@@ -185,12 +201,15 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
             }`}
             value={formData.BirthDate}
             onChange={(e) => handleInputChange("BirthDate", e.target.value)}
-            min={passengerType === "senior" ? 
-              new Date(new Date().getFullYear() - 100, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
-              new Date(new Date().getFullYear() - (passengerType === "student" ? 25 : 100), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
-            max={passengerType === "student" ? 
-              new Date(new Date().getFullYear() - 10, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
-              new Date(new Date().getFullYear() - (passengerType === "senior" ? 65 : 20), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
+            min={new Date(new Date().getFullYear() - (passengerType === "child" ? 8 : 
+                         passengerType === "student" ? 25 : 
+                         passengerType === "senior" ? 100 : 100), 
+                 new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
+            max={passengerType === "child" ? 
+                new Date().toISOString().split("T")[0] :
+                passengerType === "student" ? 
+                new Date(new Date().getFullYear() - 10, new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0] : 
+                new Date(new Date().getFullYear() - (passengerType === "senior" ? 65 : 20), new Date().getMonth(), new Date().getDate()).toISOString().split("T")[0]}
           />
           <div className="h-5 mt-1 text-sm text-red-500 transition-opacity duration-300">
             {errors["BirthDate"] || ""}

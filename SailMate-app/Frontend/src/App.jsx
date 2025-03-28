@@ -68,10 +68,10 @@ const AnimatedRoutes = () => {
 
         <Route element={<AdminRBA />}>
           <Route element={<AdminLayout />}>
-            <Route path="/adminDashboard" element={<AdminDashboard />} />
-            <Route path="/adminStations" element={<AdminStations />} />
-            <Route path="/adminAnnounce" element={<AdminAnnounce />} />
-            <Route path="/adminVoyage" element={<AdminVoyage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/Stations" element={<AdminStations />} />
+            <Route path="/admin/Announce" element={<AdminAnnounce />} />
+            <Route path="/admin/Voyage" element={<AdminVoyage />} />
           </Route>
         </Route>
 

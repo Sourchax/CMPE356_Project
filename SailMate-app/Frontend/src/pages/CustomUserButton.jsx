@@ -167,23 +167,23 @@ const CustomUserButton = () => {
               <li
                 className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
-                  if (location.pathname === "/adminStations" || 
-                      location.pathname === "/adminAnnounce" || 
-                      location.pathname === "/adminVoyage"   ||
-                      location.pathname === "/adminDashboard") {
+                  if (location.pathname === "/admin/Stations" || 
+                      location.pathname === "/admin/Announce" || 
+                      location.pathname === "/admin/Voyage"   ||
+                      location.pathname === "/admin") {
                     navigate("/");
                   } else {
-                    navigate("/adminDashboard");
+                    navigate("/admin");
                   }
                   handleMenuClose();
                 }}
               >
                 <LayoutDashboard size={isMobile ? 16 : 18} className="flex-shrink-0" />
                 <span>
-                  {location.pathname === "/adminStations" || 
-                   location.pathname === "/adminAnnounce" || 
-                   location.pathname === "/adminVoyage"   ||
-                   location.pathname === "/adminDashboard"
+                  {location.pathname === "/admin/Stations" || 
+                   location.pathname === "/admin/Announce" || 
+                   location.pathname === "/admin/Voyage"   ||
+                   location.pathname === "/admin"
                     ? "Switch to User Mode" 
                     : "Switch to Admin Dashboard"}
                 </span>

@@ -3,6 +3,7 @@ import JourneyCatagory from "../components/ferry-ticket-form/JourneyCatagory.jsx
 import TicketSum from "../components/ferry-ticket-form/TicketSum.jsx";
 import PaymentConfirmation from "../components/ferry-ticket-form/PaymentConfirmation.jsx";
 import { FaClock } from 'react-icons/fa';
+import axios from 'axios';
 import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
 import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
 import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
@@ -14,6 +15,8 @@ const steps = [
   { label: "Payment", icon: "💳" },
   { label: "Success", icon: "✅" },
 ];
+
+const API_URL = "http://localhost:8080/api";
 
 const ProgressBar = ({ currentStep, width }) => {
   return (
@@ -49,6 +52,28 @@ const ProgressBar = ({ currentStep, width }) => {
 };
 
 const FerryTicketForm = () => {
+
+  const [prices, setPrices] = useState([]);
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        // First try to get data from the API
+        const response = await axios.get(`${API_URL}/prices`);
+        
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          setPrices(response.data);
+        } else {
+          console.log("API returned empty array!");
+        }
+      } catch (err) {
+        console.error("Error fetching stations:", err);
+      }
+    };
+    
+    fetchPrices();
+  }, []);
+
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
@@ -65,7 +90,8 @@ const FerryTicketForm = () => {
     // Extra protection: verify valid navigation on component mount
     const isValidNavigation = location.state && 
                              location.state.from === 'homepage' && 
-                             location.state.tripData;
+                             location.state.tripData && 
+                             location.state.availableVoyages;
                              
     if (!isValidNavigation) {
       // Redirect to homepage if accessed improperly
@@ -91,7 +117,7 @@ const FerryTicketForm = () => {
   // Calculate total number of passengers based on passenger types
   const calculateTotalPassengers = (passengerTypes) => {
     if (!passengerTypes) return 0;
-    return (passengerTypes.adult || 0) + (passengerTypes.student || 0) + (passengerTypes.senior || 0);
+    return (passengerTypes.adult || 0) + (passengerTypes.student || 0) + (passengerTypes.senior || 0) + (passengerTypes.child || 0);
   };
   
   const [formData, setFormData] = useState({
@@ -145,6 +171,17 @@ const FerryTicketForm = () => {
             Phone: "",
             BirthDate: "",
             Email: "",
+            isValid: false,
+          });
+        }
+
+        // Add child passengers
+        for (let i = 0; i < (passengerTypes.child || 0); i++) {
+          passengerList.push({
+            PassengerType: "Child",
+            Name: "",
+            Surname: "",
+            BirthDate: "",
             isValid: false,
           });
         }
@@ -326,7 +363,7 @@ const FerryTicketForm = () => {
           <div className={`w-full ${currentStep === 3 ? 'md:w-2/3' : 'md:w-2/3'} mb-6 md:mb-0 ${currentStep === 3 ? 'md:pr-6' : ''}`}>
             {currentStep === 1 && (
               <div>
-                <JourneyCatagory tripData={formData.tripData} onSelectDeparture={handleSelectDeparture} onSelectReturn={handleSelectReturn} />
+                <JourneyCatagory tripData={formData.tripData} availableVoyages={location.state.availableVoyages} onSelectDeparture={handleSelectDeparture} onSelectReturn={handleSelectReturn} prices={prices} />
               </div>
             )}
 
@@ -415,7 +452,7 @@ const FerryTicketForm = () => {
 
           {/* Right Side - Ticket Summary */}
           <div className="w-full md:w-1/3 md:pl-6">
-            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} />
+            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} prices= {prices} />
           </div>
         </div>
 
