@@ -22,7 +22,9 @@ const VoyageTimes = () => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+    
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(() => {
     const date = new Date();
@@ -110,6 +112,24 @@ const VoyageTimes = () => {
     
     return dateInRange && fromMatch && toMatch;
   });
+
+  const indexOfLastVoyage = currentPage * rowsPerPage;
+  const indexOfFirstVoyage = indexOfLastVoyage - rowsPerPage;
+  const paginatedVoyages = filteredVoyages.slice(indexOfFirstVoyage, indexOfLastVoyage);
+  const totalPages = Math.ceil(filteredVoyages.length / rowsPerPage);
+
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
+    setCurrentPage(1); 
+  };
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedFrom, selectedTo, startDate, endDate]);
 
   const handleBuyTicket = (voyage) => {
     if (!isSignedIn) {
@@ -306,11 +326,12 @@ const VoyageTimes = () => {
             ) : (
               <>
                 <div className="md:hidden p-4 space-y-3">
-                  {filteredVoyages.map((voyage, index) => (
+                  {paginatedVoyages.map((voyage, index) => (
                     <div 
                       key={index} 
                       className={`voyage-card ${voyage.status !== "active" ? "border-red-200 bg-red-50" : "border border-gray-200"}`}
                     >
+                      {/* Keep the existing card content */}
                       <div className="voyage-row">
                         <div>
                           <div className="font-medium text-[#0D3A73]">{voyage.fromStationTitle} to {voyage.toStationTitle}</div>
@@ -354,7 +375,7 @@ const VoyageTimes = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredVoyages.map((voyage, index) => (
+                      {paginatedVoyages.map((voyage, index) => (
                         <tr 
                           key={index} 
                           className={`${voyage.status !== "active" ? "bg-red-50" : "hover:bg-gray-50"}`}
@@ -398,6 +419,118 @@ const VoyageTimes = () => {
                   </table>
                 </div>
               </>
+            )}
+            {filteredVoyages.length > 0 && (
+              <div className="bg-white px-4 py-3 flex flex-col sm:flex-row items-center justify-between border-t border-gray-200">
+                <div className="flex-1 flex flex-col sm:flex-row items-center justify-between w-full">
+                  <div className="mb-4 sm:mb-0">
+                    <p className="text-sm text-gray-700">
+                      Showing <span className="font-medium">{indexOfFirstVoyage + 1}</span> to{" "}
+                      <span className="font-medium">
+                        {Math.min(indexOfLastVoyage, filteredVoyages.length)}
+                      </span>{" "}
+                      of <span className="font-medium">{filteredVoyages.length}</span> results
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center">
+                    <div className="mb-4 sm:mb-0 sm:mr-4">
+                      <select
+                        className="border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-[#06AED5] focus:border-[#06AED5]"
+                        value={rowsPerPage}
+                        onChange={handleRowsPerPageChange}
+                      >
+                        <option value={5}>5 per page</option>
+                        <option value={10}>10 per page</option>
+                        <option value={20}>20 per page</option>
+                      </select>
+                    </div>
+                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                      <button
+                        onClick={() => paginate(1)}
+                        disabled={currentPage === 1}
+                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === 1 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">First</span>
+                        <span className="h-5 w-5 flex justify-center items-center">«</span>
+                      </button>
+                      <button
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === 1 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">Previous</span>
+                        <span className="h-5 w-5 flex justify-center items-center">‹</span>
+                      </button>
+                      
+                      {/* Dynamic page buttons based on total pages */}
+                      {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+                        // Calculate page number to display based on current page
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          // If we have 5 or fewer pages, show all page numbers
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          // If we're near the start, show first 5 pages
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          // If we're near the end, show last 5 pages
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          // Otherwise show current page with 2 pages on each side
+                          pageNum = currentPage - 2 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => paginate(pageNum)}
+                            className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                              currentPage === pageNum
+                                ? 'z-10 bg-[#06AED5] text-white'
+                                : 'text-gray-500 hover:bg-gray-50'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                      
+                      <button
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === totalPages 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">Next</span>
+                        <span className="h-5 w-5 flex justify-center items-center">›</span>
+                      </button>
+                      <button
+                        onClick={() => paginate(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === totalPages 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">Last</span>
+                        <span className="h-5 w-5 flex justify-center items-center">»</span>
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </section>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -19,6 +19,8 @@ const AdminStations = () => {
   // For delete confirmation modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [stationToDelete, setStationToDelete] = useState(null);
+  const [hasActiveVoyages, setHasActiveVoyages] = useState(false);
+  const [checkingVoyages, setCheckingVoyages] = useState(false);
 
   const icons = [MapPin, User, Phone, Building, Home];
   
@@ -72,7 +74,7 @@ const AdminStations = () => {
     // Contact person validation - allow letters, spaces, hyphens, and apostrophes
     if (!formData.personnel.trim()) {
       newErrors.personnel = "Contact person is required";
-    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.personnel.trim())) {
+    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.personnel.trim())){
       newErrors.personnel = "Contact person can only contain letters, spaces, hyphens, and apostrophes";
     }
     
@@ -86,7 +88,7 @@ const AdminStations = () => {
     // City validation - allow letters, spaces, hyphens, and common punctuation
     if (!formData.city.trim()) {
       newErrors.city = "City is required";
-    } else if (!/^[a-zA-Z\s'-.,]+$/.test(formData.city.trim())) {
+    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.personnel.trim())) {
       newErrors.city = "City can only contain letters, spaces, and basic punctuation";
     }
     
@@ -101,9 +103,28 @@ const AdminStations = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const openDeleteConfirmation = (id) => {
+  const checkActiveVoyages = async (stationId) => {
+    setCheckingVoyages(true);
+    try {
+      // Check if there are active voyages associated with this station
+      const response = await axios.get(`${API_URL}/voyages/by-station/${stationId}`);
+      return response.data && response.data.length > 0;
+    } catch (err) {
+      console.error("Error checking active voyages:", err);
+      return false;
+    } finally {
+      setCheckingVoyages(false);
+    }
+  };
+
+  const openDeleteConfirmation = async (id) => {
     const station = stations.find(s => s.id === id);
     setStationToDelete(station);
+    
+    // Check for active voyages before showing the modal
+    const activeVoyagesExist = await checkActiveVoyages(id);
+    setHasActiveVoyages(activeVoyagesExist);
+    
     setDeleteModalOpen(true);
   };
 
@@ -114,6 +135,7 @@ const AdminStations = () => {
         setStations(stations.filter((station) => station.id !== stationToDelete.id));
         setDeleteModalOpen(false);
         setStationToDelete(null);
+        setHasActiveVoyages(false);
       } catch (err) {
         console.error("Error deleting station:", err);
         setError("Failed to delete station. Please try again.");
@@ -344,30 +366,56 @@ const AdminStations = () => {
       {deleteModalOpen && stationToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle size={24} className="text-red-600" />
-              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
-            </div>
-            
-            <p className="mb-4">Are you sure you want to delete the station <span className="font-semibold">{stationToDelete.title}</span>? This action cannot be undone.</p>
-            
-            <div className="flex justify-end gap-3 mt-5">
-              <button 
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setStationToDelete(null);
-                }} 
-                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleDelete} 
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-              >
-                Delete
-              </button>
-            </div>
+            {checkingVoyages ? (
+              <div className="text-center py-4">
+                <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
+                <p className="mt-2 text-gray-600">Checking for active voyages...</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  {hasActiveVoyages ? (
+                    <AlertTriangle size={24} className="text-orange-500" />
+                  ) : (
+                    <AlertCircle size={24} className="text-red-600" />
+                  )}
+                  <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+                </div>
+                
+                <p className="mb-4">Are you sure you want to delete the station <span className="font-semibold">{stationToDelete.title}</span>? This action cannot be undone.</p>
+                
+                {hasActiveVoyages && (
+                  <div className="p-3 mb-4 bg-orange-50 border-l-4 border-orange-500 text-orange-700 rounded">
+                    <div className="flex items-start">
+                      <AlertTriangle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium">Warning: Active Voyages Detected</p>
+                        <p className="text-sm mt-1">This station has active voyages assigned to it. Deleting it may cause issues with scheduled trips.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex justify-end gap-3 mt-5">
+                  <button 
+                    onClick={() => {
+                      setDeleteModalOpen(false);
+                      setStationToDelete(null);
+                      setHasActiveVoyages(false);
+                    }} 
+                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleDelete} 
+                    className={`px-4 py-2 ${hasActiveVoyages ? 'bg-orange-500 hover:bg-orange-600' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md transition`}
+                  >
+                    {hasActiveVoyages ? "Delete Anyway" : "Delete"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

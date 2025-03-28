@@ -65,7 +65,8 @@ const FerryTicketForm = () => {
     // Extra protection: verify valid navigation on component mount
     const isValidNavigation = location.state && 
                              location.state.from === 'homepage' && 
-                             location.state.tripData;
+                             location.state.tripData && 
+                             location.state.availableVoyages;
                              
     if (!isValidNavigation) {
       // Redirect to homepage if accessed improperly
@@ -337,7 +338,7 @@ const FerryTicketForm = () => {
           <div className={`w-full ${currentStep === 3 ? 'md:w-2/3' : 'md:w-2/3'} mb-6 md:mb-0 ${currentStep === 3 ? 'md:pr-6' : ''}`}>
             {currentStep === 1 && (
               <div>
-                <JourneyCatagory tripData={formData.tripData} onSelectDeparture={handleSelectDeparture} onSelectReturn={handleSelectReturn} />
+                <JourneyCatagory tripData={formData.tripData} availableVoyages={location.state.availableVoyages} onSelectDeparture={handleSelectDeparture} onSelectReturn={handleSelectReturn} />
               </div>
             )}
 

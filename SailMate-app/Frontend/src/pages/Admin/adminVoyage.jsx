@@ -108,6 +108,8 @@ const AdminVoyage = () => {
   const [stations, setStations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -385,7 +387,30 @@ const AdminVoyage = () => {
     }
   };
   
-  // Handle input changes in weekly schedule modal
+  const indexOfLastVoyage = currentPage * rowsPerPage;
+  const indexOfFirstVoyage = indexOfLastVoyage - rowsPerPage;
+  const currentVoyages = filteredVoyages.slice(indexOfFirstVoyage, indexOfLastVoyage);
+  const totalPages = Math.ceil(filteredVoyages.length / rowsPerPage);
+
+  // Function to change page
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, stationFilters]);
+
+  // Function to handle rows per page change
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
+    setCurrentPage(1); // Reset to first page when changing rows per page
+  };
+
+    // Handle input changes in weekly schedule modal
   const handleWeeklyScheduleChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -407,11 +432,27 @@ const AdminVoyage = () => {
         ...prev,
         daysOfWeek: updatedDays
       }));
+    } else if (name === 'numberOfWeeks') {
+      // Handle number of weeks with validation
+      let numValue = parseInt(value);
+      
+      // Enforce min and max limits
+      if (isNaN(numValue)) {
+        numValue = 1; // Default to 1 if not a number
+      } else if (numValue < 1) {
+        numValue = 1; // Enforce minimum of 1
+      } else if (numValue > 52) {
+        numValue = 52; // Enforce maximum of 52
+      }
+      
+      setWeeklySchedule(prev => ({
+        ...prev,
+        numberOfWeeks: numValue
+      }));
     } else {
       setWeeklySchedule(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : 
-               name === 'numberOfWeeks' ? parseInt(value) : value
+        [name]: type === 'checkbox' ? checked : value
       }));
     }
     
@@ -711,13 +752,13 @@ const AdminVoyage = () => {
   
   // Generate days of week options for weekly schedule
   const daysOfWeek = [
-    { value: '0', label: 'Sunday' },
     { value: '1', label: 'Monday' },
     { value: '2', label: 'Tuesday' },
     { value: '3', label: 'Wednesday' },
     { value: '4', label: 'Thursday' },
     { value: '5', label: 'Friday' },
-    { value: '6', label: 'Saturday' }
+    { value: '6', label: 'Saturday' },
+    { value: '0', label: 'Sunday' }
   ];
   
   // Ship types
@@ -746,7 +787,7 @@ const AdminVoyage = () => {
                 className="bg-[#06AED5] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-[#058aaa] transition"
               >
                 <Calendar size={18} className="mr-2" />
-                Weekly Schedule
+                Add Weekly Schedule
               </button>
               <button 
                 onClick={openAddModal}
@@ -769,7 +810,7 @@ const AdminVoyage = () => {
                 <option value="">All Departure Stations</option>
                 {stations.map(station => (
                   <option key={`from-${station.id}`} value={station.id}>
-                    {station.city} - {station.title}
+                    {station.title}
                   </option>
                 ))}
               </select>
@@ -785,7 +826,7 @@ const AdminVoyage = () => {
                 <option value="">All Arrival Stations</option>
                 {stations.map(station => (
                   <option key={`to-${station.id}`} value={station.id}>
-                    {station.city} - {station.title}
+                    {station.title}
                   </option>
                 ))}
               </select>
@@ -884,8 +925,8 @@ const AdminVoyage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredVoyages.length > 0 ? (
-                    filteredVoyages.map((voyage) => (
+                  {currentVoyages.length > 0 ? (
+                    currentVoyages.map((voyage) => (
                       <tr key={voyage.id} className={voyage.status === 'cancel' ? 'bg-red-50' : ''}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-gray-900">
@@ -951,6 +992,118 @@ const AdminVoyage = () => {
                   )}
                 </tbody>
               </table>
+              {filteredVoyages.length > 0 && (
+                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                  <div className="flex-1 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Showing <span className="font-medium">{indexOfFirstVoyage + 1}</span> to{" "}
+                        <span className="font-medium">
+                          {Math.min(indexOfLastVoyage, filteredVoyages.length)}
+                        </span>{" "}
+                        of <span className="font-medium">{filteredVoyages.length}</span> results
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="mr-4">
+                        <select
+                          className="border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-[#06AED5] focus:border-[#06AED5]"
+                          value={rowsPerPage}
+                          onChange={handleRowsPerPageChange}
+                        >
+                          <option value={10}>10 per page</option>
+                          <option value={25}>25 per page</option>
+                          <option value={50}>50 per page</option>
+                        </select>
+                      </div>
+                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button
+                          onClick={() => paginate(1)}
+                          disabled={currentPage === 1}
+                          className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === 1 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">First</span>
+                          <span className="h-5 w-5 flex justify-center items-center">«</span>
+                        </button>
+                        <button
+                          onClick={() => paginate(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === 1 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">Previous</span>
+                          <span className="h-5 w-5 flex justify-center items-center">‹</span>
+                        </button>
+                        
+                        {/* Page number buttons - show current page and up to 2 pages on each side */}
+                        {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+                          // Calculate page number to display based on current page
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            // If we have 5 or fewer pages, show all page numbers
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            // If we're near the start, show first 5 pages
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            // If we're near the end, show last 5 pages
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            // Otherwise show current page with 2 pages on each side
+                            pageNum = currentPage - 2 + i;
+                          }
+
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => paginate(pageNum)}
+                              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                                currentPage === pageNum
+                                  ? 'z-10 bg-[#06AED5] text-white focus:z-10'
+                                  : 'text-gray-500 hover:bg-gray-50'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                        
+                        <button
+                          onClick={() => paginate(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className={`relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === totalPages 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">Next</span>
+                          <span className="h-5 w-5 flex justify-center items-center">›</span>
+                        </button>
+                        <button
+                          onClick={() => paginate(totalPages)}
+                          disabled={currentPage === totalPages}
+                          className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === totalPages 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">Last</span>
+                          <span className="h-5 w-5 flex justify-center items-center">»</span>
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -983,7 +1136,7 @@ const AdminVoyage = () => {
                     <option value="">Select a station</option>
                     {stations.map(station => (
                       <option key={`modal-from-${station.id}`} value={station.id}>
-                        {station.city} - {station.title}
+                        {station.title}
                       </option>
                     ))}
                   </select>
@@ -1010,7 +1163,7 @@ const AdminVoyage = () => {
                     <option value="">Select a station</option>
                     {stations.map(station => (
                       <option key={`modal-to-${station.id}`} value={station.id}>
-                        {station.city} - {station.title}
+                        {station.title}
                       </option>
                     ))}
                   </select>
@@ -1241,7 +1394,7 @@ const AdminVoyage = () => {
                     <option value="">Select a station</option>
                     {stations.map(station => (
                       <option key={`weekly-from-${station.id}`} value={station.id}>
-                        {station.city} - {station.title}
+                        {station.title}
                       </option>
                     ))}
                   </select>
@@ -1268,7 +1421,7 @@ const AdminVoyage = () => {
                     <option value="">Select a station</option>
                     {stations.map(station => (
                       <option key={`weekly-to-${station.id}`} value={station.id}>
-                        {station.city} - {station.title}
+                        {station.title}
                       </option>
                     ))}
                   </select>
@@ -1513,7 +1666,7 @@ const AdminVoyage = () => {
             </div>
             
             <p className="mb-4">
-              Are you sure you want to delete the voyage from <span className="font-semibold">{voyageToDelete.fromStationCity} ({voyageToDelete.fromStationTitle})</span> to <span className="font-semibold">{voyageToDelete.toStationCity} ({voyageToDelete.toStationTitle})</span> on <span className="font-semibold">{formatDate(voyageToDelete.departureDate)}</span>?
+              Are you sure you want to delete the voyage from <span className="font-semibold">({voyageToDelete.fromStationTitle})</span> to <span className="font-semibold">({voyageToDelete.toStationTitle})</span> on <span className="font-semibold">{formatDate(voyageToDelete.departureDate)}</span>?
             </p>
             <p className="mb-4 text-red-600 font-medium">
               This action cannot be undone.

@@ -26,16 +26,20 @@ const Homepage = () => {
 
   const [stations, setStations] = useState([]);
   const [stationsLoaded, setStationsLoaded] = useState(false);
+  const [stationsArray, setStationsArray] = useState([]);
   
+
   // Fetch stations on component mount
   useEffect(() => {
     const fetchStations = async () => {
       try {
         // First try to get data from the API
-        const response = await axios.get(`${API_URL}/stations/titles`);
+        const response = await axios.get(`${API_URL}/stations`);
         
         if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-          setStations(response.data);
+          const stationTitles = response.data.map(station => station.title);
+          setStationsArray(response.data);
+          setStations(stationTitles);
         } else {
           // Fallback to hardcoded values if API returns empty array
           console.log("API returned empty array, using hardcoded stations");
@@ -60,6 +64,7 @@ const Homepage = () => {
   
   // Form state
   const [tripType, setTripType] = useState("one-way");
+  const [availableVoyages, setAvailableVoyages] = useState();
   const [formData, setFormData] = useState({
     departure: "",
     arrival: "",
@@ -165,7 +170,7 @@ const Homepage = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if(!isSignedIn) {
       navigate("/sign-in");
@@ -180,28 +185,82 @@ const Homepage = () => {
       alert("Please enter a valid number of passengers.");
       return;
     }
-    
+
     if(passengerDetails.child != 0 && (passengerDetails.adult === 0 && passengerDetails.senior === 0)){
       alert("There should be at least 1 adult passenger for children!");
       return;
     }
-    // Create trip data to pass via location state
-    const tripData = {
-      ...formData,
-      tripType,
-      passengerTypes: passengerDetails
-    };
-    
-    navigate('/ferry-ticket-form', { 
-      state: { 
-        tripData,
-        from: 'homepage',
-        timestamp: Date.now()
-      } 
-    });
-    console.log(tripData);
-  };
 
+    try {
+      // Create trip data to pass via location state
+      const tripData = {
+        ...formData,
+        tripType,
+        passengerTypes: passengerDetails,
+      };
+    
+      let voyageData; // Create a local variable to store the response data
+    
+      if(formData.returnDate != ""){
+        const response1 = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            departureDate: formData.departureDate
+          }
+        });
+        const response2 = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            departureDate: formData.returnDate
+          }
+        });
+    
+        if(response1.data.length === 0 || response2.data.length === 0){
+          alert("No voyages available for your selected route and date. Please try different options.");
+          return;
+        } else {
+          voyageData = [response1.data, response2.data];
+          setAvailableVoyages(voyageData);
+        }
+      }
+      else {
+        const response = await axios.get(`${API_URL}/voyages/search`, {
+          params: {
+            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            departureDate: formData.departureDate
+          }
+        });
+        console.log(response);
+        // Check if there are any voyages available
+        if (!response.data || response.data.length === 0) {
+          alert("No voyages available for your selected route and date. Please try different options.");
+          return;
+        }
+        else {
+          voyageData = response.data;
+          setAvailableVoyages(voyageData);
+        }
+      }
+    
+      // Use the local variable instead of the state variable that hasn't updated yet
+      navigate('/ferry-ticket-form', { 
+        state: { 
+          tripData,
+          availableVoyages: voyageData, // Use the local variable here
+          from: 'homepage',
+          timestamp: Date.now()
+        } 
+      });
+      console.log(tripData);
+    } catch (error) {
+      console.error("Error searching for voyages:", error);
+      alert("There was a problem searching for voyages. Please try again later.");
+    }
+  };
+  
   // Add this useEffect hook near your other hooks at the top of the component
   const [dropdownPosition, setDropdownPosition] = useState('bottom');
 
