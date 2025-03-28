@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MapPin, Clock, Bell, DollarSign, Menu, X } from 'lucide-react';
+import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
@@ -26,6 +26,9 @@ const ManagerHeader = () => {
             title = "Complaints | SailMate";
         } else if (path === "/managerFinance") {
             title = "Finance | SailMate";
+        }
+        else if (path === "/managerCharts") {
+            title = "Charts | SailMate";
         }
         
         document.title = title;
@@ -116,6 +119,13 @@ const ManagerHeader = () => {
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/managerFinance')}
                     />
+                    <NavLink
+                        to="/managerCharts"
+                        icon={TrendingUp}
+                        text="Charts"
+                        className="md:text-xs lg:text-sm xl:text-base"
+                        isActive={isActive('/managerCharts')}
+                    />
                 </nav>
 
                 {/* User Profile Button and Mobile Menu Button */}
@@ -171,6 +181,13 @@ const ManagerHeader = () => {
                         text="Finance" 
                         mobile={true} 
                         isActive={isActive('/managerFinance')}
+                    />
+                    <NavLink
+                        to="/managerCharts"
+                        icon={TrendingUp}
+                        text="Charts"
+                        mobile={true}
+                        isActive={isActive('/managerCharts')}
                     />
                 </div>
             </div>

@@ -47,7 +47,8 @@ const ManagerDashboard = () => {
     activeUsers: 42,
     pendingComplaints: 3,
     totalLogs: 156,
-    ticketTypes: 8
+    ticketTypes: 8,
+    charts: 2
   };
 
   // Summary stats array
@@ -55,7 +56,8 @@ const ManagerDashboard = () => {
     { label: "Active Users", value: stats.activeUsers, icon: Users },
     { label: "Pending Complaints", value: stats.pendingComplaints, icon: AlertTriangle },
     { label: "Total Logs", value: stats.totalLogs, icon: Activity },
-    { label: "Ticket Types", value: stats.ticketTypes, icon: DollarSign }
+    { label: "Ticket Types", value: stats.ticketTypes, icon: DollarSign },
+    { label: "Charts", value: stats.charts, icon: TrendingUp }
   ];
 
   // Card data
@@ -99,7 +101,18 @@ const ManagerDashboard = () => {
       borderColor: "border-green-200",
       path: "/managerFinance",
       count: stats.ticketTypes
-    }
+    },
+    {
+        title: "Charts",
+        description: "View visual analytics and trends",
+        icon: TrendingUp,
+        iconColor: "#6366F1",
+        bgColor: "#EEF2FF",
+        borderColor: "border-indigo-200",
+        path: "/managerCharts",
+        count: stats.charts
+      }
+
   ];
 
   // Quick actions

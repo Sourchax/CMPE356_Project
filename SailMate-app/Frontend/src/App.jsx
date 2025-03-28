@@ -27,6 +27,7 @@ import ManagerLogs from "./pages/Manager/managerLogs";
 import ManagerUsers from "./pages/Manager/managerUsers";
 import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
+import ManagerCharts from "./pages/Manager/managerCharts";
 import AdminVoyage from "./pages/Admin/adminVoyage";
 import ProtectedRoute from "./RBAcomponents/ProtectedRoute";
 import CustomerRBA from "./RBAcomponents/customerRBA";
@@ -83,6 +84,7 @@ const AnimatedRoutes = () => {
             <Route path="/managerUsers" element={<ManagerUsers />} />
             <Route path="/managerComplaints" element={<ManagerComplaints />} />
             <Route path="/managerFinance" element={<ManagerFinance />} />
+            <Route path="/managerCharts" element={<ManagerCharts />} />
           </Route>
         </Route>
 
