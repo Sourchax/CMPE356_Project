@@ -68,10 +68,10 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     } else {
       switch (field) {
         case "Name":
-        case "Surname":
-          if (!value.trim()) error = `${field} is required`;
-          else if (!/^[a-zA-Z\s]+$/.test(value.trim())) error = `${field} invalid entry`;
-          break;
+          case "Surname":
+            if (!value.trim()) error = `${field} is required`;
+            else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value.trim())) error = `${field} invalid entry`;
+            break;
         case "Phone":
           if (!isChild) { // Skip validation for child
             if (!value.trim()) error = "Phone is required";

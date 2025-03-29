@@ -16,18 +16,18 @@ const ManagerHeader = () => {
         const path = location.pathname;
         let title = "Manager | SailMate";
 
-        if (path === "/managerDashboard") {
+        if (path === "/manager") {
             title = "Manager Dashboard | SailMate";
-        } else if (path === "/managerLogs") {
+        } else if (path === "/manager/Logs") {
             title = "Activity Logs | SailMate";
-        } else if (path === "/managerUsers") {
+        } else if (path === "/manager/Users") {
             title = "User Management | SailMate";
-        } else if (path === "/managerComplaints") {
+        } else if (path === "/manager/Complaints") {
             title = "Complaints | SailMate";
-        } else if (path === "/managerFinance") {
+        } else if (path === "/manager/Finance") {
             title = "Finance | SailMate";
         }
-        else if (path === "/managerCharts") {
+        else if (path === "/manager/Charts") {
             title = "Charts | SailMate";
         }
 
@@ -76,7 +76,7 @@ const ManagerHeader = () => {
         <header className="bg-[#D1FFD7] text-gray-800 shadow-lg">
             <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 py-3 flex justify-between items-center gap-2 md:gap-3 lg:gap-4">
                 {/* Left Side: Logo & Title */}
-                <Link to="/managerDashboard" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline text-gray-800">
+                <Link to="/manager" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline text-gray-800">
                     <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0">
                         <img
                             src={SailMateLogo}
@@ -92,39 +92,39 @@ const ManagerHeader = () => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex md:space-x-1 lg:space-x-4 overflow-x-auto">
                     <NavLink
-                        to="/managerLogs"
+                        to="/manager/Logs"
                         icon={MapPin}
                         text="Logs"
                         className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/managerLogs')}
+                        isActive={isActive('/manager/Logs')}
                     />
                     <NavLink
-                        to="/managerUsers"
+                        to="/manager/Users"
                         icon={Clock}
                         text="Users"
                         className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/managerUsers')}
+                        isActive={isActive('/manager/Users')}
                     />
                     <NavLink
-                        to="/managerComplaints"
+                        to="/manager/Complaints"
                         icon={Bell}
                         text="Complaints"
                         className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/managerComplaints')}
+                        isActive={isActive('/manager/Complaints')}
                     />
                     <NavLink
-                        to="/managerFinance"
+                        to="/manager/Finance"
                         icon={DollarSign}
                         text="Finance"
                         className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/managerFinance')}
+                        isActive={isActive('/manager/Finance')}
                     />
                     <NavLink
-                        to="/managerCharts"
+                        to="/manager/Charts"
                         icon={TrendingUp}
                         text="Charts"
                         className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/managerCharts')}
+                        isActive={isActive('/manager/Charts')}
                     />
                 </nav>
 

@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapPin, Calendar, ChevronRight } from 'lucide-react';
 
-const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
+const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculated }) => {
+  const [departureTotalPrice, setDepartureTotalPrice] = useState(0);
+  const [returnTotalPrice, setReturnTotalPrice] = useState(0);
+  
   if (!ticketTripInfo) return <div>No ticket data available</div>;
 
   const { departure, arrival, departureDate, returnDate, passengers, passengerTypes } = ticketTripInfo;
@@ -24,8 +27,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
   const childDiscount = 1.00; // 100% discount for children
 
   // Calculate initial prices (before discounts)
-  let departureTotalPrice = serviceFee * passengers;
-  let returnTotalPrice = serviceFee * passengers;
+  let departurePriceValue = serviceFee * passengers;
+  let returnPriceValue = serviceFee * passengers;
 
   const tickets = [
     { label: "ONE WAY", date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
@@ -99,6 +102,25 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
     return { total, breakdown };
   };
 
+  // Update prices and notify parent component when they change
+  useEffect(() => {
+    // Set local state
+    setDepartureTotalPrice(departurePriceValue);
+    setReturnTotalPrice(returnPriceValue);
+    
+    // Notify parent component through callback with just departure and return prices
+    if (onPriceCalculated) {
+      onPriceCalculated({
+        departure: departurePriceValue,
+        return: returnPriceValue
+      });
+    }
+  }, [
+    departurePriceValue, 
+    returnPriceValue, 
+    onPriceCalculated
+  ]);
+
   return (
     <>
       {tickets.map((ticket, index) => {
@@ -125,9 +147,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
         
         // Update total prices for departure and return
         if (ticket.label === "ONE WAY" && passengerPrices.total !== "N/A") {
-          departureTotalPrice = departureTotalPrice - (serviceFee * passengers) + passengerPrices.total + (serviceFee * passengers);
+          departurePriceValue = (passengerPrices.total + (serviceFee * passengers));
         } else if (ticket.label === "RETURN" && passengerPrices.total !== "N/A") {
-          returnTotalPrice = returnTotalPrice - (serviceFee * passengers) + passengerPrices.total + (serviceFee * passengers);
+          returnPriceValue = (passengerPrices.total + (serviceFee * passengers));
         }
 
         // Set the overall color style based on the selected seat type
@@ -260,7 +282,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
             <div className="bg-green-500 text-white p-2 flex justify-between items-center" style={{ backgroundColor: colorStyle }}>
               <div>TOTAL</div>
               <div>
-                {ticket.label === "ONE WAY" ? `₺${departureTotalPrice.toFixed(2)}` : `₺${returnTotalPrice.toFixed(2)}`}
+                {ticket.label === "ONE WAY" ? `₺${departurePriceValue.toFixed(2)}` : `₺${returnPriceValue.toFixed(2)}`}
               </div>
             </div>
           </div>
@@ -272,8 +294,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices }) => {
         <div className="text-lg font-bold">Grand Total</div>
         <div className="text-xl font-bold">
           {returnDate === "" ? 
-            `₺${departureTotalPrice.toFixed(2)}` : 
-            `₺${(departureTotalPrice + returnTotalPrice).toFixed(2)}`}
+            `₺${departurePriceValue.toFixed(2)}` : 
+            `₺${(departurePriceValue + returnPriceValue).toFixed(2)}`}
         </div>
       </div>
     </>

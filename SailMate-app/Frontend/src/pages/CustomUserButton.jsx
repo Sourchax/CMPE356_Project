@@ -195,25 +195,27 @@ const CustomUserButton = () => {
               <li
                 className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
-                  if (location.pathname === "/managerDashboard" || 
-                      location.pathname === "/managerLogs" || 
-                      location.pathname === "/managerUsers" || 
-                      location.pathname === "/managerComplaints" || 
-                      location.pathname === "/managerFinance") {
+                  if (location.pathname === "/manager" || 
+                      location.pathname === "/manager/Logs" || 
+                      location.pathname === "/manager/Users" || 
+                      location.pathname === "/manager/Complaints" || 
+                      location.pathname === "/manager/Finance" ||
+                      location.pathname === "/manager/Charts") {
                     navigate("/");
                   } else {
-                    navigate("/managerDashboard");
+                    navigate("/manager");
                   }
                   handleMenuClose();
                 }}
               >
                 <LayoutDashboard size={isMobile ? 16 : 18} className="flex-shrink-0" />
                 <span>
-                  {location.pathname === "/managerLogs" || 
-                   location.pathname === "/managerUsers" || 
-                   location.pathname === "/managerComplaints" || 
-                   location.pathname === "/managerFinance" ||
-                   location.pathname === "/managerDashboard"
+                  {location.pathname === "/manager/Logs" || 
+                   location.pathname === "/manager/Users" || 
+                   location.pathname === "/manager/Complaints" || 
+                   location.pathname === "/manager/Finance" ||
+                   location.pathname === "/manager/Charts" ||
+                   location.pathname === "/manager"
                     ? "Switch to User Mode" 
                     : "Switch to Manager Dashboard"}
                 </span>

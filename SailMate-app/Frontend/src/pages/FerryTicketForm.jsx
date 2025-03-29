@@ -78,6 +78,15 @@ const FerryTicketForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
   const { userId, isLoaded } = useAuth();
+
+  const [departurePrice, setDeparturePrice] = useState(0);
+  const [returnPrice, setReturnPrice] = useState(0);
+  
+  const handlePriceCalculated = (prices) => {
+    // Now you have access to just departure and return prices
+    setDeparturePrice(prices.departure);
+    setReturnPrice(prices.return);
+  };
   
   // Check authentication and redirect if needed
   useEffect(() => {
@@ -221,8 +230,90 @@ const FerryTicketForm = () => {
     }
     setCurrentStep((prev) => prev - 1);
   }
-  const handleSubmit = () => {
-    setCurrentStep(4);
+  const handleSubmit = async () => {
+    const ticketsCreated = await createTickets();
+    
+    if (ticketsCreated) {
+      // If tickets were created successfully, show the Thank You page
+      setCurrentStep(4);
+    }
+  };
+
+  const createTickets = async () => {
+    try {
+      // Format the passenger data for the API
+      
+      const formatPassengers = (passengers, count) => {
+        return passengers.slice(0, count).map(passenger => ({
+          name: passenger.Name,
+          surname: passenger.Surname,
+          birthDate: passenger.BirthDate,
+          email: passenger.Email || "",
+          phoneNo: passenger.Phone || ""
+        }));
+      };
+  
+      // Get departure voyage passengers
+      const departurePassengers = formatPassengers(
+        formData.departureDetails.passengers,
+        formData.departureDetails.passengerCount
+      );
+  
+      // Create the departure ticket request
+      const departureTicketRequest = {
+        voyageId: formData.selectedDeparture.voyageId,
+        passengerCount: formData.departureDetails.passengerCount,
+        totalPrice: departurePrice,
+        ticketClass: formData.selectedDeparture.type ,
+        selectedSeats: formData.selectedDeparture.selectedSeats || "auto",
+        userId: userId, // From your Clerk authentication
+        passengers: departurePassengers
+      };
+  
+      // Create departure ticket
+      console.log("Departure ticket request:", departureTicketRequest);
+      const departureTicketResponse = await axios.post(`${API_URL}/tickets`, departureTicketRequest);
+      
+      // If round trip, create the return ticket as well
+      let returnTicketResponse = null;
+      if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
+        // Get return voyage passengers
+        const returnPassengers = formatPassengers(
+          formData.departureDetails.passengers.slice(formData.departureDetails.passengerCount),
+          formData.departureDetails.passengerCount
+        );
+  
+        // Create the return ticket request
+        const returnTicketRequest = {
+          voyageId: formData.selectedReturn.voyageId,
+          passengerCount: formData.departureDetails.passengerCount,
+          totalPrice: returnPrice,
+          ticketClass: formData.selectedReturn.ticketClass,
+          selectedSeats: formData.selectedReturn.selectedSeats || "auto",
+          userId: userId,
+          passengers: returnPassengers
+        };
+  
+        // Create return ticket
+        returnTicketResponse = await axios.post(`${API_URL}/tickets`, returnTicketRequest);
+        console.log("Return ticket created:", returnTicketResponse.data);
+      }
+  
+      // Store ticket information in state or localStorage for the Thank You page
+      const ticketInfo = {
+        departureTicket: departureTicketResponse.data,
+        returnTicket: returnTicketResponse ? returnTicketResponse.data : null
+      };
+      
+      // Could save this to state or localStorage for display on Thank You page
+      localStorage.setItem('lastTicketInfo', JSON.stringify(ticketInfo));
+      
+      return true;
+    } catch (error) {
+      console.error("Error creating tickets:", error);
+      alert("There was an error creating your tickets. Please try again.");
+      return false;
+    }
   };
 
   const handleSelectDeparture = (selectedDeparture) => {
@@ -262,12 +353,12 @@ const FerryTicketForm = () => {
     });
   };
 
-  const handleCCDataChange = (data) => {
+  const handleCCDataChange = async (data) => {
     setFormData((prevData) => ({
       ...prevData,
       creditCardDetails: data,
     }));
-    handleSubmit();
+    await handleSubmit();
   };
 
   const handleNotifyChange = (field, value) => {
@@ -452,7 +543,7 @@ const FerryTicketForm = () => {
 
           {/* Right Side - Ticket Summary */}
           <div className="w-full md:w-1/3 md:pl-6">
-            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} prices= {prices} />
+            <TicketSum ticketPlanningInfo={formData.planningData} ticketTripInfo={formData.tripData} prices= {prices} onPriceCalculated={handlePriceCalculated}/>
           </div>
         </div>
 

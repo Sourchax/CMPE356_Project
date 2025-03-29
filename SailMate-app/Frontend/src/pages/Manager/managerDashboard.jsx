@@ -69,7 +69,7 @@ const ManagerDashboard = () => {
       iconColor: "#8B5CF6",
       bgColor: "#F5F3FF",
       borderColor: "border-purple-200",
-      path: "/managerUsers",
+      path: "//Users",
       count: stats.activeUsers
     },
     {
@@ -79,7 +79,7 @@ const ManagerDashboard = () => {
       iconColor: "#F59E0B",
       bgColor: "#FFF7ED",
       borderColor: "border-amber-200",
-      path: "/managerComplaints",
+      path: "/manager/Complaints",
       count: stats.pendingComplaints
     },
     {
@@ -89,7 +89,7 @@ const ManagerDashboard = () => {
       iconColor: "#3B82F6",
       bgColor: "#EFF6FF",
       borderColor: "border-blue-200",
-      path: "/managerLogs",
+      path: "/manager/Logs",
       count: stats.totalLogs
     },
     {
@@ -99,7 +99,7 @@ const ManagerDashboard = () => {
       iconColor: "#10B981",
       bgColor: "#ECFDF5",
       borderColor: "border-green-200",
-      path: "/managerFinance",
+      path: "/manager/Finance",
       count: stats.ticketTypes
     },
     {
@@ -109,7 +109,7 @@ const ManagerDashboard = () => {
         iconColor: "#6366F1",
         bgColor: "#EEF2FF",
         borderColor: "border-indigo-200",
-        path: "/managerCharts",
+        path: "/manager/Charts",
         count: stats.charts
       }
 
@@ -120,19 +120,19 @@ const ManagerDashboard = () => {
     {
       title: "Add New User",
       description: "Create a new user account",
-      path: "/managerUsers",
+      path: "/manager/Users",
       state: { openAddModal: true }
     },
     {
       title: "Process Complaint",
       description: "Handle a pending customer complaint",
-      path: "/managerComplaints",
+      path: "/manager/Complaints",
       state: { openQueue: true }
     },
     {
       title: "Update Pricing",
       description: "Modify ticket pricing structure",
-      path: "/managerFinance",
+      path: "/manager/Finance",
       state: { openPriceEditor: true }
     }
   ];
