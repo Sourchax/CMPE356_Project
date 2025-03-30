@@ -249,7 +249,8 @@ const FerryTicketForm = () => {
           surname: passenger.Surname,
           birthDate: passenger.BirthDate,
           email: passenger.Email || "",
-          phoneNo: passenger.Phone || ""
+          phoneNo: passenger.Phone || "",
+          passengerType: passenger.PassengerType
         }));
       };
   
@@ -288,7 +289,7 @@ const FerryTicketForm = () => {
           voyageId: formData.selectedReturn.voyageId,
           passengerCount: formData.departureDetails.passengerCount,
           totalPrice: returnPrice,
-          ticketClass: formData.selectedReturn.ticketClass,
+          ticketClass: formData.selectedReturn.type,
           selectedSeats: formData.selectedReturn.selectedSeats || "auto",
           userId: userId,
           passengers: returnPassengers

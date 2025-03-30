@@ -3,24 +3,29 @@ package group12.Backend.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import group12.Backend.dto.TicketDTO;
 import group12.Backend.service.TicketService;
+import group12.Backend.service.VoyageService;
+import group12.Backend.entity.Voyage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tickets")
-@CrossOrigin(origins = "*") // Configure as needed for your environment
+@CrossOrigin(origins = "*")
 public class TicketController {
 
     private final TicketService ticketService;
+    private final VoyageService voyageService;
 
     @Autowired
-    public TicketController(TicketService ticketService) {
+    public TicketController(TicketService ticketService, VoyageService voyageService) {
         this.ticketService = ticketService;
+        this.voyageService = voyageService;
     }
 
     /**
@@ -33,46 +38,67 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
-    /**
-     * Get a ticket by its ID
-     * @param id the ID of the ticket
-     * @return ResponseEntity with the ticket if found
-     */
     @GetMapping("/{id}")
     public ResponseEntity<TicketDTO.TicketResponse> getTicketById(@PathVariable Integer id) {
         Optional<TicketDTO.TicketResponse> ticket = ticketService.getTicketById(id);
-        return ticket.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        
+        if (ticket.isPresent()) {
+            TicketDTO.TicketResponse ticketResponse = ticket.get();
+            
+            // Try to enrich with voyage information
+            try {
+                enrichTicketWithVoyageInfo(ticketResponse);
+            } catch (Exception e) {
+                // Log the error but still return the basic ticket
+                System.err.println("Error enriching ticket with voyage info: " + e.getMessage());
+            }
+            
+            return ResponseEntity.ok(ticketResponse);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    /**
-     * Get tickets by user ID
-     * @param userId the ID of the user
-     * @return ResponseEntity with the list of tickets
-     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<TicketDTO.TicketResponse>> getTicketsByUserId(@PathVariable String userId) {
         List<TicketDTO.TicketResponse> tickets = ticketService.getTicketsByUserId(userId);
+        
+        // Try to enrich each ticket with voyage information
+        for (TicketDTO.TicketResponse ticket : tickets) {
+            try {
+                enrichTicketWithVoyageInfo(ticket);
+            } catch (Exception e) {
+                // Log the error but continue with the next ticket
+                System.err.println("Error enriching ticket with voyage info: " + e.getMessage());
+            }
+        }
+        
         return ResponseEntity.ok(tickets);
     }
 
-    /**
-     * Get a ticket by its unique ticketID
-     * @param ticketID the unique ticket identifier
-     * @return ResponseEntity with the ticket if found
-     */
+
     @GetMapping("/ticketID/{ticketID}")
     public ResponseEntity<TicketDTO.TicketResponse> getTicketByTicketID(@PathVariable String ticketID) {
         Optional<TicketDTO.TicketResponse> ticket = ticketService.getTicketByTicketID(ticketID);
-        return ticket.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        
+        if (ticket.isPresent()) {
+            TicketDTO.TicketResponse ticketResponse = ticket.get();
+            
+            // Try to enrich with voyage information
+            try {
+                enrichTicketWithVoyageInfo(ticketResponse);
+            } catch (Exception e) {
+                // Log the error but still return the basic ticket
+                System.err.println("Error enriching ticket with voyage info: " + e.getMessage());
+            }
+            
+            return ResponseEntity.ok(ticketResponse);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    /**
-     * Create a new ticket
-     * @param ticketRequest the ticket request DTO
-     * @return ResponseEntity with the created ticket
-     */
+
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody TicketDTO.TicketRequest ticketRequest) {
         try {
@@ -87,12 +113,6 @@ public class TicketController {
         }
     }
 
-    /**
-     * Update an existing ticket
-     * @param id the ID of the ticket to update
-     * @param updateRequest the ticket update request DTO
-     * @return ResponseEntity with the updated ticket if found
-     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTicket(@PathVariable Integer id, @RequestBody TicketDTO.TicketUpdateRequest updateRequest) {
         try {
@@ -108,14 +128,38 @@ public class TicketController {
         }
     }
 
-    /**
-     * Delete a ticket by its ID
-     * @param id the ID of the ticket to delete
-     * @return ResponseEntity with success or not found status
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Integer id) {
         boolean deleted = ticketService.deleteTicket(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+    
+    private void enrichTicketWithVoyageInfo(TicketDTO.TicketResponse ticket) {
+        if (ticket.getVoyageId() != null) {
+            // Get voyage data
+            try {
+                // Get voyage information by ID
+                Voyage voyage = voyageService.getVoyageEntityById(ticket.getVoyageId());
+                if (voyage != null) {
+                    // Extract station information and add it to the ticket
+                    if (voyage.getFromStation() != null) {
+                        ticket.setFromStationCity(voyage.getFromStation().getCity());
+                        ticket.setFromStationTitle(voyage.getFromStation().getTitle());
+                    }
+                    
+                    if (voyage.getToStation() != null) {
+                        ticket.setToStationCity(voyage.getToStation().getCity());
+                        ticket.setToStationTitle(voyage.getToStation().getTitle());
+                    }
+                    
+                    // Add departure and arrival times
+                    ticket.setDepartureDate(voyage.getDepartureDate());
+                    ticket.setDepartureTime(voyage.getDepartureTime());
+                    ticket.setArrivalTime(voyage.getArrivalTime());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error fetching voyage information: " + e.getMessage(), e);
+            }
+        }
     }
 }

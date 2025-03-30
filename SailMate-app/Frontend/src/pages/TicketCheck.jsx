@@ -1,61 +1,134 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle } from 'lucide-react';
+import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle, User } from 'lucide-react';
 import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
+import axios from "axios";
+
+const API_URL = "http://localhost:8080/api";
 
 const TicketCheck = () => {
   const [ticketId, setTicketId] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [ticketStatus, setTicketStatus] = useState("confirmed"); // Can be "confirmed", "pending", "canceled"
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Mock ticket details for demonstration
+  // Initialize ticket details with empty values
   const [ticketDetails, setTicketDetails] = useState({
     id: "",
-    departure: "Yenikapı",
-    destination: "Bursa",
-    departureDate: "2023-07-15",
-    departureTime: "09:30",
-    ticketClass: "Economy",
-    passenger: "1 Adult",
-    price: "₺450.00",
-    status: "Confirmed"
+    ticketID: "",
+    fromStationCity: "",
+    fromStationTitle: "",
+    toStationCity: "",
+    toStationTitle: "",
+    departureDate: "",
+    departureTime: "",
+    arrivalTime: "",
+    ticketClass: "",
+    passengerCount: 0,
+    totalPrice: 0,
+    status: "",
+    voyageId: null,
+    passengers: []
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // First, try to fetch ticket by ticketID
+      const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`);
+      
+      if (response.data) {
+        // Check if the provided email matches any passenger's email
+        const ticket = response.data;
+        const passengerEmails = ticket.passengers ? ticket.passengers.map(p => p.email.toLowerCase()) : [];
+        
+        if (passengerEmails.includes(email.toLowerCase()) || 
+            (ticket.bookerEmail && ticket.bookerEmail.toLowerCase() === email.toLowerCase())) {
+          
+          // Determine ticket status based on departure date/time
+          const status = calculateTicketStatus(ticket);
+          
+          setTicketDetails({
+            ...ticket,
+            status: status
+          });
+          
+          setShowStatus(true);
+        } else {
+          setError("The email provided does not match our records for this ticket.");
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching ticket:", err);
+      setError("Ticket not found or invalid information provided. Please check your ticket ID and email.");
+    } finally {
       setLoading(false);
-      
-      // Set mock ticket details based on input
-      setTicketDetails({
-        ...ticketDetails,
-        id: ticketId,
-        email: email,
-        // Status would normally come from the backend
-        status: ticketStatus === "confirmed" ? "Confirmed" : 
-                ticketStatus === "pending" ? "Pending" : "Canceled"
-      });
-      
-      // Show the ticket status section
-      setShowStatus(true);
-    }, 1500);
+    }
+  };
+
+  // Function to calculate ticket status based on departure date/time
+  const calculateTicketStatus = (ticket) => {
+    if (!ticket.departureDate || !ticket.departureTime) return "Unknown";
+    
+    const now = new Date();
+    const departureDate = new Date(ticket.departureDate);
+    
+    // Set departure time on the departure date
+    const timeParts = ticket.departureTime.split(':');
+    departureDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10));
+    
+    // Check if voyage is cancelled
+    if (ticket.voyageStatus === "cancel") return "Canceled";
+    
+    // If departure time is in the past
+    if (now > departureDate) return "Completed";
+    
+    // If departure time is less than 24 hours away
+    const oneDayFromNow = new Date(now);
+    oneDayFromNow.setHours(now.getHours() + 24);
+    
+    if (departureDate < oneDayFromNow) return "Upcoming";
+    
+    // Otherwise, it's confirmed
+    return "Confirmed";
   };
 
   const handleBackToSearch = () => {
     setShowStatus(false);
     setTicketId("");
     setEmail("");
+    setError(null);
   };
 
   const navigateToContact = () => {
     navigate("/contact");
+  };
+
+  const handleDownloadTicket = async () => {
+    try {
+      alert(`Downloading ticket ${ticketDetails.ticketID}...`);
+      
+      // Real implementation would fetch a PDF or generate one
+      // const response = await axios.get(`${API_URL}/tickets/${ticketDetails.id}/download`, {
+      //   responseType: 'blob'
+      // });
+      // const url = window.URL.createObjectURL(new Blob([response.data]));
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.setAttribute('download', `ticket-${ticketDetails.ticketID}.pdf`);
+      // document.body.appendChild(link);
+      // link.click();
+      // link.remove();
+    } catch (err) {
+      console.error("Error downloading ticket:", err);
+      alert("Failed to download ticket. Please try again.");
+    }
   };
 
   /* You can also add this if you want a more dramatic effect */
@@ -76,10 +149,44 @@ const TicketCheck = () => {
   const getStatusColor = (status) => {
     switch(status.toLowerCase()) {
       case "confirmed": return "text-green-600";
-      case "pending": return "text-amber-500";
+      case "upcoming": return "text-blue-600";
+      case "completed": return "text-gray-600";
       case "canceled": return "text-red-600";
       default: return "text-gray-600";
     }
+  };
+
+  // Helper function to get status background color
+  const getStatusBgColor = (status) => {
+    switch(status.toLowerCase()) {
+      case "confirmed": return "bg-green-100";
+      case "upcoming": return "bg-blue-100";
+      case "completed": return "bg-gray-100";
+      case "canceled": return "bg-red-100";
+      default: return "bg-gray-100";
+    }
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return "";
+    return `₺${price.toFixed(2)}`;
+  };
+
+  // Get departure and destination display
+  const getDepartureDisplay = () => {
+    return ticketDetails.fromStationCity || ticketDetails.fromStationTitle || "-";
+  };
+
+  const getDestinationDisplay = () => {
+    return ticketDetails.toStationCity || ticketDetails.toStationTitle || "-";
   };
 
   return (
@@ -131,7 +238,7 @@ const TicketCheck = () => {
                 
                 <div className="space-y-2">
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Email Address
+                    Any Email Address used for Booking
                   </label>
                   <div className="input-with-icon">
                     <input 
@@ -146,6 +253,12 @@ const TicketCheck = () => {
                     <Mail className="input-icon" size={18} />
                   </div>
                 </div>
+                
+                {error && (
+                  <div className="bg-red-50 p-3 rounded-md">
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                )}
                 
                 <Button 
                   type="submit" 
@@ -164,10 +277,7 @@ const TicketCheck = () => {
             <div className="animate-[fadeIn_0.5s_ease-out]">
               <div className="flex flex-col items-center pb-4 border-b border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-800 font-sans">Ticket Status</h2>
-                <div className={`mt-2 px-4 py-1 rounded-full ${
-                  ticketDetails.status.toLowerCase() === "confirmed" ? "bg-green-100" : 
-                  ticketDetails.status.toLowerCase() === "pending" ? "bg-amber-100" : "bg-red-100"
-                }`}>
+                <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>
                   <span className={`font-medium ${getStatusColor(ticketDetails.status)}`}>
                     {ticketDetails.status}
                   </span>
@@ -181,7 +291,7 @@ const TicketCheck = () => {
                       <Ticket size={16} className="mr-2 text-gray-500" />
                       Ticket ID:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.id}</span>
+                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.ticketID}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -190,7 +300,7 @@ const TicketCheck = () => {
                       Journey:
                     </span>
                     <span className="font-medium text-gray-700 font-sans">
-                      {ticketDetails.departure} to {ticketDetails.destination}
+                      {getDepartureDisplay()} to {getDestinationDisplay()}
                     </span>
                   </div>
                   
@@ -199,7 +309,7 @@ const TicketCheck = () => {
                       <Calendar size={16} className="mr-2 text-gray-500" />
                       Departure Date:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.departureDate}</span>
+                    <span className="font-medium text-gray-700 font-sans">{formatDate(ticketDetails.departureDate)}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -215,7 +325,7 @@ const TicketCheck = () => {
                       <Users size={16} className="mr-2 text-gray-500" />
                       Passengers:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.passenger}</span>
+                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.passengerCount}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -228,22 +338,76 @@ const TicketCheck = () => {
                   
                   <div className="flex justify-between items-center border-t border-gray-200 pt-2 mt-2">
                     <span className="text-gray-600 font-sans">Total Price:</span>
-                    <span className="font-bold text-gray-900 font-sans">{ticketDetails.price}</span>
+                    <span className="font-bold text-gray-900 font-sans">{formatPrice(ticketDetails.totalPrice)}</span>
                   </div>
                 </div>
                 
+                {/* Passenger Information Section */}
+                {ticketDetails.passengers && ticketDetails.passengers.length > 0 && (
+                  <div className="bg-gray-50 rounded-md p-4">
+                    <h3 className="text-gray-800 font-medium mb-3 flex items-center">
+                      <Users size={16} className="mr-2 text-gray-600" />
+                      Passenger Information
+                    </h3>
+                    
+                    <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                      {ticketDetails.passengers.map((passenger, index) => (
+                        <div key={index} className="bg-white p-3 rounded border border-gray-200">
+                          <div className="flex items-center mb-2">
+                            <User size={14} className="mr-2 text-gray-500" />
+                            <span className="font-medium">{passenger.name} {passenger.surname}</span>
+                            {passenger.passengerType && (
+                              <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
+                                {passenger.passengerType}
+                              </span>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {passenger.birthDate && (
+                              <div>
+                                <p className="text-gray-500">Birth Date:</p>
+                                <p>{passenger.birthDate}</p>
+                              </div>
+                            )}
+                            {passenger.email && (
+                              <div>
+                                <p className="text-gray-500">Email:</p>
+                                <p className="truncate">{passenger.email}</p>
+                              </div>
+                            )}
+                            {passenger.phoneNo && (
+                              <div className="col-span-2">
+                                <p className="text-gray-500">Phone:</p>
+                                <p>{passenger.phoneNo}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 {ticketDetails.status.toLowerCase() === "confirmed" && (
-                  <div className="bg-blue-50 rounded-md p-4">
-                    <p className="text-sm text-blue-700 font-sans">
+                  <div className="bg-green-50 rounded-md p-4">
+                    <p className="text-sm text-green-700 font-sans">
                       Your ticket is confirmed! Please arrive at the port at least 30 minutes before departure.
                     </p>
                   </div>
                 )}
                 
-                {ticketDetails.status.toLowerCase() === "pending" && (
-                  <div className="bg-amber-50 rounded-md p-4">
-                    <p className="text-sm text-amber-700 font-sans">
-                      Your payment is being processed. Please check back in a few minutes.
+                {ticketDetails.status.toLowerCase() === "upcoming" && (
+                  <div className="bg-blue-50 rounded-md p-4">
+                    <p className="text-sm text-blue-700 font-sans">
+                      Your journey is coming soon! Please arrive at the port at least 30 minutes before departure.
+                    </p>
+                  </div>
+                )}
+                
+                {ticketDetails.status.toLowerCase() === "completed" && (
+                  <div className="bg-gray-50 rounded-md p-4">
+                    <p className="text-sm text-gray-700 font-sans">
+                      This journey has been completed. We hope you enjoyed your trip with us!
                     </p>
                   </div>
                 )}
@@ -267,12 +431,10 @@ const TicketCheck = () => {
                   Go Back
                 </Button>
                 <Button 
-                  onClick={() => {
-                    // Handle download ticket functionality here
-                    alert("Downloading ticket...");
-                  }}
+                  onClick={handleDownloadTicket}
                   variant="primary"
                   size="lg"
+                  disabled={ticketDetails.status.toLowerCase() === "canceled"}
                   className="ticketcheck-button px-4 py-3 text-base w-full"
                 >
                   Download Ticket

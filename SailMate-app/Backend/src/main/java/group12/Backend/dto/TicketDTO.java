@@ -1,6 +1,8 @@
 package group12.Backend.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class TicketDTO {
@@ -11,6 +13,7 @@ public class TicketDTO {
         private String birthDate;
         private String email;
         private String phoneNo;
+        private String passengerType;
         
         // Constructors
         public PassengerInfo() {}
@@ -62,6 +65,14 @@ public class TicketDTO {
         
         public void setPhoneNo(String phoneNo) {
             this.phoneNo = phoneNo;
+        }
+        
+        public String getPassengerType() {
+            return passengerType;
+        }
+        
+        public void setPassengerType(String passengerType) {
+            this.passengerType = passengerType;
         }
     }
     
@@ -160,6 +171,15 @@ public class TicketDTO {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         
+        // Added voyage and station information fields
+        private String fromStationCity;
+        private String fromStationTitle;
+        private String toStationCity;
+        private String toStationTitle;
+        private LocalDate departureDate;
+        private LocalTime departureTime;
+        private LocalTime arrivalTime;
+        
         // Constructors
         public TicketResponse() {}
         
@@ -179,7 +199,7 @@ public class TicketDTO {
             this.updatedAt = updatedAt;
         }
         
-        // Getters and Setters
+        // Getters and Setters for original fields
         public Integer getId() {
             return id;
         }
@@ -266,6 +286,63 @@ public class TicketDTO {
         
         public void setUpdatedAt(LocalDateTime updatedAt) {
             this.updatedAt = updatedAt;
+        }
+        
+        // Getters and Setters for added fields
+        public String getFromStationCity() {
+            return fromStationCity;
+        }
+        
+        public void setFromStationCity(String fromStationCity) {
+            this.fromStationCity = fromStationCity;
+        }
+        
+        public String getFromStationTitle() {
+            return fromStationTitle;
+        }
+        
+        public void setFromStationTitle(String fromStationTitle) {
+            this.fromStationTitle = fromStationTitle;
+        }
+        
+        public String getToStationCity() {
+            return toStationCity;
+        }
+        
+        public void setToStationCity(String toStationCity) {
+            this.toStationCity = toStationCity;
+        }
+        
+        public String getToStationTitle() {
+            return toStationTitle;
+        }
+        
+        public void setToStationTitle(String toStationTitle) {
+            this.toStationTitle = toStationTitle;
+        }
+        
+        public LocalDate getDepartureDate() {
+            return departureDate;
+        }
+        
+        public void setDepartureDate(LocalDate departureDate) {
+            this.departureDate = departureDate;
+        }
+        
+        public LocalTime getDepartureTime() {
+            return departureTime;
+        }
+        
+        public void setDepartureTime(LocalTime departureTime) {
+            this.departureTime = departureTime;
+        }
+        
+        public LocalTime getArrivalTime() {
+            return arrivalTime;
+        }
+        
+        public void setArrivalTime(LocalTime arrivalTime) {
+            this.arrivalTime = arrivalTime;
         }
     }
     

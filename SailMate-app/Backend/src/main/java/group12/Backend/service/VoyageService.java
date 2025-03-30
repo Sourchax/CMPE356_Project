@@ -46,6 +46,11 @@ public class VoyageService {
         return voyage.map(this::convertToDTO).orElse(null);
     }
     
+    // Get voyage entity by ID - added for ticket enrichment
+    public Voyage getVoyageEntityById(Integer id) {
+        return voyageRepository.findById(id).orElse(null);
+    }
+    
     // Find voyages by from station, to station and departure date
     public List<VoyageDTO> findVoyages(Integer fromStationId, Integer toStationId, LocalDate departureDate) {
         return voyageRepository.findByFromStation_IdAndToStation_IdAndDepartureDate(
@@ -218,7 +223,7 @@ public class VoyageService {
     
     
     // Convert Voyage entity to VoyageDTO
-    private VoyageDTO convertToDTO(Voyage voyage) {
+    public VoyageDTO convertToDTO(Voyage voyage) {
         VoyageDTO dto = new VoyageDTO();
         
         dto.setId(voyage.getId());

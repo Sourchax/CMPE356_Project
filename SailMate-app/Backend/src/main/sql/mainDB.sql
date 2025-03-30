@@ -59,7 +59,7 @@ CREATE TABLE tickets (
     
     -- Foreign key to voyages table
     FOREIGN KEY (voyage_id) REFERENCES voyages(id)
-        ON DELETE SET NULL ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create indexes for better query performance
@@ -84,6 +84,7 @@ CREATE TABLE complaint (
     email VARCHAR(255) NOT NULL,
     subject TEXT NOT NULL,
     message TEXT NOT NULL,
+    reply TEXT,
     status ENUM('active', 'solved') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
