@@ -14,11 +14,43 @@ import {
   Plus
 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
+import axios from "axios";
 
 const ManagerDashboard = () => {
   const { user } = useUser();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loaded, setLoaded] = useState(false);
+  const [dashboardStats, setDashboardStats] = useState({
+    activeUsers: 42,
+    pendingComplaints: 0, // Initialize to 0, will be updated from API
+    totalLogs: 156,
+    ticketTypes: 8,
+    charts: 2
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Fetch pending complaints count
+  useEffect(() => {
+    const fetchPendingComplaints = async () => {
+      try {
+        // Get complaints with 'active' status
+        const response = await axios.get('http://localhost:8080/api/complaints/status/active');
+        
+        // Update stats with the count of pending complaints
+        setDashboardStats(prevStats => ({
+          ...prevStats,
+          pendingComplaints: response.data.length
+        }));
+      } catch (error) {
+        console.error("Error fetching pending complaints:", error);
+        // In case of error, keep the default value
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPendingComplaints();
+  }, []);
 
   // Set loaded to true when component mounts
   useEffect(() => {
@@ -42,22 +74,13 @@ const ManagerDashboard = () => {
     return "Good evening";
   };
 
-  // Fake stats for the dashboard
-  const stats = {
-    activeUsers: 42,
-    pendingComplaints: 3,
-    totalLogs: 156,
-    ticketTypes: 8,
-    charts: 2
-  };
-
   // Summary stats array
   const statItems = [
-    { label: "Active Users", value: stats.activeUsers, icon: Users },
-    { label: "Pending Complaints", value: stats.pendingComplaints, icon: AlertTriangle },
-    { label: "Total Logs", value: stats.totalLogs, icon: Activity },
-    { label: "Ticket Types", value: stats.ticketTypes, icon: DollarSign },
-    { label: "Charts", value: stats.charts, icon: TrendingUp }
+    { label: "Active Users", value: dashboardStats.activeUsers, icon: Users },
+    { label: "Pending Complaints", value: dashboardStats.pendingComplaints, icon: AlertTriangle },
+    { label: "Total Logs", value: dashboardStats.totalLogs, icon: Activity },
+    { label: "Ticket Types", value: dashboardStats.ticketTypes, icon: DollarSign },
+    { label: "Charts", value: dashboardStats.charts, icon: TrendingUp }
   ];
 
   // Card data
@@ -70,7 +93,7 @@ const ManagerDashboard = () => {
       bgColor: "#F5F3FF",
       borderColor: "border-purple-200",
       path: "//Users",
-      count: stats.activeUsers
+      count: dashboardStats.activeUsers
     },
     {
       title: "Complaint Center",
@@ -80,7 +103,9 @@ const ManagerDashboard = () => {
       bgColor: "#FFF7ED",
       borderColor: "border-amber-200",
       path: "/manager/Complaints",
-      count: stats.pendingComplaints
+      count: dashboardStats.pendingComplaints,
+      loading: loading,
+      countLabel: "pending"
     },
     {
       title: "Activity Logs",
@@ -90,7 +115,7 @@ const ManagerDashboard = () => {
       bgColor: "#EFF6FF",
       borderColor: "border-blue-200",
       path: "/manager/Logs",
-      count: stats.totalLogs
+      count: dashboardStats.totalLogs
     },
     {
       title: "Ticket Pricing",
@@ -100,19 +125,18 @@ const ManagerDashboard = () => {
       bgColor: "#ECFDF5",
       borderColor: "border-green-200",
       path: "/manager/Finance",
-      count: stats.ticketTypes
+      count: dashboardStats.ticketTypes
     },
     {
-        title: "Charts",
-        description: "View visual analytics and trends",
-        icon: TrendingUp,
-        iconColor: "#6366F1",
-        bgColor: "#EEF2FF",
-        borderColor: "border-indigo-200",
-        path: "/manager/Charts",
-        count: stats.charts
-      }
-
+      title: "Charts",
+      description: "View visual analytics and trends",
+      icon: TrendingUp,
+      iconColor: "#6366F1",
+      bgColor: "#EEF2FF",
+      borderColor: "border-indigo-200",
+      path: "/manager/Charts",
+      count: dashboardStats.charts
+    }
   ];
 
   // Quick actions
@@ -205,7 +229,11 @@ const ManagerDashboard = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="text-xs text-gray-500">{stat.label}</p>
-                        <p className="text-xl font-bold text-gray-800">{stat.value}</p>
+                        {index === 1 && loading ? (
+                          <div className="h-6 w-6 mt-1 rounded-full border-2 border-gray-300 border-t-green-500 animate-spin"></div>
+                        ) : (
+                          <p className="text-xl font-bold text-gray-800">{stat.value}</p>
+                        )}
                       </div>
                       <div className="bg-green-100 p-2 rounded-full">
                         <Icon size={18} className="text-green-700" />
@@ -245,7 +273,16 @@ const ManagerDashboard = () => {
                     >
                       <Icon size={24} color={card.iconColor} />
                     </div>
-                    <div className="text-2xl font-bold text-gray-800">{card.count}</div>
+                    {card.loading ? (
+                      <div className="h-8 w-8 rounded-full border-2 border-gray-300 border-t-amber-500 animate-spin"></div>
+                    ) : (
+                      <div className="text-2xl font-bold text-gray-800 flex flex-col items-end">
+                        {card.count}
+                        {card.countLabel && (
+                          <span className="text-xs text-gray-500 mt-1">{card.countLabel}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">{card.title}</h2>
                   <p className="text-gray-500 mb-4">{card.description}</p>

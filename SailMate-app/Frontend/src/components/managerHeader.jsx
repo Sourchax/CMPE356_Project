@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp } from 'lucide-react';
+import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp, Activity, AlertTriangle, Users } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
@@ -92,22 +92,22 @@ const ManagerHeader = () => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex md:space-x-1 lg:space-x-4 overflow-x-auto">
                     <NavLink
-                        to="/manager/Logs"
-                        icon={MapPin}
-                        text="Logs"
-                        className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/manager/Logs')}
-                    />
-                    <NavLink
                         to="/manager/Users"
-                        icon={Clock}
+                        icon={Users}
                         text="Users"
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Users')}
                     />
                     <NavLink
+                        to="/manager/Logs"
+                        icon={Activity}
+                        text="Logs"
+                        className="md:text-xs lg:text-sm xl:text-base"
+                        isActive={isActive('/manager/Logs')}
+                    />
+                    <NavLink
                         to="/manager/Complaints"
-                        icon={Bell}
+                        icon={AlertTriangle}
                         text="Complaints"
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Complaints')}
@@ -162,7 +162,7 @@ const ManagerHeader = () => {
                     />
                     <NavLink
                         to="/managerUsers"
-                        icon={Clock}
+                        icon={Users}
                         text="Users"
                         mobile={true}
                         isActive={isActive('/managerUsers')}

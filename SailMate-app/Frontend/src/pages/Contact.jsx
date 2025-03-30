@@ -11,9 +11,13 @@ import {
 } from "lucide-react";
 import { FaFacebookF, FaXTwitter, FaInstagram} from 'react-icons/fa6';
 import Button from "../components/Button";
-
+import axios from "axios";
+import { useUser } from "@clerk/clerk-react"; // Import Clerk's useUser hook
 
 const Contact = () => {
+  // Get userId from Clerk authentication
+  const { user, isSignedIn } = useUser();
+  const userId = isSignedIn ? user.id : "guest";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,10 +26,13 @@ const Contact = () => {
     message: ""
   });
   
-
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
+  // Rest of your validation functions remain the same
+  // validateField, handleChange, handleBlur, validateForm, getCharacterCount
 
   const validateField = (name, value) => {
     let error = null;
@@ -123,26 +130,46 @@ const Contact = () => {
     return `${formData.message.length}/1000`;
   };
   
-  const handleSubmit = (e) => {
+  // Updated handleSubmit function to create a complaint
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
     
     if (validateForm()) {
       setLoading(true);
       
-      setTimeout(() => {
-        setLoading(false);
-        setSubmitted(true);
+      try {
+        // Create complaint request object
+        const complaintData = {
+          userId: userId,
+          sender: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        };
+        
+        // Send the complaint to the backend
+        await axios.post('http://localhost:8080/api/complaints', complaintData);
+        
+        // Reset form and show success message
         setFormData({
           name: "",
           email: "",
           subject: "",
           message: ""
         });
+        setSubmitted(true);
         
+        // Hide success message after 5 seconds
         setTimeout(() => {
           setSubmitted(false);
         }, 5000);
-      }, 1500);
+      } catch (error) {
+        console.error("Error submitting complaint:", error);
+        setSubmitError("There was an error submitting your message. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       // Scroll to first error
       const firstErrorField = Object.keys(errors).find(key => errors[key]);
@@ -154,10 +181,10 @@ const Contact = () => {
 
   return (
     <div className="contact-container">
-      {/* Hero Background - Added to match TicketCheck */}
+      {/* Hero Background */}
       <div className="hero-background"></div>
       
-      {/* Wave Transition - Added to match TicketCheck */}
+      {/* Wave Transition */}
       <div className="wave-transition">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
           <path fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,128C672,128,768,160,864,176C960,192,1056,192,1152,176C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
@@ -238,6 +265,12 @@ const Contact = () => {
               <div className="success-message">
                 <i className="fas fa-check-circle"></i>
                 <p>Thank you for your message! We'll get back to you soon.</p>
+              </div>
+            )}
+            
+            {submitError && (
+              <div className="error-message-container">
+                <p>{submitError}</p>
               </div>
             )}
             
