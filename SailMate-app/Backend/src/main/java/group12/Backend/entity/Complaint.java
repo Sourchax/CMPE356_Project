@@ -19,13 +19,13 @@ public class Complaint {
     @Column(nullable = false)
     private String email;
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String subject;
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
     
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String reply;
     
     @Enumerated(EnumType.STRING)

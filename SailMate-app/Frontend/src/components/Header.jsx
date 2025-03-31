@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { SignedIn, SignedOut, UserButton, useClerk } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, useClerk, useUser } from '@clerk/clerk-react';
 import sailMatelogo from "../assets/images/SailMate_logo.png";
-import { LogIn, Anchor, Menu, X, ChevronDown, User } from "lucide-react";
+import { LogIn, Anchor, Menu, X, ChevronDown, User, Bell } from "lucide-react";
 import CustomUserButton from "../pages/customUserButton";
+import axios from "axios";
+import NotificationModal from "./NotificationsModal";
+
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Define a custom hook for window dimensions
 const useWindowSize = () => {
@@ -52,10 +56,224 @@ const AuthPlaceholder = ({ isMaxZoom }) => (
   </div>
 );
 
+// Notification Bell Component
+const NotificationBell = ({ userId, isMaxZoom }) => {
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // Fetch unread notification count
+  const fetchUnreadCount = async () => {
+    if (!userId) return;
+    
+    try {
+      const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}/count`);
+      setUnreadCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+    }
+  };
+
+  // Fetch notifications for the dropdown
+  const fetchNotifications = async () => {
+    if (!userId) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}`);
+      // Only show up to 5 most recent notifications in the dropdown
+      setNotifications(response.data.slice(0, 5));
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Mark a notification as read
+  const markAsRead = async (id) => {
+    try {
+      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true });
+      // Update the local state
+      setNotifications(notifications.map(notif => 
+        notif.id === id ? { ...notif, isRead: true } : notif
+      ));
+      // Update unread count
+      fetchUnreadCount();
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Mark all notifications as read
+  const markAllAsRead = async () => {
+    try {
+      await axios.put(`${API_BASE_URL}/notifications/user/${userId}/read-all`);
+      // Update the local state
+      setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  // Toggle notification dropdown
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+    if (!isDropdownOpen) {
+      fetchNotifications();
+    }
+  };
+
+  // Open the notifications modal
+  const openModal = () => {
+    setIsModalOpen(true);
+    setIsDropdownOpen(false);
+  };
+
+  // Close the notifications modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    // Refresh count after closing modal
+    fetchUnreadCount();
+  };
+
+  // Get notification color based on type
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'TICKET_CREATED':
+        return 'text-green-600';
+      case 'TICKET_UPDATED':
+        return 'text-blue-600';
+      case 'VOYAGE_CANCELLED':
+        return 'text-red-600';
+      case 'VOYAGE_DELAYED':
+        return 'text-yellow-600';
+      case 'BROADCAST':
+        return 'text-purple-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Fetch initial data
+  useEffect(() => {
+    if (userId) {
+      fetchUnreadCount();
+      
+      // Set up polling for new notifications (every 30 seconds)
+      const interval = setInterval(fetchUnreadCount, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [userId]);
+
+  return (
+    <>
+      <div className="relative" ref={dropdownRef} style={{ position: 'relative', zIndex: 60 }}>
+        <button 
+          className="text-[#0D3A73] hover:text-[#06AED5] focus:outline-none transition-colors" 
+          onClick={toggleDropdown}
+          aria-label="Notifications"
+        >
+          <Bell size={isMaxZoom ? 20 : 24} />
+          {unreadCount > 0 && (
+            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
+
+        {/* Dropdown panel */}
+        {isDropdownOpen && (
+          <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50">
+            <div className="py-2 px-4 bg-gray-50 border-b flex justify-between items-center">
+              <span className="text-sm font-medium">Notifications</span>
+              {unreadCount > 0 && (
+                <button 
+                  className="text-xs text-blue-600 hover:text-blue-800"
+                  onClick={markAllAsRead}
+                >
+                  Mark all as read
+                </button>
+              )}
+            </div>
+            
+            <div className="max-h-96 overflow-y-auto">
+              {isLoading ? (
+                <div className="py-4 px-4 text-center text-gray-500">Loading notifications...</div>
+              ) : notifications.length === 0 ? (
+                <div className="py-4 px-4 text-center text-gray-500">No notifications</div>
+              ) : (
+                notifications.map(notification => (
+                  <div 
+                    key={notification.id} 
+                    className={`py-2 px-4 border-b hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                    onClick={() => !notification.isRead && markAsRead(notification.id)}
+                  >
+                    <div className="flex items-start">
+                      <div className={`mr-3 mt-1 ${getNotificationColor(notification.type)}`}>
+                        <Bell size={16} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{notification.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            
+            <div className="py-2 px-4 bg-gray-50 border-t text-center">
+              <button 
+                className="text-xs text-blue-600 hover:text-blue-800"
+                onClick={openModal}
+              >
+                View all notifications
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Notification Modal */}
+      {isModalOpen && (
+        <NotificationModal 
+          isOpen={isModalOpen} 
+          onClose={closeModal} 
+          userId={userId} 
+        />
+      )}
+    </>
+  );
+};
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { loaded } = useClerk();
+  const { user, isLoaded } = useUser();
   
   // Use our custom hook that returns current dimensions
   const { isMobile, isMaxZoom } = useWindowSize();
@@ -76,7 +294,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full sticky top-0 z-50">
+    <div className="w-full sticky top-0 z-40">
       <header className="bg-white shadow-md px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo - More significant size reduction at max zoom */}
@@ -149,8 +367,19 @@ const Header = () => {
             </nav>
           )}
 
-          {/* Sign In / User Button with Static Placeholder - Now with max zoom handling */}
-          <div className="flex items-center">
+          {/* Sign In / User Button / Notification Bell - Now with max zoom handling */}
+          <div className="flex items-center space-x-2">
+            {/* Notification Bell - Only show when signed in */}
+            <SignedIn>
+              {isLoaded && user && (
+                <NotificationBell 
+                  userId={user.id} 
+                  isMaxZoom={isMaxZoom} 
+                />
+              )}
+            </SignedIn>
+
+            {/* Auth Section */}
             {!loaded ? (
               <AuthPlaceholder isMaxZoom={isMaxZoom} />
             ) : (
@@ -167,7 +396,7 @@ const Header = () => {
                   </Link>
                 </SignedOut>
                 <SignedIn>
-                  <div className="ml-2 md:ml-4 flex-shrink-0">
+                  <div className="flex-shrink-0">
                     <CustomUserButton />
                   </div>
                 </SignedIn>
@@ -178,7 +407,7 @@ const Header = () => {
 
         {/* Mobile Menu - Fixed to be contained within viewport */}
         {isMobile && menuOpen && (
-          <div className="fixed inset-x-0 top-auto mt-2 bg-white border-t shadow-lg max-h-screen overflow-y-auto z-50">
+          <div className="fixed inset-x-0 top-auto mt-2 bg-white border-t shadow-lg max-h-screen overflow-y-auto z-40">
             <div className="px-4 py-2 max-w-7xl mx-auto">
               <nav className="flex flex-col space-y-1">
                 <MobileNavLink to="/stations" onClick={handleLinkClick}>
@@ -208,6 +437,37 @@ const Header = () => {
         )}
       </header>
     </div>
+  );
+};
+
+// Renamed from NotificationCount to NotificationBadge and used in the mobile menu
+const NotificationBadge = ({ userId }) => {
+  const [count, setCount] = useState(0);
+  const API_BASE_URL = 'http://localhost:8080/api';
+
+  useEffect(() => {
+    if (!userId) return;
+    
+    const fetchCount = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}/count`);
+        setCount(response.data.count);
+      } catch (error) {
+        console.error('Error fetching notification count:', error);
+      }
+    };
+    
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, [userId]);
+
+  if (count === 0) return null;
+  
+  return (
+    <span className="ml-2 inline-block px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+      {count > 99 ? '99+' : count}
+    </span>
   );
 };
 

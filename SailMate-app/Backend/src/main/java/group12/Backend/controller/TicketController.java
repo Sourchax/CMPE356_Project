@@ -139,7 +139,8 @@ public class TicketController {
             // Get voyage data
             try {
                 // Get voyage information by ID
-                Voyage voyage = voyageService.getVoyageEntityById(ticket.getVoyageId());
+                Voyage voyage = voyageService.getVoyageEntityById(ticket.getVoyageId())
+    .orElseThrow(() -> new RuntimeException("Voyage not found with id: " + ticket.getVoyageId()));
                 if (voyage != null) {
                     // Extract station information and add it to the ticket
                     if (voyage.getFromStation() != null) {

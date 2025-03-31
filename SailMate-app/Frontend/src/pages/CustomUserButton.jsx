@@ -1,12 +1,209 @@
 import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, LayoutDashboard, LogOut } from "lucide-react";
+import { User, LayoutDashboard, LogOut, Megaphone, X } from "lucide-react";
+import axios from "axios";
+
+const API_BASE_URL = 'http://localhost:8080/api';
+
+// Broadcast Modal Component
+const BroadcastModal = ({ isOpen, onClose }) => {
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const modalRef = useRef(null);
+
+  // Handle outside click to close modal
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscKey);
+    }
+    
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isOpen, onClose]);
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTitle("");
+      setMessage("");
+      setError("");
+      setSuccess("");
+    }
+  }, [isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!title.trim()) {
+      setError("Please enter a title");
+      return;
+    }
+    
+    if (!message.trim()) {
+      setError("Please enter a message");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setError("");
+    
+    try {
+      await axios.post(`${API_BASE_URL}/notifications/broadcast`, {
+        title: title.trim(),
+        message: message.trim()
+      });
+      
+      setSuccess("Broadcast notification sent successfully!");
+      setTitle("");
+      setMessage("");
+      
+      // Auto close after 2 seconds on success
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+    } catch (err) {
+      console.error("Error sending broadcast:", err);
+      setError("Failed to send broadcast. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div 
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden relative"
+        style={{ maxHeight: "calc(100vh - 40px)" }}
+      >
+        <div className="flex justify-between items-center bg-[#0D3A73] text-white px-6 py-4 sticky top-0 z-10">
+          <h3 className="text-lg font-medium flex items-center">
+            <Megaphone size={20} className="mr-2" />
+            Send Broadcast Notification
+          </h3>
+          <button 
+            onClick={onClose}
+            className="text-white hover:text-gray-200 transition-colors"
+            aria-label="Close"
+          >
+            <X size={24} />
+          </button>
+        </div>
+        
+        <div className="p-6 overflow-y-auto flex-grow">
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="mb-4 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 text-sm">
+                {success}
+              </div>
+            )}
+            
+            <div className="mb-4">
+              <label 
+                htmlFor="broadcast-title" 
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Title
+              </label>
+              <input
+                id="broadcast-title"
+                type="text"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0D3A73] focus:border-[#0D3A73]"
+                placeholder="Enter notification title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                maxLength={255}
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label 
+                htmlFor="broadcast-message" 
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Message
+              </label>
+              <textarea
+                id="broadcast-message"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0D3A73] focus:border-[#0D3A73]"
+                placeholder="Enter notification message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+                rows={4}
+                style={{ maxHeight: "150px" }}
+              />
+              <div className="text-xs text-gray-500 mt-1 text-right">
+                {message.length}/500 characters max
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div className="bg-gray-50 px-6 py-3 flex justify-end sticky bottom-0 z-10 border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 text-sm font-medium text-white bg-[#0D3A73] hover:bg-blue-800 rounded-md transition"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Sending..." : "Send Broadcast"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CustomUserButton = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuHeight, setMenuHeight] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
+  const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
   const { signOut, openUserProfile } = useClerk();
   const { user } = useUser();
   const navigate = useNavigate();
@@ -87,9 +284,15 @@ const CustomUserButton = () => {
 
   // Assume the user's role is stored in public metadata
   const userRole = user?.publicMetadata?.role || "user";
+  const canBroadcast = ["admin", "manager", "super"].includes(userRole);
 
   const handleMenuClose = () => {
     setMenuOpen(false);
+  };
+
+  const openBroadcastModal = () => {
+    setIsBroadcastModalOpen(true);
+    handleMenuClose();
   };
 
   const truncateName = (name) => {
@@ -161,6 +364,17 @@ const CustomUserButton = () => {
               <User size={isMobile ? 16 : 18} className="flex-shrink-0" />
               <span>Manage Account</span>
             </li>
+
+            {/* Broadcast Option - Only for admin, manager, and super roles */}
+            {canBroadcast && (
+              <li
+                className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                onClick={openBroadcastModal}
+              >
+                <Megaphone size={isMobile ? 16 : 18} className="flex-shrink-0" />
+                <span>Send Broadcast</span>
+              </li>
+            )}
 
             {/* Admin Dashboard Access */}
             {(userRole === "admin" || userRole === "super") && (
@@ -236,6 +450,12 @@ const CustomUserButton = () => {
           </ul>
         </div>
       )}
+
+      {/* Broadcast Modal */}
+      <BroadcastModal 
+        isOpen={isBroadcastModalOpen} 
+        onClose={() => setIsBroadcastModalOpen(false)} 
+      />
     </div>
   );
 };
