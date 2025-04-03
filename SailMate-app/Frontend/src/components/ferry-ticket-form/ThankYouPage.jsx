@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Sailboat, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ThankYouPage = () => {
   const [progress, setProgress] = useState(100);
   const [showMessage, setShowMessage] = useState(true);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     // Start with full progress bar
     setProgress(100);
@@ -25,7 +25,6 @@ const ThankYouPage = () => {
       }, 30); // Update roughly 33 times per second for smooth animation
       
       // Redirect after 3 seconds
-
       setTimeout(() => {
         setShowMessage(false);
         // Add a small delay before redirecting for a smoother transition
@@ -43,7 +42,7 @@ const ThankYouPage = () => {
       clearTimeout(countdownStart);
     };
   }, []);
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6">
       <div 
@@ -74,7 +73,7 @@ const ThankYouPage = () => {
                 Navigating to homepage in {Math.ceil(progress/33)} seconds...
               </p>
             </div>
-            
+
             <div className="pt-4 border-t border-gray-100 w-full">
               <p className="text-sm text-gray-500">
                 Need assistance? Our crew is standing by at sailmatesup@gmail.com
