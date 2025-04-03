@@ -604,8 +604,8 @@ const FerryTicketForm = () => {
                         ? 'business' 
                         : formData.selectedDeparture?.type === 'promo' 
                           ? 'promo' 
-                          : 'econ'}
-                      ferryType={formData.tripData?.ferryType || 'fastFerry'}
+                          : 'economy'}
+                      ferryType={formData.selectedDeparture.shipType}
                       passengerCount={formData.departureDetails.passengerCount || 1}
                     />
                     
@@ -656,10 +656,10 @@ const FerryTicketForm = () => {
                         selectedSeat={formData.creditCardDetails.returnSeat}
                         ticketClass={formData.selectedReturn?.type === 'business' 
                           ? 'business' 
-                          : formData.selectedReturn?.type === 'promo' 
+                          : formData.selectedDeparture?.type === 'promo' 
                             ? 'promo' 
-                            : 'econ'}
-                        ferryType={formData.tripData?.ferryType || 'fastFerry'}
+                            : 'economy'}
+                        ferryType={formData.selectedReturn.shipType}
                         passengerCount={formData.departureDetails.passengerCount || 1}
                       />
                       

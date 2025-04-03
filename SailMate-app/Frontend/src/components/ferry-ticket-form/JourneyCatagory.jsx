@@ -25,8 +25,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
   const economyPrice = getPrice("Economy")*tripData.passengers;
   const businessPrice = getPrice("Business")*tripData.passengers;
   
-
-
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [collapsedDeparture, setCollapsedDeparture] = useState(false);
@@ -66,7 +64,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             economy: economyPrice,
             business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id
+            voyageId: voyage.id,
+            shipType: voyage.shipType
           }));
           
           setDepartureTrips(transformedDepartureData);
@@ -82,7 +81,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             economy: economyPrice,
             business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id
+            voyageId: voyage.id,
+            shipType: voyage.shipType// Add ship type
           }));
           
           // Transform return voyages with prices from props
@@ -93,7 +93,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             economy: economyPrice,
             business: businessPrice,
             availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id
+            voyageId: voyage.id,
+            shipType: voyage.shipType // Add ship type
           }));
           
           setDepartureTrips(transformedDepartureData);
@@ -113,6 +114,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
 
   const handleSelectTrip = (trip, type, isReturn = false) => {
     const selectedTrip = { ...trip, type };
+    console.log(selectedTrip);
     setSelectedOption((prev) => ({
       ...prev,
       [isReturn ? "return" : "departure"]: selectedTrip,
@@ -151,10 +153,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         return "text-gray-800 bg-gray-100";
     }
   };
-
   // Mobile view for trip card
   const renderMobileCard = (trip, isReturn = false) => {
-    
     return (
       <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
         {/* Trip header with departure and arrival */}
@@ -172,6 +172,12 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <div className="text-lg font-bold">{trip.arrival}</div>
             <div className="text-xs text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
           </div>
+        </div>
+        
+        {/* Ship Type */}
+        <div className="p-2 bg-blue-50 text-center text-blue-700 text-sm font-medium flex items-center justify-center">
+          <Ship size={14} className="mr-1" />
+          {trip.shipType}
         </div>
         
         {/* Fare options */}
@@ -252,6 +258,12 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                 <span>Arrival</span>
               </div>
             </th>
+            <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
+              <div className="flex items-center justify-center space-x-2">
+                <Ship size={16} className="text-gray-600" />
+                <span>Ship Type</span>
+              </div>
+            </th>
             <th className="p-3 md:p-6" style={{ backgroundImage: `url(${PromoLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
             </th>
             <th className="p-3 md:p-6" style={{ backgroundImage: `url(${EconomyLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
@@ -277,6 +289,16 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                       <div className="text-base md:text-xl font-bold">{trip.arrival}</div>
                       <div className="text-xs md:text-sm text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
                       <div className="flex items-center mt-1 text-xs">
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3 md:p-5">
+                    <div className="flex flex-col items-center">
+                      <div className="text-sm font-medium text-blue-600">
+                        <span className="flex items-center justify-center">
+                          <Ship size={14} className="mr-1" />
+                          {trip.shipType}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -381,7 +403,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             })
           ) : (
             <tr>
-              <td colSpan="5" className="p-8 text-center text-gray-500">
+              <td colSpan="6" className="p-8 text-center text-gray-500">
                 No voyages available for this route and date
               </td>
             </tr>
@@ -457,10 +479,16 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                   <ArrowRight size={12} className="mx-1" />
                   <span className="font-medium">{selectedOption.departure.arrival}</span>
                 </div>
-                <div className="text-xs mt-1">
+                <div className="text-xs mt-1 flex items-center">
                   <span className={`capitalize px-2 py-0.5 rounded ${getClassForType(selectedOption.departure.type)}`}>
                     {selectedOption.departure.type}
                   </span>
+                  {selectedOption.departure.shipType && (
+                    <span className="ml-2 text-blue-600 flex items-center">
+                      <Ship size={10} className="mr-1" /> 
+                      {selectedOption.departure.shipType}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -536,10 +564,16 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                   <ArrowRight size={12} className="mx-1" />
                   <span className="font-medium">{selectedOption.return.arrival}</span>
                 </div>
-                <div className="text-xs mt-1">
+                <div className="text-xs mt-1 flex items-center">
                   <span className={`capitalize px-2 py-0.5 rounded ${getClassForType(selectedOption.return.type)}`}>
                     {selectedOption.return.type}
                   </span>
+                  {selectedOption.return.shipType && (
+                    <span className="ml-2 text-blue-600 flex items-center">
+                      <Ship size={10} className="mr-1" /> 
+                      {selectedOption.return.shipType}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

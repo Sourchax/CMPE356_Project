@@ -1,6 +1,7 @@
 package group12.Backend.service;
 
 import group12.Backend.dto.NotificationDTO;
+import group12.Backend.dto.SeatsSoldDTO;
 import group12.Backend.dto.VoyageDTO;
 import group12.Backend.entity.Notification;
 import group12.Backend.entity.Station;
@@ -37,6 +38,9 @@ public class VoyageService {
     
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SeatsSoldService seatsSoldService;
     
     // Get all voyages
     public List<VoyageDTO> getAllVoyages() {
@@ -57,6 +61,30 @@ public class VoyageService {
         Optional<Voyage> voyage = voyageRepository.findById(id);
         return voyage.map(this::convertToDTO).orElse(null);
     }
+
+    private void initializeSeatsForVoyage(Voyage voyage) {
+        try {
+            // Create a SeatsSoldDTO for the new voyage
+            SeatsSoldDTO seatsSoldDTO = new SeatsSoldDTO();
+            seatsSoldDTO.setVoyageId(voyage.getId());
+            seatsSoldDTO.setShipType(voyage.getShipType());
+            
+            // Initialize with zero seats sold
+            seatsSoldDTO.setUpperDeckPromo(0L);
+            seatsSoldDTO.setUpperDeckEconomy(0L);
+            seatsSoldDTO.setUpperDeckBusiness(0L);
+            seatsSoldDTO.setLowerDeckPromo(0L);
+            seatsSoldDTO.setLowerDeckEconomy(0L);
+            seatsSoldDTO.setLowerDeckBusiness(0L);
+            seatsSoldDTO.setTotalTicketsSold(0L);
+            
+            // Create the seats sold record
+            seatsSoldService.createSeatsSold(seatsSoldDTO);
+        } catch (Exception e) {
+            // Log the error but don't prevent voyage creation
+            System.err.println("Error initializing seats sold record for voyage " + voyage.getId() + ": " + e.getMessage());
+        }
+    }
     
     // Find voyages by from station, to station and departure date
     public List<VoyageDTO> findVoyages(Integer fromStationId, Integer toStationId, LocalDate departureDate) {
@@ -72,6 +100,7 @@ public class VoyageService {
     public VoyageDTO createVoyage(VoyageDTO voyageDTO) {
         Voyage voyage = convertToEntity(voyageDTO);
         Voyage savedVoyage = voyageRepository.save(voyage);
+        initializeSeatsForVoyage(savedVoyage);
         return convertToDTO(savedVoyage);
     }
 
@@ -85,8 +114,8 @@ public class VoyageService {
         List<Voyage> voyages = voyageDTOs.stream()
                 .map(this::convertToEntity)
                 .collect(Collectors.toList());
-        
         List<Voyage> savedVoyages = voyageRepository.saveAll(voyages);
+        savedVoyages.forEach(this::initializeSeatsForVoyage);
         return savedVoyages.size();
     }
     

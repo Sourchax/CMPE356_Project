@@ -32,7 +32,16 @@ const voyageService = {
       throw error;
     }
   },
-  
+
+  getSeatsSoldByVoyageId: async (voyageId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/seats-sold/voyage/${voyageId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching seats sold data:', error);
+      return null;
+    }
+  },
   // Get all stations for dropdown menus
   getStations: async () => {
     try {
@@ -136,12 +145,32 @@ const AdminVoyage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [seatsSoldData, setSeatsSoldData] = useState({});
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isWeeklyScheduleModalOpen, setIsWeeklyScheduleModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const fetchSeatsSoldData = async (voyageIds) => {
+    const seatsSoldMap = {};
+    
+    await Promise.all(
+      voyageIds.map(async (voyageId) => {
+        try {
+          const data = await voyageService.getSeatsSoldByVoyageId(voyageId);
+          if (data) {
+            seatsSoldMap[voyageId] = data;
+          }
+        } catch (error) {
+          console.error(`Error fetching seats sold for voyage ${voyageId}:`, error);
+        }
+      })
+    );
+    
+    setSeatsSoldData(seatsSoldMap);
+  };
+  
   
   // Current voyage for editing/creating
   const [currentVoyage, setCurrentVoyage] = useState({
@@ -154,9 +183,6 @@ const AdminVoyage = () => {
     status: 'active',
     shipType: 'Fast Ferry',
     fuelType: false,
-    businessSeats: 30,
-    promoSeats: 10,
-    economySeats: 100
   });
   
   // Weekly schedule state
@@ -170,9 +196,6 @@ const AdminVoyage = () => {
     startDate: new Date().toISOString().substr(0, 10),
     shipType: 'Fast Ferry',
     fuelType: false,
-    businessSeats: 30,
-    promoSeats: 10,
-    economySeats: 100
   });
   
   // Filter states
@@ -215,7 +238,6 @@ const AdminVoyage = () => {
     applyFilters();
   }, [filters, voyages, stationFilters]);
 
-  // Fetch voyages from API
   const fetchVoyages = async () => {
     setIsLoading(true);
     setError(null);
@@ -223,6 +245,11 @@ const AdminVoyage = () => {
       const data = await voyageService.getVoyages();
       setVoyages(data);
       setFilteredVoyages(data);
+      
+      // Fetch seats sold data for all voyages
+      const voyageIds = data.map(voyage => voyage.id);
+      await fetchSeatsSoldData(voyageIds);
+      
       setIsLoading(false);
     } catch (err) {
       setError('Failed to fetch voyages');
@@ -344,9 +371,6 @@ const AdminVoyage = () => {
       status: 'active',
       shipType: 'Fast Ferry',
       fuelType: false,
-      businessSeats: 30,
-      promoSeats: 10,
-      economySeats: 100
     });
     setIsModalOpen(true);
     setValidationErrors({});
@@ -381,9 +405,6 @@ const AdminVoyage = () => {
       startDate: new Date().toISOString().substr(0, 10),
       shipType: 'Fast Ferry',
       fuelType: false,
-      businessSeats: 30,
-      promoSeats: 10,
-      economySeats: 100
     });
     setIsWeeklyScheduleModalOpen(true);
     setValidationErrors({});
@@ -503,9 +524,9 @@ const AdminVoyage = () => {
       status: voyage.status,
       shipType: voyage.shipType,
       fuelType: voyage.fuelType,
-      businessSeats: parseInt(voyage.businessSeats) || 30,
-      promoSeats: parseInt(voyage.promoSeats) || 10,
-      economySeats: parseInt(voyage.economySeats) || 100
+      businessSeats: voyage.shipType === "Fast Ferry" ? 50 : 30,
+      promoSeats: voyage.shipType === "Fast Ferry" ?  100: 60,
+      economySeats: voyage.shipType === "Fast Ferry" ?  100: 60,
     };
   };
   
@@ -691,9 +712,9 @@ const AdminVoyage = () => {
             status: 'active',
             shipType: weeklySchedule.shipType,
             fuelType: weeklySchedule.fuelType,
-            businessSeats: parseInt(weeklySchedule.businessSeats) || 30,
-            promoSeats: parseInt(weeklySchedule.promoSeats) || 10,
-            economySeats: parseInt(weeklySchedule.economySeats) || 100
+            businessSeats: weeklySchedule.shipType === "Fast Ferry" ? 50 : 30,
+            promoSeats: weeklySchedule.shipType === "Fast Ferry" ?  100: 60,
+            economySeats: weeklySchedule.shipType === "Fast Ferry" ?  100: 60,
           });
         }
         
@@ -716,19 +737,30 @@ const AdminVoyage = () => {
     }
   };
 
-  // Change voyage status to cancelled
-  const cancelVoyage = async (id) => {
-    setIsLoading(true);
-    try {
-      await voyageService.cancelVoyage(id);
-      showAlert('success', 'Voyage cancelled successfully');
-      await fetchVoyages();
-    } catch (error) {
-      showAlert('error', 'Failed to cancel voyage. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [voyageToCancel, setVoyageToCancel] = useState(null);
+
+    const openCancelConfirmation = (voyage) => {
+      setVoyageToCancel(voyage);
+      setCancelModalOpen(true);
+    };
+
+    const cancelVoyage = async () => {
+      if (!voyageToCancel) return;
+      
+      setIsLoading(true);
+      try {
+        await voyageService.cancelVoyage(voyageToCancel.id);
+        showAlert('success', 'Voyage cancelled successfully');
+        await fetchVoyages();
+        setCancelModalOpen(false);
+        setVoyageToCancel(null);
+      } catch (error) {
+        showAlert('error', 'Failed to cancel voyage. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   // Open delete confirmation
   const openDeleteConfirmation = (voyage) => {
@@ -945,6 +977,7 @@ const AdminVoyage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Time</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tickets Sold</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Ship Type</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">LPG</th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Actions</th>
@@ -972,6 +1005,9 @@ const AdminVoyage = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {seatsSoldData[voyage.id] ? seatsSoldData[voyage.id].totalTicketsSold : '0'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {voyage.shipType}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -984,7 +1020,7 @@ const AdminVoyage = () => {
                           <div className="flex justify-end space-x-2">
                             {voyage.status !== 'cancel' && (
                               <button 
-                                onClick={() => cancelVoyage(voyage.id)}
+                                onClick={() => openCancelConfirmation(voyage)}
                                 className="text-yellow-600 hover:text-yellow-900"
                                 title="Cancel Voyage"
                               >
@@ -998,13 +1034,15 @@ const AdminVoyage = () => {
                             >
                               <Edit size={18} />
                             </button>
-                            <button 
-                              onClick={() => openDeleteConfirmation(voyage)}
-                              className="text-red-600 hover:text-red-900"
-                              title="Delete Voyage"
-                            >
-                              <Trash2 size={18} />
-                            </button>
+                            {voyage.status === 'cancel' && (
+                              <button 
+                                onClick={() => openDeleteConfirmation(voyage)}
+                                className="text-red-600 hover:text-red-900"
+                                title="Delete Voyage"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1292,48 +1330,6 @@ const AdminVoyage = () => {
                   </select>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Business Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="businessSeats"
-                    value={currentVoyage.businessSeats}
-                    onChange={handleInputChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Promo Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="promoSeats"
-                    value={currentVoyage.promoSeats}
-                    onChange={handleInputChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Economy Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="economySeats"
-                    value={currentVoyage.economySeats}
-                    onChange={handleInputChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
-                
                 <div className="flex items-center">
                   <label className="block text-sm font-medium text-gray-700 mb-1 mr-2">
                     LPG Available
@@ -1597,48 +1593,6 @@ const AdminVoyage = () => {
                     className="h-4 w-4 text-[#06AED5] border-gray-300 rounded focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                   />
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Business Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="businessSeats"
-                    value={weeklySchedule.businessSeats}
-                    onChange={handleWeeklyScheduleChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Promo Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="promoSeats"
-                    value={weeklySchedule.promoSeats}
-                    onChange={handleWeeklyScheduleChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Economy Seats
-                  </label>
-                  <input
-                    type="number"
-                    name="economySeats"
-                    value={weeklySchedule.economySeats}
-                    onChange={handleWeeklyScheduleChange}
-                    min="0"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                  />
-                </div>
               </div>
               
               <div className="mt-6 flex justify-end space-x-3">
@@ -1684,7 +1638,7 @@ const AdminVoyage = () => {
       )}
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && voyageToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle size={24} className="text-red-600" />
@@ -1694,6 +1648,13 @@ const AdminVoyage = () => {
             <p className="mb-4">
               Are you sure you want to delete the voyage from <span className="font-semibold">({voyageToDelete.fromStationTitle})</span> to <span className="font-semibold">({voyageToDelete.toStationTitle})</span> on <span className="font-semibold">{formatDate(voyageToDelete.departureDate)}</span>?
             </p>
+            
+            {seatsSoldData[voyageToDelete.id]?.totalTicketsSold > 0 && (
+              <p className="mb-4 text-orange-600 font-medium">
+                This voyage has {seatsSoldData[voyageToDelete.id].totalTicketsSold} tickets sold. Deleting it will remove all ticket records.
+              </p>
+            )}
+            
             <p className="mb-4 text-red-600 font-medium">
               This action cannot be undone.
             </p>
@@ -1723,6 +1684,58 @@ const AdminVoyage = () => {
                     Deleting...
                   </span>
                 ) : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {cancelModalOpen && voyageToCancel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle size={24} className="text-yellow-600" />
+              <h2 className="text-lg sm:text-xl font-semibold">Confirm Voyage Cancellation</h2>
+            </div>
+            
+            <p className="mb-4">
+              Are you sure you want to cancel the voyage from <span className="font-semibold">{voyageToCancel.fromStationTitle}</span> to <span className="font-semibold">{voyageToCancel.toStationTitle}</span> on <span className="font-semibold">{formatDate(voyageToCancel.departureDate)}</span>?
+            </p>
+            
+            {seatsSoldData[voyageToCancel.id]?.totalTicketsSold > 0 && (
+              <p className="mb-4 text-orange-600 font-medium">
+                This voyage has {seatsSoldData[voyageToCancel.id].totalTicketsSold} tickets sold. Canceling it will impact customers who have purchased tickets.
+              </p>
+            )}
+            
+            <p className="mb-4 text-yellow-600 font-medium">
+              Canceling a voyage will notify all customers who have purchased tickets. This may result in customer service inquiries.
+            </p>
+            
+            <div className="flex justify-end gap-3 mt-5">
+              <button 
+                onClick={() => {
+                  setCancelModalOpen(false);
+                  setVoyageToCancel(null);
+                }} 
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                disabled={isLoading}
+              >
+                Back
+              </button>
+              <button 
+                onClick={cancelVoyage} 
+                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Canceling...
+                  </span>
+                ) : 'Cancel Voyage'}
               </button>
             </div>
           </div>

@@ -1,0 +1,158 @@
+package group12.Backend.controller;
+
+import group12.Backend.dto.SeatsSoldDTO;
+import group12.Backend.service.SeatsSoldService;
+import group12.Backend.util.Authentication;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/seats-sold")
+@CrossOrigin(origins = "*")
+public class SeatsSoldController {
+
+    private final SeatsSoldService seatsSoldService;
+
+    @Autowired
+    public SeatsSoldController(SeatsSoldService seatsSoldService) {
+        this.seatsSoldService = seatsSoldService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SeatsSoldDTO>> getAllSeatsSold() {
+        return ResponseEntity.ok(seatsSoldService.getAllSeatsSold());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SeatsSoldDTO> getSeatsSoldById(@PathVariable Integer id) {
+        return seatsSoldService.getSeatsSoldById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/voyage/{voyageId}")
+    public ResponseEntity<SeatsSoldDTO> getSeatsSoldByVoyageId(@PathVariable Integer voyageId) {
+        return seatsSoldService.getSeatsSoldByVoyageId(voyageId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<SeatsSoldDTO> createSeatsSold(
+            @RequestBody SeatsSoldDTO seatsSoldDTO,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            SeatsSoldDTO created = seatsSoldService.createSeatsSold(seatsSoldDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SeatsSoldDTO> updateSeatsSold(
+            @PathVariable Integer id,
+            @RequestBody SeatsSoldDTO seatsSoldDTO,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            return seatsSoldService.updateSeatsSold(id, seatsSoldDTO)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteSeatsSold(
+            @PathVariable Integer id,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            Map<String, Object> response = new HashMap<>();
+            boolean deleted = seatsSoldService.deleteSeatsSold(id);
+            
+            if (deleted) {
+                response.put("success", true);
+                response.put("message", "Seats sold record deleted successfully");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "Seats sold record not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+
+    @PostMapping("/initialize/{voyageId}")
+    public ResponseEntity<SeatsSoldDTO> initializeForVoyage(
+            @PathVariable Integer voyageId,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            SeatsSoldDTO initialized = seatsSoldService.initializeForVoyage(voyageId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(initialized);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+
+    @PutMapping("/update-seats")
+    public ResponseEntity<Map<String, Object>> updateSeatCounts(
+            @RequestParam Integer voyageId,
+            @RequestParam String ticketClass,
+            @RequestParam String deckType,
+            @RequestParam Long count,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            seatsSoldService.updateSeatCounts(voyageId, ticketClass, deckType, count);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Seat counts updated successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+}

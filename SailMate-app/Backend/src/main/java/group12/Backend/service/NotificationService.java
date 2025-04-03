@@ -3,6 +3,8 @@ package group12.Backend.service;
 import group12.Backend.dto.NotificationDTO;
 import group12.Backend.entity.Notification;
 import group12.Backend.repository.NotificationRepository;
+import group12.Backend.util.ClerkUsers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,7 +156,7 @@ public class NotificationService {
                 message,
                 null  // No entity ID for broadcast messages
         );
-        
+        ClerkUsers.allUsers();
         notification = notificationRepository.save(notification);
         return convertToDTO(notification);
     }
