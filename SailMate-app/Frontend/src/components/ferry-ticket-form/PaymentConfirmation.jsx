@@ -2,7 +2,7 @@
 import "../../assets/styles/ferry-ticket-form/paymentconfirmation.css";
 
 
-const PaymentConfirmation = ({ onCCDataChange, selectedSeat }) => {
+const PaymentConfirmation = ({ onCCDataChange}) => {
   const termsText = `SailMate Payment Terms & Conditions
 
 By proceeding with payment on SailMate, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions`;
@@ -38,11 +38,6 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
-  };
-
-  const handleSeatSelection = (seat) => {
-    // Add seat to form data for submission
-    onCCDataChange({...formData, selectedSeat: seat});
   };
 
   const handleBlur = (e) => {
@@ -170,7 +165,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
     const isValid = validateForm();
     
     if (isValid) {
-      onCCDataChange({...formData, selectedSeat});
+      onCCDataChange({...formData});
     }
   };
 

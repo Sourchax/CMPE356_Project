@@ -7,7 +7,6 @@ import axios from 'axios';
 import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
 import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
 import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
-import { SeatSelectionBox } from "../components/ferry-ticket-form/FerrySeatSelector.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 const steps = [
@@ -55,9 +54,6 @@ const ProgressBar = ({ currentStep, width }) => {
 const FerryTicketForm = () => {
 
   const [prices, setPrices] = useState([]);
-  const [seatSelectorOpen, setSeatSelectorOpen] = useState(false);
-  const [selectedSeat, setSelectedSeat] = useState("");
-  const [currentTripType, setCurrentTripType] = useState("departure");
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -77,54 +73,6 @@ const FerryTicketForm = () => {
     
     fetchPrices();
   }, []);
-
-  // Toggle seat selector modal
-  const toggleSeatSelector = (tripType = "departure") => {
-    setCurrentTripType(tripType);
-    setSeatSelectorOpen(!seatSelectorOpen);
-  };
-
-  // Handle seat selection
-  const handleSeatSelected = (seat) => {
-    // Clear the warning if the user selects a seat
-    if (seat) {
-      setShowSeatWarning(false);
-    }
-    
-    setFormData((prevData) => ({
-      ...prevData,
-      creditCardDetails: {
-        ...prevData.creditCardDetails,
-        selectedSeat: seat,
-      },
-    }));
-  };
-  
-  // New handlers for separate departure and return seat selections
-  const handleDepartureSeatSelected = (seat) => {
-    // Clear the warning if the user selects a seat
-    if (seat) {
-      setShowSeatWarning(false);
-    }
-    
-    setFormData((prevData) => ({
-      ...prevData,
-      creditCardDetails: {
-        ...prevData.creditCardDetails,
-        departureSeat: seat,
-      },
-    }));
-  };
-  
-  const handleReturnSeatSelected = (seat) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      creditCardDetails: {
-        ...prevData.creditCardDetails,
-        returnSeat: seat,
-      },
-    }));
-  };
 
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -258,9 +206,6 @@ const FerryTicketForm = () => {
       expiryYear: "",
       cvv: "",
       termsAccepted: false,
-      selectedSeat: "",
-      departureSeat: "",
-      returnSeat: ""
     },
     notifyBySMS: false,
     notifyByEmail: false,
@@ -273,27 +218,7 @@ const FerryTicketForm = () => {
     console.log("Passengers:", formData.departureDetails.passengers);
   }, [location.state, formData.tripData]);
 
-  const [showSeatWarning, setShowSeatWarning] = useState(false);
-  
-  const handleNext = () => {
-    if (currentStep === 2) {
-      // Check if seats are selected
-      if (isRoundTrip) {
-        // For round trips, check both departure and return seats
-        if (!formData.creditCardDetails.departureSeat || !formData.creditCardDetails.returnSeat) {
-          setShowSeatWarning(true);
-          return; // Don't proceed
-        }
-      } else {
-        // For one-way trips, check only departure seat
-        if (!formData.creditCardDetails.departureSeat) {
-          setShowSeatWarning(true);
-          return; // Don't proceed
-        }
-      }
-    }
-    setCurrentStep((prev) => prev + 1);
-  };
+  const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handleBack = () => {
     if (currentStep === 2) {
       setFormData((prevData) => ({
@@ -316,23 +241,8 @@ const FerryTicketForm = () => {
 
   const createTickets = async () => {
     try {
-      // Validate required data
-      if (!formData.selectedDeparture?.voyageId) {
-        alert("No departure voyage selected");
-        return false;
-      }
-
-      if (!formData.departureDetails?.passengerCount) {
-        alert("No passengers specified");
-        return false;
-      }
-
-      if (!userId) {
-        alert("User not authenticated");
-        return false;
-      }
-
       // Format the passenger data for the API
+      
       const formatPassengers = (passengers, count) => {
         return passengers.slice(0, count).map(passenger => ({
           name: passenger.Name,
@@ -349,18 +259,15 @@ const FerryTicketForm = () => {
         formData.departureDetails.passengers,
         formData.departureDetails.passengerCount
       );
-      
-      // Get the selected departure seat
-      const departureSeat = formData.creditCardDetails?.departureSeat || "auto";
   
       // Create the departure ticket request
       const departureTicketRequest = {
         voyageId: formData.selectedDeparture.voyageId,
         passengerCount: formData.departureDetails.passengerCount,
         totalPrice: departurePrice,
-        ticketClass: formData.selectedDeparture.type,
-        selectedSeats: departureSeat || "auto",
-        userId: userId,
+        ticketClass: formData.selectedDeparture.type ,
+        selectedSeats: formData.selectedDeparture.selectedSeats || "auto",
+        userId: userId, // From your Clerk authentication
         passengers: departurePassengers
       };
   
@@ -371,20 +278,11 @@ const FerryTicketForm = () => {
       // If round trip, create the return ticket as well
       let returnTicketResponse = null;
       if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
-        // Validate return voyage data
-        if (!formData.selectedReturn?.voyageId) {
-          alert("No return voyage selected");
-          return false;
-        }
-
         // Get return voyage passengers
         const returnPassengers = formatPassengers(
           formData.departureDetails.passengers.slice(formData.departureDetails.passengerCount),
           formData.departureDetails.passengerCount
         );
-        
-        // Get the selected return seat
-        const returnSeat = formData.creditCardDetails?.returnSeat || "auto";
   
         // Create the return ticket request
         const returnTicketRequest = {
@@ -392,7 +290,7 @@ const FerryTicketForm = () => {
           passengerCount: formData.departureDetails.passengerCount,
           totalPrice: returnPrice,
           ticketClass: formData.selectedReturn.type,
-          selectedSeats: returnSeat || "auto",
+          selectedSeats: formData.selectedReturn.selectedSeats || "auto",
           userId: userId,
           passengers: returnPassengers
         };
@@ -405,28 +303,16 @@ const FerryTicketForm = () => {
       // Store ticket information in state or localStorage for the Thank You page
       const ticketInfo = {
         departureTicket: departureTicketResponse.data,
-        returnTicket: returnTicketResponse ? returnTicketResponse.data : null,
-        departureSeat: departureSeat,
-        returnSeat: formData.creditCardDetails?.returnSeat || null
+        returnTicket: returnTicketResponse ? returnTicketResponse.data : null
       };
       
-      // Save to localStorage for display on Thank You page
+      // Could save this to state or localStorage for display on Thank You page
       localStorage.setItem('lastTicketInfo', JSON.stringify(ticketInfo));
       
       return true;
     } catch (error) {
       console.error("Error creating tickets:", error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        alert(`Error creating tickets: ${error.response.data || 'Please try again.'}`);
-      } else if (error.request) {
-        // The request was made but no response was received
-        alert("Network error. Please check your connection and try again.");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        alert("Error creating tickets. Please try again.");
-      }
+      alert("There was an error creating your tickets. Please try again.");
       return false;
     }
   };
@@ -492,11 +378,10 @@ const FerryTicketForm = () => {
       }
     };
     if(currentStep === 2){
-      // Check if all passengers are valid
-      const passengersValid = formData.departureDetails.passengers.every(passenger => passenger.isValid);
-      
-      // Return true (disabled) if not all conditions are met
-      return !passengersValid;
+      if (formData.departureDetails.passengers.every(passenger => passenger.isValid)) {
+        return false;
+      }
+      return true;
     }
     return false;
   };
@@ -594,29 +479,6 @@ const FerryTicketForm = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 border-b">
-                    <h3 className="text-blue-700 font-medium mb-3">Select Your Departure Seat</h3>
-                    <SeatSelectionBox 
-                      tripType="departure" 
-                      onSeatSelected={handleDepartureSeatSelected}
-                      selectedSeat={formData.creditCardDetails.departureSeat}
-                      ticketClass={formData.selectedDeparture?.type === 'business' 
-                        ? 'business' 
-                        : formData.selectedDeparture?.type === 'promo' 
-                          ? 'promo' 
-                          : 'economy'}
-                      ferryType={formData.selectedDeparture.shipType}
-                      passengerCount={formData.departureDetails.passengerCount || 1}
-                    />
-                    
-                    {showSeatWarning && !formData.creditCardDetails.departureSeat && (
-                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md flex items-center text-red-700">
-                        <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
-                        <span>Please select seats for your departure journey</span>
-                      </div>
-                    )}
-                  </div>
-
                   {formData.departureDetails.passengers.map((passenger, index) => (
                     index < totalPassengers ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
@@ -643,32 +505,6 @@ const FerryTicketForm = () => {
                           <span>{formData.tripData.departure}</span>
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Add seat selection for return journey when it's a round trip */}
-                  {isRoundTrip && (
-                    <div className="p-4 border-b">
-                      <h3 className="text-red-700 font-medium mb-3">Select Your Return Seat</h3>
-                      <SeatSelectionBox 
-                        tripType="return" 
-                        onSeatSelected={handleReturnSeatSelected}
-                        selectedSeat={formData.creditCardDetails.returnSeat}
-                        ticketClass={formData.selectedReturn?.type === 'business' 
-                          ? 'business' 
-                          : formData.selectedDeparture?.type === 'promo' 
-                            ? 'promo' 
-                            : 'economy'}
-                        ferryType={formData.selectedReturn.shipType}
-                        passengerCount={formData.departureDetails.passengerCount || 1}
-                      />
-                      
-                      {showSeatWarning && !formData.creditCardDetails.returnSeat && (
-                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md flex items-center text-red-700">
-                          <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
-                          <span>Please select seats for your return journey</span>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -702,13 +538,7 @@ const FerryTicketForm = () => {
 
             {/* Payment form - now displayed in left column when on step 3 */}
             {currentStep === 3 && (
-              <PaymentConfirmation 
-                onCCDataChange={handleCCDataChange} 
-                handleFormSubmit={handleSubmit}
-                departureSeat={formData.creditCardDetails.departureSeat}
-                returnSeat={formData.creditCardDetails.returnSeat}
-                isRoundTrip={isRoundTrip}
-              />
+              <PaymentConfirmation onCCDataChange={handleCCDataChange} handleFormSubmit={handleSubmit} />
             )}
           </div>
 
