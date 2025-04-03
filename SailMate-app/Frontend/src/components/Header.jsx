@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, useClerk, useUser } from '@clerk/clerk-react';
 import sailMatelogo from "../assets/images/SailMate_logo.png";
+import { useSessionToken } from "../utils/sessions";
 import { LogIn, Anchor, Menu, X, ChevronDown, User, Bell } from "lucide-react";
 import CustomUserButton from "../pages/customUserButton";
 import axios from "axios";
@@ -68,9 +69,13 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
     if (!userId) return;
-    
+    const token = useSessionToken();
     try {
-      const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}/count`);
+      const response = await axios.get(`${API_BASE_URL}/notifications/count`,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       setUnreadCount(response.data.count);
     } catch (error) {
       console.error('Error fetching notification count:', error);
@@ -80,10 +85,14 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   // Fetch notifications for the dropdown
   const fetchNotifications = async () => {
     if (!userId) return;
-    
+    const token = useSessionToken();
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/notifications/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Only show up to 5 most recent notifications in the dropdown
       setNotifications(response.data.slice(0, 5));
     } catch (error) {
@@ -96,7 +105,12 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   // Mark a notification as read
   const markAsRead = async (id) => {
     try {
-      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true });
+      const token = useSessionToken();
+      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Update the local state
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: true } : notif
@@ -111,7 +125,12 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   // Mark all notifications as read
   const markAllAsRead = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/notifications/user/${userId}/read-all`);
+      const token = useSessionToken();
+      await axios.put(`${API_BASE_URL}/notifications/read-all`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Update the local state
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
       setUnreadCount(0);
@@ -437,37 +456,6 @@ const Header = () => {
         )}
       </header>
     </div>
-  );
-};
-
-// Renamed from NotificationCount to NotificationBadge and used in the mobile menu
-const NotificationBadge = ({ userId }) => {
-  const [count, setCount] = useState(0);
-  const API_BASE_URL = 'http://localhost:8080/api';
-
-  useEffect(() => {
-    if (!userId) return;
-    
-    const fetchCount = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/notifications/user/${userId}/count`);
-        setCount(response.data.count);
-      } catch (error) {
-        console.error('Error fetching notification count:', error);
-      }
-    };
-    
-    fetchCount();
-    const interval = setInterval(fetchCount, 30000);
-    return () => clearInterval(interval);
-  }, [userId]);
-
-  if (count === 0) return null;
-  
-  return (
-    <span className="ml-2 inline-block px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-      {count > 99 ? '99+' : count}
-    </span>
   );
 };
 

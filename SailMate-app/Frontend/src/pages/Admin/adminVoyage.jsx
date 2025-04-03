@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Edit, Plus, Search, X, Check, RefreshCcw, AlertCircle, Calendar } from 'lucide-react';
+import { useSessionToken } from "../../utils/sessions";
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -45,8 +46,13 @@ const voyageService = {
   
   // Create a new voyage
   createVoyage: async (voyageData) => {
+    const token = useSessionToken();
     try {
-      const response = await axios.post(`${API_BASE_URL}/voyages`, voyageData);
+      const response = await axios.post(`${API_BASE_URL}/voyages`, voyageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error creating voyage:', error);
@@ -56,8 +62,13 @@ const voyageService = {
   
   // Update an existing voyage
   updateVoyage: async (id, voyageData) => {
+    const token = useSessionToken();
     try {
-      const response = await axios.put(`${API_BASE_URL}/voyages/${id}`, voyageData);
+      const response = await axios.put(`${API_BASE_URL}/voyages/${id}`, voyageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error updating voyage:', error);
@@ -67,8 +78,13 @@ const voyageService = {
   
   // Delete a voyage
   deleteVoyage: async (id) => {
+    const token = useSessionToken();
     try {
-      const response = await axios.delete(`${API_BASE_URL}/voyages/${id}`);
+      const response = await axios.delete(`${API_BASE_URL}/voyages/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error deleting voyage:', error);
@@ -78,8 +94,14 @@ const voyageService = {
   
   // Cancel a voyage
   cancelVoyage: async (id) => {
+    const token = useSessionToken();
     try {
-      const response = await axios.put(`${API_BASE_URL}/voyages/${id}/cancel`);
+      
+      const response = await axios.put(`${API_BASE_URL}/voyages/${id}/cancel`,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error cancelling voyage:', error);
@@ -89,8 +111,13 @@ const voyageService = {
   
   // Create weekly schedule
   createWeeklySchedule: async (scheduleData) => {
+    const token = useSessionToken();
     try {
-      const response = await axios.post(`${API_BASE_URL}/voyages/bulk`, scheduleData);
+      const response = await axios.post(`${API_BASE_URL}/voyages/bulk`, scheduleData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error creating weekly schedule:', error);
@@ -101,7 +128,6 @@ const voyageService = {
 
 const AdminVoyage = () => {
   const location = useLocation();
-  
   // State management
   const [voyages, setVoyages] = useState([]);
   const [filteredVoyages, setFilteredVoyages] = useState([]);

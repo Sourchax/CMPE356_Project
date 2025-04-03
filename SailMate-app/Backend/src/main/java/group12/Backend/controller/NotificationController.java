@@ -1,11 +1,18 @@
 package group12.Backend.controller;
 
+import group12.Backend.util.*;
+
 import group12.Backend.dto.NotificationDTO;
 import group12.Backend.service.NotificationService;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,18 +31,24 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
     
-    // ===== User Notification Endpoints =====
     
     // Get all notifications for a user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable String userId) {
-        return ResponseEntity.ok(notificationService.getUserNotifications(userId));
+    @GetMapping("/all")
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(HttpServletRequest request) throws Exception{
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+
+        return ResponseEntity.ok(notificationService.getUserNotifications(claims.getSubject()));
     }
     
     // Get only unread notifications for a user
-    @GetMapping("/user/{userId}/unread")
-    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(@PathVariable String userId) {
-        return ResponseEntity.ok(notificationService.getUnreadNotifications(userId));
+    @GetMapping("/unread")
+    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(HttpServletRequest request) throws Exception {
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        return ResponseEntity.ok(notificationService.getUnreadNotifications(claims.getSubject()));
     }
     
     // Get notification by ID
@@ -47,9 +60,13 @@ public class NotificationController {
     }
     
     // Count unread notifications
-    @GetMapping("/user/{userId}/count")
-    public ResponseEntity<Map<String, Long>> countUnreadNotifications(@PathVariable String userId) {
-        Long count = notificationService.countUnreadNotifications(userId);
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> countUnreadNotifications(HttpServletRequest request) throws Exception{
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+            
+        Long count = notificationService.countUnreadNotifications(claims.getSubject());
         Map<String, Long> response = new HashMap<>();
         response.put("count", count);
         return ResponseEntity.ok(response);
@@ -78,8 +95,13 @@ public class NotificationController {
     @PutMapping("/{id}/read")
     public ResponseEntity<NotificationDTO> markNotificationRead(
             @PathVariable Integer id,
-            @RequestBody NotificationDTO.NotificationMarkReadRequest request) {
-        NotificationDTO updatedNotification = notificationService.markAsRead(id, request);
+            @RequestBody NotificationDTO.NotificationMarkReadRequest requestMe,
+            HttpServletRequest request) throws Exception {
+        
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        NotificationDTO updatedNotification = notificationService.markAsRead(id, requestMe);
         
         if (updatedNotification != null) {
             return ResponseEntity.ok(updatedNotification);
@@ -89,9 +111,13 @@ public class NotificationController {
     }
     
     // Mark all notifications as read for a user
-    @PutMapping("/user/{userId}/read-all")
-    public ResponseEntity<Map<String, Object>> markAllAsRead(@PathVariable String userId) {
-        int updated = notificationService.markAllAsRead(userId);
+    @PutMapping("/read-all")
+    public ResponseEntity<Map<String, Object>> markAllAsRead(HttpServletRequest request) throws Exception{
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        int updated = notificationService.markAllAsRead(claims.getSubject());
         
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

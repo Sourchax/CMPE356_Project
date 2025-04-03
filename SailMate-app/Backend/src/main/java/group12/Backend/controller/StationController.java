@@ -1,5 +1,8 @@
 package group12.Backend.controller;
 
+import group12.Backend.util.*;
+
+import java.io.IOException;
 import group12.Backend.dto.StationDTO;
 import group12.Backend.entity.Station;
 import group12.Backend.service.StationService;
@@ -7,10 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,34 +97,61 @@ public class StationController {
     }
     
     @PostMapping
-    public ResponseEntity<Station> createStation(@RequestBody StationDTO stationDTO) {
-        Station station = convertToEntity(stationDTO);
-        Station savedStation = stationService.saveStation(station);
-        return new ResponseEntity<>(savedStation, HttpStatus.CREATED);
+    public ResponseEntity<Station> createStation(@RequestBody StationDTO stationDTO, HttpServletRequest request) throws Exception {
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            Station station = convertToEntity(stationDTO);
+            Station savedStation = stationService.saveStation(station);
+            return new ResponseEntity<>(savedStation, HttpStatus.CREATED);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Station> updateStation(
             @PathVariable Integer id,
-            @RequestBody StationDTO stationDTO) {
-        
-        if (!stationService.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            @RequestBody StationDTO stationDTO, HttpServletRequest request) throws Exception {
+
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            if (!stationService.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            Station station = convertToEntity(stationDTO);
+            Station updatedStation = stationService.updateStation(id, station);
+            return ResponseEntity.ok(updatedStation);
+
         }
-        
-        Station station = convertToEntity(stationDTO);
-        Station updatedStation = stationService.updateStation(id, station);
-        return ResponseEntity.ok(updatedStation);
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }     
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Integer id) {
-        if (!stationService.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteStation(@PathVariable Integer id, HttpServletRequest request) throws Exception {
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            if (!stationService.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            stationService.deleteStation(id);
+            return ResponseEntity.noContent().build();
         }
-        
-        stationService.deleteStation(id);
-        return ResponseEntity.noContent().build();
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
     }
     
     private Station convertToEntity(StationDTO stationDTO) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Edit, Trash2, AlertCircle } from "lucide-react";
+import { Edit, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import placeholder from "../../assets/images/placeholder.jpg";
+import { useSessionToken } from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -11,6 +12,7 @@ export default function AdminAnnounce() {
   const location = useLocation();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false); // Add submitting state
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ 
@@ -31,6 +33,7 @@ export default function AdminAnnounce() {
   // Fetch announcements from API
   const fetchAnnouncements = async () => {
     setLoading(true);
+    const token = useSessionToken();
     try {
       const response = await axios.get(API_BASE_URL);
       // Make sure we're setting an array, even if the API returns something else
@@ -201,12 +204,18 @@ export default function AdminAnnounce() {
   };
 
   const saveAnnouncement = async () => {
+    // Prevent submission if already submitting
+    if (submitting) {
+      return;
+    }
+    
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       return;
     }
     
     try {
+      setSubmitting(true);
       const announcementData = {
         id: form.id,
         title: form.title,
@@ -214,8 +223,12 @@ export default function AdminAnnounce() {
         details: form.details || "",
         imageBase64: form.imageBase64
       };
-      
-      const response = await axios.put(`${API_BASE_URL}/${form.id}`, announcementData);
+      const token = useSessionToken();
+      const response = await axios.put(`${API_BASE_URL}/${form.id}`, announcementData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       
       // Update the announcements list with the updated item
       setAnnouncements(prevAnnouncements => 
@@ -228,6 +241,8 @@ export default function AdminAnnounce() {
     } catch (err) {
       console.error("Error updating announcement:", err);
       setErrors({ submit: "Failed to update announcement. Please try again." });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -237,9 +252,15 @@ export default function AdminAnnounce() {
   };
 
   const deleteAnnouncement = async () => {
-    if (announcementToDelete) {
+    if (announcementToDelete && !submitting) {
       try {
-        await axios.delete(`${API_BASE_URL}/${announcementToDelete.id}`);
+        setSubmitting(true);
+        const token = useSessionToken();
+        await axios.delete(`${API_BASE_URL}/${announcementToDelete.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         
         // Update the UI after successful deletion
         setAnnouncements(prevAnnouncements => 
@@ -250,25 +271,38 @@ export default function AdminAnnounce() {
       } catch (err) {
         console.error("Error deleting announcement:", err);
         setErrors({ submit: "Failed to delete announcement. Please try again." });
+      } finally {
+        setSubmitting(false);
       }
     }
   };
 
   const addAnnouncement = async () => {
+    // Prevent submission if already submitting
+    if (submitting) {
+      return;
+    }
+    
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       return;
     }
     
     try {
+      setSubmitting(true);
       const announcementData = {
         title: form.title,
         description: form.description,
         details: form.details || "",
         imageBase64: form.imageBase64
       };
+      const token = useSessionToken();
       
-      const response = await axios.post(API_BASE_URL, announcementData);
+      const response = await axios.post(API_BASE_URL, announcementData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       
       // Add the new announcement to the list
       setAnnouncements(prevAnnouncements => [...prevAnnouncements, response.data]);
@@ -281,6 +315,8 @@ export default function AdminAnnounce() {
     } catch (err) {
       console.error("Error adding announcement:", err);
       setErrors({ submit: "Failed to add announcement. Please try again." });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -310,6 +346,7 @@ export default function AdminAnnounce() {
       <button
         onClick={() => openEdit({ id: null, title: "", imageBase64: "", description: "", details: "" })}
         className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-8 text-lg"
+        disabled={submitting}
       >
         Add Announcement
       </button>
@@ -342,29 +379,42 @@ export default function AdminAnnounce() {
             </div>
           ) : (
             announcements.map((announcement) => (
-              <div key={announcement.id} className="p-6 border rounded-lg flex justify-between items-center shadow-md hover:shadow-lg transition duration-300">
-                <div className="flex gap-6 items-center flex-1">
-                  <img
-                    src={announcement.imageBase64 ? `data:image/jpeg;base64,${announcement.imageBase64}` : placeholder}
-                    alt="Announcement"
-                    className="w-28 h-28 object-cover rounded-lg"
-                    onError={(e) => {
-                      console.log("Image failed to load, using placeholder");
-                      e.target.src = placeholder;
-                    }}
-                  />
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">{announcement.title}</h2>
-                    <p className="text-gray-500 text-lg max-w-2xl">{announcement.description}</p>
+              <div key={announcement.id} className="p-6 border rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                <div className="flex justify-between">
+                  {/* Left side: Image and text */}
+                  <div className="flex gap-6 items-start overflow-hidden">
+                    <img
+                      src={announcement.imageBase64 ? `data:image/jpeg;base64,${announcement.imageBase64}` : placeholder}
+                      alt="Announcement"
+                      className="w-28 h-28 object-cover rounded-lg flex-shrink-0"
+                      onError={(e) => {
+                        console.log("Image failed to load, using placeholder");
+                        e.target.src = placeholder;
+                      }}
+                    />
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <h2 className="text-2xl font-semibold text-gray-800 mb-2 truncate">{announcement.title}</h2>
+                      <p className="text-gray-500 text-lg line-clamp-2 overflow-hidden text-ellipsis">{announcement.description}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="space-x-6 flex ml-4">
-                  <button onClick={() => openEdit(announcement)} className="text-[#06AED5] transition duration-300">
-                    <Edit size={24} />
-                  </button>
-                  <button onClick={() => openDeleteConfirmation(announcement)} className="text-red-600 transition duration-300">
-                    <Trash2 size={24} />
-                  </button>
+                  
+                  {/* Right side: Action buttons */}
+                  <div className="flex items-start space-x-6 ml-4 flex-shrink-0">
+                    <button 
+                      onClick={() => openEdit(announcement)} 
+                      className="text-[#06AED5] transition duration-300"
+                      disabled={submitting}
+                    >
+                      <Edit size={24} />
+                    </button>
+                    <button 
+                      onClick={() => openDeleteConfirmation(announcement)} 
+                      className="text-red-600 transition duration-300"
+                      disabled={submitting}
+                    >
+                      <Trash2 size={24} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -398,6 +448,7 @@ export default function AdminAnnounce() {
                 placeholder="Enter announcement title"
                 className={getFieldClassName("title")}
                 maxLength={50}
+                disabled={submitting}
               />
               {touched.title && errors.title ? (
                 <p className="text-red-600 text-sm">{errors.title}</p>
@@ -419,6 +470,7 @@ export default function AdminAnnounce() {
                 onChange={handleImageChange}
                 accept="image/jpeg, image/png, image/gif, image/webp"
                 className="w-full p-3 border rounded-lg mb-2 text-gray-800 file:border-0 file:bg-[#06AED5] file:text-white focus:outline-none"
+                disabled={submitting}
               />
               {(form.imagePreview || (form.imageBase64 && !form.imagePreview)) ? (
                 <div className="mb-2">
@@ -453,6 +505,7 @@ export default function AdminAnnounce() {
                 className={getFieldClassName("description")}
                 rows={3}
                 maxLength={200}
+                disabled={submitting}
               />
               {touched.description && errors.description ? (
                 <p className="text-red-600 text-sm">{errors.description}</p>
@@ -477,6 +530,7 @@ export default function AdminAnnounce() {
                 className={getFieldClassName("details")}
                 rows={5}
                 maxLength={1000}
+                disabled={submitting}
               />
               {touched.details && errors.details ? (
                 <p className="text-red-600 text-sm">{errors.details}</p>
@@ -491,14 +545,23 @@ export default function AdminAnnounce() {
               <button 
                 onClick={() => setSelected(null)} 
                 className="px-6 py-2 bg-gray-300 rounded-lg transition duration-300"
+                disabled={submitting}
               >
                 Cancel
               </button>
               <button 
                 onClick={form.id ? saveAnnouncement : addAnnouncement} 
-                className="px-6 py-2 bg-[#06AED5] text-white rounded-lg transition duration-300"
+                className={`px-6 py-2 bg-[#06AED5] text-white rounded-lg transition duration-300 ${submitting ? 'opacity-70' : ''}`}
+                disabled={submitting}
               >
-                {form.id ? "Save Changes" : "Add Announcement"}
+                {submitting ? (
+                  <span className="flex items-center">
+                    <Loader2 size={18} className="animate-spin mr-2" />
+                    {form.id ? "Saving..." : "Adding..."}
+                  </span>
+                ) : (
+                  form.id ? "Save Changes" : "Add Announcement"
+                )}
               </button>
             </div>
           </div>
@@ -525,14 +588,23 @@ export default function AdminAnnounce() {
                   setAnnouncementToDelete(null);
                 }} 
                 className="px-4 py-2 border border-gray-300 rounded-md transition"
+                disabled={submitting}
               >
                 Cancel
               </button>
               <button 
                 onClick={deleteAnnouncement} 
-                className="px-4 py-2 bg-red-600 text-white rounded-md transition"
+                className={`px-4 py-2 bg-red-600 text-white rounded-md transition ${submitting ? 'opacity-70' : ''}`}
+                disabled={submitting}
               >
-                Delete
+                {submitting ? (
+                  <span className="flex items-center">
+                    <Loader2 size={18} className="animate-spin mr-2" />
+                    Deleting...
+                  </span>
+                ) : (
+                  "Delete"
+                )}
               </button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useSessionToken } from "../utils/sessions";
 import placeholder from "../assets/images/placeholder.jpg";
 import axios from "axios";
 
@@ -13,6 +14,9 @@ export default function Cards() {
   const [open, setOpen] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
+  const token = useSessionToken();
+  
+
   // Fetch announcements from backend
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -20,7 +24,11 @@ export default function Cards() {
         setLoading(true);
         // For published/active announcements, you might want to create a specific endpoint
         // like /api/announcements/active if you implement status in the backend
-        const response = await axios.get(API_BASE_URL);
+        const response = await axios.get(API_BASE_URL, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setAnnouncements(Array.isArray(response.data) ? response.data : []);
         setError(null);
       } catch (err) {

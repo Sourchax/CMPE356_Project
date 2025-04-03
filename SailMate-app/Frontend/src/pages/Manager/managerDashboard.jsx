@@ -92,7 +92,7 @@ const ManagerDashboard = () => {
       iconColor: "#8B5CF6",
       bgColor: "#F5F3FF",
       borderColor: "border-purple-200",
-      path: "//Users",
+      path: "/manager/Users",
       count: dashboardStats.activeUsers
     },
     {

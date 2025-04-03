@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle } from "lucide-react";
+import {useSessionToken} from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -105,9 +106,16 @@ const AdminStations = () => {
 
   const checkActiveVoyages = async (stationId) => {
     setCheckingVoyages(true);
+    const token = useSessionToken();
     try {
       // Check if there are active voyages associated with this station
-      const response = await axios.get(`${API_URL}/voyages/by-station/${stationId}`);
+      const response = await axios.get(`${API_URL}/voyages/by-station/${stationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       return response.data && response.data.length > 0;
     } catch (err) {
       console.error("Error checking active voyages:", err);
@@ -130,8 +138,13 @@ const AdminStations = () => {
 
   const handleDelete = async () => {
     if (stationToDelete) {
+      const token = useSessionToken();
       try {
-        await axios.delete(`${API_URL}/stations/${stationToDelete.id}`);
+        await axios.delete(`${API_URL}/stations/${stationToDelete.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setStations(stations.filter((station) => station.id !== stationToDelete.id));
         setDeleteModalOpen(false);
         setStationToDelete(null);
@@ -161,18 +174,25 @@ const AdminStations = () => {
   const handleSave = async (event) => {
     event.preventDefault();
     if (!validateForm()) return;
-
+    const token = useSessionToken();
     try {
       if (editingStation) {
         // Update existing station
         const response = await axios.put(`${API_URL}/stations/${editingStation.id}`, {
           id: editingStation.id,
           ...formData
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         setStations(stations.map((s) => (s.id === editingStation.id ? response.data : s)));
       } else {
         // Create new station
-        const response = await axios.post(`${API_URL}/stations`, formData);
+        const response = await axios.post(`${API_URL}/stations`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`
+        }});
         setStations([...stations, response.data]);
       }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSessionToken } from '../utils/sessions';
 import { X, Bell, Check, Trash2 } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -25,13 +26,18 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     setError(null);
     
     try {
-      let endpoint = `${API_BASE_URL}/notifications/user/${userId}`;
+      const token = useSessionToken();
+      let endpoint = `${API_BASE_URL}/notifications/all`;
       
       if (activeTab === 'unread') {
-        endpoint = `${API_BASE_URL}/notifications/user/${userId}/unread`;
+        endpoint = `${API_BASE_URL}/notifications/unread`;
       }
       
-      const response = await axios.get(endpoint);
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       setNotifications(response.data);
     } catch (err) {
       console.error('Error fetching notifications:', err);
@@ -47,7 +53,12 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     event.stopPropagation();
     
     try {
-      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true });
+      const token = useSessionToken();
+      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Update local state
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: true } : notif
@@ -64,7 +75,12 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     event.stopPropagation();
     
     try {
-      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: false });
+      const token = useSessionToken();
+      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: false }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Update local state
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: false } : notif
@@ -81,7 +97,11 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     event.stopPropagation();
     
     try {
-      await axios.put(`${API_BASE_URL}/notifications/user/${userId}/read-all`);
+      await axios.put(`${API_BASE_URL}/notifications/read-all`, {}, {
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`,
+        }
+      });
       // Update local state
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
     } catch (err) {
@@ -94,9 +114,13 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
   const deleteNotification = async (id, event) => {
     // Stop event propagation to prevent the modal backdrop from closing
     event.stopPropagation();
-    
+    const token = useSessionToken();
     try {
-      await axios.delete(`${API_BASE_URL}/notifications/${id}`);
+      await axios.delete(`${API_BASE_URL}/notifications/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       // Update local state
       setNotifications(notifications.filter(notif => notif.id !== id));
     } catch (err) {
