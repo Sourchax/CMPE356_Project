@@ -156,7 +156,20 @@ public class NotificationController {
     }
     
     @PostMapping("/broadcast")
-    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(
+            @RequestBody Map<String, String> request,
+            HttpServletRequest httpRequest) throws Exception {
+        
+        // Authentication check - only admin and super users can send broadcasts
+        Claims claims = Authentication.getClaims(httpRequest);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to send broadcast messages");
+        }
+        
         String title = request.get("title");
         String message = request.get("message");
         
@@ -167,23 +180,46 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
         
-        NotificationDTO notification = notificationService.createBroadcastNotification(title, message);
+        List<NotificationDTO> notifications = notificationService.createBroadcastNotification(title, message);
         
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "Broadcast notification sent successfully");
-        response.put("notification", notification);
+        response.put("message", "Broadcast notification sent to " + notifications.size() + " users successfully");
+        response.put("count", notifications.size());
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping("/broadcasts")
-    public ResponseEntity<List<NotificationDTO>> getAllBroadcasts() {
-        return ResponseEntity.ok(notificationService.getUserNotifications("broadcast"));
+    public ResponseEntity<List<NotificationDTO>> getAllBroadcasts(HttpServletRequest request) throws Exception {
+        // Authentication check - only admin and super users can view all broadcasts
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role) || "manager".equalsIgnoreCase(role))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view all broadcasts");
+        }
+        
+        return ResponseEntity.ok(notificationService.getAllBroadcasts());
     }
     
     @DeleteMapping("/broadcast/{id}")
-    public ResponseEntity<Map<String, Object>> deleteBroadcast(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, Object>> deleteBroadcast(
+            @PathVariable Integer id,
+            HttpServletRequest request) throws Exception {
+        
+        // Authentication check - only admin and super users can delete broadcasts
+        Claims claims = Authentication.getClaims(request);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to delete broadcast messages");
+        }
+        
         boolean deleted = notificationService.deleteNotification(id);
         
         Map<String, Object> response = new HashMap<>();

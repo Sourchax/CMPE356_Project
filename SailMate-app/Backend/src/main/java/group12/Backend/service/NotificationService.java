@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -147,18 +149,39 @@ public class NotificationService {
     
     // Create broadcast notification for all users
     @Transactional
-    public NotificationDTO createBroadcastNotification(String title, String message) {
-        // Create a notification with "broadcast" as userId to indicate it's for all users
-        Notification notification = new Notification(
-                "broadcast",  // Special userId for broadcast notifications
-                Notification.NotificationType.BROADCAST,
-                title,
-                message,
-                null  // No entity ID for broadcast messages
-        );
-        ClerkUsers.allUsers();
-        notification = notificationRepository.save(notification);
-        return convertToDTO(notification);
+    public List<NotificationDTO> createBroadcastNotification(String title, String message) {
+        List<NotificationDTO> createdNotifications = new ArrayList<>();
+        
+        // Get all users from ClerkUsers utility
+        Map<String, Object> allUsers = ClerkUsers.allUsers();
+        
+        if (allUsers != null && !allUsers.isEmpty()) {
+            // For each user, create an individual notification
+            for (String userId : allUsers.keySet()) {
+                Notification notification = new Notification(
+                        userId,  // Use actual user ID instead of "broadcast"
+                        Notification.NotificationType.BROADCAST,
+                        title,
+                        message,
+                        null  // No entity ID for broadcast messages
+                );
+                
+                Notification savedNotification = notificationRepository.save(notification);
+                createdNotifications.add(convertToDTO(savedNotification));
+            }
+        }
+        
+        return createdNotifications;
+    }
+    
+    // Get all broadcast notifications (for admin view)
+    @Transactional
+    public List<NotificationDTO> getAllBroadcasts() {
+        // We don't have a "broadcast" user anymore, so we'll find by type instead
+        return notificationRepository.findByUserIdAndTypeOrderByCreatedAtDesc("broadcast", Notification.NotificationType.BROADCAST)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
     // Create voyage notification

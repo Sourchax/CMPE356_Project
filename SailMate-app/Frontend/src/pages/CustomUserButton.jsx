@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { User, LayoutDashboard, LogOut, Megaphone, X } from "lucide-react";
 import axios from "axios";
+import { useSessionToken } from "../utils/sessions";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -76,9 +77,14 @@ const BroadcastModal = ({ isOpen, onClose }) => {
     setError("");
     
     try {
+      const token = useSessionToken();
       await axios.post(`${API_BASE_URL}/notifications/broadcast`, {
         title: title.trim(),
         message: message.trim()
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       setSuccess("Broadcast notification sent successfully!");
