@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Ship, Percent, Save, Tag, Users, User, DollarSign, ArrowRight, Check } from "lucide-react";
 import axios from "axios";
+import {useSessionToken} from "../../utils/sessions";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -204,6 +205,7 @@ const ManagerFinance = () => {
       }
       return;
     }
+    const token = useSessionToken();
     
     // Prepare data for API update
     try {
@@ -211,36 +213,60 @@ const ManagerFinance = () => {
       await axios.put(`${API_URL}/prices/class/Promo`, {
         className: "Promo",
         value: ticketClasses[0].basePrice
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Update Economy price
       await axios.put(`${API_URL}/prices/class/Economy`, {
         className: "Economy",
         value: ticketClasses[1].basePrice
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Update Business price
       await axios.put(`${API_URL}/prices/class/Business`, {
         className: "Business",
         value: ticketClasses[2].basePrice
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Update Student discount
       await axios.put(`${API_URL}/prices/class/Student`, {
         className: "Student",
         value: discounts[0].percentage
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Update Senior discount
       await axios.put(`${API_URL}/prices/class/Senior`, {
         className: "Senior",
         value: discounts[1].percentage
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Update Fee
       await axios.put(`${API_URL}/prices/class/Fee`, {
         className: "Fee",
         value: serviceFee
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       
       // Show success message

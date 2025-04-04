@@ -9,6 +9,7 @@ import {
   Send,
   Tag
 } from "lucide-react";
+import {useSessionToken} from "../utils/sessions";
 import { FaFacebookF, FaXTwitter, FaInstagram} from 'react-icons/fa6';
 import Button from "../components/Button";
 import axios from "axios";
@@ -148,8 +149,12 @@ const Contact = () => {
           message: formData.message
         };
         
-        // Send the complaint to the backend
-        await axios.post('http://localhost:8080/api/complaints', complaintData);
+        const token = useSessionToken();
+        await axios.post('http://localhost:8080/api/complaints', complaintData, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         
         // Reset form and show success message
         setFormData({

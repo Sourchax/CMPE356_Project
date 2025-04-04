@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, User, MessageSquare, Send, CheckCircle, Clock, AlertCircle, X, RefreshCw } from "lucide-react";
 import axios from "axios";
+import {useSessionToken} from "../../utils/sessions";
 
 const ManageComplaints = () => {
     const [complaints, setComplaints] = useState([]);
@@ -17,7 +18,12 @@ const ManageComplaints = () => {
     const fetchComplaints = async () => {
         try {
             setRefreshing(true);
-            const response = await axios.get("http://localhost:8080/api/complaints");
+            const token = useSessionToken();
+            const response = await axios.get("http://localhost:8080/api/complaints", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                  }
+            });
             const formattedComplaints = response.data.map(complaint => ({
                 ...complaint,
                 // Map the status from the backend to the UI's status format
@@ -60,7 +66,11 @@ const ManageComplaints = () => {
     const handleDeleteConfirm = async () => {
         try {
             // Call the backend to delete the complaint
-            await axios.delete(`http://localhost:8080/api/complaints/${deleteConfirm.id}`);
+            await axios.delete(`http://localhost:8080/api/complaints/${deleteConfirm.id}`, {
+                headers: {
+                    Authorization: `Bearer ${useSessionToken()}`
+                  }
+            });
             
             // Update the UI by removing the deleted complaint
             const updatedComplaints = complaints.filter((complaint) => complaint.id !== deleteConfirm.id);
@@ -88,6 +98,10 @@ const ManageComplaints = () => {
             await axios.put(`http://localhost:8080/api/complaints/${id}`, {
                 status: "solved",
                 reply: replyData.message
+            }, {
+                headers: {
+                    Authorization: `Bearer ${useSessionToken()}`
+                  }
             });
             
             // Update the UI

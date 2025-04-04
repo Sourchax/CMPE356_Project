@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
+import { useSessionToken } from "../../utils/sessions";
+
 
 const ManagerDashboard = () => {
   const { user } = useUser();
@@ -34,7 +36,11 @@ const ManagerDashboard = () => {
     const fetchPendingComplaints = async () => {
       try {
         // Get complaints with 'active' status
-        const response = await axios.get('http://localhost:8080/api/complaints/status/active');
+        const response = await axios.get('http://localhost:8080/api/complaints/status/active', {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
         
         // Update stats with the count of pending complaints
         setDashboardStats(prevStats => ({
