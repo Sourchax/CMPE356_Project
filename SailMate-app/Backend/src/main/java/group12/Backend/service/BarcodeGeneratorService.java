@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class BarcodeGeneratorService {
 
     public static byte[] generateBarcodeBytes(String data) throws Exception {
-        BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.CODE_128, 300, 100);
+        BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 300, 300);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(matrix, "PNG", out);
         return out.toByteArray();
