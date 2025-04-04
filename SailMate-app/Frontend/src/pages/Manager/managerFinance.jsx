@@ -15,6 +15,7 @@ const ManagerFinance = () => {
 
   // Prices state
   const [prices, setPrices] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -182,6 +183,9 @@ const ManagerFinance = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check if already submitting
+    if (isSubmitting) return;
+    
     // Check if any discount is empty
     const hasEmptyDiscount = discounts.some(discount => 
       discount.percentage === "" || discount.percentage === null
@@ -205,80 +209,110 @@ const ManagerFinance = () => {
       }
       return;
     }
+    
     const token = useSessionToken();
+    
+    // Set submitting state
+    setIsSubmitting(true);
     
     // Prepare data for API update
     try {
-      // Update Promo price
-      await axios.put(`${API_URL}/prices/class/Promo`, {
-        className: "Promo",
-        value: ticketClasses[0].basePrice
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Update Economy price
-      await axios.put(`${API_URL}/prices/class/Economy`, {
-        className: "Economy",
-        value: ticketClasses[1].basePrice
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Update Business price
-      await axios.put(`${API_URL}/prices/class/Business`, {
-        className: "Business",
-        value: ticketClasses[2].basePrice
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Update Student discount
-      await axios.put(`${API_URL}/prices/class/Student`, {
-        className: "Student",
-        value: discounts[0].percentage
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Update Senior discount
-      await axios.put(`${API_URL}/prices/class/Senior`, {
-        className: "Senior",
-        value: discounts[1].percentage
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Update Fee
-      await axios.put(`${API_URL}/prices/class/Fee`, {
-        className: "Fee",
-        value: serviceFee
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Show success message
-      setSaveSuccess(true);
-      
-      setTimeout(() => {
-        setSaveSuccess(false);
-      }, 3000);
+      // Compare with original prices fetched from API
+      const apiUpdates = [];
+  
+      // Check Ticket Classes
+      const promoPrice = prices.find(price => price.className === "Promo");
+      if (promoPrice && promoPrice.value !== ticketClasses[0].basePrice) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Promo`, {
+            className: "Promo",
+            value: ticketClasses[0].basePrice
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      const economyPrice = prices.find(price => price.className === "Economy");
+      if (economyPrice && economyPrice.value !== ticketClasses[1].basePrice) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Economy`, {
+            className: "Economy",
+            value: ticketClasses[1].basePrice
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      const businessPrice = prices.find(price => price.className === "Business");
+      if (businessPrice && businessPrice.value !== ticketClasses[2].basePrice) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Business`, {
+            className: "Business",
+            value: ticketClasses[2].basePrice
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      // Check Discounts
+      const studentDiscount = prices.find(price => price.className === "Student");
+      if (studentDiscount && studentDiscount.value !== discounts[0].percentage) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Student`, {
+            className: "Student",
+            value: discounts[0].percentage
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      const seniorDiscount = prices.find(price => price.className === "Senior");
+      if (seniorDiscount && seniorDiscount.value !== discounts[1].percentage) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Senior`, {
+            className: "Senior",
+            value: discounts[1].percentage
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      // Check Service Fee
+      const feePrice = prices.find(price => price.className === "Fee");
+      if (feePrice && feePrice.value !== serviceFee) {
+        apiUpdates.push(
+          axios.put(`${API_URL}/prices/class/Fee`, {
+            className: "Fee",
+            value: serviceFee
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+      }
+  
+      // Only make API calls for changed values
+      if (apiUpdates.length > 0) {
+        await Promise.all(apiUpdates);
+        
+        // Show success message
+        setSaveSuccess(true);
+        
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
+      }
       
     } catch (err) {
       console.error("Error updating prices:", err);
       setError("Failed to save changes. Please try again later.");
+    } finally {
+      // Reset submitting state
+      setIsSubmitting(false);
     }
   };
 
@@ -605,23 +639,56 @@ const ManagerFinance = () => {
             }`}
             style={{ transitionDelay: '500ms' }}
           >
-            {saveSuccess ? (
-              <button
-                type="button"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300"
-              >
-                <Check size={18} className="mr-2" />
-                Changes Saved!
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
-              >
-                <Save size={18} className="mr-2" />
-                Save Changes
-              </button>
-            )}
+          {saveSuccess ? (
+            <button
+              type="button"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300"
+            >
+              <Check size={18} className="mr-2" />
+              Changes Saved!
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
+                isSubmitting 
+                  ? "bg-blue-400 cursor-not-allowed" 
+                  : "bg-blue-600 hover:bg-blue-700"
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300`}
+            >
+              {isSubmitting ? (
+                <div className="flex items-center">
+                  <svg 
+                    className="animate-spin h-5 w-5 mr-2" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24"
+                  >
+                    <circle 
+                      className="opacity-25" 
+                      cx="12" 
+                      cy="12" 
+                      r="10" 
+                      stroke="currentColor" 
+                      strokeWidth="4"
+                    ></circle>
+                    <path 
+                      className="opacity-75" 
+                      fill="currentColor" 
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Saving...
+                </div>
+              ) : (
+                <>
+                  <Save size={18} className="mr-2" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          )}
           </div>
         </form>
       </div>

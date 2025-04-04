@@ -2,8 +2,10 @@ package group12.Backend.controller;
 
 import group12.Backend.util.*;
 
+import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.ComplaintDTO;
 import group12.Backend.entity.Complaint;
+import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.ComplaintService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +28,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ComplaintController {
     
     private final ComplaintService complaintService;
+    private final ActivityLogService activityLogService;
     
-    public ComplaintController(ComplaintService complaintService) {
+    public ComplaintController(ComplaintService complaintService, ActivityLogService activityLogService) {
         this.complaintService = complaintService;
+        this.activityLogService = activityLogService;
     }
     
     @GetMapping
@@ -77,7 +81,18 @@ public class ComplaintController {
             Claims claims = Authentication.getClaims(httpServletRequest);
             if (claims == null)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        return new ResponseEntity<>(complaintService.createComplaint(request), HttpStatus.CREATED);
+            
+            ComplaintDTO createdComplaint = complaintService.createComplaint(request);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("CREATE");
+            logRequest.setEntityType("COMPLAINT");
+            logRequest.setEntityId(createdComplaint.getId().toString());
+            logRequest.setDescription("Created complaint: " + createdComplaint.getSubject() + " from " + createdComplaint.getSender());
+            activityLogService.createActivityLog(logRequest, claims);
+            
+            return new ResponseEntity<>(createdComplaint, HttpStatus.CREATED);
     }
     
     @PutMapping("/{id}")
@@ -89,8 +104,38 @@ public class ComplaintController {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
                 String role = (String) claims.get("meta_data", HashMap.class).get("role");
                 if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
-                    return ResponseEntity.ok(complaintService.updateComplaintStatus(id, request));
-
+                    // Get original complaint for logging
+                    ComplaintDTO originalComplaint = complaintService.getComplaintById(id);
+                    
+                    ComplaintDTO updatedComplaint = complaintService.updateComplaintStatus(id, request);
+                    
+                    // Log the activity
+                    ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                    logRequest.setActionType("UPDATE");
+                    logRequest.setEntityType("COMPLAINT");
+                    logRequest.setEntityId(id.toString());
+                    
+                    StringBuilder description = new StringBuilder("Updated complaint");
+                    
+                    if (originalComplaint != null) {
+                        description.append(": ").append(originalComplaint.getSubject());
+                        
+                        if (originalComplaint.getStatus() != request.getStatus()) {
+                            description.append(", status changed from ")
+                                     .append(originalComplaint.getStatus())
+                                     .append(" to ")
+                                     .append(request.getStatus());
+                        }
+                        
+                        if (request.getReply() != null && !request.getReply().equals(originalComplaint.getReply())) {
+                            description.append(", reply added/updated");
+                        }
+                    }
+                    
+                    logRequest.setDescription(description.toString());
+                    activityLogService.createActivityLog(logRequest, claims);
+                    
+                    return ResponseEntity.ok(updatedComplaint);
                 }
                 else{
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
@@ -104,7 +149,25 @@ public class ComplaintController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get the complaint details for logging before deletion
+            ComplaintDTO complaint = complaintService.getComplaintById(id);
+            
             complaintService.deleteComplaint(id);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("DELETE");
+            logRequest.setEntityType("COMPLAINT");
+            logRequest.setEntityId(id.toString());
+            
+            String description = "Deleted complaint";
+            if (complaint != null) {
+                description += ": " + complaint.getSubject() + " from " + complaint.getSender();
+            }
+            
+            logRequest.setDescription(description);
+            activityLogService.createActivityLog(logRequest, claims);
+            
             return ResponseEntity.noContent().build();
         }
         else{

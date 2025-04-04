@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.AnnouncementDTO;
+import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.AnnouncementService;
 
 @RestController
@@ -35,6 +37,9 @@ public class AnnouncementController {
     
     @Autowired
     private AnnouncementService announcementService;
+    
+    @Autowired
+    private ActivityLogService activityLogService;
     
     // Get all announcements
     @GetMapping
@@ -62,6 +67,15 @@ public class AnnouncementController {
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
             AnnouncementDTO created = announcementService.createAnnouncement(announcementDTO);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("CREATE");
+            logRequest.setEntityType("ANNOUNCEMENT");
+            logRequest.setEntityId(created.getId().toString());
+            logRequest.setDescription("Created announcement: " + created.getTitle());
+            activityLogService.createActivityLog(logRequest, claims);
+            
             return new ResponseEntity<>(created, HttpStatus.CREATED);   
         }
         else{
@@ -81,8 +95,25 @@ public class AnnouncementController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get the original announcement for logging
+            AnnouncementDTO originalAnnouncement = announcementService.getAnnouncementById(id);
+            
             AnnouncementDTO updated = announcementService.updateAnnouncement(id, announcementDTO);
             if (updated != null) {
+                // Log the activity
+                ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                logRequest.setActionType("UPDATE");
+                logRequest.setEntityType("ANNOUNCEMENT");
+                logRequest.setEntityId(id.toString());
+                
+                String description = "Updated announcement: " + updated.getTitle();
+                if (originalAnnouncement != null && !originalAnnouncement.getTitle().equals(updated.getTitle())) {
+                    description += " (previously: " + originalAnnouncement.getTitle() + ")";
+                }
+                
+                logRequest.setDescription(description);
+                activityLogService.createActivityLog(logRequest, claims);
+                
                 return ResponseEntity.ok(updated);
             } else {
                 return ResponseEntity.notFound().build();
@@ -102,8 +133,25 @@ public class AnnouncementController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get the announcement for logging before deletion
+            AnnouncementDTO announcement = announcementService.getAnnouncementById(id);
+            
             boolean deleted = announcementService.deleteAnnouncement(id);
             if (deleted) {
+                // Log the activity
+                ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                logRequest.setActionType("DELETE");
+                logRequest.setEntityType("ANNOUNCEMENT");
+                logRequest.setEntityId(id.toString());
+                
+                String description = "Deleted announcement";
+                if (announcement != null) {
+                    description += ": " + announcement.getTitle();
+                }
+                
+                logRequest.setDescription(description);
+                activityLogService.createActivityLog(logRequest, claims);
+                
                 return ResponseEntity.noContent().build();
             } else {
                 return ResponseEntity.notFound().build();

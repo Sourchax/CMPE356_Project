@@ -2,7 +2,9 @@ package group12.Backend.controller;
 
 import group12.Backend.util.*;
 
+import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.NotificationDTO;
+import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.NotificationService;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,12 @@ import java.util.Optional;
 public class NotificationController {
     
     private final NotificationService notificationService;
+    private final ActivityLogService activityLogService;
     
     @Autowired
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, ActivityLogService activityLogService) {
         this.notificationService = notificationService;
+        this.activityLogService = activityLogService;
     }
     
     
@@ -156,17 +160,15 @@ public class NotificationController {
     }
     
     @PostMapping("/broadcast")
-    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(
-            @RequestBody Map<String, String> request,
-            HttpServletRequest httpRequest) throws Exception {
-        
-        // Authentication check - only admin and super users can send broadcasts
+    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) throws Exception {
+        // Authenticate user
         Claims claims = Authentication.getClaims(httpRequest);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
+        // Check if user is admin or super for authorization
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role))) {
+        if (!"admin".equalsIgnoreCase(role) && !"super".equalsIgnoreCase(role)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to send broadcast messages");
         }
         
@@ -180,47 +182,53 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
         
-        List<NotificationDTO> notifications = notificationService.createBroadcastNotification(title, message);
+        notificationService.createBroadcastNotification(title, message);
+        
+        // Log the broadcast activity
+        ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+        logRequest.setActionType("BROADCAST");
+        logRequest.setEntityType("NOTIFICATION");
+        logRequest.setEntityId("broadcast");
+        logRequest.setDescription("Sent broadcast notification: " + title);
+        activityLogService.createActivityLog(logRequest, claims);
         
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "Broadcast notification sent to " + notifications.size() + " users successfully");
-        response.put("count", notifications.size());
+        response.put("message", "Broadcast notification sent successfully");
+        response.put("notification", message);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping("/broadcasts")
-    public ResponseEntity<List<NotificationDTO>> getAllBroadcasts(HttpServletRequest request) throws Exception {
-        // Authentication check - only admin and super users can view all broadcasts
-        Claims claims = Authentication.getClaims(request);
-        if (claims == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        
-        String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role) || "manager".equalsIgnoreCase(role))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view all broadcasts");
-        }
-        
-        return ResponseEntity.ok(notificationService.getAllBroadcasts());
+    public ResponseEntity<List<NotificationDTO>> getAllBroadcasts() {
+        return ResponseEntity.ok(notificationService.getUserNotifications("broadcast"));
     }
     
     @DeleteMapping("/broadcast/{id}")
-    public ResponseEntity<Map<String, Object>> deleteBroadcast(
-            @PathVariable Integer id,
-            HttpServletRequest request) throws Exception {
-        
-        // Authentication check - only admin and super users can delete broadcasts
+    public ResponseEntity<Map<String, Object>> deleteBroadcast(@PathVariable Integer id, HttpServletRequest request) throws Exception {
+        // Authenticate user
         Claims claims = Authentication.getClaims(request);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
+        // Check if user is admin or super for authorization
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if (!("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role))) {
+        if (!"admin".equalsIgnoreCase(role) && !"super".equalsIgnoreCase(role)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to delete broadcast messages");
         }
         
         boolean deleted = notificationService.deleteNotification(id);
+        
+        // If deleted, log the activity
+        if (deleted) {
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("DELETE");
+            logRequest.setEntityType("NOTIFICATION");
+            logRequest.setEntityId("broadcast/" + id);
+            logRequest.setDescription("Deleted broadcast notification with ID: " + id);
+            activityLogService.createActivityLog(logRequest, claims);
+        }
         
         Map<String, Object> response = new HashMap<>();
         if (deleted) {

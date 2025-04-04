@@ -1,7 +1,9 @@
 package group12.Backend.controller;
 
 import group12.Backend.util.*;
+import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.VoyageDTO;
+import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.VoyageService;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -26,6 +28,9 @@ public class VoyageController {
 
     @Autowired
     private VoyageService voyageService;
+    
+    @Autowired
+    private ActivityLogService activityLogService;
     
     // Get all voyages
     @GetMapping
@@ -69,7 +74,20 @@ public class VoyageController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
-            return ResponseEntity.status(HttpStatus.CREATED).body(voyageService.createVoyage(voyageDTO));
+            VoyageDTO createdVoyage = voyageService.createVoyage(voyageDTO);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("CREATE");
+            logRequest.setEntityType("VOYAGE");
+            logRequest.setEntityId(createdVoyage.getId().toString());
+            logRequest.setDescription("Created voyage from " + createdVoyage.getFromStationTitle() + 
+                " (" + createdVoyage.getFromStationCity() + ") to " + 
+                createdVoyage.getToStationTitle() + " (" + createdVoyage.getToStationCity() + 
+                ") on " + createdVoyage.getDepartureDate());
+            activityLogService.createActivityLog(logRequest, claims);
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdVoyage);
         }
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
@@ -87,6 +105,14 @@ public class VoyageController {
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
             int createdCount = voyageService.createBulkVoyages(voyageDTOs);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("BULK_CREATE");
+            logRequest.setEntityType("VOYAGE");
+            logRequest.setEntityId("bulk");
+            logRequest.setDescription("Created " + createdCount + " voyages in bulk operation");
+            activityLogService.createActivityLog(logRequest, claims);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -110,9 +136,47 @@ public class VoyageController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get original voyage for comparison
+            VoyageDTO originalVoyage = voyageService.getVoyageById(id);
+            
             VoyageDTO updatedVoyage = voyageService.updateVoyage(id, voyageDTO);
             
             if (updatedVoyage != null) {
+                // Log the activity with detailed changes
+                ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                logRequest.setActionType("UPDATE");
+                logRequest.setEntityType("VOYAGE");
+                logRequest.setEntityId(id.toString());
+                
+                StringBuilder description = new StringBuilder("Updated voyage");
+                
+                if (originalVoyage != null) {
+                    description.append(" from ")
+                             .append(originalVoyage.getFromStationTitle())
+                             .append(" to ")
+                             .append(originalVoyage.getToStationTitle());
+                    
+                    // Log significant changes
+                    if (voyageDTO.getDepartureDate() != null && 
+                        !voyageDTO.getDepartureDate().equals(originalVoyage.getDepartureDate())) {
+                        description.append(", date changed from ")
+                                 .append(originalVoyage.getDepartureDate())
+                                 .append(" to ")
+                                 .append(updatedVoyage.getDepartureDate());
+                    }
+                    
+                    if (voyageDTO.getStatus() != null && 
+                        voyageDTO.getStatus() != originalVoyage.getStatus()) {
+                        description.append(", status changed from ")
+                                 .append(originalVoyage.getStatus())
+                                 .append(" to ")
+                                 .append(updatedVoyage.getStatus());
+                    }
+                }
+                
+                logRequest.setDescription(description.toString());
+                activityLogService.createActivityLog(logRequest, claims);
+                
                 return ResponseEntity.ok(updatedVoyage);
             } else {
                 return ResponseEntity.notFound().build();
@@ -131,10 +195,37 @@ public class VoyageController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get voyage details before cancellation for logging
+            VoyageDTO voyage = voyageService.getVoyageById(id);
+            
             boolean success = voyageService.cancelVoyage(id);
             Map<String, Object> response = new HashMap<>();
             
             if (success) {
+                // Log the activity
+                ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                logRequest.setActionType("CANCEL");
+                logRequest.setEntityType("VOYAGE");
+                logRequest.setEntityId(id.toString());
+                
+                StringBuilder description = new StringBuilder("Cancelled voyage with ID: " + id);
+                
+                if (voyage != null) {
+                    description.append(" from ")
+                             .append(voyage.getFromStationTitle())
+                             .append(" (")
+                             .append(voyage.getFromStationCity())
+                             .append(") to ")
+                             .append(voyage.getToStationTitle())
+                             .append(" (")
+                             .append(voyage.getToStationCity())
+                             .append(") on ")
+                             .append(voyage.getDepartureDate());
+                }
+                
+                logRequest.setDescription(description.toString());
+                activityLogService.createActivityLog(logRequest, claims);
+                
                 response.put("success", true);
                 response.put("message", "Voyage cancelled successfully");
                 return ResponseEntity.ok(response);
@@ -157,10 +248,37 @@ public class VoyageController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            // Get voyage details before deletion for logging
+            VoyageDTO voyage = voyageService.getVoyageById(id);
+            
             boolean success = voyageService.deleteVoyage(id);
             Map<String, Object> response = new HashMap<>();
             
             if (success) {
+                // Log the activity
+                ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+                logRequest.setActionType("DELETE");
+                logRequest.setEntityType("VOYAGE");
+                logRequest.setEntityId(id.toString());
+                
+                StringBuilder description = new StringBuilder("Deleted voyage with ID: " + id);
+                
+                if (voyage != null) {
+                    description.append(" from ")
+                             .append(voyage.getFromStationTitle())
+                             .append(" (")
+                             .append(voyage.getFromStationCity())
+                             .append(") to ")
+                             .append(voyage.getToStationTitle())
+                             .append(" (")
+                             .append(voyage.getToStationCity())
+                             .append(") on ")
+                             .append(voyage.getDepartureDate());
+                }
+                
+                logRequest.setDescription(description.toString());
+                activityLogService.createActivityLog(logRequest, claims);
+                
                 response.put("success", true);
                 response.put("message", "Voyage deleted successfully");
                 return ResponseEntity.ok(response);

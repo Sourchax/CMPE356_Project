@@ -1,28 +1,58 @@
-import React, { useState } from "react";
-import { Trash2, Clock, User, Calendar, X, Search, Filter, ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Trash2, Clock, User, Calendar, X, Search, Filter, ChevronDown, Tag, Activity } from "lucide-react";
+import axios from "axios";
+import {useSessionToken} from "../../utils/sessions";
 
-const ManagerLogs = () => {
-    const [logs, setLogs] = useState([
-        { id: 1, user: "Alice Brown", loginTime: "2025-03-01 08:30:00", logoutTime: "2025-03-01 12:45:00", role: "User" },
-        { id: 2, user: "Bob White", loginTime: "2025-03-01 09:15:00", logoutTime: "2025-03-01 13:30:00", role: "Admin" },
-        { id: 3, user: "Charlie Green", loginTime: "2025-03-02 08:45:00", logoutTime: "2025-03-02 17:15:00", role: "Manager" },
-        { id: 4, user: "Diana Miller", loginTime: "2025-03-02 09:30:00", logoutTime: "2025-03-02 18:00:00", role: "User" },
-        { id: 5, user: "Edward Johnson", loginTime: "2025-03-03 07:55:00", logoutTime: "2025-03-03 16:40:00", role: "Manager" },
-        { id: 6, user: "Fiona Smith", loginTime: "2025-03-03 08:20:00", logoutTime: "2025-03-03 17:30:00", role: "Admin" },
-        { id: 7, user: "George Wilson", loginTime: "2025-03-04 09:10:00", logoutTime: "2025-03-04 18:25:00", role: "User" },
-        { id: 8, user: "Hannah Davis", loginTime: "2025-03-04 08:30:00", logoutTime: "2025-03-04 17:45:00", role: "Manager" },
-    ]);
+
+const ActivityLogs = () => {
+    const [logs, setLogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [selectedLogDetails, setSelectedLogDetails] = useState(null);
     
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
     const [searchTerm, setSearchTerm] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [filterOpen, setFilterOpen] = useState(false);
     const [filters, setFilters] = useState({
-        roles: []
+        roles: [],
+        actionTypes: []
     });
 
     // Available roles for filtering
-    const roles = ["User", "Admin", "Manager"];
+    const roles = ["user", "admin", "manager", "super"];
+    
+    // Available action types for filtering
+    const actionTypes = ["CREATE", "UPDATE", "DELETE", "CANCEL", "BROADCAST", "BULK_CREATE"];
+
+    // Fetch logs
+    useEffect(() => {
+        const fetchLogs = async () => {
+            try {
+                setLoading(true);
+                // Get token from localStorage - adjust this according to your auth implementation
+                const token = useSessionToken();
+                
+                const response = await axios.get(
+                    `${'http://localhost:8080'}/api/activity-logs`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                setLogs(response.data);
+                setError(null);
+            } catch (err) {
+                console.error("Error fetching activity logs:", err);
+                setError("Failed to fetch activity logs. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLogs();
+    }, []);
 
     // Handle sorting
     const requestSort = (key) => {
@@ -40,15 +70,25 @@ const ManagerLogs = () => {
         // Apply search
         if (searchTerm) {
             filteredLogs = filteredLogs.filter(log => 
-                log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                log.role.toLowerCase().includes(searchTerm.toLowerCase())
+                (log.fullName && log.fullName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (log.userRole && log.userRole.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (log.actionType && log.actionType.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (log.entityType && log.entityType.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (log.description && log.description.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
         
         // Apply role filters
         if (filters.roles.length > 0) {
             filteredLogs = filteredLogs.filter(log => 
-                filters.roles.includes(log.role)
+                filters.roles.includes(log.userRole)
+            );
+        }
+        
+        // Apply action type filters
+        if (filters.actionTypes.length > 0) {
+            filteredLogs = filteredLogs.filter(log => 
+                filters.actionTypes.includes(log.actionType)
             );
         }
         
@@ -64,8 +104,8 @@ const ManagerLogs = () => {
                 return 0;
             });
         } else {
-            // Default sort by login time (newest first)
-            filteredLogs.sort((a, b) => new Date(b.loginTime) - new Date(a.loginTime));
+            // Default sort by creation time (newest first)
+            filteredLogs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
         
         return filteredLogs;
@@ -75,9 +115,27 @@ const ManagerLogs = () => {
         setDeleteConfirm({ show: true, id });
     };
 
-    const handleDeleteConfirm = () => {
-        setLogs(logs.filter((log) => log.id !== deleteConfirm.id));
-        setDeleteConfirm({ show: false, id: null });
+    const handleDeleteConfirm = async () => {
+        try {
+            // Get token from localStorage - adjust this according to your auth implementation
+            const token = useSessionToken();
+            
+            await axios.delete(
+                `${'http://localhost:8080'}/api/activity-logs/${deleteConfirm.id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            
+            // Update local state after successful delete
+            setLogs(logs.filter((log) => log.id !== deleteConfirm.id));
+            setDeleteConfirm({ show: false, id: null });
+        } catch (err) {
+            console.error("Error deleting activity log:", err);
+            alert("Failed to delete activity log. Please try again.");
+        }
     };
 
     const handleDeleteCancel = () => {
@@ -94,31 +152,117 @@ const ManagerLogs = () => {
         });
     };
 
-    // Format date/time for better display
-    const formatDateTime = (dateTimeStr) => {
-        const date = new Date(dateTimeStr);
-        return date.toLocaleString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+    const handleActionTypeFilter = (actionType) => {
+        setFilters(prev => {
+            const newActionTypes = prev.actionTypes.includes(actionType) 
+                ? prev.actionTypes.filter(a => a !== actionType)
+                : [...prev.actionTypes, actionType];
+            
+            return { ...prev, actionTypes: newActionTypes };
         });
     };
 
-    // Calculate session duration
-    const calculateDuration = (login, logout) => {
-        const start = new Date(login);
-        const end = new Date(logout);
-        const diff = (end - start) / (1000 * 60); // in minutes
-        
-        const hours = Math.floor(diff / 60);
-        const minutes = Math.floor(diff % 60);
-        
-        return `${hours}h ${minutes}m`;
+    const formatDateTime = (dateTimeStr) => {
+        const date = new Date(dateTimeStr);
+        return date.toLocaleString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+    };
+
+    // Get role badge styling
+    const getRoleBadgeStyle = (role) => {
+        switch(role?.toLowerCase()) {
+            case 'admin':
+                return 'bg-purple-100 text-purple-800 border border-purple-200';
+            case 'manager':
+                return 'bg-blue-100 text-blue-800 border border-blue-200';
+            case 'super':
+                return 'bg-orange-100 text-orange-800 border border-orange-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border border-gray-200';
+        }
+    };
+
+    // Get action type badge styling
+    const getActionTypeBadgeStyle = (actionType) => {
+        switch(actionType) {
+            case 'CREATE':
+                return 'bg-green-100 text-green-800 border border-green-200';
+            case 'UPDATE':
+                return 'bg-blue-100 text-blue-800 border border-blue-200';
+            case 'DELETE':
+                return 'bg-red-100 text-red-800 border border-red-200';
+            case 'CANCEL':
+                return 'bg-orange-100 text-orange-800 border border-orange-200';
+            case 'BROADCAST':
+                return 'bg-purple-100 text-purple-800 border border-purple-200';
+            case 'BULK_CREATE':
+                return 'bg-cyan-100 text-cyan-800 border border-cyan-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border border-gray-200';
+        }
+    };
+    
+    // Get entity type badge styling
+    const getEntityTypeBadgeStyle = (entityType) => {
+        switch(entityType) {
+            case 'ANNOUNCEMENT':
+                return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+            case 'STATION':
+                return 'bg-lime-100 text-lime-800 border border-lime-200';
+            case 'PRICE':
+                return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+            case 'COMPLAINT':
+                return 'bg-rose-100 text-rose-800 border border-rose-200';
+            case 'NOTIFICATION':
+                return 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+            case 'VOYAGE':
+                return 'bg-sky-100 text-sky-800 border border-sky-200';
+            case 'TICKET':
+                return 'bg-amber-100 text-amber-800 border border-amber-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border border-gray-200';
+        }
     };
     
     const sortedAndFilteredLogs = getSortedAndFilteredLogs();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-t-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading activity logs...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+                    <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+                        <X size={32} className="text-red-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Error</h2>
+                    <p className="text-gray-600 mb-6">{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -127,27 +271,27 @@ const ManagerLogs = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full mx-4">
                         <div className="flex justify-between items-center mb-5">
-                            <h3 className="text-xl font-semibold text-gray-900">Confirm Delete</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
                             <button 
                                 onClick={handleDeleteCancel}
-                                className="text-gray-400 hover:text-gray-500 transition-colors"
+                                className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full p-1 transition"
                             >
-                                <X size={24} />
+                                <X size={20} />
                             </button>
                         </div>
                         <div className="mb-6">
-                            <p className="text-gray-600">Are you sure you want to delete this log entry? This action cannot be undone.</p>
+                            <p className="text-gray-700">Are you sure you want to delete this log? This action cannot be undone.</p>
                         </div>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleDeleteCancel}
-                                className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium border border-gray-200"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
-                                className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm font-medium border border-red-700"
                             >
                                 Delete
                             </button>
@@ -158,14 +302,14 @@ const ManagerLogs = () => {
 
             <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-teal-600 mb-4 md:mb-0">Manager Logs</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-teal-600 mb-4 md:mb-0">Activity Logs</h1>
                     
                     <div className="flex flex-col sm:flex-row gap-3">
                         {/* Search Input */}
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search users or roles..."
+                                placeholder="Search logs..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
@@ -180,33 +324,52 @@ const ManagerLogs = () => {
                                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
                             >
                                 <Filter size={18} className="text-teal-500" />
-                                <span>Filter Roles</span>
+                                <span>Filters</span>
                                 <ChevronDown size={16} className={`transition-transform text-gray-500 ${filterOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
                             {/* Filter Dropdown */}
                             {filterOpen && (
-                                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
+                                <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
                                     <div className="p-3 border-b border-gray-200 bg-teal-100">
-                                        <h3 className="font-semibold text-teal-800">User Roles</h3>
+                                        <h3 className="font-semibold text-teal-800">Filter Options</h3>
                                     </div>
-                                    <div className="p-3">
-                                        <div className="space-y-3">
+                                    
+                                    {/* Role Filters */}
+                                    <div className="p-3 border-b border-gray-200">
+                                        <h4 className="font-medium text-gray-700 mb-2">User Roles</h4>
+                                        <div className="flex flex-wrap gap-2">
                                             {roles.map(role => (
-                                                <label key={role} className="flex items-center p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        checked={filters.roles.includes(role)}
-                                                        onChange={() => handleRoleFilter(role)}
-                                                        className="mr-3 h-4 w-4 text-teal-600 focus:ring-teal-500 rounded"
-                                                    />
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                                                        role === 'Admin' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 
-                                                        role === 'Manager' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
-                                                        'bg-gray-100 text-gray-800 border border-gray-200'
-                                                    }`}>
-                                                        {role}
-                                                    </span>
+                                                <label 
+                                                    key={role} 
+                                                    className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
+                                                        filters.roles.includes(role) 
+                                                            ? `bg-teal-100 border-teal-500 shadow-sm` 
+                                                            : 'bg-gray-100 border-transparent hover:bg-gray-200'
+                                                    }`}
+                                                    onClick={() => handleRoleFilter(role)}
+                                                >
+                                                    {role}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Action Type Filters */}
+                                    <div className="p-3">
+                                        <h4 className="font-medium text-gray-700 mb-2">Action Types</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {actionTypes.map(type => (
+                                                <label 
+                                                    key={type} 
+                                                    className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
+                                                        filters.actionTypes.includes(type) 
+                                                            ? `bg-teal-100 border-teal-500 shadow-sm` 
+                                                            : 'bg-gray-100 border-transparent hover:bg-gray-200'
+                                                    }`}
+                                                    onClick={() => handleActionTypeFilter(type)}
+                                                >
+                                                    {type}
                                                 </label>
                                             ))}
                                         </div>
@@ -222,11 +385,62 @@ const ManagerLogs = () => {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-gradient-to-r from-green-500 to-teal-500 text-white">
-                                <th className="p-4 text-left font-medium text-white">User</th>
-                                <th className="p-4 text-left font-medium text-white">Role</th>
-                                <th className="p-4 text-left font-medium text-white">Login Time</th>
-                                <th className="p-4 text-left font-medium text-white">Logout Time</th>
-                                <th className="p-4 text-left font-medium text-white">Duration</th>
+                                <th 
+                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
+                                    onClick={() => requestSort('fullName')}
+                                >
+                                    User
+                                    {sortConfig.key === 'fullName' && (
+                                        <span className="ml-1">
+                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                                        </span>
+                                    )}
+                                </th>
+                                <th 
+                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
+                                    onClick={() => requestSort('userRole')}
+                                >
+                                    Role
+                                    {sortConfig.key === 'userRole' && (
+                                        <span className="ml-1">
+                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                                        </span>
+                                    )}
+                                </th>
+                                <th 
+                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
+                                    onClick={() => requestSort('actionType')}
+                                >
+                                    Action
+                                    {sortConfig.key === 'actionType' && (
+                                        <span className="ml-1">
+                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                                        </span>
+                                    )}
+                                </th>
+                                <th 
+                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
+                                    onClick={() => requestSort('entityType')}
+                                >
+                                    Entity
+                                    {sortConfig.key === 'entityType' && (
+                                        <span className="ml-1">
+                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                                        </span>
+                                    )}
+                                </th>
+                                <th className="p-4 text-left font-medium text-white">Description</th>
+                                <th 
+                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
+                                    onClick={() => requestSort('createdAt')}
+                                >
+                                    Timestamp
+                                    {sortConfig.key === 'createdAt' && (
+                                        <span className="ml-1">
+                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                                        </span>
+                                    )}
+                                </th>
                                 <th className="p-4 text-center font-medium text-white">Actions</th>
                             </tr>
                         </thead>
@@ -237,36 +451,40 @@ const ManagerLogs = () => {
                                         <td className="p-4">
                                             <div className="flex items-center">
                                                 <div className="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center mr-3 shadow-sm">
-                                                    {log.user.charAt(0)}
+                                                    {log.fullName ? log.fullName.charAt(0) : 'U'}
                                                 </div>
-                                                <span className="font-medium">{log.user}</span>
+                                                <span className="font-medium">{log.fullName || 'Unknown User'}</span>
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                log.role === 'Admin' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 
-                                                log.role === 'Manager' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
-                                                'bg-gray-100 text-gray-800 border border-gray-200'
-                                            }`}>
-                                                {log.role}
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
+                                                {log.userRole || 'user'}
                                             </span>
                                         </td>
+                                        <td className="p-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
+                                                {log.actionType || 'UNKNOWN'}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
+                                                {log.entityType || 'UNKNOWN'}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <button 
+                                                onClick={() => setSelectedLogDetails(log)}
+                                                className="text-teal-600 hover:text-teal-800 font-medium transition-colors"
+                                            >
+                                                Show Details
+                                            </button>
+                                        </td>
+
                                         <td className="p-4">
                                             <div className="flex items-center">
                                                 <Clock size={16} className="text-teal-500 mr-2" /> 
-                                                <span>{formatDateTime(log.loginTime)}</span>
+                                                <span>{formatDateTime(log.createdAt)}</span>
                                             </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex items-center">
-                                                <Calendar size={16} className="text-teal-500 mr-2" /> 
-                                                <span>{formatDateTime(log.logoutTime)}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className="font-medium text-teal-600">
-                                                {calculateDuration(log.loginTime, log.logoutTime)}
-                                            </span>
                                         </td>
                                         <td className="p-4 text-center">
                                             <button 
@@ -281,7 +499,7 @@ const ManagerLogs = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="p-8 text-center text-gray-500">
+                                    <td colSpan="7" className="p-8 text-center text-gray-500">
                                         No logs found matching your criteria.
                                     </td>
                                 </tr>
@@ -299,18 +517,16 @@ const ManagerLogs = () => {
                                     <div>
                                         <div className="flex items-center">
                                             <div className="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center mr-3 shadow-sm">
-                                                {log.user.charAt(0)}
+                                                {log.fullName ? log.fullName.charAt(0) : 'U'}
                                             </div>
-                                            <span className="font-semibold text-gray-800">{log.user}</span>
-                                        </div>
-                                        <div className="mt-2 ml-12">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                log.role === 'Admin' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 
-                                                log.role === 'Manager' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
-                                                'bg-gray-100 text-gray-800 border border-gray-200'
-                                            }`}>
-                                                {log.role}
-                                            </span>
+                                            <div>
+                                                <span className="font-semibold text-gray-800">{log.fullName || 'Unknown User'}</span>
+                                                <div className="mt-1">
+                                                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
+                                                        {log.userRole || 'user'}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <button 
@@ -321,30 +537,29 @@ const ManagerLogs = () => {
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
-                                <div className="space-y-3 text-sm mt-5 border-t border-gray-100 pt-4">
-                                    <div className="flex items-start">
-                                        <Clock size={16} className="text-teal-500 mr-3 mt-0.5 flex-shrink-0" />
-                                        <div>
-                                            <div className="text-gray-500 mb-1">Login Time</div>
-                                            <div className="font-medium">{formatDateTime(log.loginTime)}</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start">
-                                        <Calendar size={16} className="text-teal-500 mr-3 mt-0.5 flex-shrink-0" />
-                                        <div>
-                                            <div className="text-gray-500 mb-1">Logout Time</div>
-                                            <div className="font-medium">{formatDateTime(log.logoutTime)}</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start bg-teal-50 p-3 rounded-lg mt-3">
-                                        <div className="mr-3 flex-shrink-0 bg-white w-6 h-6 rounded-full flex items-center justify-center shadow-sm">
-                                            <Clock size={14} className="text-teal-500" />
-                                        </div>
-                                        <div>
-                                            <div className="text-gray-500 mb-1">Session Duration</div>
-                                            <div className="font-semibold text-teal-700">{calculateDuration(log.loginTime, log.logoutTime)}</div>
-                                        </div>
-                                    </div>
+                                
+                                <div className="flex gap-2 my-3">
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
+                                        {log.actionType || 'UNKNOWN'}
+                                    </span>
+                                    
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
+                                        {log.entityType || 'UNKNOWN'}
+                                    </span>
+                                </div>
+                                
+                                <p className="text-sm mt-2">
+                                    <button 
+                                        onClick={() => setSelectedLogDetails(log)}
+                                        className="text-teal-600 hover:text-teal-800 font-medium transition-colors"
+                                    >
+                                        Show Details
+                                    </button>
+                                </p>
+                                
+                                <div className="flex items-center justify-end text-xs text-gray-500 mt-4 pt-3 border-t border-gray-100">
+                                    <Clock size={14} className="mr-1" />
+                                    {formatDateTime(log.createdAt)}
                                 </div>
                             </div>
                         ))
@@ -355,8 +570,67 @@ const ManagerLogs = () => {
                     )}
                 </div>
             </div>
+            {selectedLogDetails && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold text-gray-900">Log Details</h3>
+                            <button 
+                                onClick={() => setSelectedLogDetails(null)}
+                                className="text-gray-400 hover:text-gray-500 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600">Full Description</p>
+                                <p className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    {selectedLogDetails.description}
+                                </p>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600">User</p>
+                                    <p className="bg-gray-50 p-2 rounded-lg border border-gray-200">
+                                        {selectedLogDetails.fullName || 'Unknown'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600">Role</p>
+                                    <p className={`${getRoleBadgeStyle(selectedLogDetails.userRole)} p-2 rounded-lg text-center`}>
+                                        {selectedLogDetails.userRole || 'user'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600">Action</p>
+                                    <p className={`${getActionTypeBadgeStyle(selectedLogDetails.actionType)} p-2 rounded-lg text-center`}>
+                                        {selectedLogDetails.actionType || 'UNKNOWN'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600">Entity</p>
+                                    <p className={`${getEntityTypeBadgeStyle(selectedLogDetails.entityType)} p-2 rounded-lg text-center`}>
+                                        {selectedLogDetails.entityType || 'UNKNOWN'}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p className="text-sm font-medium text-gray-600">Timestamp</p>
+                                <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center">
+                                    <Clock size={16} className="mr-2 text-teal-500" />
+                                    {formatDateTime(selectedLogDetails.createdAt)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default ManagerLogs;
+export default ActivityLogs;

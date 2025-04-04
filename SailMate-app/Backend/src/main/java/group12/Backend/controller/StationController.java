@@ -3,8 +3,10 @@ package group12.Backend.controller;
 import group12.Backend.util.*;
 
 import java.io.IOException;
+import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.StationDTO;
 import group12.Backend.entity.Station;
+import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Optional;
 
 import java.util.stream.Collectors;
 
@@ -28,10 +31,12 @@ import java.util.stream.Collectors;
 public class StationController {
     
     private final StationService stationService;
+    private final ActivityLogService activityLogService;
     
     @Autowired
-    public StationController(StationService stationService) {
+    public StationController(StationService stationService, ActivityLogService activityLogService) {
         this.stationService = stationService;
+        this.activityLogService = activityLogService;
     }
     
     @GetMapping
@@ -105,6 +110,15 @@ public class StationController {
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
             Station station = convertToEntity(stationDTO);
             Station savedStation = stationService.saveStation(station);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("CREATE");
+            logRequest.setEntityType("STATION");
+            logRequest.setEntityId(savedStation.getId().toString());
+            logRequest.setDescription("Created station: " + savedStation.getTitle() + " in " + savedStation.getCity());
+            activityLogService.createActivityLog(logRequest, claims);
+            
             return new ResponseEntity<>(savedStation, HttpStatus.CREATED);
         }
         else{
@@ -125,10 +139,53 @@ public class StationController {
             if (!stationService.existsById(id)) {
                 return ResponseEntity.notFound().build();
             }
+            
+            // Get original station for logging
+            Optional<Station> originalStationOpt = stationService.getStationById(id);
+            String originalTitle = "";
+            String originalCity = "";
+            Station.Status originalStatus = null;
+            
+            if (originalStationOpt.isPresent()) {
+                Station originalStation = originalStationOpt.get();
+                originalTitle = originalStation.getTitle();
+                originalCity = originalStation.getCity();
+                originalStatus = originalStation.getStatus();
+            }
+            
             Station station = convertToEntity(stationDTO);
             Station updatedStation = stationService.updateStation(id, station);
+            
+            // Log the activity with changes
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("UPDATE");
+            logRequest.setEntityType("STATION");
+            logRequest.setEntityId(id.toString());
+            
+            StringBuilder descriptionBuilder = new StringBuilder("Updated station: " + updatedStation.getTitle());
+            
+            // Add changed fields to description
+            List<String> changes = new ArrayList<>();
+            if (!originalTitle.equals(updatedStation.getTitle())) {
+                changes.add("title changed from '" + originalTitle + "' to '" + updatedStation.getTitle() + "'");
+            }
+            if (!originalCity.equals(updatedStation.getCity())) {
+                changes.add("city changed from '" + originalCity + "' to '" + updatedStation.getCity() + "'");
+            }
+            if (originalStatus != updatedStation.getStatus()) {
+                changes.add("status changed from '" + originalStatus + "' to '" + updatedStation.getStatus() + "'");
+            }
+            
+            if (!changes.isEmpty()) {
+                descriptionBuilder.append(" (");
+                descriptionBuilder.append(String.join(", ", changes));
+                descriptionBuilder.append(")");
+            }
+            
+            logRequest.setDescription(descriptionBuilder.toString());
+            activityLogService.createActivityLog(logRequest, claims);
+            
             return ResponseEntity.ok(updatedStation);
-
         }
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
@@ -146,7 +203,27 @@ public class StationController {
                 return ResponseEntity.notFound().build();
             }
             
+            // Get station details for logging before deletion
+            Optional<Station> stationOpt = stationService.getStationById(id);
+            String stationTitle = "";
+            String stationCity = "";
+            
+            if (stationOpt.isPresent()) {
+                Station station = stationOpt.get();
+                stationTitle = station.getTitle();
+                stationCity = station.getCity();
+            }
+            
             stationService.deleteStation(id);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("DELETE");
+            logRequest.setEntityType("STATION");
+            logRequest.setEntityId(id.toString());
+            logRequest.setDescription("Deleted station: " + stationTitle + " in " + stationCity);
+            activityLogService.createActivityLog(logRequest, claims);
+            
             return ResponseEntity.noContent().build();
         }
         else{
