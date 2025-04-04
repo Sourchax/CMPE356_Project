@@ -3,27 +3,33 @@ import { motion } from "framer-motion";
 import { useSessionToken } from "../utils/sessions";
 import placeholder from "../assets/images/placeholder.jpg";
 import axios from "axios";
+import { X } from "lucide-react";
 
 // API URL
 const API_BASE_URL = "http://localhost:8080/api/announcements";
 
-export default function Cards() {
+// Utility function to truncate text
+const truncateText = (text, maxLength = 50) => {
+  if (!text) return '';
+  return text.length > maxLength 
+    ? text.substring(0, maxLength) + '...' 
+    : text;
+};
+
+export default function Announcements() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const token = useSessionToken();
-  
 
   // Fetch announcements from backend
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         setLoading(true);
-        // For published/active announcements, you might want to create a specific endpoint
-        // like /api/announcements/active if you implement status in the backend
         const response = await axios.get(API_BASE_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,113 +45,157 @@ export default function Cards() {
       }
     };
 
-    fetchAnnouncements();
-  }, []);
+    if (token) {
+      fetchAnnouncements();
+    }
+  }, [token]);
 
-  const handleOpen = (announcement) => {
+  // Open modal with selected announcement
+  const openAnnouncementModal = (announcement) => {
     setSelectedAnnouncement(announcement);
-    setOpen(true);
+    setIsModalOpen(true);
   };
 
-  // Handle loading state
+  // Loading State
   if (loading) {
     return (
-      <div className="max-w-screen-lg mx-auto px-4 py-6 flex justify-center items-center min-h-[400px]">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading announcements...</p>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-block animate-pulse">
+            <div className="w-16 h-16 bg-blue-200 rounded-full mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading announcements...</p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
-  // Handle error state
+  // Error State
   if (error) {
     return (
-      <div className="max-w-screen-lg mx-auto px-4 py-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <strong className="font-bold">Error!</strong>
-          <span className="block sm:inline"> {error}</span>
+      <section className="py-12 bg-red-50">
+        <div className="container mx-auto px-4">
+          <div className="bg-red-100 border border-red-300 text-red-800 p-4 rounded-lg">
+            <p>{error}</p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
-  // Handle empty announcements
+  // Empty State
   if (announcements.length === 0) {
     return (
-      <div className="max-w-screen-lg mx-auto px-4 py-6">
-        <div className="text-center py-10 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 text-lg">No announcements available</p>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <div className="bg-white p-8 rounded-xl shadow-md">
+            <p className="text-xl text-gray-600">No announcements available</p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="max-w-screen-lg mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {announcements.map((announcement) => (
-          <motion.div
-            key={announcement.id}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            className="relative cursor-pointer overflow-hidden rounded-2xl shadow-lg bg-white"
-            onClick={() => handleOpen(announcement)}
-          >
-            <img
-              src={announcement.imageBase64 
-                ? `data:image/jpeg;base64,${announcement.imageBase64}` 
-                : placeholder}
-              alt={announcement.title}
-              className="w-full h-52 object-cover"
-              onError={(e) => {
-                console.log("Image failed to load, using placeholder");
-                e.target.src = placeholder;
-              }}
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+    <>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {announcements.map((announcement) => (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-center text-white p-4"
+                key={announcement.id}
+                className="relative group cursor-pointer"
+                whileHover={{ scale: 1.05 }}
               >
-                <h3 className="text-lg md:text-xl font-bold">{announcement.title}</h3>
-                <p className="text-sm mt-2">{announcement.description}</p>
+                {/* Image */}
+                <div className="relative overflow-hidden rounded-xl shadow-lg">
+                  <img
+                    src={announcement.imageBase64 
+                      ? `data:image/jpeg;base64,${announcement.imageBase64}` 
+                      : placeholder}
+                    alt={announcement.title}
+                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                    onError={(e) => { e.target.src = placeholder; }}
+                  />
+                  
+                  {/* Hover Overlay */}
+                  <div 
+                    className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4"
+                    onClick={() => openAnnouncementModal(announcement)}
+                  >
+                    <div className="text-white text-center overflow-hidden">
+                      <h3 className="text-xl font-bold mb-2 break-words">
+                        {truncateText(announcement.title, 50)}
+                      </h3>
+                      <p className="text-sm line-clamp-3 break-words overflow-hidden text-ellipsis">
+                        {announcement.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Modal */}
-      {open && selectedAnnouncement && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
-            <button 
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-xl" 
-              onClick={() => setOpen(false)}
-            >
-              ✖
-            </button>
-            <h2 className="text-lg md:text-xl font-bold">{selectedAnnouncement.title}</h2>
-            <img
-              src={selectedAnnouncement.imageBase64 
-                ? `data:image/jpeg;base64,${selectedAnnouncement.imageBase64}` 
-                : placeholder}
-              alt={selectedAnnouncement.title}
-              className="w-full h-48 object-cover rounded-md mt-4"
-              onError={(e) => {
-                e.target.src = placeholder;
-              }}
-            />
-            <p className="mt-4 text-gray-700">
-              {selectedAnnouncement.details || selectedAnnouncement.description}
-            </p>
+            ))}
           </div>
         </div>
+      </section>
+
+      {/* Announcement Modal */}
+      {isModalOpen && selectedAnnouncement && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white max-w-6xl w-full rounded-xl shadow-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 z-10 text-gray-600 hover:text-gray-900 bg-white bg-opacity-20 hover:bg-opacity-50 rounded-full p-2 transition"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Modal Content */}
+            <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+              {/* Image Side - Full width on mobile, half width on desktop */}
+              <div className="w-full md:w-2/3 max-h-[70vh] flex items-center justify-center">
+                <img
+                  src={selectedAnnouncement.imageBase64 
+                    ? `data:image/jpeg;base64,${selectedAnnouncement.imageBase64}` 
+                    : placeholder}
+                  alt={selectedAnnouncement.title}
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => { e.target.src = placeholder; }}
+                />
+              </div>
+
+              {/* Text Side - Full width on mobile, half width on desktop */}
+              <div className="w-full md:w-1/3 p-6 overflow-y-auto">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 break-words">
+                  {selectedAnnouncement.title}
+                </h2>
+                <p className="text-gray-600 text-base leading-relaxed mb-4 break-words">
+                  {selectedAnnouncement.description}
+                </p>
+                {selectedAnnouncement.details && (
+                  <div className="text-gray-700">
+                    <h3 className="font-semibold mb-2 break-words">Details:</h3>
+                    <p className="max-h-48 overflow-y-auto break-words">
+                      {selectedAnnouncement.details}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       )}
-    </div>
+    </>
   );
 }

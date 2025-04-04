@@ -17,6 +17,23 @@ CREATE TABLE station (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE activity_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action_type VARCHAR(50) NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id VARCHAR(50) NOT NULL,
+    user_id VARCHAR(255),
+    full_name VARCHAR(255),
+    user_role VARCHAR(50) DEFAULT 'user',
+    description TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Create indexes for better query performance
+CREATE INDEX idx_activity_action ON activity_log(action_type);
+CREATE INDEX idx_activity_entity ON activity_log(entity_type, entity_id);
+CREATE INDEX idx_activity_user ON activity_log(user_id);
+CREATE INDEX idx_activity_date ON activity_log(created_at);
 
 CREATE TABLE notification (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -150,16 +167,16 @@ VALUES
 -- İzmir to İstanbul routes
 INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
 VALUES
-    (1, 2, CURDATE(), '08:00:00', '12:30:00', 'Large Ferry', false, 50, 20, 200),
-    (1, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '08:00:00', '12:30:00', 'Large Ferry', false, 50, 20, 200),
-    (1, 2, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '08:00:00', '12:30:00', 'Large Ferry', false, 50, 20, 200);
+    (1, 2, CURDATE(), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200),
+    (1, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200),
+    (1, 2, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200);
 
 -- İstanbul to İzmir routes
 INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
 VALUES
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '09:00:00', '13:30:00', 'Large Ferry', false, 50, 20, 200),
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '09:00:00', '13:30:00', 'Large Ferry', false, 50, 20, 200),
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '09:00:00', '13:30:00', 'Large Ferry', false, 50, 20, 200);
+    (2, 1, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200),
+    (2, 1, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200),
+    (2, 1, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200);
 
 -- İzmir to Bursa routes
 INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)

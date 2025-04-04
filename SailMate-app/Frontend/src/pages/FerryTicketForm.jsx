@@ -7,6 +7,8 @@ import axios from 'axios';
 import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
 import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
 import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
+import SeatSelectionBox from '../components/ferry-ticket-form/seatSelectionBox.jsx';
+import SeatSelectionModal from '../components/ferry-ticket-form/seatSelectionModal.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 const steps = [
@@ -78,6 +80,10 @@ const FerryTicketForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const location = useLocation();
   const { userId, isLoaded } = useAuth();
+  const [isDepartureSeatModalOpen, setIsDepartureSeatModalOpen] = useState(false);
+  const [isReturnSeatModalOpen, setIsReturnSeatModalOpen] = useState(false);
+  const [departureSelectedSeats, setDepartureSelectedSeats] = useState([]);
+  const [returnSelectedSeats, setReturnSelectedSeats] = useState([]);
 
   const [departurePrice, setDeparturePrice] = useState(0);
   const [returnPrice, setReturnPrice] = useState(0);
@@ -87,7 +93,33 @@ const FerryTicketForm = () => {
     setDeparturePrice(prices.departure);
     setReturnPrice(prices.return);
   };
+
+  const handleDepartureSeatSelection = (seats) => {
+    setDepartureSelectedSeats(seats);
+    
+    // Update your form data with the selected seats
+    setFormData((prevData) => ({
+      ...prevData,
+      selectedDeparture: {
+        ...prevData.selectedDeparture,
+        selectedSeats: seats.join(','),
+      },
+    }));
+  };
   
+  const handleReturnSeatSelection = (seats) => {
+    setReturnSelectedSeats(seats);
+    
+    // Update your form data with the selected seats
+    setFormData((prevData) => ({
+      ...prevData,
+      selectedReturn: {
+        ...prevData.selectedReturn,
+        selectedSeats: seats.join(','),
+      },
+    }));
+  };
+
   // Check authentication and redirect if needed
   useEffect(() => {
     if (isLoaded && !userId) {
@@ -378,7 +410,9 @@ const FerryTicketForm = () => {
       }
     };
     if(currentStep === 2){
-      if (formData.departureDetails.passengers.every(passenger => passenger.isValid)) {
+      if (formData.departureDetails.passengers.every(passenger => passenger.isValid) && 
+        departureSelectedSeats.length !== 0 && 
+        (formData.tripData.returnDate === "" || returnSelectedSeats.length !== 0)) {
         return false;
       }
       return true;
@@ -478,7 +512,25 @@ const FerryTicketForm = () => {
                       </div>
                     </div>
                   </div>
+                  <SeatSelectionBox 
+                      type="departure"
+                      isSelected={departureSelectedSeats.length > 0}
+                      onOpen={() => setIsDepartureSeatModalOpen(true)}
+                      ticketClass={formData.selectedDeparture ? formData.selectedDeparture.type : null}
+                      shipType={formData.selectedDeparture ? formData.selectedDeparture.shipType : null}
+                      passengerCount={formData.departureDetails.passengerCount}
+                      selectedSeats={departureSelectedSeats}
+                    />
 
+                    <SeatSelectionModal
+                      type="departure"
+                      isOpen={isDepartureSeatModalOpen}
+                      onClose={() => setIsDepartureSeatModalOpen(false)}
+                      passengerCount={formData.departureDetails.passengerCount}
+                      onSeatSelection={handleDepartureSeatSelection}
+                      ticketClass={formData.selectedDeparture ? formData.selectedDeparture.type : null}
+                      shipType={formData.selectedDeparture ? formData.selectedDeparture.shipType : null}
+                    />
                   {formData.departureDetails.passengers.map((passenger, index) => (
                     index < totalPassengers ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
@@ -506,6 +558,30 @@ const FerryTicketForm = () => {
                         </div>
                       </div>
                     </div>
+                  )}
+
+                  {isRoundTrip && (
+                    <>
+                      <SeatSelectionBox 
+                        type="return"
+                        isSelected={returnSelectedSeats.length > 0}
+                        onOpen={() => setIsReturnSeatModalOpen(true)}
+                        ticketClass={formData.selectedReturn ? formData.selectedReturn.type : null}
+                        shipType={formData.selectedReturn ? formData.selectedReturn.shipType : null}
+                        passengerCount={formData.departureDetails.passengerCount}
+                        selectedSeats= {returnSelectedSeats}
+                      />
+
+                      <SeatSelectionModal
+                        type="return"
+                        isOpen={isReturnSeatModalOpen}
+                        onClose={() => setIsReturnSeatModalOpen(false)}
+                        passengerCount={formData.departureDetails.passengerCount}
+                        onSeatSelection={handleReturnSeatSelection}
+                        ticketClass={formData.selectedReturn ? formData.selectedReturn.type : null}
+                        shipType={formData.selectedReturn ? formData.selectedReturn.shipType : null}
+                      />
+                    </>
                   )}
 
                   {isRoundTrip && formData.departureDetails.passengers.map((passenger, index) => (

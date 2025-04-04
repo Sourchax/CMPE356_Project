@@ -1,265 +1,247 @@
 import React from 'react';
-import { Coffee, Star, Check } from 'lucide-react';
+import { ArrowRight, ArrowUpDown, Wind, Toilet, Circle, Gem } from 'lucide-react';
 
-// Seat status constants
-const SEAT_STATUS = {
-  OCCUPIED: 'occupied',
-  AVAILABLE: 'available',
-  SELECTED: 'selected',
-  RESTRICTED: 'restricted'
-};
-
-const SeabusSeatMap = ({
+const SeaBusSeatMap = ({ 
   currentDeck, 
-  currentSeats, 
-  manualSeat, 
-  handleSeatClick,
-  zoom
+  selectedSeats, 
+  onSeatClick, 
+  availableSeats,
+  ticketClass 
 }) => {
-  // Helper function to check if a seat is selected
-  const isSeatSelected = (seat) => {
-    const seatWithDeck = `${seat.id} (${seat.deck === 'main' ? 'Main Deck' : 'Upper Deck'})`;
-    return manualSeat && manualSeat.seat === seatWithDeck;
+  const getClassHighlight = (seatClass) => {
+    if (ticketClass === seatClass) return 'border-2 border-blue-500';
+    return '';
   };
 
-  return (
-    <div className="pt-16 pb-10 transform origin-center" style={{ transform: `scale(${zoom})` }}>
-      {currentSeats.map((row, rowIndex) => (
-        <div key={`row-${rowIndex}`} className="flex justify-center mb-1.5 sm:mb-2 relative">
-          {/* Row-specific features */}
-          {renderRowFeatures(currentDeck, rowIndex)}
-          
-          {/* Seat Row */}
-          {row.map((seat, colIndex) => (
-            seat === null ? (
-              <div key={`empty-${rowIndex}-${colIndex}`} className="w-5 h-5 sm:w-6 sm:h-6 mx-0.5"></div>
-            ) : (
-              <button
-                key={seat.id}
-                disabled={seat.status === SEAT_STATUS.OCCUPIED || seat.status === SEAT_STATUS.RESTRICTED}
-                className={`
-                  relative w-5 h-5 sm:w-6 sm:h-6 mx-0.5 rounded 
-                  transition-all duration-150 ease-out 
-                  flex items-center justify-center text-xs outline-none
-                  ${
-                    seat.status === SEAT_STATUS.OCCUPIED ? 'bg-[#F05D5E] cursor-not-allowed opacity-80' : 
-                    seat.status === SEAT_STATUS.RESTRICTED ? 'bg-gray-300 cursor-not-allowed opacity-70' :
-                    isSeatSelected(seat) ? 'bg-[#F0C808] ring-1 ring-[#0D3A73] z-10 shadow-sm' :
-                    seat.class === 'business' ? 'bg-[#D1FFD7] ring-1 ring-[#F0C808] hover:bg-[#D1FFD7]/80 active:bg-[#F0C808] cursor-pointer' :
-                    'bg-[#D1FFD7] hover:bg-[#D1FFD7]/80 active:bg-[#F0C808] cursor-pointer'
-                  }
-                  ${seat.status !== SEAT_STATUS.OCCUPIED && seat.status !== SEAT_STATUS.RESTRICTED ? 
-                    'hover:shadow hover:scale-110' : ''}
-                `}
-                onClick={() => handleSeatClick(seat)}
-                title={`${seat.id} (${seat.class === 'business' ? 'Business Class' : 'Economy Class'})`}
-                aria-label={`Seat ${seat.id}, ${
-                  seat.status === SEAT_STATUS.OCCUPIED ? 'Occupied' : 
-                  seat.status === SEAT_STATUS.RESTRICTED ? 'Not available for your ticket class' :
-                  'Available'
-                }, ${seat.class === 'business' ? 'Business Class' : 'Economy Class'}`}
-              >
-                {isSeatSelected(seat) && (
-                  <Check size={14} className="text-[#0D3A73]" />
-                )}
-                {seat.class === 'business' && seat.status !== SEAT_STATUS.OCCUPIED && seat.status !== SEAT_STATUS.RESTRICTED && !isSeatSelected(seat) && (
-                  <Star size={8} className="text-[#F0C808]" />
-                )}
-              </button>
-            )
+  const isSeatSelectable = (seatId) => {
+    const seatPrefix = seatId.split('-')[0];
+    const classPrefix = ticketClass === 'business' ? 'B' : 
+                        ticketClass === 'economy' ? 'E' : 'P';
+    return seatPrefix.includes(classPrefix);
+  };
+
+  const renderSeatRow = (rowChar, startNum, endNum, seatClass, customStyles = '') => {
+    const seats = [];
+    const classPrefix = seatClass === 'business' ? 'B' : seatClass === 'economy' ? 'E' : 'P';
+    // Add deck prefix to the class prefix (1 for lower, 2 for upper)
+    const deckPrefix = currentDeck === 'main' ? '1' : '2';
+    const fullPrefix = deckPrefix + classPrefix;
+    
+    for (let i = startNum; i <= endNum; i++) {
+      const seatId = `${fullPrefix}-${rowChar}${i}`;
+      const isAvailable = availableSeats?.[seatId]?.isAvailable ?? true;
+      const isSelected = selectedSeats.includes(seatId);
+      const canSelect = isSeatSelectable(seatId);
+      
+      seats.push(
+        <button
+          key={seatId}
+          onClick={() => isAvailable && canSelect && onSeatClick(seatId)}
+          disabled={!isAvailable || !canSelect}
+          className={`w-6 h-6 m-0.5 rounded-sm text-xs flex items-center justify-center relative
+            ${canSelect ? 
+              (isAvailable ? 
+                (isSelected ? 'bg-yellow-400' : 'bg-green-100') 
+                : 'bg-red-500') 
+              : 'bg-gray-300 cursor-not-allowed'}
+            ${customStyles}`}
+          title={seatId}
+        >
+          <span className="sr-only">{seatId}</span>
+        </button>
+      );
+    }
+    return seats;
+  };
+
+  // Upper Deck Layout - Sea Bus (20 business, 20 economy, 20 promo)
+  const renderUpperDeck = () => (
+    <div className="relative">
+      <div className="relative w-full bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div className="absolute -top-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="mr-1">Bow</span>
+          <ArrowRight size={16} />
+        </div>
+
+        {/* Windows along the sides */}
+        <div className="absolute top-2 left-0 right-0 flex justify-between px-4">
+          {[...Array(12)].map((_, i) => (
+            <div key={`top-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
           ))}
         </div>
-      ))}
+        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4">
+          {[...Array(12)].map((_, i) => (
+            <div key={`bottom-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
+          ))}
+        </div>
+
+        {/* Business Class Section - more centralized layout for Sea Bus */}
+        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('business')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-blue-800">Business Class</span>
+            <Gem className="text-yellow-500" size={12} />
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('A', 1, 10, 'business')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('B', 1, 10, 'business')}
+          </div>
+        </div>
+
+        {/* Economy Class Section */}
+        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('economy')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-blue-600">Economy Class</span>
+            <Circle className="text-blue-500 fill-blue-500" size={10} />
+          </div>
+          
+          {/* Central Facilities for Sea Bus */}
+          <div className="flex justify-between items-center my-2">
+            <div className="bg-gray-200 p-1 rounded flex items-center">
+              <ArrowUpDown className="text-gray-600 mr-1" size={14} />
+              <span className="text-xs">Stairs</span>
+            </div>
+            
+            <div className="bg-gray-200 p-1 rounded flex items-center">
+              <Toilet className="text-gray-600 mr-1" size={14} />
+              <span className="text-xs">Toilet</span>
+            </div>
+          </div>
+          
+          <div className="flex justify-center">
+            {renderSeatRow('C', 1, 10, 'economy')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('D', 1, 10, 'economy')}
+          </div>
+        </div>
+
+        {/* Promo Class Section */}
+        <div className={`${getClassHighlight('promo')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-purple-700">Promo Class</span>
+            <Circle className="text-purple-500 fill-purple-500" size={10} />
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('E', 1, 10, 'promo')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('F', 1, 10, 'promo')}
+          </div>
+        </div>
+
+        <div className="absolute -bottom-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="mr-1">Stern</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Lower Deck Layout - Sea Bus (10 business, 40 economy, 40 promo)
+  const renderLowerDeck = () => (
+    <div className="relative">
+      <div className="relative w-full bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div className="absolute -top-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="mr-1">Bow</span>
+          <ArrowRight size={16} />
+        </div>
+
+        {/* Windows along the sides */}
+        <div className="absolute top-2 left-0 right-0 flex justify-between px-4">
+          {[...Array(12)].map((_, i) => (
+            <div key={`top-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
+          ))}
+        </div>
+        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4">
+          {[...Array(12)].map((_, i) => (
+            <div key={`bottom-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
+          ))}
+        </div>
+
+        {/* Business Class Section - smaller for lower deck */}
+        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('business')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-blue-800">Business Class</span>
+            <Gem className="text-yellow-500" size={12} />
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('A', 1, 10, 'business')}
+          </div>
+        </div>
+
+        {/* Economy Class Section - larger for lower deck */}
+        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('economy')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-blue-600">Economy Class</span>
+            <Circle className="text-blue-500 fill-blue-500" size={10} />
+          </div>
+          
+          <div className="flex justify-center">
+            {renderSeatRow('B', 1, 10, 'economy')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('C', 1, 10, 'economy')}
+          </div>
+
+          {/* Central Facilities */}
+          <div className="flex justify-between items-center my-2">
+            <div className="bg-gray-200 p-1 rounded flex items-center">
+              <ArrowUpDown className="text-gray-600 mr-1" size={14} />
+              <span className="text-xs">Stairs</span>
+            </div>
+            
+            <div className="bg-gray-200 p-1 rounded flex items-center">
+              <Wind className="text-gray-600 mr-1" size={14} />
+              <span className="text-xs">Café</span>
+            </div>
+            
+            <div className="bg-gray-200 p-1 rounded flex items-center">
+              <Toilet className="text-gray-600 mr-1" size={14} />
+              <span className="text-xs">Toilet</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            {renderSeatRow('D', 1, 10, 'economy')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('E', 1, 10, 'economy')}
+          </div>
+        </div>
+
+        {/* Promo Class Section - larger for lower deck */}
+        <div className={`${getClassHighlight('promo')}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold text-purple-700">Promo Class</span>
+            <Circle className="text-purple-500 fill-purple-500" size={10} />
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('F', 1, 10, 'promo')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('G', 1, 10, 'promo')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('H', 1, 10, 'promo')}
+          </div>
+          <div className="flex justify-center">
+            {renderSeatRow('I', 1, 10, 'promo')}
+          </div>
+        </div>
+
+        <div className="absolute -bottom-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="mr-1">Stern</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="p-2">
+      {currentDeck === 'upper' ? renderUpperDeck() : renderLowerDeck()}
     </div>
   );
 };
 
-// Helper function to render features for each row
-function renderRowFeatures(deck, rowIndex) {
-  if (deck === 'main') {
-    // Economy Label (Row 1)
-    if (rowIndex === 0) {
-      return (
-        <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 z-10">
-          <div className="bg-white p-1.5 rounded-r-md border-y border-r border-[#06AED5] shadow-sm flex items-center">
-            <span className="font-medium text-xs text-[#0D3A73]">Economy & Promo</span>
-          </div>
-        </div>
-      );
-    }
-    
-    // WC (Row 3)
-    if (rowIndex === 2) {
-      return (
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-          <div className="bg-white p-1.5 rounded-md border border-[#06AED5] shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#06AED5]">
-              <path d="M7 13h10v7a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"></path>
-              <path d="M7 13V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v7"></path>
-              <path d="M12 2v4"></path>
-            </svg>
-          </div>
-        </div>
-      );
-    }
-    
-    // Café (Row 7)
-    if (rowIndex === 6) {
-      return (
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-white p-1.5 rounded-md border border-[#06AED5] shadow-sm flex items-center">
-            <Coffee size={14} className="mr-1 text-[#06AED5]" />
-            <span className="font-medium text-xs text-[#0D3A73]">Café</span>
-          </div>
-        </div>
-      );
-    }
-  }
-  else if (deck === 'upper') {
-    // Business Class Label (Row 1)
-    if (rowIndex === 0) {
-      return (
-        <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 z-10">
-          <div className="bg-[#F0C808] p-1.5 rounded-r-md shadow-sm flex items-center">
-            <Star size={12} className="mr-1 text-[#0D3A73]" />
-            <span className="font-medium text-xs text-[#0D3A73]">Business Class Only</span>
-          </div>
-        </div>
-      );
-    }
-    
-    // VIP Lounge (Row 6)
-    if (rowIndex === 5) {
-      return (
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-[#F0C808] p-1.5 rounded-md border border-[#0D3A73] shadow-sm flex items-center">
-            <Star size={14} className="mr-1 text-[#0D3A73]" />
-            <span className="font-medium text-xs text-[#0D3A73]">VIP Lounge</span>
-          </div>
-        </div>
-      );
-    }
-  }
-  
-  return null;
-}
-
-// Function to generate seats for Seabus
-export function generateSeabusSeats(getSeatStatus) {
-  const mainDeck = [];
-  const upperDeck = [];
-  
-  // Main Deck - All Economy/Promo
-  // Row 1 (Front row)
-  const mainRow1 = Array(10).fill().map((_, i) => ({
-    id: `M1-${i+1}`,
-    status: getSeatStatus(1, i+1, 'main', 'economy'),
-    position: [1, i+1],
-    deck: 'main',
-    class: 'economy'
-  }));
-  mainDeck.push(mainRow1);
-  
-  // Rows 2-6 (Middle rows, wider)
-  for (let r = 0; r < 5; r++) {
-    const row = Array(14).fill().map((_, i) => ({
-      id: `M${r+2}-${i+1}`,
-      status: getSeatStatus(r+2, i+1, 'main', 'economy'),
-      position: [r+2, i+1],
-      deck: 'main',
-      class: 'economy'
-    }));
-    mainDeck.push(row);
-  }
-  
-  // Rows 7-8 (Rear rows with café)
-    for (let r = 0; r < 2; r++) {
-      const row = [];
-      // Left side
-    for (let i = 0; i < 5; i++) {
-        row.push({
-        id: `M${r+7}-${i+1}`,
-        status: getSeatStatus(r+7, i+1, 'main', 'economy'),
-        position: [r+7, i+1],
-        deck: 'main',
-        class: 'economy'
-      });
-    }
-    
-    // Middle (café area)
-      for (let i = 0; i < 4; i++) {
-        row.push(null);
-      }
-      
-      // Right side
-    for (let i = 0; i < 5; i++) {
-        row.push({
-        id: `M${r+7}-${i+10}`,
-        status: getSeatStatus(r+7, i+10, 'main', 'economy'),
-        position: [r+7, i+10],
-        deck: 'main',
-        class: 'economy'
-      });
-    }
-    mainDeck.push(row);
-  }
-  
-  // Upper Deck - All Business Class
-  // Rows 1-2 (Front premium rows)
-  for (let r = 0; r < 2; r++) {
-    const row = Array(8).fill().map((_, i) => ({
-      id: `U${r+1}-${i+1}`,
-      status: getSeatStatus(r+1, i+1, 'upper', 'business'),
-      position: [r+1, i+1],
-      deck: 'upper',
-      class: 'business'
-    }));
-    upperDeck.push(row);
-  }
-  
-  // Rows 3-5 (Middle business rows)
-  for (let r = 0; r < 3; r++) {
-    const row = Array(10).fill().map((_, i) => ({
-      id: `U${r+3}-${i+1}`,
-      status: getSeatStatus(r+3, i+1, 'upper', 'business'),
-      position: [r+3, i+1],
-      deck: 'upper',
-      class: 'business'
-    }));
-    upperDeck.push(row);
-  }
-  
-  // Row 6 (Rear business row with observation lounge)
-  const upperRow6 = [];
-      // Left side
-  for (let i = 0; i < 3; i++) {
-    upperRow6.push({
-      id: `U6-${i+1}`,
-      status: getSeatStatus(6, i+1, 'upper', 'business'),
-      position: [6, i+1],
-      deck: 'upper',
-      class: 'business'
-    });
-  }
-  
-  // Middle (VIP lounge)
-  for (let i = 0; i < 4; i++) {
-    upperRow6.push(null);
-      }
-      
-      // Right side
-  for (let i = 0; i < 3; i++) {
-    upperRow6.push({
-      id: `U6-${i+8}`,
-      status: getSeatStatus(6, i+8, 'upper', 'business'),
-      position: [6, i+8],
-      deck: 'upper',
-      class: 'business'
-    });
-  }
-  upperDeck.push(upperRow6);
-  
-  return { mainDeckSeats: mainDeck, upperDeckSeats: upperDeck };
-}
-
-export default SeabusSeatMap; 
+export default SeaBusSeatMap;
