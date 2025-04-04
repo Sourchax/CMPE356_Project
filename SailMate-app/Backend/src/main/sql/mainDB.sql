@@ -18,6 +18,23 @@ CREATE TABLE station (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE notification (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    type ENUM('TICKET_CREATED', 'TICKET_UPDATED', 'VOYAGE_CANCELLED', 'VOYAGE_DELAYED', 'PRICE_CHANGED', 'SYSTEM', 'BROADCAST') NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    entity_id VARCHAR(255),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_notification_user (user_id),
+    INDEX idx_notification_read (is_read),
+    INDEX idx_notification_type (type),
+    INDEX idx_notification_entity (entity_id),
+    INDEX idx_notification_date (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE voyages (
     id INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
     from_station INTEGER NOT NULL,
@@ -40,6 +57,23 @@ CREATE TABLE voyages (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (to_station) REFERENCES station(id)
         ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE seats_sold (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    voyage_id INT NOT NULL UNIQUE,
+    ship_type VARCHAR(255) NOT NULL,
+    upper_deck_promo BIGINT DEFAULT 0,
+    upper_deck_economy BIGINT DEFAULT 0,
+    upper_deck_business BIGINT DEFAULT 0,
+    lower_deck_promo BIGINT DEFAULT 0,
+    lower_deck_economy BIGINT DEFAULT 0,
+    lower_deck_business BIGINT DEFAULT 0,
+    total_tickets_sold BIGINT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (voyage_id) REFERENCES voyages(id) ON DELETE CASCADE,
+    INDEX idx_seats_voyage (voyage_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tickets table with snake_case naming
@@ -150,53 +184,53 @@ INSERT INTO voyages (from_station, to_station, departure_date, departure_time, a
 VALUES
     (4, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '14:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100),
     (4, 2, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '14:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100);
-    
-INSERT INTO prices (id, class, value)
+
+-- Initialize seats_sold records for voyages
+INSERT INTO seats_sold (voyage_id, ship_type, upper_deck_promo, upper_deck_economy, upper_deck_business, lower_deck_promo, lower_deck_economy, lower_deck_business, total_tickets_sold)
+SELECT id, ship_type, 0, 0, 0, 0, 0, 0, 0 FROM voyages;
+
+-- Insert some ticket data
+INSERT INTO tickets (ticket_id, voyage_id, passenger_count, total_price, ticket_class, selected_seats, user_id, ticket_data)
 VALUES
-    (1, 'Promo', 400),
-    (2, 'Economy', 500),
-    (3, 'Business', 800),
-    (4, 'Fee', 10),
-    (5, 'Senior', 15),
-    (6, 'Student', 20);
-    
+    ('TKT-12345678', 1, 2, 1000, 'Economy', 'E12,E13', 'user123', '{"passengers":[{"name":"John","surname":"Doe","birthDate":"1985-06-15","email":"john.doe@example.com","phoneNo":"+90 555 123 4567"},{"name":"Jane","surname":"Doe","birthDate":"1988-08-22","email":"jane.doe@example.com","phoneNo":"+90 555 765 4321"}]}'),
+    ('TKT-23456789', 1, 1, 800, 'Business', 'B5', 'user456', '{"passengers":[{"name":"Ali","surname":"Yilmaz","birthDate":"1975-03-10","email":"ali.yilmaz@example.com","phoneNo":"+90 532 111 2222"}]}'),
+    ('TKT-34567890', 4, 3, 1500, 'Economy', 'E22,E23,E24', 'user789', '{"passengers":[{"name":"Mehmet","surname":"Kaya","birthDate":"1982-11-28","email":"mehmet.kaya@example.com","phoneNo":"+90 533 333 4444"},{"name":"Ayşe","surname":"Kaya","birthDate":"1984-07-12","email":"ayse.kaya@example.com","phoneNo":"+90 533 555 6666"},{"name":"Zeynep","surname":"Kaya","birthDate":"2012-02-05","email":"","phoneNo":""}]}');
+
+-- Update the seats_sold counts based on tickets sold
+UPDATE seats_sold SET 
+    lower_deck_economy = 2, 
+    total_tickets_sold = 2 
+WHERE voyage_id = 1;
+
+UPDATE seats_sold SET 
+    upper_deck_business = 1, 
+    total_tickets_sold = 1 
+WHERE voyage_id = 1;
+
+UPDATE seats_sold SET 
+    lower_deck_economy = 3, 
+    total_tickets_sold = 3 
+WHERE voyage_id = 4;
+
+INSERT INTO prices (class, value)
+VALUES
+    ('Promo', 400),
+    ('Economy', 500),
+    ('Business', 800),
+    ('Fee', 10),
+    ('Senior', 15),
+    ('Student', 20);
+
 -- Insert some complaints
 INSERT INTO complaint (user_id, sender, email, subject, message)
 VALUES
     ('user123', 'Ali Yilmaz', 'ali.yilmaz@example.com', 'Delay on Monday Ferry', 'The ferry on Monday was delayed by 30 minutes without any announcement. I almost missed my connection.'),
     ('user456', 'Fatma Demir', 'fatma.demir@example.com', 'Cleanliness Issue', 'The restrooms on the ferry were not in good condition during my journey on Tuesday.');
 
--- Show some verification data
-SELECT 'Stations' AS TableName, COUNT(*) AS RecordCount FROM station
-UNION ALL
-SELECT 'Voyages', COUNT(*) FROM voyages
-UNION ALL
-SELECT 'Tickets', COUNT(*) FROM tickets
-UNION ALL
-SELECT 'Announcements', COUNT(*) FROM announcement
-UNION ALL
-SELECT 'Complaints', COUNT(*) FROM complaint;
-
--- Display all stations
-SELECT * FROM station;
-
--- Display voyages with station names
-SELECT 
-    v.id, 
-    s1.city AS from_city,
-    s1.title AS from_title,
-    s2.city AS to_city,
-    s2.title AS to_title,
-    v.departure_date,
-    v.departure_time,
-    v.arrival_time,
-    v.ship_type,
-    v.fuel_type,
-    v.business_seats,
-    v.promo_seats,
-    v.economy_seats,
-    v.status
-FROM voyages v
-JOIN station s1 ON v.from_station = s1.id
-JOIN station s2 ON v.to_station = s2.id
-ORDER BY v.departure_date, v.departure_time;
+-- Insert notifications
+INSERT INTO notification (user_id, type, title, message, entity_id, is_read)
+VALUES
+    ('user123', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-12345678 has been confirmed. Thank you for choosing SailMate!', 'TKT-12345678', false),
+    ('user456', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-23456789 has been confirmed. Thank you for choosing SailMate!', 'TKT-23456789', true),
+    ('user789', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-34567890 has been confirmed. Thank you for choosing SailMate!', 'TKT-34567890', false),
+    ('user123', 'VOYAGE_DELAYED', 'Voyage Delay Notice', 'Your voyage from İzmir Marina to Yenikapı Terminal on today has been delayed by 30 minutes.', 'TKT-12345678', false);
