@@ -50,9 +50,9 @@ public class SeatsSoldController {
     @PostMapping
     public ResponseEntity<SeatsSoldDTO> createSeatsSold(
             @RequestBody SeatsSoldDTO seatsSoldDTO,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -69,9 +69,9 @@ public class SeatsSoldController {
     public ResponseEntity<SeatsSoldDTO> updateSeatsSold(
             @PathVariable Integer id,
             @RequestBody SeatsSoldDTO seatsSoldDTO,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -88,9 +88,9 @@ public class SeatsSoldController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteSeatsSold(
             @PathVariable Integer id,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -116,9 +116,9 @@ public class SeatsSoldController {
     @PostMapping("/initialize/{voyageId}")
     public ResponseEntity<SeatsSoldDTO> initializeForVoyage(
             @PathVariable Integer voyageId,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -137,9 +137,9 @@ public class SeatsSoldController {
             @RequestParam String ticketClass,
             @RequestParam String deckType,
             @RequestParam Long count,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         

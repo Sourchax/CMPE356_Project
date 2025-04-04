@@ -102,8 +102,8 @@ public class StationController {
     }
     
     @PostMapping
-    public ResponseEntity<Station> createStation(@RequestBody StationDTO stationDTO, HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Station> createStation(@RequestBody StationDTO stationDTO, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -129,9 +129,9 @@ public class StationController {
     @PutMapping("/{id}")
     public ResponseEntity<Station> updateStation(
             @PathVariable Integer id,
-            @RequestBody StationDTO stationDTO, HttpServletRequest request) throws Exception {
+            @RequestBody StationDTO stationDTO, @RequestHeader("Authorization") String auth) throws Exception {
 
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -193,8 +193,8 @@ public class StationController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Integer id, HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Void> deleteStation(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");

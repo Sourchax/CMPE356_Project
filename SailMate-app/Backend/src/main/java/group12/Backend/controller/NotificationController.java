@@ -38,8 +38,8 @@ public class NotificationController {
     
     // Get all notifications for a user
     @GetMapping("/all")
-    public ResponseEntity<List<NotificationDTO>> getUserNotifications(HttpServletRequest request) throws Exception{
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@RequestHeader("Authorization") String auth) throws Exception{
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
 
@@ -48,8 +48,8 @@ public class NotificationController {
     
     // Get only unread notifications for a user
     @GetMapping("/unread")
-    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<List<NotificationDTO>> getUnreadNotifications(@RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         return ResponseEntity.ok(notificationService.getUnreadNotifications(claims.getSubject()));
@@ -65,8 +65,8 @@ public class NotificationController {
     
     // Count unread notifications
     @GetMapping("/count")
-    public ResponseEntity<Map<String, Long>> countUnreadNotifications(HttpServletRequest request) throws Exception{
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Map<String, Long>> countUnreadNotifications(@RequestHeader("Authorization") String auth) throws Exception{
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             
@@ -74,14 +74,6 @@ public class NotificationController {
         Map<String, Long> response = new HashMap<>();
         response.put("count", count);
         return ResponseEntity.ok(response);
-    }
-    
-    // Create a notification (for manual creation or testing)
-    @PostMapping
-    public ResponseEntity<NotificationDTO> createNotification(
-            @RequestBody NotificationDTO.NotificationCreateRequest request) {
-        NotificationDTO notification = notificationService.createNotification(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(notification);
     }
     
     // Create ticket notification helper endpoint
@@ -100,9 +92,9 @@ public class NotificationController {
     public ResponseEntity<NotificationDTO> markNotificationRead(
             @PathVariable Integer id,
             @RequestBody NotificationDTO.NotificationMarkReadRequest requestMe,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         NotificationDTO updatedNotification = notificationService.markAsRead(id, requestMe);
@@ -116,8 +108,8 @@ public class NotificationController {
     
     // Mark all notifications as read for a user
     @PutMapping("/read-all")
-    public ResponseEntity<Map<String, Object>> markAllAsRead(HttpServletRequest request) throws Exception{
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Map<String, Object>> markAllAsRead(@RequestHeader("Authorization") String auth) throws Exception{
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -160,9 +152,9 @@ public class NotificationController {
     }
     
     @PostMapping("/broadcast")
-    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) throws Exception {
+    public ResponseEntity<Map<String, Object>> sendBroadcastNotification(@RequestBody Map<String, String> request, @RequestHeader("Authorization") String auth) throws Exception {
         // Authenticate user
-        Claims claims = Authentication.getClaims(httpRequest);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
@@ -200,15 +192,10 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
-    @GetMapping("/broadcasts")
-    public ResponseEntity<List<NotificationDTO>> getAllBroadcasts() {
-        return ResponseEntity.ok(notificationService.getUserNotifications("broadcast"));
-    }
-    
     @DeleteMapping("/broadcast/{id}")
-    public ResponseEntity<Map<String, Object>> deleteBroadcast(@PathVariable Integer id, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Map<String, Object>> deleteBroadcast(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         

@@ -30,17 +30,16 @@ public class ClerkUsers {
                     user.put("email", a.emailAddresses().get().getFirst().emailAddress());
                 if (a.id().isPresent())
                     all_users.put(a.id().get(), user);
+                if (a.imageUrl().isPresent())
+                    all_users.put("image", a.imageUrl().get());
                 if(a.publicMetadata().isPresent()){
-                    System.out.println("Hello I am under the water");
                     Object metadata = a.publicMetadata().get();
                     System.out.println(metadata);
                     if (metadata instanceof Map) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> metadataMap = (Map<String, Object>) metadata;
-                        System.out.println(metadataMap);
                         if (metadataMap.containsKey("role")) {
                             user.put("role", metadataMap.get("role"));
-                            System.out.println(metadataMap.get("role"));
                         }
 
                     }

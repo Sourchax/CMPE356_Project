@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,8 +61,8 @@ public class AnnouncementController {
     
     // Create announcement
     @PostMapping
-    public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody AnnouncementDTO announcementDTO, HttpServletRequest request) throws Exception{
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody AnnouncementDTO announcementDTO, @RequestHeader("Authorization") String auth) throws Exception{
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -88,9 +89,9 @@ public class AnnouncementController {
     public ResponseEntity<AnnouncementDTO> updateAnnouncement(
             @PathVariable Integer id, 
             @RequestBody AnnouncementDTO announcementDTO,
-            HttpServletRequest request) throws Exception{
+            @RequestHeader("Authorization") String auth) throws Exception{
 
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -126,9 +127,9 @@ public class AnnouncementController {
     
     // Delete announcement
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAnnouncement(@PathVariable Integer id, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Void> deleteAnnouncement(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
 
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");

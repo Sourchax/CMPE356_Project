@@ -43,9 +43,9 @@ public class PriceController {
     public ResponseEntity<PriceDTO> updatePriceById(
             @PathVariable Integer id,
             @RequestBody PriceDTO priceDTO,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         try {
-            Claims claims = Authentication.getClaims(request);
+            Claims claims = Authentication.getClaims(auth);
             if (claims == null)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -99,9 +99,9 @@ public class PriceController {
     @PutMapping("/class/{className}")
     public ResponseEntity<PriceDTO> updatePriceByClassName(
             @PathVariable String className,
-            @RequestBody PriceDTO priceDTO, HttpServletRequest request) throws Exception {
+            @RequestBody PriceDTO priceDTO, @RequestHeader("Authorization") String auth) throws Exception {
         try {
-            Claims claims = Authentication.getClaims(request);
+            Claims claims = Authentication.getClaims(auth);
             if (claims == null)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             String role = (String) claims.get("meta_data", HashMap.class).get("role");

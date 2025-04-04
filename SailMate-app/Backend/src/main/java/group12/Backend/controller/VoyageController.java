@@ -68,8 +68,8 @@ public class VoyageController {
     
     // Create a new voyage
     @PostMapping
-    public ResponseEntity<VoyageDTO> createVoyage(@RequestBody VoyageDTO voyageDTO, HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<VoyageDTO> createVoyage(@RequestBody VoyageDTO voyageDTO, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -97,9 +97,9 @@ public class VoyageController {
     // Create multiple voyages at once
     @PostMapping("/bulk")
     public ResponseEntity<Map<String, Object>> createBulkVoyages(
-            @RequestBody List<VoyageDTO> voyageDTOs, HttpServletRequest request) throws Exception {
+            @RequestBody List<VoyageDTO> voyageDTOs, @RequestHeader("Authorization") String auth) throws Exception {
 
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -129,9 +129,9 @@ public class VoyageController {
     
     // Update a voyage
     @PutMapping("/{id}")
-    public ResponseEntity<VoyageDTO> updateVoyage(@PathVariable Integer id, @RequestBody VoyageDTO voyageDTO, HttpServletRequest request) throws Exception {
+    public ResponseEntity<VoyageDTO> updateVoyage(@PathVariable Integer id, @RequestBody VoyageDTO voyageDTO, @RequestHeader("Authorization") String auth) throws Exception {
 
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -189,8 +189,8 @@ public class VoyageController {
     
     // Cancel a voyage
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<Map<String, Object>> cancelVoyage(@PathVariable Integer id, HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Map<String, Object>> cancelVoyage(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -242,8 +242,8 @@ public class VoyageController {
     
     // Delete a voyage (soft delete by marking as inactive)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteVoyage(@PathVariable Integer id, HttpServletRequest request) throws Exception {
-        Claims claims = Authentication.getClaims(request);
+    public ResponseEntity<Map<String, Object>> deleteVoyage(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");

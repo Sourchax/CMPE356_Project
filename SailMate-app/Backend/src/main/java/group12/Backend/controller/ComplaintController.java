@@ -36,8 +36,8 @@ public class ComplaintController {
     }
     
     @GetMapping
-    public ResponseEntity<List<ComplaintDTO>> getAllComplaints(HttpServletRequest httpServletRequest) throws Exception {
-        Claims claims = Authentication.getClaims(httpServletRequest);
+    public ResponseEntity<List<ComplaintDTO>> getAllComplaints(@RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
             if (claims == null)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -62,8 +62,8 @@ public class ComplaintController {
     
     @GetMapping("/status/{status}")
     public ResponseEntity<List<ComplaintDTO>> getComplaintsByStatus(
-            @PathVariable Complaint.ComplaintStatus status, HttpServletRequest httpServletRequest) throws Exception {
-                Claims claims = Authentication.getClaims(httpServletRequest);
+            @PathVariable Complaint.ComplaintStatus status, @RequestHeader("Authorization") String auth) throws Exception {
+                Claims claims = Authentication.getClaims(auth);
                 if (claims == null)
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
                 String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -77,8 +77,8 @@ public class ComplaintController {
     
     @PostMapping
     public ResponseEntity<ComplaintDTO> createComplaint(
-            @RequestBody ComplaintDTO.ComplaintCreateRequest request, HttpServletRequest httpServletRequest) throws Exception {
-            Claims claims = Authentication.getClaims(httpServletRequest);
+            @RequestBody ComplaintDTO.ComplaintCreateRequest request, @RequestHeader("Authorization") String auth) throws Exception {
+            Claims claims = Authentication.getClaims(auth);
             if (claims == null)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             
@@ -98,8 +98,8 @@ public class ComplaintController {
     @PutMapping("/{id}")
     public ResponseEntity<ComplaintDTO> updateComplaintStatus(
             @PathVariable Integer id, 
-            @RequestBody ComplaintDTO.ComplaintUpdateRequest request, HttpServletRequest httpServletRequest) throws Exception {
-                Claims claims = Authentication.getClaims(httpServletRequest);
+            @RequestBody ComplaintDTO.ComplaintUpdateRequest request, @RequestHeader("Authorization") String auth) throws Exception {
+                Claims claims = Authentication.getClaims(auth);
                 if (claims == null)
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
                 String role = (String) claims.get("meta_data", HashMap.class).get("role");
@@ -143,8 +143,8 @@ public class ComplaintController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComplaint(@PathVariable Integer id, HttpServletRequest httpServletRequest) throws Exception {
-        Claims claims = Authentication.getClaims(httpServletRequest);
+    public ResponseEntity<Void> deleteComplaint(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         String role = (String) claims.get("meta_data", HashMap.class).get("role");

@@ -35,9 +35,9 @@ public class ActivityLogController {
     
     // Get all activity logs (admin only)
     @GetMapping
-    public ResponseEntity<List<ActivityLogDTO>> getAllActivityLogs(HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<ActivityLogDTO>> getAllActivityLogs(@RequestHeader("Authorization") String auth) throws Exception {
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -55,10 +55,10 @@ public class ActivityLogController {
     @GetMapping("/{id}")
     public ResponseEntity<ActivityLogDTO> getActivityLogById(
             @PathVariable Integer id,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -78,10 +78,10 @@ public class ActivityLogController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ActivityLogDTO>> getActivityLogsByUserId(
             @PathVariable String userId,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -105,10 +105,10 @@ public class ActivityLogController {
     public ResponseEntity<List<ActivityLogDTO>> getActivityLogsByEntity(
             @RequestParam String type,
             @RequestParam String id,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -126,10 +126,10 @@ public class ActivityLogController {
     @GetMapping("/action/{actionType}")
     public ResponseEntity<List<ActivityLogDTO>> getActivityLogsByActionType(
             @PathVariable String actionType,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -147,10 +147,10 @@ public class ActivityLogController {
     @PostMapping("/filter")
     public ResponseEntity<Page<ActivityLogDTO>> filterActivityLogs(
             @RequestBody ActivityLogDTO.ActivityLogFilterRequest filterRequest,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -168,10 +168,10 @@ public class ActivityLogController {
     @PostMapping
     public ResponseEntity<ActivityLogDTO> createActivityLog(
             @RequestBody ActivityLogDTO.ActivityLogCreateRequest request,
-            HttpServletRequest httpRequest) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(httpRequest);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -184,10 +184,10 @@ public class ActivityLogController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteActivityLog(
             @PathVariable Integer id,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -216,10 +216,10 @@ public class ActivityLogController {
     @GetMapping("/count/entity/{entityType}")
     public ResponseEntity<Map<String, Long>> getCountByEntityType(
             @PathVariable String entityType,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
@@ -241,10 +241,10 @@ public class ActivityLogController {
     @GetMapping("/count/action/{actionType}")
     public ResponseEntity<Map<String, Long>> getCountByActionType(
             @PathVariable String actionType,
-            HttpServletRequest request) throws Exception {
+            @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
-        Claims claims = Authentication.getClaims(request);
+        Claims claims = Authentication.getClaims(auth);
         if (claims == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
