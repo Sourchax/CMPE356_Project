@@ -11,6 +11,7 @@ import SeatSelectionBox from '../components/ferry-ticket-form/seatSelectionBox.j
 import SeatSelectionModal from '../components/ferry-ticket-form/seatSelectionModal.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
+import {useSessionToken} from "../utils/sessions.js"
 const steps = [
   { label: "Select Voyage", icon: "📅" },
   { label: "Passenger Details", icon: "🧑" },
@@ -306,6 +307,15 @@ const FerryTicketForm = () => {
       // Create departure ticket
       console.log("Departure ticket request:", departureTicketRequest);
       const departureTicketResponse = await axios.post(`${API_URL}/tickets`, departureTicketRequest);
+      const seatSoldResponse = await axios.post(`${API_URL}/seats-sold/ticket-created`, null, {
+        params: {
+          ticketData: departureTicketRequest.selectedSeats,
+          voyageId: departureTicketRequest.voyageId
+        },
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        }
+      });
       
       // If round trip, create the return ticket as well
       let returnTicketResponse = null;
@@ -329,6 +339,15 @@ const FerryTicketForm = () => {
   
         // Create return ticket
         returnTicketResponse = await axios.post(`${API_URL}/tickets`, returnTicketRequest);
+        const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-created`, null, {
+          params: {
+            ticketData: returnTicketRequest.selectedSeats,
+            voyageId: returnTicketRequest.voyageId
+          },
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
         console.log("Return ticket created:", returnTicketResponse.data);
       }
   

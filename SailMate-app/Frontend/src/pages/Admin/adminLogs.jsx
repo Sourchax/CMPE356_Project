@@ -15,12 +15,14 @@ const AdminLogs = () => {
     const [filterOpen, setFilterOpen] = useState(false);
     const [filters, setFilters] = useState({
         roles: [],
-        actionTypes: []
+        actionTypes: [],
+        entityTypes: []  // Add this new array
     });
 
     // Available roles for filtering
     const roles = ["user", "admin", "manager", "super"];
-    
+
+    const entityTypes = ["VOYAGE", "TICKET", "STATION", "PRICE", "ANNOUNCEMENT", "COMPLAINT", "NOTIFICATION"];
     // Available action types for filtering
     const actionTypes = ["CREATE", "UPDATE", "DELETE", "CANCEL", "BROADCAST", "BULK_CREATE"];
 
@@ -88,6 +90,12 @@ const AdminLogs = () => {
                 filters.actionTypes.includes(log.actionType)
             );
         }
+
+        if (filters.entityTypes.length > 0) {
+            filteredLogs = filteredLogs.filter(log => 
+                filters.entityTypes.includes(log.entityType)
+            );
+        }
         
         // Apply sorting
         if (sortConfig.key) {
@@ -153,6 +161,16 @@ const AdminLogs = () => {
                 : [...prev.actionTypes, actionType];
             
             return { ...prev, actionTypes: newActionTypes };
+        });
+    };
+
+    const handleEntityTypeFilter = (entityType) => {
+        setFilters(prev => {
+            const newEntityTypes = prev.entityTypes.includes(entityType) 
+                ? prev.entityTypes.filter(e => e !== entityType)
+                : [...prev.entityTypes, entityType];
+            
+            return { ...prev, entityTypes: newEntityTypes };
         });
     };
 
@@ -348,6 +366,25 @@ const AdminLogs = () => {
                                             ))}
                                         </div>
                                     </div>
+                                    {/* Entity Type Filters */}
+                                        <div className="p-3 border-t border-gray-200">
+                                            <h4 className="font-medium text-gray-700 mb-2">Entity Types</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {entityTypes.map(type => (
+                                                    <label 
+                                                        key={type} 
+                                                        className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
+                                                            filters.entityTypes.includes(type) 
+                                                                ? `bg-[#E6F7FB] border-[#06AED5] shadow-sm` 
+                                                                : 'bg-gray-100 border-transparent hover:bg-gray-200'
+                                                        }`}
+                                                        onClick={() => handleEntityTypeFilter(type)}
+                                                    >
+                                                        {type}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
                                     
                                     {/* Action Type Filters */}
                                     <div className="p-3">

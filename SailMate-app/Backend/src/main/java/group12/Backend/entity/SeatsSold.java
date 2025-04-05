@@ -146,9 +146,11 @@ public class SeatsSold {
         this.totalTicketsSold = totalTicketsSold;
     }
     
-    public void recalculateTotal() {
-        this.totalTicketsSold = upperDeckPromo + upperDeckEconomy + upperDeckBusiness + 
-                                lowerDeckPromo + lowerDeckEconomy + lowerDeckBusiness;
+    public void recalculateTotal(boolean isPurchased) {
+        if(isPurchased)
+            this.totalTicketsSold++;
+        else
+            this.totalTicketsSold--;
     }
     
     public LocalDateTime getCreatedAt() {

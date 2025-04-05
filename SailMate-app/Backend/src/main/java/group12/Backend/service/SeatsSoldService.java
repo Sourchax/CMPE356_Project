@@ -44,7 +44,6 @@ public class SeatsSoldService {
     @Transactional
     public SeatsSoldDTO createSeatsSold(SeatsSoldDTO seatsSoldDTO) {
         SeatsSold seatsSold = convertToEntity(seatsSoldDTO);
-        seatsSold.recalculateTotal();
         return convertToDTO(seatsSoldRepository.save(seatsSold));
     }
 
@@ -56,7 +55,6 @@ public class SeatsSoldService {
 
         SeatsSold seatsSold = convertToEntity(seatsSoldDTO);
         seatsSold.setId(id);
-        seatsSold.recalculateTotal();
         return Optional.of(convertToDTO(seatsSoldRepository.save(seatsSold)));
     }
 
@@ -111,42 +109,92 @@ public class SeatsSoldService {
 
     // Update seats when a ticket is purchased or changed
     @Transactional
-    public void updateSeatCounts(Integer voyageId, String ticketClass, String deckType, Long count) {
+    public void updateSeatCounts(Integer voyageId, String ticketData, boolean isPurchased) {
         Optional<SeatsSold> seatsSoldOpt = seatsSoldRepository.findByVoyageId(voyageId);
-        
+    
         SeatsSold seatsSold;
         if (seatsSoldOpt.isPresent()) {
             seatsSold = seatsSoldOpt.get();
         } else {
-            // Initialize if not exists
             Voyage voyage = voyageRepository.findById(voyageId)
                     .orElseThrow(() -> new IllegalArgumentException("Voyage not found with id: " + voyageId));
             seatsSold = new SeatsSold();
             seatsSold.setVoyage(voyage);
             seatsSold.setShipType(voyage.getShipType());
         }
-
-        // Update specific seat counts
-        if ("upper".equalsIgnoreCase(deckType)) {
-            if ("promo".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setUpperDeckPromo(seatsSold.getUpperDeckPromo() + count);
-            } else if ("economy".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setUpperDeckEconomy(seatsSold.getUpperDeckEconomy() + count);
-            } else if ("business".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setUpperDeckBusiness(seatsSold.getUpperDeckBusiness() + count);
-            }
-        } else if ("lower".equalsIgnoreCase(deckType)) {
-            if ("promo".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setLowerDeckPromo(seatsSold.getLowerDeckPromo() + count);
-            } else if ("economy".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setLowerDeckEconomy(seatsSold.getLowerDeckEconomy() + count);
-            } else if ("business".equalsIgnoreCase(ticketClass)) {
-                seatsSold.setLowerDeckBusiness(seatsSold.getLowerDeckBusiness() + count);
+    
+        String[] codes = ticketData.split(",");
+    
+        for (String code : codes) {
+            code = code.trim();
+    
+            char rowType = code.charAt(0);
+            char classType = code.charAt(1);
+            int index = Integer.parseInt(code.substring(code.indexOf('-') + 1));
+    
+            int bitMask = 1 << (index - 1); // replaces pow(2, index - 1)
+    
+            switch (classType) {
+                case 'B': {
+                    switch (rowType) {
+                        case '1': {
+                            if (isPurchased)
+                                seatsSold.setLowerDeckBusiness(seatsSold.getLowerDeckBusiness() + bitMask);
+                            else
+                                seatsSold.setLowerDeckBusiness(seatsSold.getLowerDeckBusiness() - bitMask);
+                            break;
+                        }
+                        case '2': {
+                            if (isPurchased)
+                                seatsSold.setUpperDeckBusiness(seatsSold.getUpperDeckBusiness() + bitMask);
+                            else
+                                seatsSold.setUpperDeckBusiness(seatsSold.getUpperDeckBusiness() - bitMask);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 'E': {
+                    switch (rowType) {
+                        case '1': {
+                            if (isPurchased)
+                                seatsSold.setLowerDeckEconomy(seatsSold.getLowerDeckEconomy() + bitMask);
+                            else
+                                seatsSold.setLowerDeckEconomy(seatsSold.getLowerDeckEconomy() - bitMask);
+                            break;
+                        }
+                        case '2': {
+                            if (isPurchased)
+                                seatsSold.setUpperDeckEconomy(seatsSold.getUpperDeckEconomy() + bitMask);
+                            else
+                                seatsSold.setUpperDeckEconomy(seatsSold.getUpperDeckEconomy() - bitMask);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 'P': {
+                    switch (rowType) {
+                        case '1': {
+                            if (isPurchased)
+                                seatsSold.setLowerDeckPromo(seatsSold.getLowerDeckPromo() + bitMask);
+                            else
+                                seatsSold.setLowerDeckPromo(seatsSold.getLowerDeckPromo() - bitMask);
+                            break;
+                        }
+                        case '2': {
+                            if (isPurchased)
+                                seatsSold.setUpperDeckPromo(seatsSold.getUpperDeckPromo() + bitMask);
+                            else
+                                seatsSold.setUpperDeckPromo(seatsSold.getUpperDeckPromo() - bitMask);
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
         }
-
-        // Recalculate total
-        seatsSold.recalculateTotal();
+        seatsSold.recalculateTotal(isPurchased);
         seatsSoldRepository.save(seatsSold);
     }
 

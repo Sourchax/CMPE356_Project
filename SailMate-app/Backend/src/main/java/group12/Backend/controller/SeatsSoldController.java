@@ -49,44 +49,6 @@ public class SeatsSoldController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<SeatsSoldDTO> createSeatsSold(
-            @RequestBody SeatsSoldDTO seatsSoldDTO,
-            @RequestHeader("Authorization") String auth) throws Exception {
-        
-        Claims claims = Authentication.getClaims(auth);
-        if (claims == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        
-        String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
-            SeatsSoldDTO created = seatsSoldService.createSeatsSold(seatsSoldDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<SeatsSoldDTO> updateSeatsSold(
-            @PathVariable Integer id,
-            @RequestBody SeatsSoldDTO seatsSoldDTO,
-            @RequestHeader("Authorization") String auth) throws Exception {
-        
-        Claims claims = Authentication.getClaims(auth);
-        if (claims == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        
-        String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
-            return seatsSoldService.updateSeatsSold(id, seatsSoldDTO)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
-        }
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteSeatsSold(
             @PathVariable Integer id,
@@ -133,12 +95,10 @@ public class SeatsSoldController {
         }
     }
 
-    @PutMapping("/update-seats")
-    public ResponseEntity<Map<String, Object>> updateSeatCounts(
+    @PostMapping("/ticket-cancelled")
+    public ResponseEntity<Map<String, Object>> ticketCancelled(
+            @RequestParam String ticketData,
             @RequestParam Integer voyageId,
-            @RequestParam String ticketClass,
-            @RequestParam String deckType,
-            @RequestParam Long count,
             @RequestHeader("Authorization") String auth) throws Exception {
         
         Claims claims = Authentication.getClaims(auth);
@@ -147,8 +107,30 @@ public class SeatsSoldController {
         
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
-            seatsSoldService.updateSeatCounts(voyageId, ticketClass, deckType, count);
-            
+
+            seatsSoldService.updateSeatCounts(voyageId, ticketData, false);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Seat counts updated successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
+    }
+
+    @PostMapping("/ticket-created")
+    public ResponseEntity<Map<String, Object>> ticketCreated(
+        @RequestParam String ticketData,
+        @RequestParam Integer voyageId,
+            @RequestHeader("Authorization") String auth) throws Exception {
+        
+        Claims claims = Authentication.getClaims(auth);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            seatsSoldService.updateSeatCounts(voyageId, ticketData, true);
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Seat counts updated successfully");
@@ -166,5 +148,4 @@ public class SeatsSoldController {
         }
         return ResponseEntity.ok(decodedSeatsList);
     }
-
 }

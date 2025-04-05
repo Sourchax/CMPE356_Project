@@ -1315,14 +1315,15 @@ const AdminVoyage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ship Type
-                  </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ship Type {isEditing && <span className="text-xs text-gray-500">(cannot be changed)</span>}
+                </label>
                   <select
                     name="shipType"
                     value={currentVoyage.shipType}
                     onChange={handleInputChange}
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
+                    disabled={isEditing} // Add this line to disable when editing
                   >
                     {shipTypes.map(type => (
                       <option key={`ship-type-${type}`} value={type}>{type}</option>
