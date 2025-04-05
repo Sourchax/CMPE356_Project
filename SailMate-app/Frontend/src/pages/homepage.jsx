@@ -169,97 +169,126 @@ const Homepage = () => {
     }
   };
   
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!isSignedIn) {
+  
+    if (!isSignedIn) {
       navigate("/sign-in");
       return;
     }
-    // Check if departure and arrival are the same
+  
     if (formData.departure === formData.arrival) {
       alert("Departure and arrival locations cannot be the same. Please select different locations.");
       return;
     }
-    if(formData.passengers === 0){
+  
+    if (formData.passengers === 0) {
       alert("Please enter a valid number of passengers.");
       return;
     }
-
-    if(passengerDetails.child != 0 && (passengerDetails.adult === 0 && passengerDetails.senior === 0)){
+  
+    if (passengerDetails.child !== 0 && passengerDetails.adult === 0 && passengerDetails.senior === 0) {
       alert("There should be at least 1 adult passenger for children!");
       return;
     }
-
+  
     try {
-      // Create trip data to pass via location state
       const tripData = {
         ...formData,
         tripType,
         passengerTypes: passengerDetails,
       };
-    
-      let voyageData; // Create a local variable to store the response data
-    
-      if(formData.returnDate != ""){
+  
+      let voyageData = {
+        voyages: [],
+        seatInformation: [],
+      };
+  
+      if (formData.returnDate !== "") {
         const response1 = await axios.get(`${API_URL}/voyages/search`, {
           params: {
-            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
-            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            fromStationId: stationsArray.find(station => station.title === formData.departure).id,
+            toStationId: stationsArray.find(station => station.title === formData.arrival).id,
             departureDate: formData.departureDate
           }
         });
+  
         const response2 = await axios.get(`${API_URL}/voyages/search`, {
           params: {
-            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
-            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
+            fromStationId: stationsArray.find(station => station.title === formData.arrival).id,
+            toStationId: stationsArray.find(station => station.title === formData.departure).id,
             departureDate: formData.returnDate
           }
         });
-    
-        if(response1.data.length === 0 || response2.data.length === 0){
+  
+        if (response1.data.length === 0 || response2.data.length === 0) {
           alert("No voyages available for your selected route and date. Please try different options.");
           return;
-        } else {
-          voyageData = [response1.data, response2.data];
-          setAvailableVoyages(voyageData);
         }
-      }
-      else {
+  
+        const allVoyages = [...response1.data, ...response2.data];
+        const seatSoldPromises = allVoyages.map(voyage =>
+          axios.get(`${API_URL}/seats-sold/voyage/${voyage.id}`)
+        );
+  
+        const seatsSoldResponses = await Promise.all(seatSoldPromises);
+        const seatsSoldDataArray = seatsSoldResponses.map(res => res.data);
+  
+        const calculatedSeatsResponse = await axios.post(
+          `${API_URL}/seats-sold/calculate-seats`,
+          seatsSoldDataArray
+        );
+  
+        voyageData.voyages = [[...response1.data],[ ...response2.data]];
+        voyageData.seatInformation = calculatedSeatsResponse.data;
+      } else {
         const response = await axios.get(`${API_URL}/voyages/search`, {
           params: {
-            fromStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.departure)].id,
-            toStationId: stationsArray[stationsArray.findIndex(station => station.title === formData.arrival)].id,
+            fromStationId: stationsArray.find(station => station.title === formData.departure).id,
+            toStationId: stationsArray.find(station => station.title === formData.arrival).id,
             departureDate: formData.departureDate
           }
         });
-        console.log(response);
-        // Check if there are any voyages available
-        if (!response.data || response.data.length === 0) {
+  
+        if (response.data.length === 0) {
           alert("No voyages available for your selected route and date. Please try different options.");
           return;
         }
-        else {
-          voyageData = response.data;
-          setAvailableVoyages(voyageData);
-        }
+  
+        const seatSoldPromises = response.data.map(voyage =>
+          axios.get(`${API_URL}/seats-sold/voyage/${voyage.id}`)
+        );
+  
+        const seatsSoldResponses = await Promise.all(seatSoldPromises);
+        const seatsSoldDataArray = seatsSoldResponses.map(res => res.data);
+  
+        const calculatedSeatsResponse = await axios.post(
+          `${API_URL}/seats-sold/calculate-seats`,
+          seatsSoldDataArray
+        );
+  
+        voyageData.voyages = [response.data];
+        voyageData.seatInformation = calculatedSeatsResponse.data;
       }
-    
-      // Use the local variable instead of the state variable that hasn't updated yet
-      navigate('/ferry-ticket-form', { 
-        state: { 
+  
+      console.log(voyageData);
+  
+      navigate('/ferry-ticket-form', {
+        state: {
           tripData,
-          availableVoyages: voyageData, // Use the local variable here
+          availableVoyages: voyageData,
           from: 'homepage',
           timestamp: Date.now()
-        } 
+        }
       });
+  
       console.log(tripData);
     } catch (error) {
       console.error("Error searching for voyages:", error);
       alert("There was a problem searching for voyages. Please try again later.");
     }
   };
+  
   
   // Add this useEffect hook near your other hooks at the top of the component
   const [dropdownPosition, setDropdownPosition] = useState('bottom');

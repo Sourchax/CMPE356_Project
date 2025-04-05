@@ -52,50 +52,80 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     
     try {
       // Check if availableVoyages exists and has data
-      if (availableVoyages) {
-        // For one-way trip
-        if (!Array.isArray(availableVoyages[0])) {
+      if (availableVoyages && availableVoyages.voyages) {
+        // Create a lookup map for seat information by voyageId for faster access
+        const seatInfoMap = {};
+        if (availableVoyages.seatInformation && Array.isArray(availableVoyages.seatInformation)) {
+          availableVoyages.seatInformation.forEach(seatInfo => {
+            if (seatInfo && seatInfo.voyageId) {
+              seatInfoMap[seatInfo.voyageId] = seatInfo;
+            }
+          });
+        }
+        
+        // For one-way trip - check if voyages[1] doesn't exist
+        if (!availableVoyages.voyages[1]) {
           // Transform API voyage data to match the component's expected format
-          // Use prices from props instead of voyage data
-          const transformedDepartureData = availableVoyages.map(voyage => ({
-            departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
-            arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: promoPrice,
-            economy: economyPrice,
-            business: businessPrice,
-            availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id,
-            shipType: voyage.shipType
-          }));
+          const transformedDepartureData = availableVoyages.voyages[0].map(voyage => {
+            // Get seat information for this voyage using voyageId
+            const seatInfo = seatInfoMap[voyage.id] || {};
+            
+            return {
+              departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
+              arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
+              promo: promoPrice,
+              economy: economyPrice,
+              business: businessPrice,
+              promoSeats: seatInfo.promoAvailable || 0,
+              economySeats: seatInfo.economyAvailable || 0,
+              businessSeats: seatInfo.businessAvailable || 0,
+              voyageId: voyage.id,
+              shipType: voyage.shipType
+            };
+          });
           
           setDepartureTrips(transformedDepartureData);
           setReturnTrips([]);
         } 
         // For round trip
-        else if (Array.isArray(availableVoyages[0]) && Array.isArray(availableVoyages[1])) {
-          // Transform departure voyages with prices from props
-          const transformedDepartureData = availableVoyages[0].map(voyage => ({
-            departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
-            arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: promoPrice,
-            economy: economyPrice,
-            business: businessPrice,
-            availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id,
-            shipType: voyage.shipType// Add ship type
-          }));
+        else if (availableVoyages.voyages[0] && availableVoyages.voyages[1]) {
+          // Transform departure voyages with prices from props and seat information
+          const transformedDepartureData = availableVoyages.voyages[0].map(voyage => {
+            // Get seat information for this voyage using voyageId
+            const seatInfo = seatInfoMap[voyage.id] || {};
+            
+            return {
+              departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
+              arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
+              promo: promoPrice,
+              economy: economyPrice,
+              business: businessPrice,
+              promoSeats: seatInfo.promoAvailable || 0,
+              economySeats: seatInfo.economyAvailable || 0,
+              businessSeats: seatInfo.businessAvailable || 0,
+              voyageId: voyage.id,
+              shipType: voyage.shipType
+            };
+          });
           
-          // Transform return voyages with prices from props
-          const transformedReturnData = availableVoyages[1].map(voyage => ({
-            departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
-            arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
-            promo: promoPrice,
-            economy: economyPrice,
-            business: businessPrice,
-            availableSeats: voyage.availableSeats || 30,
-            voyageId: voyage.id,
-            shipType: voyage.shipType // Add ship type
-          }));
+          // Transform return voyages with prices from props and seat information
+          const transformedReturnData = availableVoyages.voyages[1].map(voyage => {
+            // Get seat information for this voyage using voyageId
+            const seatInfo = seatInfoMap[voyage.id] || {};
+            
+            return {
+              departure: voyage.departureTime ? voyage.departureTime.substring(0, 5) : "00:00",
+              arrival: voyage.arrivalTime ? voyage.arrivalTime.substring(0, 5) : "00:00",
+              promo: promoPrice,
+              economy: economyPrice,
+              business: businessPrice,
+              promoSeats: seatInfo.promoAvailable || 0,
+              economySeats: seatInfo.economyAvailable || 0,
+              businessSeats: seatInfo.businessAvailable || 0,
+              voyageId: voyage.id,
+              shipType: voyage.shipType
+            };
+          });
           
           setDepartureTrips(transformedDepartureData);
           setReturnTrips(transformedReturnData);
@@ -153,8 +183,12 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         return "text-gray-800 bg-gray-100";
     }
   };
-  // Mobile view for trip card
   const renderMobileCard = (trip, isReturn = false) => {
+    // Check if number of passengers exceeds available seats for each class
+    const promoDisabled = trip.promoSeats < tripData.passengers;
+    const economyDisabled = trip.economySeats < tripData.passengers;
+    const businessDisabled = trip.businessSeats < tripData.passengers;
+
     return (
       <div className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
         {/* Trip header with departure and arrival */}
@@ -184,55 +218,67 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         <div className="p-4 grid grid-cols-3 gap-2">
           {/* Promo fare */}
           <div 
-            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
-              selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
-              selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                ? "bg-[#f0c808]" 
-                : "bg-gray-100 hover:bg-[#f0c808]/60"
+            className={`p-2 rounded-lg text-center transition-colors ${
+              promoDisabled
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                : `cursor-pointer ${
+                    selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                      ? "bg-[#f0c808]" 
+                      : "bg-gray-100 hover:bg-[#f0c808]/60"
+                  }`
             }`}
-            onClick={() => handleSelectTrip(trip, "promo", isReturn)}
+            onClick={() => !promoDisabled && handleSelectTrip(trip, "promo", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Promo</div>
             <div className="text-base font-bold">{trip.promo}₺</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {trip.availableSeats}
+              {promoDisabled ? 'Not enough seats' : `${trip.promoSeats} seats`}
             </div>
           </div>
           
           {/* Economy fare */}
           <div 
-            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
-              selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
-              selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                ? "bg-[#D1FFD7]" 
-                : "bg-gray-100 hover:bg-[#D1FFD7]/60"
+            className={`p-2 rounded-lg text-center transition-colors ${
+              economyDisabled
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                : `cursor-pointer ${
+                    selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                      ? "bg-[#D1FFD7]" 
+                      : "bg-gray-100 hover:bg-[#D1FFD7]/60"
+                  }`
             }`}
-            onClick={() => handleSelectTrip(trip, "economy", isReturn)}
+            onClick={() => !economyDisabled && handleSelectTrip(trip, "economy", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Economy</div>
             <div className="text-base font-bold">{trip.economy}₺</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {trip.availableSeats}
+              {economyDisabled ? 'Not enough seats' : `${trip.economySeats} seats`}
             </div>
           </div>
           
           {/* Business fare */}
           <div 
-            className={`p-2 rounded-lg text-center cursor-pointer transition-colors ${
-              selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
-              selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                ? "bg-[#F05D5E] text-white" 
-                : "bg-gray-100 hover:bg-[#F05D5E]/60"
+            className={`p-2 rounded-lg text-center transition-colors ${
+              businessDisabled
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                : `cursor-pointer ${
+                    selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                      ? "bg-[#F05D5E] text-white" 
+                      : "bg-gray-100 hover:bg-[#F05D5E]/60"
+                  }`
             }`}
-            onClick={() => handleSelectTrip(trip, "business", isReturn)}
+            onClick={() => !businessDisabled && handleSelectTrip(trip, "business", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Business</div>
             <div className="text-base font-bold">{trip.business}₺</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {trip.availableSeats}
+              {businessDisabled ? 'Not enough seats' : `${trip.businessSeats} seats`}
             </div>
           </div>
         </div>
@@ -240,7 +286,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     );
   };
 
-  // Desktop table view
+    // Desktop table view
   const renderTable = (trips, isReturn = false) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse shadow-lg rounded-lg overflow-hidden">
@@ -275,7 +321,11 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         <tbody>
           {trips.length > 0 ? (
             trips.map((trip, index) => {
-              
+              // Check if number of passengers exceeds available seats for each class
+              const promoDisabled = trip.promoSeats < tripData.passengers;
+              const economyDisabled = trip.economySeats < tripData.passengers;
+              const businessDisabled = trip.businessSeats < tripData.passengers;
+
               return (
                 <tr key={trip.voyageId || index} className={`text-center border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                   <td className="p-3 md:p-5">
@@ -288,8 +338,6 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="flex flex-col items-center">
                       <div className="text-base md:text-xl font-bold">{trip.arrival}</div>
                       <div className="text-xs md:text-sm text-gray-500">{tripData[isReturn ? "departure" : "arrival"]}</div>
-                      <div className="flex items-center mt-1 text-xs">
-                      </div>
                     </div>
                   </td>
                   <td className="p-3 md:p-5">
@@ -302,14 +350,19 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                       </div>
                     </div>
                   </td>
+                  {/* Promo Fare Column */}
                   <td
-                    className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
-                      selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
-                      selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                        ? "bg-[#f0c808]" 
-                        : "hover:bg-[#f0c808]/60"
+                    className={`p-3 md:p-5 transition-colors relative ${
+                      promoDisabled
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : `cursor-pointer ${
+                            selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
+                            selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                              ? "bg-[#f0c808]" 
+                              : "hover:bg-[#f0c808]/60"
+                          }`
                     }`}
-                    onClick={() => handleSelectTrip(trip, "promo", isReturn)}
+                    onClick={() => !promoDisabled && handleSelectTrip(trip, "promo", isReturn)}
                   >
                     <div className={`text-base md:text-xl font-medium ${
                       selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
@@ -321,7 +374,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
-                     selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
                       <div className="absolute top-1 right-1 bg-white text-yellow-700 p-1 rounded-full">
                         ✓
                       </div>
@@ -330,18 +383,24 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {trip.availableSeats} seats left
+                        {promoDisabled ? 'Not enough seats' : `${trip.promoSeats} seats left`}
                       </div>
                     </div>
                   </td>
+                  
+                  {/* Economy Fare Column */}
                   <td
-                    className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
-                      selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
-                      selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                        ? "bg-[#D1FFD7]" 
-                        : "hover:bg-[#D1FFD7]/60"
+                    className={`p-3 md:p-5 transition-colors relative ${
+                      economyDisabled
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : `cursor-pointer ${
+                            selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
+                            selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                              ? "bg-[#D1FFD7]" 
+                              : "hover:bg-[#D1FFD7]/60"
+                          }`
                     }`}
-                    onClick={() => handleSelectTrip(trip, "economy", isReturn)}
+                    onClick={() => !economyDisabled && handleSelectTrip(trip, "economy", isReturn)}
                   >
                     <div className={`text-base md:text-xl font-medium ${
                       selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
@@ -353,7 +412,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
-                     selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
                       <div className="absolute top-1 right-1 bg-white text-green-700 p-1 rounded-full">
                         ✓
                       </div>
@@ -362,18 +421,24 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {trip.availableSeats} seats left
+                        {economyDisabled ? 'Not enough seats' : `${trip.economySeats} seats left`}
                       </div>
                     </div>
                   </td>
+                  
+                  {/* Business Fare Column */}
                   <td
-                    className={`p-3 md:p-5 cursor-pointer transition-colors relative ${
-                      selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
-                      selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
-                        ? "bg-[#F05D5E]" 
-                        : "hover:bg-[#F05D5E]/60"
+                    className={`p-3 md:p-5 transition-colors relative ${
+                      businessDisabled
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : `cursor-pointer ${
+                            selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
+                            selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId
+                              ? "bg-[#F05D5E]" 
+                              : "hover:bg-[#F05D5E]/60"
+                          }`
                     }`}
-                    onClick={() => handleSelectTrip(trip, "business", isReturn)}
+                    onClick={() => !businessDisabled && handleSelectTrip(trip, "business", isReturn)}
                   >
                     <div className={`text-base md:text-xl font-medium ${
                       selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
@@ -385,7 +450,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
-                     selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
+                    selectedOption[isReturn ? "return" : "departure"]?.voyageId === trip.voyageId && (
                       <div className="absolute top-1 right-1 bg-white text-red-700 p-1 rounded-full">
                         ✓
                       </div>
@@ -394,7 +459,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {trip.availableSeats} seats left
+                        {businessDisabled ? 'Not enough seats' : `${trip.businessSeats} seats left`}
                       </div>
                     </div>
                   </td>

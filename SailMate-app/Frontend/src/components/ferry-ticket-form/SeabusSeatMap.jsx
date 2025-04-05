@@ -23,12 +23,14 @@ const SeaBusSeatMap = ({
   const renderSeatRow = (rowChar, startNum, endNum, seatClass, customStyles = '') => {
     const seats = [];
     const classPrefix = seatClass === 'business' ? 'B' : seatClass === 'economy' ? 'E' : 'P';
-    // Add deck prefix to the class prefix (1 for lower, 2 for upper)
     const deckPrefix = currentDeck === 'main' ? '1' : '2';
     const fullPrefix = deckPrefix + classPrefix;
     
     for (let i = startNum; i <= endNum; i++) {
-      const seatId = `${fullPrefix}-${rowChar}${i}`;
+      // Calculate the unique seat index based on the row and column
+      const seatIndex = i;
+      const seatId = `${fullPrefix}-${seatIndex}`;
+      
       const isAvailable = availableSeats?.[seatId]?.isAvailable ?? true;
       const isSelected = selectedSeats.includes(seatId);
       const canSelect = isSeatSelectable(seatId);
@@ -85,7 +87,7 @@ const SeaBusSeatMap = ({
             {renderSeatRow('A', 1, 10, 'business')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('B', 1, 10, 'business')}
+            {renderSeatRow('B', 11, 20, 'business')}
           </div>
         </div>
 
@@ -113,7 +115,7 @@ const SeaBusSeatMap = ({
             {renderSeatRow('C', 1, 10, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('D', 1, 10, 'economy')}
+            {renderSeatRow('D', 11, 20, 'economy')}
           </div>
         </div>
 
@@ -127,7 +129,7 @@ const SeaBusSeatMap = ({
             {renderSeatRow('E', 1, 10, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('F', 1, 10, 'promo')}
+            {renderSeatRow('F', 11, 20, 'promo')}
           </div>
         </div>
 
@@ -181,7 +183,7 @@ const SeaBusSeatMap = ({
             {renderSeatRow('B', 1, 10, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('C', 1, 10, 'economy')}
+            {renderSeatRow('C', 11, 20, 'economy')}
           </div>
 
           {/* Central Facilities */}
@@ -203,10 +205,10 @@ const SeaBusSeatMap = ({
           </div>
 
           <div className="flex justify-center">
-            {renderSeatRow('D', 1, 10, 'economy')}
+            {renderSeatRow('D', 21, 30, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('E', 1, 10, 'economy')}
+            {renderSeatRow('E', 31, 40, 'economy')}
           </div>
         </div>
 
@@ -220,13 +222,13 @@ const SeaBusSeatMap = ({
             {renderSeatRow('F', 1, 10, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('G', 1, 10, 'promo')}
+            {renderSeatRow('G', 11, 20, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('H', 1, 10, 'promo')}
+            {renderSeatRow('H', 21, 30, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('I', 1, 10, 'promo')}
+            {renderSeatRow('I', 31, 40, 'promo')}
           </div>
         </div>
 

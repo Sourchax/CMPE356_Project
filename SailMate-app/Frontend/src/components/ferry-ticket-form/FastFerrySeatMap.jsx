@@ -15,7 +15,6 @@ const FastFerrySeatMap = ({
 
   const isSeatSelectable = (seatId) => {
     const seatPrefix = seatId.split('-')[0];
-    // Get just the class part (B, E, P) without the deck prefix
     const classPrefix = ticketClass === 'business' ? 'B' : 
                         ticketClass === 'economy' ? 'E' : 'P';
     return seatPrefix.includes(classPrefix);
@@ -24,12 +23,14 @@ const FastFerrySeatMap = ({
   const renderSeatRow = (rowChar, startNum, endNum, seatClass, customStyles = '') => {
     const seats = [];
     const classPrefix = seatClass === 'business' ? 'B' : seatClass === 'economy' ? 'E' : 'P';
-    // Add deck prefix to the class prefix (1 for lower, 2 for upper)
     const deckPrefix = currentDeck === 'main' ? '1' : '2';
     const fullPrefix = deckPrefix + classPrefix;
     
     for (let i = startNum; i <= endNum; i++) {
-      const seatId = `${fullPrefix}-${rowChar}${i}`;
+      // Calculate the unique seat index based on the row and column
+      const seatIndex = i;
+      const seatId = `${fullPrefix}-${seatIndex}`;
+      
       const isAvailable = availableSeats?.[seatId]?.isAvailable ?? true;
       const isSelected = selectedSeats.includes(seatId);
       const canSelect = isSeatSelectable(seatId);
@@ -83,7 +84,7 @@ const FastFerrySeatMap = ({
             {renderSeatRow('A', 1, 10, 'business')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('B', 1, 10, 'business')}
+            {renderSeatRow('B', 11, 20, 'business')}
           </div>
         </div>
 
@@ -96,7 +97,7 @@ const FastFerrySeatMap = ({
             {renderSeatRow('C', 1, 10, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('D', 1, 10, 'economy')}
+            {renderSeatRow('D', 11, 20, 'economy')}
           </div>
 
           <div className="flex justify-between items-center my-2">
@@ -115,10 +116,10 @@ const FastFerrySeatMap = ({
           </div>
 
           <div className="flex justify-center">
-            {renderSeatRow('E', 1, 10, 'economy')}
+            {renderSeatRow('E', 21, 30, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('F', 1, 10, 'economy')}
+            {renderSeatRow('F', 31, 40, 'economy')}
           </div>
         </div>
 
@@ -131,13 +132,13 @@ const FastFerrySeatMap = ({
             {renderSeatRow('G', 1, 10, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('H', 1, 10, 'promo')}
+            {renderSeatRow('H', 11, 20, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('I', 1, 10, 'promo')}
+            {renderSeatRow('I', 21, 30, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('J', 1, 10, 'promo')}
+            {renderSeatRow('J', 31, 40, 'promo')}
           </div>
         </div>
 
@@ -176,10 +177,10 @@ const FastFerrySeatMap = ({
             {renderSeatRow('A', 1, 10, 'business')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('B', 1, 10, 'business')}
+            {renderSeatRow('B', 11, 20, 'business')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('C', 1, 10, 'business')}
+            {renderSeatRow('C', 21, 30, 'business')}
           </div>
         </div>
 
@@ -192,7 +193,7 @@ const FastFerrySeatMap = ({
             {renderSeatRow('D', 1, 10, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('E', 1, 10, 'economy')}
+            {renderSeatRow('E', 11, 20, 'economy')}
           </div>
 
           <div className="flex justify-between items-center my-2">
@@ -211,16 +212,16 @@ const FastFerrySeatMap = ({
           </div>
 
           <div className="flex justify-center">
-            {renderSeatRow('F', 1, 10, 'economy')}
+            {renderSeatRow('F', 21, 30, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('G', 1, 10, 'economy')}
+            {renderSeatRow('G', 31, 40, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('H', 1, 10, 'economy')}
+            {renderSeatRow('H', 41, 50, 'economy')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('I', 1, 10, 'economy')}
+            {renderSeatRow('I', 51, 60, 'economy')}
           </div>
         </div>
 
@@ -233,19 +234,19 @@ const FastFerrySeatMap = ({
             {renderSeatRow('J', 1, 10, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('K', 1, 10, 'promo')}
+            {renderSeatRow('K', 11, 20, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('L', 1, 10, 'promo')}
+            {renderSeatRow('L', 21, 30, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('M', 1, 10, 'promo')}
+            {renderSeatRow('M', 31, 40, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('N', 1, 10, 'promo')}
+            {renderSeatRow('N', 41, 50, 'promo')}
           </div>
           <div className="flex justify-center">
-            {renderSeatRow('O', 1, 10, 'promo')}
+            {renderSeatRow('O', 51, 60, 'promo')}
           </div>
         </div>
 

@@ -31,6 +31,36 @@ const VoyageTimes = () => {
     date.setDate(date.getDate() + 7);
     return date.toISOString().split('T')[0];
   });
+
+  const isVoyageExpired = (voyage) => {
+    const voyageDate = new Date(voyage.departureDate);
+    const currentDate = new Date();
+    const voyageTime = voyage.departureTime;
+  
+    // Check if the voyage date is today
+    const isToday = 
+      voyageDate.getFullYear() === currentDate.getFullYear() &&
+      voyageDate.getMonth() === currentDate.getMonth() &&
+      voyageDate.getDate() === currentDate.getDate();
+  
+    // If it's today, check if the time has passed
+    if (isToday) {
+      const [voyageHours, voyageMinutes] = voyageTime.split(':').map(Number);
+      const [currentHours, currentMinutes] = [
+        currentDate.getHours(), 
+        currentDate.getMinutes()
+      ];
+  
+      // Compare time
+      return (
+        currentHours > voyageHours || 
+        (currentHours === voyageHours && currentMinutes > voyageMinutes)
+      );
+    }
+  
+    // If not today, return false
+    return false;
+  };
   const [selectedFrom, setSelectedFrom] = useState("");
   const [selectedTo, setSelectedTo] = useState("");
 
@@ -344,7 +374,7 @@ const VoyageTimes = () => {
                       
                       <div className="voyage-row">
                         <div>{formatTime(voyage.departureTime)} - {formatTime(voyage.arrivalTime)}</div>
-                        {voyage.status === "active" ? (
+                        {voyage.status === "active" && !isVoyageExpired(voyage) ? (
                           <Button
                             onClick={() => handleBuyTicket(voyage)}
                             variant="primary"
@@ -400,18 +430,18 @@ const VoyageTimes = () => {
                             <FuelBadge fuel={voyage.fuelType} />
                           </td>
                           <td>
-                            {voyage.status === "active" ? (
-                              <Button
-                                onClick={() => handleBuyTicket(voyage)}
-                                variant="primary"
-                                size="sm"
-                                className="voyage-button"
-                              >
-                                Buy Ticket
-                              </Button>
-                            ) : (
-                              <span className="text-gray-400">Not Available</span>
-                            )}
+                          {voyage.status === "active" && !isVoyageExpired(voyage) ? (
+                            <Button
+                              onClick={() => handleBuyTicket(voyage)}
+                              variant="primary"
+                              size="sm"
+                              className="voyage-button"
+                            >
+                              Buy Ticket
+                            </Button>
+                          ) : (
+                            <span className="text-gray-400 text-sm">Not Available</span>
+                          )}
                           </td>
                         </tr>
                       ))}

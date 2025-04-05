@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import group12.Backend.util.seatsOperations;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,4 +157,14 @@ public class SeatsSoldController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
         }
     }
+
+    @PostMapping("/calculate-seats")
+    public ResponseEntity<List<Map<String, Object>>> calculateSeats(@RequestBody List<Object> seatsSoldList){
+        List<Map<String, Object>> decodedSeatsList = new ArrayList<>();
+        for (Object seatsSold : seatsSoldList) {
+            decodedSeatsList.add(seatsOperations.decode(seatsSold));
+        }
+        return ResponseEntity.ok(decodedSeatsList);
+    }
+
 }

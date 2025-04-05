@@ -10,107 +10,82 @@ const SeatSelectionModal = ({
   passengerCount, 
   onSeatSelection,
   ticketClass,
-  shipType
+  shipType,
+  voyageId,
+  seatsInformation
 }) => {
   const [selectionMode, setSelectionMode] = useState('automatic');
   const [currentDeck, setCurrentDeck] = useState('main');
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [availableSeats, setAvailableSeats] = useState({});
   const isDeparture = type === 'departure';
-  
+
+  const seatInfo = seatsInformation.find(
+    info => info.voyageId === voyageId
+  );
+
   // Generate seat map structure based on ferry type and deck
   const generateSeatMap = () => {
     // Define seat configurations based on ferry type and deck
     const seatConfigs = {
       'Fast Ferry': {
         'main': {
-          'business': { prefix: '1B', count: 30, startRow: 'A', startCol: 1 },
-          'economy': { prefix: '1E', count: 60, startRow: 'D', startCol: 1 },
-          'promo': { prefix: '1P', count: 60, startRow: 'J', startCol: 1 }
+          'business': { prefix: '1B', count: 30, startIndex: 1, deckKey: 'lowerDeckBusiness' },
+          'economy': { prefix: '1E', count: 60, startIndex: 1, deckKey: 'lowerDeckEconomy' },
+          'promo': { prefix: '1P', count: 60, startIndex: 1, deckKey: 'lowerDeckPromo' }
         },
         'upper': {
-          'business': { prefix: '2B', count: 20, startRow: 'A', startCol: 1 },
-          'economy': { prefix: '2E', count: 40, startRow: 'C', startCol: 1 },
-          'promo': { prefix: '2P', count: 40, startRow: 'G', startCol: 1 }
+          'business': { prefix: '2B', count: 20, startIndex: 1, deckKey: 'upperDeckBusiness' },
+          'economy': { prefix: '2E', count: 40, startIndex: 1, deckKey: 'upperDeckEconomy' },
+          'promo': { prefix: '2P', count: 40, startIndex: 1, deckKey: 'upperDeckPromo' }
         }
       },
       'Sea Bus': {
         'main': {
-          'business': { prefix: '1B', count: 10, startRow: 'A', startCol: 1 },
-          'economy': { prefix: '1E', count: 40, startRow: 'B', startCol: 1 },
-          'promo': { prefix: '1P', count: 40, startRow: 'F', startCol: 1 }
+          'business': { prefix: '1B', count: 10, startIndex: 1, deckKey: 'lowerDeckBusiness' },
+          'economy': { prefix: '1E', count: 40, startIndex: 1, deckKey: 'lowerDeckEconomy' },
+          'promo': { prefix: '1P', count: 40, startIndex: 1, deckKey: 'lowerDeckPromo' }
         },
         'upper': {
-          'business': { prefix: '2B', count: 20, startRow: 'A', startCol: 1 },
-          'economy': { prefix: '2E', count: 20, startRow: 'C', startCol: 1 },
-          'promo': { prefix: '2P', count: 20, startRow: 'E', startCol: 1 }
+          'business': { prefix: '2B', count: 20, startIndex: 1, deckKey: 'upperDeckBusiness' },
+          'economy': { prefix: '2E', count: 20, startIndex: 1, deckKey: 'upperDeckEconomy' },
+          'promo': { prefix: '2P', count: 20, startIndex: 1, deckKey: 'upperDeckPromo' }
         }
       }
     };
-
+  
     // Create seat map for both decks
     const seatMap = {};
     
-    // Generate seats for lower deck
-    const lowerConfig = seatConfigs[shipType]?.['main'] || seatConfigs['Fast Ferry']['main'];
-    Object.keys(lowerConfig).forEach(seatClass => {
-      const { prefix, count, startRow, startCol } = lowerConfig[seatClass];
-      let row = startRow.charCodeAt(0);
-      let col = startCol;
-      
-      for (let i = 0; i < count; i++) {
-        const seatId = `${prefix}-${String.fromCharCode(row)}${col}`;
-        
-        // Random availability (80% available for demo purposes)
-        const isAvailable = Math.random() > 0.2;
-        
-        seatMap[seatId] = {
-          id: seatId,
-          class: seatClass,
-          deck: 'main',
-          row: String.fromCharCode(row),
-          col: col,
-          isAvailable: isAvailable
-        };
-        
-        col++;
-        // After 10 seats in a row, move to next row
-        if (col > 10) {
-          col = 1;
-          row++;
-        }
-      }
-    });
+    // Get the ship type from seatInfo
+    const shipType = seatInfo?.shipType || 'Fast Ferry';
     
-    // Generate seats for upper deck
-    const upperConfig = seatConfigs[shipType]?.['upper'] || seatConfigs['Fast Ferry']['upper'];
-    Object.keys(upperConfig).forEach(seatClass => {
-      const { prefix, count, startRow, startCol } = upperConfig[seatClass];
-      let row = startRow.charCodeAt(0);
-      let col = startCol;
-      
-      for (let i = 0; i < count; i++) {
-        const seatId = `${prefix}-${String.fromCharCode(row)}${col}`;
+    // Generate seats for the specific ship type
+    const shipConfig = seatConfigs[shipType];
+    
+    Object.keys(shipConfig).forEach(deck => {
+      Object.keys(shipConfig[deck]).forEach(seatClass => {
+        const { prefix, count, startIndex, deckKey } = shipConfig[deck][seatClass];
         
-        // Random availability (80% available for demo purposes)
-        const isAvailable = Math.random() > 0.2;
+        // Get the availability array for this deck and class
+        const availabilityArray = seatInfo?.[deckKey] || [];
         
-        seatMap[seatId] = {
-          id: seatId,
-          class: seatClass,
-          deck: 'upper',
-          row: String.fromCharCode(row),
-          col: col,
-          isAvailable: isAvailable
-        };
-        
-        col++;
-        // After 10 seats in a row, move to next row
-        if (col > 10) {
-          col = 1;
-          row++;
+        for (let i = startIndex; i <= count; i++) {
+          const seatId = `${prefix}-${i}`;
+          
+          // Determine seat availability from the seatInfo
+          // Note: false in the array means seat is available (not taken)
+          const isAvailable = !availabilityArray[i - startIndex];
+          
+          seatMap[seatId] = {
+            id: seatId,
+            class: seatClass,
+            deck: deck,
+            index: i,
+            isAvailable: isAvailable
+          };
         }
-      }
+      });
     });
     
     return seatMap;

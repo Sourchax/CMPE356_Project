@@ -530,6 +530,8 @@ const FerryTicketForm = () => {
                       onSeatSelection={handleDepartureSeatSelection}
                       ticketClass={formData.selectedDeparture ? formData.selectedDeparture.type : null}
                       shipType={formData.selectedDeparture ? formData.selectedDeparture.shipType : null}
+                      voyageId= {formData.selectedDeparture ? formData.selectedDeparture.voyageId : null}
+                      seatsInformation={location.state.availableVoyages.seatInformation}
                     />
                   {formData.departureDetails.passengers.map((passenger, index) => (
                     index < totalPassengers ? (
@@ -580,6 +582,8 @@ const FerryTicketForm = () => {
                         onSeatSelection={handleReturnSeatSelection}
                         ticketClass={formData.selectedReturn ? formData.selectedReturn.type : null}
                         shipType={formData.selectedReturn ? formData.selectedReturn.shipType : null}
+                        voyageId= {formData.selectedReturn? formData.selectedReturn.voyageId : null}
+                        seatsInformation={location.state.availableVoyages.seatInformation}
                       />
                     </>
                   )}
