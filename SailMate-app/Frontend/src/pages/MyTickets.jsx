@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
+import {useSessionToken} from "../utils/sessions.js";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -44,7 +45,11 @@ const fetchUserTickets = async () => {
     console.log("Fetching tickets for user:", userId);
     
     // Call the API endpoint to get tickets for the current user
-    const response = await axios.get(`${API_URL}/tickets/user/${userId}`);
+    const response = await axios.get(`${API_URL}/tickets/by-user`, {
+      headers: {
+        Authorization: `Bearer ${useSessionToken()}`
+      }
+    });
     
     // Ensure response.data is an array
     const ticketsData = Array.isArray(response.data) ? response.data : [];
@@ -66,7 +71,11 @@ const handleViewDetails = async (ticketId) => {
     setLoading(true);
     
     // Get detailed ticket information when user clicks "View Details"
-    const response = await axios.get(`${API_URL}/tickets/${ticketId}`);
+    const response = await axios.get(`${API_URL}/tickets/${ticketId}`, {
+      headers: {
+        Authorization: `Bearer ${useSessionToken()}`
+      }
+    });
     
     // Verify we got a valid response
     if (response.data) {
@@ -270,7 +279,7 @@ return (
 
     {/* Ticket Details Modal */}
     {showModal && selectedTicket && (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 selectable">
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4 animate-[fadeIn_0.3s_ease-out] max-h-[90vh] overflow-y-auto custom-scrollbar">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800">Ticket Details</h2>

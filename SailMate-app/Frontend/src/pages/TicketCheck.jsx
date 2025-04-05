@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle, User } from 'lucide-react';
 import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
+import { useSessionToken } from "../utils/sessions";
 import axios from "axios";
 
 const API_URL = "http://localhost:8080/api";
@@ -41,7 +42,11 @@ const TicketCheck = () => {
     
     try {
       // First, try to fetch ticket by ticketID
-      const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`);
+      const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        }
+      });
       
       if (response.data) {
         // Check if the provided email matches any passenger's email
@@ -274,7 +279,7 @@ const TicketCheck = () => {
               </form>
             </>
           ) : (
-            <div className="animate-[fadeIn_0.5s_ease-out]">
+            <div className="animate-[fadeIn_0.5s_ease-out] selectable">
               <div className="flex flex-col items-center pb-4 border-b border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-800 font-sans">Ticket Status</h2>
                 <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>

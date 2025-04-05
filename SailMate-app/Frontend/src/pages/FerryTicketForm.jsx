@@ -306,7 +306,11 @@ const FerryTicketForm = () => {
   
       // Create departure ticket
       console.log("Departure ticket request:", departureTicketRequest);
-      const departureTicketResponse = await axios.post(`${API_URL}/tickets`, departureTicketRequest);
+      const departureTicketResponse = await axios.post(`${API_URL}/tickets`, departureTicketRequest, {
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        }
+      });
       const seatSoldResponse = await axios.post(`${API_URL}/seats-sold/ticket-created`, null, {
         params: {
           ticketData: departureTicketRequest.selectedSeats,
@@ -338,7 +342,11 @@ const FerryTicketForm = () => {
         };
   
         // Create return ticket
-        returnTicketResponse = await axios.post(`${API_URL}/tickets`, returnTicketRequest);
+        returnTicketResponse = await axios.post(`${API_URL}/tickets`, returnTicketRequest, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
         const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-created`, null, {
           params: {
             ticketData: returnTicketRequest.selectedSeats,
