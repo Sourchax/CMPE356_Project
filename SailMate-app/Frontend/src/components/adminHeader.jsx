@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MapPin, Clock, Bell, Menu, X } from 'lucide-react';
+import { MapPin, Clock, Bell, Menu, X, Activity } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
@@ -11,7 +11,7 @@ const AdminHeader = () => {
   const { user } = useUser();
   const location = useLocation();
   
-  // Get current path for active link highlighting - more reliable method
+  // Get current path for active link highlighting
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -29,6 +29,8 @@ const AdminHeader = () => {
       title = "Voyage Times | SailMate";
     } else if (path === "/admin/Announce") {
       title = "Announcements | SailMate";
+    } else if (path === "/admin/Logs") {
+      title = "Activity Logs | SailMate";
     }
     
     document.title = title;
@@ -69,9 +71,8 @@ const AdminHeader = () => {
 
   return (
     <header className="bg-[#06AED5] text-white shadow-md">
-      {/* Fixed-height container to prevent layout shifts */}
       <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 py-3 flex justify-between items-center gap-2 md:gap-3 lg:gap-4">
-        {/* Left Side: Logo & Title - with minimum width to prevent squishing */}
+        {/* Left Side: Logo & Title */}
         <Link to="/admin" className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-shrink-0 no-underline">
           <img 
             src={SailMateLogo} 
@@ -83,13 +84,12 @@ const AdminHeader = () => {
           <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white whitespace-nowrap">Admin</h1>
         </Link>
 
-        {/* Desktop Navigation - better spacing with breakpoint adjustments */}
-        <nav className="hidden md:flex md:space-x-1 lg:space-x-4 overflow-x-auto">
+        {/* Desktop Navigation - exactly like manager header */}
+        <nav className="hidden md:flex md:space-x-1 lg:space-x-4">
           <NavLink 
             to="/admin/Stations" 
             icon={MapPin} 
             text="Stations" 
-            fullText="Edit Stations"
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Stations")}
           />
@@ -97,7 +97,6 @@ const AdminHeader = () => {
             to="/admin/Voyage" 
             icon={Clock} 
             text="Voyages" 
-            fullText="Voyage Times"
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Voyage")}
           />
@@ -105,9 +104,15 @@ const AdminHeader = () => {
             to="/admin/Announce" 
             icon={Bell} 
             text="Announcements" 
-            fullText="Announcements"
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Announce")}
+          />
+          <NavLink 
+            to="/admin/Logs" 
+            icon={Activity} 
+            text="Logs" 
+            className="md:text-xs lg:text-sm xl:text-base"
+            isActive={isActive("/admin/Logs")}
           />
         </nav>
 
@@ -115,7 +120,7 @@ const AdminHeader = () => {
         <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
           <CustomUserButton user={user} handleSignOut={handleSignOut} />
           
-          {/* Mobile Menu Button with improved tap target */}
+          {/* Mobile Menu Button */}
           <button 
             id="menu-button"
             className="md:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300 rounded-md"
@@ -140,14 +145,14 @@ const AdminHeader = () => {
           <NavLink 
             to="/admin/Stations" 
             icon={MapPin} 
-            text="Edit Stations" 
+            text="Stations" 
             mobile={true} 
             isActive={isActive("/admin/Stations")}
           />
           <NavLink 
             to="/admin/Voyage" 
             icon={Clock} 
-            text="Voyage Times" 
+            text="Voyages" 
             mobile={true} 
             isActive={isActive("/admin/Voyage")}
           />
@@ -158,33 +163,29 @@ const AdminHeader = () => {
             mobile={true} 
             isActive={isActive("/admin/Announce")}
           />
+          <NavLink 
+            to="/admin/Logs" 
+            icon={Activity} 
+            text="Logs" 
+            mobile={true} 
+            isActive={isActive("/admin/Logs")}
+          />
         </div>
       </div>
     </header>
   );
 };
 
-const NavLink = ({ to, icon: Icon, text, fullText, mobile, className = '', isActive }) => {
-  // Use shorter text for medium screens, full text for larger screens
-  const displayText = fullText ? (
-    <span className="whitespace-nowrap">
-      <span className="md:hidden lg:inline">{fullText}</span>
-      <span className="hidden md:inline lg:hidden">{text}</span>
-    </span>
-  ) : (
-    <span className="whitespace-nowrap">{text}</span>
-  );
-
+const NavLink = ({ to, icon: Icon, text, mobile, className = '', isActive }) => {
   return (
     <Link 
       to={to} 
       className={`flex items-center gap-1 md:gap-1 lg:gap-2 px-2 md:px-2 lg:px-3 py-1 md:py-2 rounded-md text-white hover:bg-[#0599bc] transition-colors duration-200 relative no-underline ${
         mobile ? 'w-full' : ''
       } ${className}`}
-      onClick={() => mobile && window.innerWidth < 768 ? setMenuOpen(false) : null}
     >
       <Icon size={16} className="text-white flex-shrink-0" strokeWidth={2.5} />
-      {displayText}
+      <span className="whitespace-nowrap">{text}</span>
       
       {/* Active indicator - positioned absolute for better control */}
       {isActive && (

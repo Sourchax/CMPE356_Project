@@ -231,4 +231,8 @@ public class ActivityLogService {
     public long getCountByActionType(String actionType) {
         return activityLogRepository.countByActionType(actionType);
     }
+
+    public long getActivityLogCount() {
+        return activityLogRepository.count();
+    }
 }

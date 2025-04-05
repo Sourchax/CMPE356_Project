@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Trash2, Clock, User, Calendar, X, Search, Filter, ChevronDown, Tag, Activity } from "lucide-react";
+import { useSessionToken } from "../../utils/sessions";
 import axios from "axios";
-import {useSessionToken} from "../../utils/sessions";
 
-
-const ActivityLogs = () => {
+const AdminLogs = () => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -30,14 +29,12 @@ const ActivityLogs = () => {
         const fetchLogs = async () => {
             try {
                 setLoading(true);
-                // Get token from localStorage - adjust this according to your auth implementation
-                const token = useSessionToken();
                 
                 const response = await axios.get(
                     `${'http://localhost:8080'}/api/activity-logs`,
                     {
                         headers: {
-                            Authorization: `Bearer ${token}`
+                            Authorization: `Bearer ${useSessionToken()}`
                         }
                     }
                 );
@@ -117,14 +114,11 @@ const ActivityLogs = () => {
 
     const handleDeleteConfirm = async () => {
         try {
-            // Get token from localStorage - adjust this according to your auth implementation
-            const token = useSessionToken();
-            
             await axios.delete(
                 `${'http://localhost:8080'}/api/activity-logs/${deleteConfirm.id}`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${useSessionToken()}`
                     }
                 }
             );
@@ -237,7 +231,7 @@ const ActivityLogs = () => {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-t-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div className="w-16 h-16 border-4 border-t-4 border-[#06AED5] border-t-transparent rounded-full animate-spin mx-auto"></div>
                     <p className="mt-4 text-gray-600">Loading activity logs...</p>
                 </div>
             </div>
@@ -255,7 +249,7 @@ const ActivityLogs = () => {
                     <p className="text-gray-600 mb-6">{error}</p>
                     <button 
                         onClick={() => window.location.reload()}
-                        className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                        className="px-5 py-2.5 bg-[#06AED5] hover:bg-[#0599c2] text-white rounded-lg transition-colors"
                     >
                         Try Again
                     </button>
@@ -302,7 +296,7 @@ const ActivityLogs = () => {
 
             <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-teal-600 mb-4 md:mb-0">Activity Logs</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#06AED5] mb-4 md:mb-0">Activity Logs</h1>
                     
                     <div className="flex flex-col sm:flex-row gap-3">
                         {/* Search Input */}
@@ -312,7 +306,7 @@ const ActivityLogs = () => {
                                 placeholder="Search logs..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
+                                className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-[#06AED5] focus:border-[#06AED5] transition-colors"
                             />
                             <Search size={18} className="absolute left-3 top-3 text-gray-400" />
                         </div>
@@ -323,7 +317,7 @@ const ActivityLogs = () => {
                                 onClick={() => setFilterOpen(!filterOpen)}
                                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
                             >
-                                <Filter size={18} className="text-teal-500" />
+                                <Filter size={18} className="text-[#06AED5]" />
                                 <span>Filters</span>
                                 <ChevronDown size={16} className={`transition-transform text-gray-500 ${filterOpen ? 'rotate-180' : ''}`} />
                             </button>
@@ -331,8 +325,8 @@ const ActivityLogs = () => {
                             {/* Filter Dropdown */}
                             {filterOpen && (
                                 <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
-                                    <div className="p-3 border-b border-gray-200 bg-teal-100">
-                                        <h3 className="font-semibold text-teal-800">Filter Options</h3>
+                                    <div className="p-3 border-b border-gray-200 bg-[#E6F7FB]">
+                                        <h3 className="font-semibold text-[#06AED5]">Filter Options</h3>
                                     </div>
                                     
                                     {/* Role Filters */}
@@ -344,7 +338,7 @@ const ActivityLogs = () => {
                                                     key={role} 
                                                     className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
                                                         filters.roles.includes(role) 
-                                                            ? `bg-teal-100 border-teal-500 shadow-sm` 
+                                                            ? `bg-[#E6F7FB] border-[#06AED5] shadow-sm` 
                                                             : 'bg-gray-100 border-transparent hover:bg-gray-200'
                                                     }`}
                                                     onClick={() => handleRoleFilter(role)}
@@ -364,7 +358,7 @@ const ActivityLogs = () => {
                                                     key={type} 
                                                     className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
                                                         filters.actionTypes.includes(type) 
-                                                            ? `bg-teal-100 border-teal-500 shadow-sm` 
+                                                            ? `bg-[#E6F7FB] border-[#06AED5] shadow-sm` 
                                                             : 'bg-gray-100 border-transparent hover:bg-gray-200'
                                                     }`}
                                                     onClick={() => handleActionTypeFilter(type)}
@@ -383,74 +377,13 @@ const ActivityLogs = () => {
                 {/* Desktop table view (hidden on mobile) */}
                 <div className="hidden sm:block bg-white shadow-xl rounded-xl overflow-hidden">
                     <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-gradient-to-r from-green-500 to-teal-500 text-white">
-                                <th 
-                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
-                                    onClick={() => requestSort('fullName')}
-                                >
-                                    User
-                                    {sortConfig.key === 'fullName' && (
-                                        <span className="ml-1">
-                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                        </span>
-                                    )}
-                                </th>
-                                <th 
-                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
-                                    onClick={() => requestSort('userRole')}
-                                >
-                                    Role
-                                    {sortConfig.key === 'userRole' && (
-                                        <span className="ml-1">
-                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                        </span>
-                                    )}
-                                </th>
-                                <th 
-                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
-                                    onClick={() => requestSort('actionType')}
-                                >
-                                    Action
-                                    {sortConfig.key === 'actionType' && (
-                                        <span className="ml-1">
-                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                        </span>
-                                    )}
-                                </th>
-                                <th 
-                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
-                                    onClick={() => requestSort('entityType')}
-                                >
-                                    Entity
-                                    {sortConfig.key === 'entityType' && (
-                                        <span className="ml-1">
-                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                        </span>
-                                    )}
-                                </th>
-                                <th className="p-4 text-left font-medium text-white">Description</th>
-                                <th 
-                                    className="p-4 text-left font-medium text-white cursor-pointer hover:bg-teal-600/30 transition-colors"
-                                    onClick={() => requestSort('createdAt')}
-                                >
-                                    Timestamp
-                                    {sortConfig.key === 'createdAt' && (
-                                        <span className="ml-1">
-                                            {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                        </span>
-                                    )}
-                                </th>
-                                <th className="p-4 text-center font-medium text-white">Actions</th>
-                            </tr>
-                        </thead>
                         <tbody className="divide-y divide-gray-100">
                             {sortedAndFilteredLogs.length > 0 ? (
                                 sortedAndFilteredLogs.map((log) => (
                                     <tr key={log.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="p-4">
                                             <div className="flex items-center">
-                                                <div className="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center mr-3 shadow-sm">
+                                                <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
                                                     {log.fullName ? log.fullName.charAt(0) : 'U'}
                                                 </div>
                                                 <span className="font-medium">{log.fullName || 'Unknown User'}</span>
@@ -474,7 +407,7 @@ const ActivityLogs = () => {
                                         <td className="p-4">
                                             <button 
                                                 onClick={() => setSelectedLogDetails(log)}
-                                                className="text-teal-600 hover:text-teal-800 font-medium transition-colors"
+                                                className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
                                             >
                                                 Show Details
                                             </button>
@@ -482,7 +415,7 @@ const ActivityLogs = () => {
 
                                         <td className="p-4">
                                             <div className="flex items-center">
-                                                <Clock size={16} className="text-teal-500 mr-2" /> 
+                                                <Clock size={16} className="text-[#06AED5] mr-2" /> 
                                                 <span>{formatDateTime(log.createdAt)}</span>
                                             </div>
                                         </td>
@@ -516,7 +449,7 @@ const ActivityLogs = () => {
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <div className="flex items-center">
-                                            <div className="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center mr-3 shadow-sm">
+                                            <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
                                                 {log.fullName ? log.fullName.charAt(0) : 'U'}
                                             </div>
                                             <div>
@@ -551,7 +484,7 @@ const ActivityLogs = () => {
                                 <p className="text-sm mt-2">
                                     <button 
                                         onClick={() => setSelectedLogDetails(log)}
-                                        className="text-teal-600 hover:text-teal-800 font-medium transition-colors"
+                                        className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
                                     >
                                         Show Details
                                     </button>
@@ -570,6 +503,8 @@ const ActivityLogs = () => {
                     )}
                 </div>
             </div>
+            
+            {/* Log Details Modal */}
             {selectedLogDetails && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
@@ -621,7 +556,7 @@ const ActivityLogs = () => {
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Timestamp</p>
                                 <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center">
-                                    <Clock size={16} className="mr-2 text-teal-500" />
+                                    <Clock size={16} className="mr-2 text-[#06AED5]" />
                                     {formatDateTime(selectedLogDetails.createdAt)}
                                 </p>
                             </div>
@@ -633,4 +568,4 @@ const ActivityLogs = () => {
     );
 };
 
-export default ActivityLogs;
+export default AdminLogs;

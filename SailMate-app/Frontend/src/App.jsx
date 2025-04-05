@@ -23,7 +23,6 @@ import FerryTicketForm from "./pages/FerryTicketForm";
 import FAQ from "./pages/FAQ";
 import ManagerRBA from "./RBAcomponents/ManagerRBA";
 import ManagerLayout from "./layouts/managerLayout";
-import ManagerLogs from "./pages/Manager/managerLogs";
 import ManagerUsers from "./pages/Manager/managerUsers";
 import ManagerComplaints from "./pages/Manager/managerComplaints";
 import ManagerFinance from "./pages/Manager/managerFinance";
@@ -38,6 +37,7 @@ import TravellingRules from "./pages/TravellingRules";
 import Accessibility from "./pages/Accessibility";
 import Sustainability from "./pages/Sustainability";
 import BarcodeViewer from './pages/BarcodeViewer';
+import AdminLogs from "./pages/Admin/adminLogs";
 import "./App.css";
 
 const AnimatedRoutes = () => {
@@ -73,13 +73,13 @@ const AnimatedRoutes = () => {
                         <Route path="/admin" element={<AdminDashboard />} />
                         <Route path="/admin/Stations" element={<AdminStations />} />
                         <Route path="/admin/Announce" element={<AdminAnnounce />} />
+                        <Route path="/admin/Logs" element={<AdminLogs />} />
                         <Route path="/admin/Voyage" element={<AdminVoyage />} />
                     </Route>
                 </Route>
                 <Route element={<ManagerRBA />}>
                     <Route element={<ManagerLayout />}>
                         <Route path="/manager" element={<ManagerDashboard />} />
-                        <Route path="/manager/Logs" element={<ManagerLogs />} />
                         <Route path="/manager/Users" element={<ManagerUsers />} />
                         <Route path="/manager/Complaints" element={<ManagerComplaints />} />
                         <Route path="/manager/Finance" element={<ManagerFinance />} />

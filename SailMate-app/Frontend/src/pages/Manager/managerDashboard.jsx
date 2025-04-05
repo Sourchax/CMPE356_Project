@@ -8,7 +8,6 @@ import {
   TrendingUp, 
   Users, 
   AlertTriangle,
-  Activity,
   Calendar,
   ArrowRight,
   Plus
@@ -25,7 +24,6 @@ const ManagerDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState({
     activeUsers: 42,
     pendingComplaints: 0, // Initialize to 0, will be updated from API
-    totalLogs: 156,
     ticketTypes: 8,
     charts: 2
   });
@@ -84,7 +82,6 @@ const ManagerDashboard = () => {
   const statItems = [
     { label: "Active Users", value: dashboardStats.activeUsers, icon: Users },
     { label: "Pending Complaints", value: dashboardStats.pendingComplaints, icon: AlertTriangle },
-    { label: "Total Logs", value: dashboardStats.totalLogs, icon: Activity },
     { label: "Ticket Types", value: dashboardStats.ticketTypes, icon: DollarSign },
     { label: "Charts", value: dashboardStats.charts, icon: TrendingUp }
   ];
@@ -112,16 +109,6 @@ const ManagerDashboard = () => {
       count: dashboardStats.pendingComplaints,
       loading: loading,
       countLabel: "pending"
-    },
-    {
-      title: "Activity Logs",
-      description: "Track user activity and system events",
-      icon: MapPin,
-      iconColor: "#3B82F6",
-      bgColor: "#EFF6FF",
-      borderColor: "border-blue-200",
-      path: "/manager/Logs",
-      count: dashboardStats.totalLogs
     },
     {
       title: "Ticket Pricing",
@@ -192,9 +179,8 @@ const ManagerDashboard = () => {
                   <p className="text-xs text-gray-500">Current Date</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleDateString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
+                      day: "2-digit",
+                      month: "2-digit",
                       year: "numeric"
                     })}
                   </p>

@@ -261,4 +261,9 @@ public class ActivityLogController {
         response.put("count", count);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getStationCount() {
+        return ResponseEntity.ok(activityLogService.getActivityLogCount());
+    }
 }

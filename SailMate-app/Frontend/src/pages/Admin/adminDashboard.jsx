@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Clock, Bell, ArrowRight, Plus, Calendar, Compass } from 'lucide-react';
+import { MapPin, Clock, Bell, ArrowRight, Plus, Calendar, Compass, Activity } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
 
 const AdminDashboard = () => {
@@ -12,6 +12,8 @@ const AdminDashboard = () => {
   const [stationCount, setStationCount] = useState(0);
   const [voyageCount, setVoyageCount] = useState(0);
   const [announcementCount, setAnnouncementCount] = useState(0);
+  const [logCount, setLogCount] = useState(0);
+  
 
   // Fetch announcement count from API
   useEffect(() => {
@@ -70,6 +72,29 @@ const AdminDashboard = () => {
     fetchVoyageCount();
   }, []);
 
+  // Fetch activity logs count from API
+  useEffect(() => {
+    const fetchLogCount = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/activity-logs/count');
+        if (response.ok) {
+          const count = await response.json();
+          setLogCount(count);
+        } else {
+          console.error('Failed to fetch activity logs count');
+          // Fallback value if API fails
+          setLogCount(156);
+        }
+      } catch (error) {
+        console.error('Error fetching activity logs count:', error);
+        // Fallback value if API fails
+        setLogCount(156);
+      }
+    };
+  
+    fetchLogCount();
+  }, []);
+
   useEffect(() => {
     setLoaded(true);
   }, []);
@@ -113,6 +138,14 @@ const AdminDashboard = () => {
       path: "/admin/Announce",
       count: announcementCount || 0,
       color: "#06AED5"
+    },
+    {
+      title: "Activity Logs",
+      description: "Track user activity and system events",
+      icon: Activity,
+      path: "/admin/Logs",
+      count: logCount || 0,
+      color: "#06AED5"
     }
   ];
 
@@ -120,7 +153,8 @@ const AdminDashboard = () => {
   const stats = [
     { label: "Total Stations", value: stationCount || 0 },
     { label: "Active Voyages", value: voyageCount || 0 },
-    { label: "Current Announcements", value: announcementCount || 0 }
+    { label: "Current Announcements", value: announcementCount || 0 },
+    { label: "System Logs", value: logCount || 0 }
   ];
 
   return (
@@ -148,9 +182,8 @@ const AdminDashboard = () => {
                   <p className="text-xs text-gray-500">Current Date</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleDateString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
+                      day: "2-digit",
+                      month: "2-digit",
                       year: "numeric"
                     })}
                   </p>
@@ -177,7 +210,7 @@ const AdminDashboard = () => {
               <h2 className="text-lg font-semibold text-gray-800">Quick Overview</h2>
               <span className="text-xs text-gray-500">Last updated: Today at {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {stats.map((stat, index) => (
                 <div 
                   key={index} 
@@ -195,6 +228,7 @@ const AdminDashboard = () => {
                       {index === 0 && <MapPin size={18} className="text-[#06AED5]" />}
                       {index === 1 && <Clock size={18} className="text-[#06AED5]" />}
                       {index === 2 && <Bell size={18} className="text-[#06AED5]" />}
+                      {index === 3 && <Activity size={18} className="text-[#06AED5]" />}
                     </div>
                   </div>
                 </div>
@@ -204,7 +238,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Admin Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {cards.map((card, index) => {
             const Icon = card.icon;
             return (
@@ -252,7 +286,7 @@ const AdminDashboard = () => {
           style={{ transitionDelay: '600ms' }}
         >
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { 
                 to: "/admin/Stations", 
@@ -268,6 +302,11 @@ const AdminDashboard = () => {
                 to: "/admin/Announce", 
                 title: "Create Announcement", 
                 description: "Publish a new announcement" 
+              },
+              { 
+                to: "/admin/Logs", 
+                title: "View Recent Logs", 
+                description: "Check recent system activity" 
               }
             ].map((action, index) => (
               <Link 

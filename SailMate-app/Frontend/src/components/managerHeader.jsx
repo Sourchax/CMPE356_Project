@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp, Activity, AlertTriangle, Users } from 'lucide-react';
+import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp, AlertTriangle, Users } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
@@ -18,8 +18,6 @@ const ManagerHeader = () => {
 
         if (path === "/manager") {
             title = "Manager Dashboard | SailMate";
-        } else if (path === "/manager/Logs") {
-            title = "Activity Logs | SailMate";
         } else if (path === "/manager/Users") {
             title = "User Management | SailMate";
         } else if (path === "/manager/Complaints") {
@@ -99,13 +97,6 @@ const ManagerHeader = () => {
                         isActive={isActive('/manager/Users')}
                     />
                     <NavLink
-                        to="/manager/Logs"
-                        icon={Activity}
-                        text="Logs"
-                        className="md:text-xs lg:text-sm xl:text-base"
-                        isActive={isActive('/manager/Logs')}
-                    />
-                    <NavLink
                         to="/manager/Complaints"
                         icon={AlertTriangle}
                         text="Complaints"
@@ -154,39 +145,32 @@ const ManagerHeader = () => {
             >
                 <div className="flex flex-col px-4 py-2 gap-2 bg-[#B2EFB9] rounded-lg">
                     <NavLink
-                        to="/managerLogs"
-                        icon={MapPin}
-                        text="Logs"
-                        mobile={true}
-                        isActive={isActive('/managerLogs')}
-                    />
-                    <NavLink
-                        to="/managerUsers"
+                        to="/manager/Users"
                         icon={Users}
                         text="Users"
                         mobile={true}
-                        isActive={isActive('/managerUsers')}
+                        isActive={isActive('/manager/Users')}
                     />
                     <NavLink
-                        to="/managerComplaints"
-                        icon={Bell}
+                        to="/manager/Complaints"
+                        icon={AlertTriangle}
                         text="Complaints"
                         mobile={true}
-                        isActive={isActive('/managerComplaints')}
+                        isActive={isActive('/manager/Complaints')}
                     />
                     <NavLink
-                        to="/managerFinance"
+                        to="/manager/Finance"
                         icon={DollarSign}
                         text="Finance"
                         mobile={true}
-                        isActive={isActive('/managerFinance')}
+                        isActive={isActive('/manager/Finance')}
                     />
                     <NavLink
-                        to="/managerCharts"
+                        to="/manager/Charts"
                         icon={TrendingUp}
                         text="Charts"
                         mobile={true}
-                        isActive={isActive('/managerCharts')}
+                        isActive={isActive('/manager/Charts')}
                     />
                 </div>
             </div>
