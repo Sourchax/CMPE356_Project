@@ -25,12 +25,18 @@ public class BarcodeTest {
             TicketService service = new TicketService(repo, retrieveRepo);
 
             // 3. Create ticket with barcode
-            service.createTicketWithBarcode(
-                "FTS-001",
-                "Ali Test",
-                2,  // Ensure voyage_id = 1 exists
-                100,
-                Timestamp.valueOf("2025-04-04 14:00:00")
+            String ticketJson = "{\"name\":\"Ali\",\"surname\":\"Test\",\"birthDate\":\"1999-01-01\",\"email\":\"ali@example.com\",\"phoneNo\":\"5551234567\"}";
+
+            service.createTicket(
+                "FTS-001",         // ticket_id
+                1,                 // voyage_id
+                1,                 // passenger_count
+                100,               // total_price
+                "Economy",         // ticket_class
+                "A1",              // selected_seats
+                "user123",         // user_id
+                ticketJson,        // ticket_data
+                Timestamp.valueOf("2025-04-04 14:00:00") // created_at
             );
 
             System.out.println("✅ Ticket with barcode saved to database.");

@@ -5,7 +5,7 @@ import group12.Backend.repository.BarcodeRetrieveRepository;
 import java.sql.Timestamp;
 
 public class TicketService {
-    
+
     private final TicketRepository ticketRepository;
     private final BarcodeRetrieveRepository barcodeRetrieveRepository;
 
@@ -14,19 +14,22 @@ public class TicketService {
         this.barcodeRetrieveRepository = barcodeRetrieveRepository;
     }
 
-    public void createTicketWithBarcode(String ticketCode, String purchaserName, int voyageId, int totalPrice, Timestamp departureTime) throws Exception {
-        String ticketInfo = String.format(
-            "TicketID: %s\nName: %s\nVoyageID: %d\nPrice: %d\nDeparture: %s",
-            ticketCode, purchaserName, voyageId, totalPrice, departureTime.toString()
-        );
-
-        // ✅ Use ticketInfo here
-        byte[] barcode = BarcodeGeneratorService.generateBarcodeBytes(ticketInfo);
-        ticketRepository.saveTicketWithBarcode(ticketCode, purchaserName, voyageId, totalPrice, departureTime, barcode);
+    public void createTicket(
+        String ticketId,
+        int voyageId,
+        int passengerCount,
+        int totalPrice,
+        String ticketClass,
+        String selectedSeats,
+        String userId,
+        String ticketDataJson,
+        Timestamp createdAt
+    ) throws Exception {
+        ticketRepository.saveTicket(ticketId, voyageId, passengerCount, totalPrice, ticketClass, selectedSeats, userId, ticketDataJson, createdAt);
     }
 
-    public byte[] getBarcodeImage(String ticketCode) throws Exception {
-        String ticketInfo = barcodeRetrieveRepository.getTicketDataString(ticketCode);
+    public byte[] getBarcodeImage(String ticketId) throws Exception {
+        String ticketInfo = barcodeRetrieveRepository.getTicketDataString(ticketId);
         return BarcodeGeneratorService.generateBarcodeBytes(ticketInfo);
     }
 }

@@ -12,24 +12,25 @@ public class BarcodeRetrieveRepository {
         this.connection = connection;
     }
 
-    public String getTicketDataString(String ticketCode) throws Exception {
-        String sql = "SELECT TicketID, purchaser_name, voyage_id, total_price FROM tickets WHERE TicketID = ?";
+    public String getTicketDataString(String ticketId) throws Exception {
+        String sql = "SELECT ticket_id, voyage_id, passenger_count, total_price, ticket_class, selected_seats, user_id, ticket_data FROM tickets WHERE ticket_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, ticketCode);
+            stmt.setString(1, ticketId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                String ticketId = rs.getString("TicketID");
-                String purchaser = rs.getString("purchaser_name");
-                int voyageId = rs.getInt("voyage_id");
-                int totalPrice = rs.getInt("total_price");
-
-                // 👇 You can format this however you want
                 return String.format(
-                    "{\"ticketId\":\"%s\",\"passenger\":\"%s\",\"voyageId\":%d,\"price\":%d}",
-                    ticketId, purchaser, voyageId, totalPrice
+                    "ticket_id: %s\nvoyage_id: %d\npassengers: %d\ntotal_price: %d\nclass: %s\nseats: %s\nuser: %s\npassenger_info: %s",
+                    rs.getString("ticket_id"),
+                    rs.getInt("voyage_id"),
+                    rs.getInt("passenger_count"),
+                    rs.getInt("total_price"),
+                    rs.getString("ticket_class"),
+                    rs.getString("selected_seats"),
+                    rs.getString("user_id"),
+                    rs.getString("ticket_data")
                 );
             } else {
-                throw new Exception("Ticket not found: " + ticketCode);
+                throw new Exception("Ticket not found: " + ticketId);
             }
         }
     }
