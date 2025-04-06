@@ -4,15 +4,13 @@
     "\\SailMate-app",
     "\\SailMate-app\\Backend",
     "\\SailMate-app\\Backend\\src",
-    "\\SailMate-app\\Backend\\src\\main",
-    "\\SailMate-app\\Backend\\src\\main\\java",
-    "\\SailMate-app\\Backend\\src\\main\\java\\group12",
-    "\\SailMate-app\\Backend\\src\\main\\java\\group12\\Backend",
-    "\\SailMate-app\\Backend\\src\\main\\java\\group12\\Backend\\service",
     "\\SailMate-app\\Backend\\src\\test",
     "\\SailMate-app\\Backend\\src\\test\\java",
     "\\SailMate-app\\Backend\\src\\test\\java\\group12",
-    "\\SailMate-app\\Backend\\src\\test\\java\\group12\\Backend"
+    "\\SailMate-app\\Backend\\src\\test\\java\\group12\\Backend",
+    "\\SailMate-app\\Frontend",
+    "\\SailMate-app\\Frontend\\src"
   ],
+  "SelectedNode": "\\SailMate-app\\Frontend\\src",
   "PreviewInSolutionExplorer": false
 }
