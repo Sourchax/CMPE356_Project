@@ -5,8 +5,12 @@ import java.util.Map;
 
 import com.clerk.backend_api.Clerk;
 import com.clerk.backend_api.models.components.User;
+import com.clerk.backend_api.models.operations.DeleteUserResponse;
 import com.clerk.backend_api.models.operations.GetUserListRequest;
 import com.clerk.backend_api.models.operations.GetUserListResponse;
+import com.clerk.backend_api.models.operations.UpdateUserMetadataRequestBody;
+import com.clerk.backend_api.models.operations.UpdateUserMetadataResponse;
+
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -28,13 +32,8 @@ public class ClerkUsers {
                 user.put("full_name", a.firstName().get() + " " + a.lastName().get());
                 if (a.emailAddresses().isPresent())
                     user.put("email", a.emailAddresses().get().getFirst().emailAddress());
-                if (a.id().isPresent())
-                    all_users.put(a.id().get(), user);
-                if (a.imageUrl().isPresent())
-                    all_users.put("image", a.imageUrl().get());
                 if(a.publicMetadata().isPresent()){
                     Object metadata = a.publicMetadata().get();
-                    System.out.println(metadata);
                     if (metadata instanceof Map) {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> metadataMap = (Map<String, Object>) metadata;
@@ -44,6 +43,10 @@ public class ClerkUsers {
 
                     }
                 }
+                if (a.imageUrl().isPresent())
+                    user.put("image", a.imageUrl().get());
+                if (a.id().isPresent())
+                    all_users.put(a.id().get(), user);
             }
             return all_users;
         } catch (Exception e) {
@@ -53,4 +56,39 @@ public class ClerkUsers {
         }
     }
 
+    public static void updateUserRole(String userId, String newRole) throws Exception{
+        Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
+        Clerk sdk = Clerk.builder()
+            .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
+            .build();
+
+         UpdateUserMetadataResponse res = sdk.users().updateMetadata()
+                 .userId(userId)
+                 .requestBody(UpdateUserMetadataRequestBody.builder().publicMetadata(Map.of("role", newRole)).build())
+                 .call();
+        if (res.user().isEmpty()) {
+            throw new Exception("User not found");
+        }
+    }
+
+    public static void deleteUser(String userId) throws Exception {
+        Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
+        Clerk sdk = Clerk.builder()
+            .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
+            .build();
+        
+        try {
+            DeleteUserResponse res = sdk.users().delete()
+                .userId(userId)
+                .call();
+            
+            // Success case - res.deletedObject() should be present
+            if (!res.deletedObject().isPresent()) {
+                throw new Exception("User deletion did not return expected response");
+            }
+            
+        } catch (Exception e) {
+            throw new Exception("Error deleting user: " + e.getMessage());
+        }
+    }
 }

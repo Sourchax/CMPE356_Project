@@ -8,7 +8,6 @@ const CustomSignUp = () => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    console.log("Clerk Loaded:", clerk.loaded); // Debugging
     setLoaded(clerk.loaded);
   }, [clerk.loaded]);
 
@@ -36,7 +35,6 @@ const CustomSignUp = () => {
           path="/sign-up"
           routing="path"
           signInUrl="/sign-in"
-          redirectUrl="/verify-email"
         />
 
       </div>

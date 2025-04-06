@@ -22,12 +22,13 @@ const ManagerDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loaded, setLoaded] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
-    activeUsers: 42,
+    activeUsers: 0, // Initialize to 0, will be updated from API
     pendingComplaints: 0, // Initialize to 0, will be updated from API
     ticketTypes: 8,
     charts: 2
   });
   const [loading, setLoading] = useState(true);
+  const [userCountLoading, setUserCountLoading] = useState(true);
 
   // Fetch pending complaints count
   useEffect(() => {
@@ -56,6 +57,35 @@ const ManagerDashboard = () => {
     fetchPendingComplaints();
   }, []);
 
+  // Fetch user count
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        setUserCountLoading(true);
+        const response = await axios.get('http://localhost:8080/api/users/users-count', {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        // Update stats with the user count from API
+        if (response.data && response.data.count !== undefined) {
+          setDashboardStats(prevStats => ({
+            ...prevStats,
+            activeUsers: response.data.count
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching user count:", error);
+        // In case of error, keep the default value
+      } finally {
+        setUserCountLoading(false);
+      }
+    };
+
+    fetchUserCount();
+  }, []);
+
   // Set loaded to true when component mounts
   useEffect(() => {
     setLoaded(true);
@@ -80,8 +110,18 @@ const ManagerDashboard = () => {
 
   // Summary stats array
   const statItems = [
-    { label: "Active Users", value: dashboardStats.activeUsers, icon: Users },
-    { label: "Pending Complaints", value: dashboardStats.pendingComplaints, icon: AlertTriangle },
+    { 
+      label: "Active Users", 
+      value: dashboardStats.activeUsers, 
+      icon: Users,
+      loading: userCountLoading 
+    },
+    { 
+      label: "Pending Complaints", 
+      value: dashboardStats.pendingComplaints, 
+      icon: AlertTriangle,
+      loading: loading 
+    },
     { label: "Ticket Types", value: dashboardStats.ticketTypes, icon: DollarSign },
     { label: "Charts", value: dashboardStats.charts, icon: TrendingUp }
   ];
@@ -96,7 +136,8 @@ const ManagerDashboard = () => {
       bgColor: "#F5F3FF",
       borderColor: "border-purple-200",
       path: "/manager/Users",
-      count: dashboardStats.activeUsers
+      count: dashboardStats.activeUsers,
+      loading: userCountLoading
     },
     {
       title: "Complaint Center",
@@ -221,7 +262,7 @@ const ManagerDashboard = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="text-xs text-gray-500">{stat.label}</p>
-                        {index === 1 && loading ? (
+                        {stat.loading ? (
                           <div className="h-6 w-6 mt-1 rounded-full border-2 border-gray-300 border-t-green-500 animate-spin"></div>
                         ) : (
                           <p className="text-xl font-bold text-gray-800">{stat.value}</p>

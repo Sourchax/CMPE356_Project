@@ -16,7 +16,7 @@ const AdminLogs = () => {
     const [filters, setFilters] = useState({
         roles: [],
         actionTypes: [],
-        entityTypes: []  // Add this new array
+        entityTypes: []
     });
 
     // Available roles for filtering
@@ -280,7 +280,7 @@ const AdminLogs = () => {
         <div className="min-h-screen bg-gray-50">
             {/* Delete Confirmation Modal */}
             {deleteConfirm.show && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full mx-4">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
@@ -342,7 +342,7 @@ const AdminLogs = () => {
                             
                             {/* Filter Dropdown */}
                             {filterOpen && (
-                                <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
+                                <div className="absolute right-0 mt-2 w-72 sm:w-64 md:w-72 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
                                     <div className="p-3 border-b border-gray-200 bg-[#E6F7FB]">
                                         <h3 className="font-semibold text-[#06AED5]">Filter Options</h3>
                                     </div>
@@ -367,24 +367,24 @@ const AdminLogs = () => {
                                         </div>
                                     </div>
                                     {/* Entity Type Filters */}
-                                        <div className="p-3 border-t border-gray-200">
-                                            <h4 className="font-medium text-gray-700 mb-2">Entity Types</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {entityTypes.map(type => (
-                                                    <label 
-                                                        key={type} 
-                                                        className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
-                                                            filters.entityTypes.includes(type) 
-                                                                ? `bg-[#E6F7FB] border-[#06AED5] shadow-sm` 
-                                                                : 'bg-gray-100 border-transparent hover:bg-gray-200'
-                                                        }`}
-                                                        onClick={() => handleEntityTypeFilter(type)}
-                                                    >
-                                                        {type}
-                                                    </label>
-                                                ))}
-                                            </div>
+                                    <div className="p-3 border-t border-gray-200">
+                                        <h4 className="font-medium text-gray-700 mb-2">Entity Types</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {entityTypes.map(type => (
+                                                <label 
+                                                    key={type} 
+                                                    className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-2 transition-all ${
+                                                        filters.entityTypes.includes(type) 
+                                                            ? `bg-[#E6F7FB] border-[#06AED5] shadow-sm` 
+                                                            : 'bg-gray-100 border-transparent hover:bg-gray-200'
+                                                    }`}
+                                                    onClick={() => handleEntityTypeFilter(type)}
+                                                >
+                                                    {type}
+                                                </label>
+                                            ))}
                                         </div>
+                                    </div>
                                     
                                     {/* Action Type Filters */}
                                     <div className="p-3">
@@ -413,122 +413,131 @@ const AdminLogs = () => {
 
                 {/* Desktop table view (hidden on mobile) */}
                 <div className="hidden sm:block bg-white shadow-xl rounded-xl overflow-hidden">
-                    <table className="w-full border-collapse">
-                        <tbody className="divide-y divide-gray-100">
-                            {sortedAndFilteredLogs.length > 0 ? (
-                                sortedAndFilteredLogs.map((log) => (
-                                    <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="p-4">
-                                            <div className="flex items-center">
-                                                <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
-                                                    {log.fullName ? log.fullName.charAt(0) : 'U'}
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead className="bg-gradient-to-r from-[#E6F7FB] to-[#F5FBFD] text-[#06AED5] border-b border-gray-200">
+                                <tr>
+                                    <th className="px-4 py-3 text-left font-medium">User</th>
+                                    <th className="px-4 py-3 text-left font-medium">Role</th>
+                                    <th className="px-4 py-3 text-left font-medium">Action</th>
+                                    <th className="px-4 py-3 text-left font-medium">Entity</th>
+                                    <th className="px-4 py-3 text-left font-medium">Details</th>
+                                    <th className="px-4 py-3 text-left font-medium">Timestamp</th>
+                                    <th className="px-4 py-3 text-center font-medium w-16">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {sortedAndFilteredLogs.length > 0 ? (
+                                    sortedAndFilteredLogs.map((log) => (
+                                        <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="p-4">
+                                                <div className="flex items-center">
+                                                    <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
+                                                        {log.fullName ? log.fullName.charAt(0) : 'U'}
+                                                    </div>
+                                                    <span className="font-medium">{log.fullName || 'Unknown User'}</span>
                                                 </div>
-                                                <span className="font-medium">{log.fullName || 'Unknown User'}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
-                                                {log.userRole || 'user'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
-                                                {log.actionType || 'UNKNOWN'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
-                                                {log.entityType || 'UNKNOWN'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <button 
-                                                onClick={() => setSelectedLogDetails(log)}
-                                                className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
-                                            >
-                                                Show Details
-                                            </button>
-                                        </td>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
+                                                    {log.userRole || 'user'}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
+                                                    {log.actionType || 'UNKNOWN'}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
+                                                    {log.entityType || 'UNKNOWN'}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <button 
+                                                    onClick={() => setSelectedLogDetails(log)}
+                                                    className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
+                                                >
+                                                    Show Details
+                                                </button>
+                                            </td>
 
-                                        <td className="p-4">
-                                            <div className="flex items-center">
-                                                <Clock size={16} className="text-[#06AED5] mr-2" /> 
-                                                <span>{formatDateTime(log.createdAt)}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            <button 
-                                                onClick={() => handleDeleteRequest(log.id)} 
-                                                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                                                aria-label="Delete log"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            <td className="p-4">
+                                                <div className="flex items-center">
+                                                    <Clock size={16} className="text-[#06AED5] mr-2" /> 
+                                                    <span>{formatDateTime(log.createdAt)}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-center">
+                                                <button 
+                                                    onClick={() => handleDeleteRequest(log.id)} 
+                                                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                                                    aria-label="Delete log"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" className="p-8 text-center text-gray-500">
+                                            No logs found matching your criteria.
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="7" className="p-8 text-center text-gray-500">
-                                        No logs found matching your criteria.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Mobile card view */}
                 <div className="sm:hidden space-y-4">
                     {sortedAndFilteredLogs.length > 0 ? (
                         sortedAndFilteredLogs.map(log => (
-                            <div key={log.id} className="bg-white p-5 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div className="flex items-center">
-                                            <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
-                                                {log.fullName ? log.fullName.charAt(0) : 'U'}
-                                            </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-800">{log.fullName || 'Unknown User'}</span>
-                                                <div className="mt-1">
-                                                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
-                                                        {log.userRole || 'user'}
-                                                    </span>
-                                                </div>
+                            <div key={log.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex items-center">
+                                        <div className="w-8 h-8 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-2 shadow-sm">
+                                            {log.fullName ? log.fullName.charAt(0) : 'U'}
+                                        </div>
+                                        <div>
+                                            <span className="font-semibold text-gray-800 text-sm">{log.fullName || 'Unknown User'}</span>
+                                            <div className="mt-1">
+                                                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
+                                                    {log.userRole || 'user'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     <button 
                                         onClick={() => handleDeleteRequest(log.id)} 
-                                        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                                        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0 ml-2"
                                         aria-label="Delete log"
                                     >
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
                                 
-                                <div className="flex gap-2 my-3">
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
+                                <div className="flex flex-wrap gap-2 my-2">
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
                                         {log.actionType || 'UNKNOWN'}
                                     </span>
                                     
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
                                         {log.entityType || 'UNKNOWN'}
                                     </span>
                                 </div>
                                 
-                                <p className="text-sm mt-2">
-                                    <button 
-                                        onClick={() => setSelectedLogDetails(log)}
-                                        className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
-                                    >
-                                        Show Details
-                                    </button>
-                                </p>
+                                <button 
+                                    onClick={() => setSelectedLogDetails(log)}
+                                    className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors text-sm"
+                                >
+                                    Show Details
+                                </button>
                                 
-                                <div className="flex items-center justify-end text-xs text-gray-500 mt-4 pt-3 border-t border-gray-100">
-                                    <Clock size={14} className="mr-1" />
+                                <div className="flex items-center justify-end text-xs text-gray-500 mt-3 pt-2 border-t border-gray-100">
+                                    <Clock size={12} className="mr-1" />
                                     {formatDateTime(log.createdAt)}
                                 </div>
                             </div>
@@ -543,8 +552,8 @@ const AdminLogs = () => {
             
             {/* Log Details Modal */}
             {selectedLogDetails && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl p-5 max-w-md w-full mx-auto">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-semibold text-gray-900">Log Details</h3>
                             <button 
@@ -555,10 +564,10 @@ const AdminLogs = () => {
                             </button>
                         </div>
                         
-                        <div className="space-y-3">
+                        <div className="space-y-3 max-h-[70vh] overflow-y-auto">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Full Description</p>
-                                <p className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <p className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm">
                                     {selectedLogDetails.description}
                                 </p>
                             </div>
@@ -566,25 +575,25 @@ const AdminLogs = () => {
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">User</p>
-                                    <p className="bg-gray-50 p-2 rounded-lg border border-gray-200">
+                                    <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 text-sm truncate">
                                         {selectedLogDetails.fullName || 'Unknown'}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Role</p>
-                                    <p className={`${getRoleBadgeStyle(selectedLogDetails.userRole)} p-2 rounded-lg text-center`}>
+                                    <p className={`${getRoleBadgeStyle(selectedLogDetails.userRole)} p-2 rounded-lg text-center text-sm`}>
                                         {selectedLogDetails.userRole || 'user'}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Action</p>
-                                    <p className={`${getActionTypeBadgeStyle(selectedLogDetails.actionType)} p-2 rounded-lg text-center`}>
+                                    <p className={`${getActionTypeBadgeStyle(selectedLogDetails.actionType)} p-2 rounded-lg text-center text-sm`}>
                                         {selectedLogDetails.actionType || 'UNKNOWN'}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Entity</p>
-                                    <p className={`${getEntityTypeBadgeStyle(selectedLogDetails.entityType)} p-2 rounded-lg text-center`}>
+                                    <p className={`${getEntityTypeBadgeStyle(selectedLogDetails.entityType)} p-2 rounded-lg text-center text-sm`}>
                                         {selectedLogDetails.entityType || 'UNKNOWN'}
                                     </p>
                                 </div>
@@ -592,11 +601,20 @@ const AdminLogs = () => {
                             
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Timestamp</p>
-                                <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center">
+                                <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center text-sm">
                                     <Clock size={16} className="mr-2 text-[#06AED5]" />
                                     {formatDateTime(selectedLogDetails.createdAt)}
                                 </p>
                             </div>
+                        </div>
+                        
+                        <div className="mt-4 pt-3 border-t border-gray-200 flex justify-end">
+                            <button
+                                onClick={() => setSelectedLogDetails(null)}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium"
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>

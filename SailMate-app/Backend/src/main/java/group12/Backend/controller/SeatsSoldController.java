@@ -129,15 +129,11 @@ public class SeatsSoldController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
             seatsSoldService.updateSeatCounts(voyageId, ticketData, true);
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Seat counts updated successfully");
             return ResponseEntity.ok(response);
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
-        }
     }
 
     @PostMapping("/calculate-seats")

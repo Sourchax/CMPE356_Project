@@ -7,8 +7,12 @@ import group12.Backend.dto.ComplaintDTO;
 import group12.Backend.entity.Complaint;
 import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.ComplaintService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +33,9 @@ public class ComplaintController {
     
     private final ComplaintService complaintService;
     private final ActivityLogService activityLogService;
+
+    @Autowired
+    private JavaMailSender emailSender;
     
     public ComplaintController(ComplaintService complaintService, ActivityLogService activityLogService) {
         this.complaintService = complaintService;
@@ -98,16 +105,42 @@ public class ComplaintController {
     @PutMapping("/{id}")
     public ResponseEntity<ComplaintDTO> updateComplaintStatus(
             @PathVariable Integer id, 
-            @RequestBody ComplaintDTO.ComplaintUpdateRequest request, @RequestHeader("Authorization") String auth) throws Exception {
-                Claims claims = Authentication.getClaims(auth);
-                if (claims == null)
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-                String role = (String) claims.get("meta_data", HashMap.class).get("role");
-                if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
-                    // Get original complaint for logging
-                    ComplaintDTO originalComplaint = complaintService.getComplaintById(id);
-                    
-                    ComplaintDTO updatedComplaint = complaintService.updateComplaintStatus(id, request);
+            @RequestBody ComplaintDTO.ComplaintUpdateRequest request, 
+            @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+            // Get original complaint for logging
+            ComplaintDTO originalComplaint = complaintService.getComplaintById(id);
+            
+            ComplaintDTO updatedComplaint = complaintService.updateComplaintStatus(id, request);
+            
+            try {
+                // Send email notification
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setFrom("sailmatesup@gmail.com");
+                message.setTo(updatedComplaint.getEmail());
+                message.setSubject("Response to Your SailMate Complaint #" + id);
+                message.setText("Dear " + updatedComplaint.getSender() + ",\n\n" +
+                        "Thank you for bringing your concerns to our attention. We've reviewed your complaint regarding:\n\n" +
+                        "\"" + originalComplaint.getSubject() + "\"\n" +
+                        "\"" + originalComplaint.getMessage() + "\"\n\n" +
+                        "Our response:\n" +
+                        "\"" + updatedComplaint.getReply() + "\"\n\n" +
+                        "We value your feedback as it helps us improve our services. If you have any further questions or comments, please don't hesitate to contact us.\n\n" +
+                        "Smooth sailing,\n" +
+                        "The SailMate Support Team");
+                
+                emailSender.send(message);
+                System.out.println("Email sent successfully to: " + updatedComplaint.getEmail());
+            } catch (Exception e) {
+                // Log the error but don't fail the request
+                System.err.println("Failed to send email: " + e.getMessage());
+                e.printStackTrace();
+            }
+
                     
                     // Log the activity
                     ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();

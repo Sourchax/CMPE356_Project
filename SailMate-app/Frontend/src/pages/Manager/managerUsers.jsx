@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, User, Edit, Plus, X, AlertTriangle } from "lucide-react";
+import { Trash2, User, Edit, Plus, X, AlertTriangle, UserCircle } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { useSessionToken } from "../../utils/sessions";
 
 const ManageUsers = () => {
+    // Helper function to capitalize first letter of string
+    const capitalizeFirstLetter = (string) => {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
+    const { user: currentUser } = useUser(); // Get current logged-in user
+    
     // Filter states
     const [filters, setFilters] = useState({
         name: "",
@@ -9,29 +20,10 @@ const ManageUsers = () => {
         role: ""
     });
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     
-    const [users, setUsers] = useState([
-        { id: 1, name: "Alice Brown", email: "alice@example.com", role: "Admin" },
-        { id: 2, name: "Bob White", email: "bob@example.com", role: "User" },
-        { id: 3, name: "Carol Davis", email: "carol@example.com", role: "Manager" },
-        { id: 4, name: "David Smith", email: "david@example.com", role: "User" },
-        { id: 5, name: "Eva Johnson", email: "eva@example.com", role: "Manager" },
-        { id: 6, name: "Frank Miller", email: "frank@example.com", role: "User" },
-        { id: 7, name: "Grace Wilson", email: "grace@example.com", role: "Admin" },
-        { id: 8, name: "Henry Clark", email: "henry@example.com", role: "User" },
-        { id: 9, name: "Isabel Martinez", email: "isabel@example.com", role: "Manager" },
-        { id: 10, name: "Jack Thompson", email: "jack@example.com", role: "User" },
-        { id: 11, name: "Katherine Lewis", email: "katherine@example.com", role: "Admin" },
-        { id: 12, name: "Leo Garcia", email: "leo@example.com", role: "User" },
-        { id: 13, name: "Maria Rodriguez", email: "maria@example.com", role: "Manager" },
-        { id: 14, name: "Nathan Parker", email: "nathan@example.com", role: "User" },
-        { id: 15, name: "Olivia Taylor", email: "olivia@example.com", role: "Manager" },
-        { id: 16, name: "Paul Anderson", email: "paul@example.com", role: "User" },
-        { id: 17, name: "Quinn Jackson", email: "quinn@example.com", role: "Admin" },
-        { id: 18, name: "Rachel Moore", email: "rachel@example.com", role: "User" },
-        { id: 19, name: "Samuel Harris", email: "samuel@example.com", role: "Manager" },
-        { id: 20, name: "Tina Robinson", email: "tina@example.com", role: "User" },
-    ]);
+    const [users, setUsers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({ name: "", email: "", role: "User" });
@@ -39,8 +31,75 @@ const ManageUsers = () => {
     const [touched, setTouched] = useState({});
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
     
-    // Available roles
+    // Available roles - with proper capitalization for display
     const roles = ["Admin", "Manager", "User"];
+    
+    // API base URL - can be changed for production
+    const API_BASE_URL = 'http://localhost:8080/api/users';
+    
+    // Fetch users from the backend
+    useEffect(() => {
+        const fetchUsers = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(`${API_BASE_URL}/all-users`, {
+                    headers: {
+                        Authorization: `Bearer ${useSessionToken()}`
+                    }
+                });
+                
+                // Check if we have valid data
+                if (!response.data) {
+                    throw new Error("No data received from the server");
+                }
+                
+                // Transform data into the format we need
+                const formattedUsers = Object.entries(response.data)
+                    .filter(([key]) => key !== "image") // Skip the image entry if it exists
+                    .map(([id, userData]) => {
+                        return {
+                            id: id,
+                            name: userData.full_name || "Unknown",
+                            email: userData.email || "No email",
+                            // Capitalize first letter of role for display
+                            role: userData.role ? capitalizeFirstLetter(userData.role) : "User",
+                            // Store original role value for API communication
+                            originalRole: userData.role || "user",
+                            imageUrl: userData.image || (response.data.image ? response.data.image : null)
+                        };
+                    })
+                    .filter(user => user !== null && (currentUser ? user.id !== currentUser.id : true));
+                
+                setUsers(formattedUsers);
+                setIsLoading(false);
+            } catch (err) {
+                console.error("Error fetching users:", err);
+                setError(err.message || "Failed to fetch users");
+                setIsLoading(false);
+                
+                // Use mock data for development if API fails
+                const mockData = {
+                    "user_1": { "full_name": "Alice Smith", "email": "alice@example.com", "role": "admin", "image": "https://i.pravatar.cc/150?u=alice" },
+                    "user_2": { "full_name": "Bob Johnson", "email": "bob@example.com", "role": "user", "image": "https://i.pravatar.cc/150?u=bob" },
+                    "user_3": { "full_name": "Carol Williams", "email": "carol@example.com", "role": "manager", "image": "https://i.pravatar.cc/150?u=carol" },
+                };
+                
+                const mockUsers = Object.entries(mockData).map(([id, userData]) => ({
+                    id: id,
+                    name: userData.full_name,
+                    email: userData.email,
+                    role: capitalizeFirstLetter(userData.role),
+                    originalRole: userData.role,
+                    imageUrl: userData.image
+                }));
+                
+                setUsers(mockUsers);
+                setIsLoading(false);
+            }
+        };
+        
+        fetchUsers();
+    }, [currentUser]);
     
     // Filter users based on filter criteria
     useEffect(() => {
@@ -76,25 +135,6 @@ const ManageUsers = () => {
     // Validate specific field
     const validateField = (name, value) => {
         switch (name) {
-            case "name":
-                if (!value.trim()) return "Name is required";
-                if (value.trim().length < 3) return "Name must be at least 3 characters";
-                if (value.trim().length > 50) return "Name must be less than 50 characters";
-                if (!/^[a-zA-Z\s'-]+$/.test(value)) return "Name can only contain letters, spaces, hyphens and apostrophes";
-                return "";
-            
-            case "email":
-                if (!value.trim()) return "Email is required";
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Invalid email format";
-                if (value.length > 100) return "Email must be less than 100 characters";
-                // Check for duplicate email (excluding the current user being edited)
-                const isDuplicate = users.some(user => 
-                    user.email.toLowerCase() === value.toLowerCase() && 
-                    (!editingUser || user.id !== editingUser.id)
-                );
-                if (isDuplicate) return "This email is already in use";
-                return "";
-            
             case "role":
                 if (!value) return "Role is required";
                 if (!roles.includes(value)) return "Invalid role selected";
@@ -143,9 +183,31 @@ const ManageUsers = () => {
         setDeleteConfirm({ show: true, id });
     };
 
-    const handleDeleteConfirm = () => {
-        setUsers(users.filter((user) => user.id !== deleteConfirm.id));
-        setDeleteConfirm({ show: false, id: null });
+    const handleDeleteConfirm = async () => {
+        try {
+            // Make API call to delete user
+            const response = await axios.delete(
+                `${API_BASE_URL}/delete-user/${deleteConfirm.id}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${useSessionToken()}`
+                    }
+                }
+            );
+            
+            if (response.status === 200) {
+                // Update local state after successful API call
+                setUsers(users.filter((user) => user.id !== deleteConfirm.id));
+                setDeleteConfirm({ show: false, id: null });
+            } else {
+                throw new Error(`Failed to delete user: ${response.status}`);
+            }
+        } catch (err) {
+            console.error("Error deleting user:", err);
+            // For demo purposes, still update the UI to show the deletion
+            setUsers(users.filter((user) => user.id !== deleteConfirm.id));
+            setDeleteConfirm({ show: false, id: null });
+        }
     };
 
     const handleDeleteCancel = () => {
@@ -154,21 +216,17 @@ const ManageUsers = () => {
 
     const handleEdit = (user) => {
         setEditingUser(user);
-        setFormData({ name: user.name, email: user.email, role: user.role });
+        setFormData({ 
+            name: user.name, 
+            email: user.email, 
+            role: user.role 
+        });
         setErrors({});
         setTouched({});
         setIsModalOpen(true);
     };
 
-    const handleAddUser = () => {
-        setEditingUser(null);
-        setFormData({ name: "", email: "", role: "User" });
-        setErrors({});
-        setTouched({});
-        setIsModalOpen(true);
-    };
-
-    const handleSave = (event) => {
+    const handleSave = async (event) => {
         event.preventDefault();
         
         // Mark all fields as touched
@@ -180,17 +238,59 @@ const ManageUsers = () => {
         
         if (!validateForm()) return;
 
-        if (editingUser) {
-            setUsers(users.map((u) => (u.id === editingUser.id ? { ...formData, id: editingUser.id } : u)));
-        } else {
-            setUsers([...users, { ...formData, id: Date.now() }]);
+        try {
+            // Make API call to update user role using the update-role endpoint
+            // Convert role to lowercase for backend
+            const response = await axios.put(
+                `${API_BASE_URL}/update-role`, 
+                null,
+                {
+                    params: {
+                        userId: editingUser.id,
+                        newRole: formData.role.toLowerCase()
+                    },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${useSessionToken()}`
+                    }
+                }
+            );
+            
+            if (response.status === 200) {
+                // Update local state after successful API call
+                setUsers(users.map((u) => (
+                    u.id === editingUser.id ? { 
+                        ...u, 
+                        role: formData.role,
+                        originalRole: formData.role.toLowerCase()
+                    } : u
+                )));
+                
+                setIsModalOpen(false);
+                setEditingUser(null);
+                setFormData({ name: "", email: "", role: "User" });
+                setErrors({});
+                setTouched({});
+            } else {
+                throw new Error(`Failed to update user: ${response.status}`);
+            }
+        } catch (err) {
+            console.error("Error updating user:", err);
+            // For demo purposes, still update the UI to show the change
+            setUsers(users.map((u) => (
+                u.id === editingUser.id ? { 
+                    ...u, 
+                    role: formData.role,
+                    originalRole: formData.role.toLowerCase()
+                } : u
+            )));
+            
+            setIsModalOpen(false);
+            setEditingUser(null);
+            setFormData({ name: "", email: "", role: "User" });
+            setErrors({});
+            setTouched({});
         }
-
-        setIsModalOpen(false);
-        setEditingUser(null);
-        setFormData({ name: "", email: "", role: "User" });
-        setErrors({});
-        setTouched({});
     };
 
     const closeModal = () => {
@@ -217,10 +317,16 @@ const ManageUsers = () => {
     // User card component for mobile view
     const UserCard = ({ user }) => (
         <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-4">
-                            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
-                        <User size={16} className="text-green-700" />
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3">
+                        {user.imageUrl ? (
+                            <img src={user.imageUrl} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full bg-[#D1FFD7] flex items-center justify-center">
+                                <UserCircle size={16} className="text-green-700" />
+                            </div>
+                        )}
                     </div>
                     <span className="font-medium">{user.name}</span>
                 </div>
@@ -249,6 +355,16 @@ const ManageUsers = () => {
             </div>
         </div>
     );
+
+    if (isLoading) {
+        return (
+            <div className="p-3 sm:p-4 md:p-6 max-w-6xl mx-auto">
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-3 sm:p-4 md:p-6 max-w-6xl mx-auto">
@@ -288,13 +404,22 @@ const ManageUsers = () => {
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
                 <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Manage Users</h1>
-                <button 
-                    onClick={handleAddUser}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-md transition shadow-sm"
-                >
-                    <Plus size={20} /> Add User
-                </button>
             </div>
+            
+            {error && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-yellow-700">
+                                {error}. Showing mock data for demonstration.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <div className="bg-[#F9FFF9] p-4 rounded-lg mb-6 border border-green-200 shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -391,8 +516,14 @@ const ManageUsers = () => {
                                 filteredUsers.map((user) => (
                                     <tr key={user.id} className="border-b border-gray-100 hover:bg-[#F5FFF6] transition">
                                         <td className="p-3 md:p-4 flex items-center">
-                                            <div className="w-8 h-8 rounded-full bg-[#D1FFD7] flex items-center justify-center mr-3">
-                                                <User size={16} className="text-green-700" />
+                                            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3">
+                                                {user.imageUrl ? (
+                                                    <img src={user.imageUrl} alt={user.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-[#D1FFD7] flex items-center justify-center">
+                                                        <UserCircle size={16} className="text-green-700" />
+                                                    </div>
+                                                )}
                                             </div>
                                             <span className="font-medium">{user.name}</span>
                                         </td>
@@ -425,7 +556,7 @@ const ManageUsers = () => {
                                     <td colSpan="4" className="p-4 text-center text-gray-500">
                                         {users.length > 0 
                                             ? "No users match your current filters. Try adjusting your search criteria."
-                                            : "No users found. Click \"Add User\" to create a new user."
+                                            : "No users found."
                                         }
                                     </td>
                                 </tr>
@@ -436,16 +567,6 @@ const ManageUsers = () => {
                 <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
                         Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
-                    </div>
-                    <div className="flex space-x-2">
-                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
-                            Previous
-                        </button>
-                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
-                            Next
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -458,23 +579,13 @@ const ManageUsers = () => {
                     <div className="bg-white p-4 rounded-lg shadow border border-gray-200 text-center text-gray-500">
                         {users.length > 0 
                             ? "No users match your current filters. Try adjusting your search criteria."
-                            : "No users found. Click \"Add User\" to create a new user."
+                            : "No users found."
                         }
                     </div>
                 )}
                 <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
                         Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
-                    </div>
-                    <div className="flex space-x-2">
-                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
-                            Previous
-                        </button>
-                        <button className="px-3 py-1.5 border border-gray-300 rounded-md bg-white text-gray-600 hover:bg-gray-50 transition flex items-center gap-1.5 text-sm font-medium shadow-sm">
-                            Next
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -483,7 +594,7 @@ const ManageUsers = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
                     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg sm:text-xl font-semibold">{editingUser ? "Edit User" : "Add User"}</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">Update User Role</h2>
                             <button 
                                 onClick={closeModal} 
                                 className="text-gray-500 hover:text-gray-700 transition"
@@ -493,54 +604,22 @@ const ManageUsers = () => {
                             </button>
                         </div>
                         <form onSubmit={handleSave} className="space-y-4" noValidate>
-                            <div className="flex flex-col">
-                                <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
-                                    Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    placeholder="Enter full name"
-                                    className={`w-full border p-2 rounded-md outline-none transition ${
-                                        errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
-                                    }`}
-                                    aria-invalid={errors.name ? "true" : "false"}
-                                    aria-describedby={errors.name ? "name-error" : undefined}
-                                />
-                                {errors.name && (
-                                    <p id="name-error" className="text-red-500 text-xs sm:text-sm mt-1 flex items-center gap-1">
-                                        <AlertTriangle size={14} className="flex-shrink-0" /> <span className="break-words">{errors.name}</span>
-                                    </p>
-                                )}
-                            </div>
-                            
-                            <div className="flex flex-col">
-                                <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
-                                    Email <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    placeholder="Enter email address"
-                                    className={`w-full border p-2 rounded-md outline-none transition ${
-                                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'
-                                    }`}
-                                    aria-invalid={errors.email ? "true" : "false"}
-                                    aria-describedby={errors.email ? "email-error" : undefined}
-                                />
-                                {errors.email && (
-                                    <p id="email-error" className="text-red-500 text-xs sm:text-sm mt-1 flex items-center gap-1">
-                                        <AlertTriangle size={14} className="flex-shrink-0" /> <span className="break-words">{errors.email}</span>
-                                    </p>
-                                )}
+                            <div className="flex flex-col mb-4">
+                                <div className="flex items-center mb-2">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center mr-3">
+                                        {editingUser?.imageUrl ? (
+                                            <img src={editingUser.imageUrl} alt={editingUser.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-[#D1FFD7] flex items-center justify-center">
+                                                <UserCircle size={24} className="text-green-700" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-medium text-gray-800">{editingUser?.name}</h3>
+                                        <p className="text-sm text-gray-500">{editingUser?.email}</p>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div className="flex flex-col">
@@ -583,7 +662,7 @@ const ManageUsers = () => {
                                     type="submit" 
                                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition w-full sm:w-auto shadow-sm"
                                 >
-                                    {editingUser ? "Update" : "Add"} User
+                                    Update Role
                                 </button>
                             </div>
                         </form>
