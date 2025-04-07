@@ -1,7 +1,8 @@
 package group12.Backend.controller;
 
-import com.clerk.backend_api.Clerk;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper;
+
 import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.TicketDTO;
 import group12.Backend.service.ActivityLogService;
@@ -11,9 +12,9 @@ import group12.Backend.entity.Voyage;
 import group12.Backend.util.Authentication;
 import group12.Backend.util.ClerkUsers;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -25,11 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 @RestController
 @RequestMapping("/api/tickets")
 @CrossOrigin(origins = "*")
 public class TicketController {
-
+    
     private final TicketService ticketService;
     private final VoyageService voyageService;
     private final ActivityLogService activityLogService;
@@ -104,7 +108,6 @@ public class TicketController {
             }
         }
         
-        
         return ResponseEntity.ok(tickets);
     }
 
@@ -144,7 +147,25 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @GetMapping("/{ticketId}/download")
+    public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
+        
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        try {
+            System.out.println(ticketId);
+            byte[] pdfBytes = ticketService.generateTicketPdfBytes(ticketId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.inline()
+                .filename("ticket-" + ticketId + ".pdf")
+                .build());
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate ticket PDF: " + e.getMessage());
+        }
+    }
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody TicketDTO.TicketRequest ticketRequest, @RequestHeader("Authorization") String auth) throws Exception {
         Claims claims = Authentication.getClaims(auth);
@@ -264,7 +285,7 @@ public class TicketController {
 
         String ticketID = ticketToDelete.isPresent() ? ticketToDelete.get().getTicketID() : String.valueOf(id);
 
-        HashMap<String, Object> user = ClerkUsers.getUserEmail(claims.getSubject());
+        HashMap<String, Object> user = ClerkUsers.getUser(claims.getSubject());
         
         boolean deleted = ticketService.deleteTicket(id);
         

@@ -108,5 +108,5 @@ public class UserController {
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
         }
-    }
+    }           
 }

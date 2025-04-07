@@ -186,27 +186,48 @@ const MyTickets = () => {
     setSelectedTicket(null);
   };
 
-  const handleDownloadTicket = async (ticketId) => {
+  const handleDownloadTicket = async (ticket) => {
     try {
-      alert(`Downloading ticket ${ticketId}`);
+      // Show loading indicator
+      setLoading(true);
       
-      // Implementation for actual ticket download
-      // This would typically generate a PDF or similar document
+      // We need to use the string ticketID (not the numeric id) based on the controller endpoint
+      const ticketID = ticket.ticketID; 
       
-      // Example of how you might implement a ticket download:
-      // const response = await axios.get(`${API_URL}/tickets/${ticketId}/download`, {
-      //   responseType: 'blob'
-      // });
-      // const url = window.URL.createObjectURL(new Blob([response.data]));
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', `ticket-${ticketId}.pdf`);
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
+      console.log(`Downloading ticket with ID: ${ticketID}`);
+      
+      // Call the API endpoint to download the ticket
+      // The endpoint structure is /api/tickets/{ticketId}/download where ticketId is the string ID
+      const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
+        responseType: 'blob',  // Important: expect binary data
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        }
+      });
+      
+      // Create a blob from the PDF bytes
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `ticket-${ticketID}.pdf`);
+      
+      // Append to body, click the link, and clean up
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Release the blob URL
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading ticket:", err);
       alert("Failed to download ticket. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -433,7 +454,7 @@ const MyTickets = () => {
                             View Details
                           </Button>
                           <Button
-                            onClick={() => handleDownloadTicket(ticket.id)}
+                            onClick={() => handleDownloadTicket(ticket)}
                             variant="outline"
                             size="sm"
                             className="download-button mytickets-button"
@@ -605,7 +626,7 @@ const MyTickets = () => {
               
               <div className="pt-4 flex flex-col sm:flex-row justify-between gap-3">
                 <Button
-                  onClick={() => handleDownloadTicket(selectedTicket.id)}
+                  onClick={() => handleDownloadTicket(selectedTicket)}
                   variant="primary"
                   size="md"
                   className="flex-1"

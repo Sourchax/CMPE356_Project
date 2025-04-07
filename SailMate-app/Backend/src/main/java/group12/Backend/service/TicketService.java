@@ -12,6 +12,8 @@ import group12.Backend.repository.VoyageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import group12.Backend.util.TicketPDFGenerator;
+import java.io.ByteArrayOutputStream;
 
 import java.util.List;
 import java.util.Optional;
@@ -471,5 +473,62 @@ public class TicketService {
     }
     public long getTicketCount() {
         return ticketRepository.count();
+    }
+    
+
+    public byte[] generateTicketPdfBytes(String ticketId) throws Exception {
+        try {
+            Optional<Ticket> ticketOpt = ticketRepository.findByTicketID(ticketId);
+            if (ticketOpt.isEmpty()) {
+                throw new Exception("Ticket not found with ticket_id: " + ticketId);
+            }
+            
+            Ticket ticket = ticketOpt.get();
+            Optional<Voyage> voyageOpt = voyageRepository.findById(ticket.getVoyageId());
+            Voyage voyage= voyageOpt.get();
+            String fromStation = (voyage.getFromStation()).getTitle();
+            String toStation = (voyage.getToStation()).getTitle();
+            String departureDate = voyage.getDepartureDate().toString();
+            String departureTime = voyage.getDepartureTime().toString();
+            System.out.println("Raw JSON ticketData: " + ticket.getTicketData());
+    
+            // Deserialize only the passenger list
+            List<TicketDTO.PassengerInfo> passengers = objectMapper.readValue(
+                ticket.getTicketData(),
+                new com.fasterxml.jackson.core.type.TypeReference<List<TicketDTO.PassengerInfo>>() {}
+            );
+    
+            TicketDTO.TicketRequest ticketRequest = new TicketDTO.TicketRequest();
+            ticketRequest.setPassengers(passengers);
+            ticketRequest.setSelectedSeats(ticket.getSelectedSeats());
+            ticketRequest.setTicketClass(ticket.getTicketClass());
+    
+            List<TicketPDFGenerator.TicketData> ticketDataList = new ArrayList<>();
+            for (TicketDTO.PassengerInfo passenger : ticketRequest.getPassengers()) {
+                TicketPDFGenerator.TicketData ticketData = new TicketPDFGenerator.TicketData();
+                ticketData.ticketId = ticket.getTicketID();
+                ticketData.passengerName = (passenger.getName() + " " + passenger.getSurname()).toUpperCase();
+                ticketData.from = fromStation;
+                ticketData.to = toStation;
+                // ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
+                ticketData.date = departureDate;
+                // ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
+                ticketData.time = departureTime;
+                ticketData.seat = ticket.getSelectedSeats();
+                ticketData.gate = "1";
+                ticketData.boardTill = "Board 15m before";
+                ticketData.ticketClass = ticket.getTicketClass().toUpperCase();
+                ticketData.passengerType = passenger.getPassengerType().toUpperCase();
+                ticketDataList.add(ticketData);
+            }
+            System.out.println(fromStation);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            TicketPDFGenerator.generateTicketPdfBytes(outputStream, ticketDataList);
+            return outputStream.toByteArray();
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Failed to generate ticket PDF: " + e.getMessage(), e);
+        }
     }
 }

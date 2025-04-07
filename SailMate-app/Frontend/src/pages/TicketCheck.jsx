@@ -172,22 +172,45 @@ const TicketCheck = () => {
 
   const handleDownloadTicket = async () => {
     try {
-      alert(`Downloading ticket ${ticketDetails.ticketID}...`);
+      // Show loading indicator if needed
+      setLoading(true);
       
-      // Real implementation would fetch a PDF or generate one
-      // const response = await axios.get(`${API_URL}/tickets/${ticketDetails.id}/download`, {
-      //   responseType: 'blob'
-      // });
-      // const url = window.URL.createObjectURL(new Blob([response.data]));
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', `ticket-${ticketDetails.ticketID}.pdf`);
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
+      // We need to use the string ticketID based on the controller endpoint
+      const ticketID = ticketDetails.ticketID;
+      
+      console.log(`Downloading ticket with ID: ${ticketID}`);
+      
+      // Call the API endpoint to download the ticket
+      const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
+        responseType: 'blob',  // Important: expect binary data
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        }
+      });
+      
+      // Create a blob from the PDF bytes
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `ticket-${ticketID}.pdf`);
+      
+      // Append to body, click the link, and clean up
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Release the blob URL
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading ticket:", err);
       alert("Failed to download ticket. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 

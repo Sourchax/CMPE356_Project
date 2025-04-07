@@ -93,7 +93,7 @@ public class ClerkUsers {
         }
     }
 
-    public static HashMap<String, Object> getUserEmail(String userId) throws Exception {
+    public static HashMap<String, Object> getUser(String userId) throws Exception {
         Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
         Clerk sdk = Clerk.builder()
             .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
