@@ -21,6 +21,8 @@ const TicketCancel = () => {
     USD: 0.031,
     EUR: 0.028
   });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,6 +31,89 @@ const TicketCancel = () => {
     TRY: '₺',
     USD: '$',
     EUR: '€'
+  };
+
+  // Helper function to display error
+  const displayError = (message) => {
+    setErrorMessage(message);
+    setShowError(true);
+    
+    // Auto-hide after 6 seconds
+    setTimeout(() => {
+      setShowError(false);
+    }, 6000);
+  };
+
+  // Error notification component
+  const ErrorNotification = () => {
+    if (!showError) return null;
+    
+    return (
+      <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease-out]">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-md">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">{errorMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  onClick={() => setShowError(false)}
+                  className="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-200 focus:outline-none"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Function to check if a voyage is expired/completed
+  const isVoyageExpired = (ticket) => {
+    if (!ticket || !ticket.departureDate || !ticket.departureTime) {
+      return false; // Can't determine if invalid ticket data
+    }
+    
+    const today = new Date();
+    const voyageDate = new Date(ticket.departureDate);
+    
+    // If the voyage date is in the past (not today)
+    if (voyageDate.getFullYear() < today.getFullYear() ||
+        (voyageDate.getFullYear() === today.getFullYear() && 
+         voyageDate.getMonth() < today.getMonth()) ||
+        (voyageDate.getFullYear() === today.getFullYear() && 
+         voyageDate.getMonth() === today.getMonth() && 
+         voyageDate.getDate() < today.getDate())) {
+      return true;
+    }
+    
+    // If it's today, check if departure time has passed
+    if (voyageDate.getFullYear() === today.getFullYear() &&
+        voyageDate.getMonth() === today.getMonth() &&
+        voyageDate.getDate() === today.getDate()) {
+      
+      const [hours, minutes] = ticket.departureTime.split(':').map(Number);
+      const currentHours = today.getHours();
+      const currentMinutes = today.getMinutes();
+      
+      // Check if time has passed
+      if (currentHours > hours || (currentHours === hours && currentMinutes > minutes)) {
+        return true;
+      }
+    }
+    
+    return false;
   };
 
   // Fetch currency rates when component mounts
@@ -59,6 +144,17 @@ const TicketCancel = () => {
     fetchCurrencyRates();
   }, []);
 
+  // Extract ticket information from location state if available
+  useEffect(() => {
+    if (location.state && location.state.voyage) {
+      // If we have the full ticket object already
+      if (location.state.voyage.ticketID) {
+        setTicketId(location.state.voyage.ticketID);
+        setTicketDetails(location.state.voyage);
+      }
+    }
+  }, [location]);
+
   // Convert price from TRY to selected currency
   const convertPrice = (priceTRY) => {
     if (!priceTRY && priceTRY !== 0) return "";
@@ -72,17 +168,6 @@ const TicketCancel = () => {
     const symbol = currencySymbols[selectedCurrency] || '₺';
     return `${symbol}${convertPrice(price)}`;
   };
-
-  // Extract ticket information from location state if available
-  useEffect(() => {
-    if (location.state && location.state.voyage) {
-      // If we have the full ticket object already
-      if (location.state.voyage.ticketID) {
-        setTicketId(location.state.voyage.ticketID);
-        setTicketDetails(location.state.voyage);
-      }
-    }
-  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,6 +185,14 @@ const TicketCancel = () => {
         });
         
         if (response.data) {
+          // Check if the voyage is expired/completed
+          if (isVoyageExpired(response.data)) {
+            setLoading(false);
+            setFetchingDetails(false);
+            displayError("This ticket cannot be cancelled because the voyage has already departed or is completed.");
+            return;
+          }
+          
           setTicketDetails(response.data);
           setShowConfirmation(true);
         } else {
@@ -107,13 +200,20 @@ const TicketCancel = () => {
         }
       } catch (error) {
         console.error("Error fetching ticket details:", error);
-        alert("Could not find ticket details. Please check the ticket ID and try again.");
+        displayError("Could not find ticket details. Please check the ticket ID and try again.");
       } finally {
         setFetchingDetails(false);
         setLoading(false);
       }
     } else {
-      // If we already have ticket details, just show confirmation
+      // If we already have ticket details, check if voyage is expired
+      if (isVoyageExpired(ticketDetails)) {
+        setLoading(false);
+        displayError("This ticket cannot be cancelled because the voyage has already departed or is completed.");
+        return;
+      }
+      
+      // If not expired, show confirmation
       setLoading(false);
       setShowConfirmation(true);
     }
@@ -123,6 +223,14 @@ const TicketCancel = () => {
     setLoading(true);
     
     try {
+      // First, double-check if the voyage is expired (in case time passed during confirmation)
+      if (isVoyageExpired(ticketDetails)) {
+        setLoading(false);
+        displayError("This ticket cannot be cancelled because the voyage has already departed or is completed.");
+        setShowConfirmation(false);
+        return;
+      }
+      
       // Use the correct endpoint for deletion - with numeric ID
       if (ticketDetails && ticketDetails.id) {
         await axios.delete(`${API_URL}/tickets/${ticketDetails.id}`, {
@@ -142,6 +250,8 @@ const TicketCancel = () => {
         });
         
         setLoading(false);
+        
+        // Show success message before redirecting
         alert("Your ticket has been successfully cancelled. Email will be sent shortly.");
         
         // Reset form and return to My Tickets
@@ -156,7 +266,7 @@ const TicketCancel = () => {
     } catch (error) {
       console.error("Error cancelling ticket:", error);
       setLoading(false);
-      alert("There was an error cancelling your ticket. Please try again or contact support.");
+      displayError("There was an error cancelling your ticket. Please try again or contact support.");
     }
   };
 
@@ -210,6 +320,9 @@ const TicketCancel = () => {
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white font-sans">
+      {/* Error Notification */}
+      <ErrorNotification />
+      
       {/* Add the CSS */}
       <style>{heroStyles}</style>
       
