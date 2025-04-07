@@ -390,6 +390,7 @@ const CustomUserButton = () => {
                   if (location.pathname === "/admin/Stations" || 
                       location.pathname === "/admin/Announce" || 
                       location.pathname === "/admin/Voyage"   ||
+                      location.pathname === "/admin/Logs"   ||
                       location.pathname === "/admin") {
                     navigate("/");
                   } else {
@@ -403,6 +404,7 @@ const CustomUserButton = () => {
                   {location.pathname === "/admin/Stations" || 
                    location.pathname === "/admin/Announce" || 
                    location.pathname === "/admin/Voyage"   ||
+                   location.pathname === "/admin/Logs"   ||
                    location.pathname === "/admin"
                     ? "Switch to User Mode" 
                     : "Switch to Admin Dashboard"}
@@ -416,7 +418,6 @@ const CustomUserButton = () => {
                 className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 onClick={() => {
                   if (location.pathname === "/manager" || 
-                      location.pathname === "/manager/Logs" || 
                       location.pathname === "/manager/Users" || 
                       location.pathname === "/manager/Complaints" || 
                       location.pathname === "/manager/Finance" ||
@@ -430,7 +431,7 @@ const CustomUserButton = () => {
               >
                 <LayoutDashboard size={isMobile ? 16 : 18} className="flex-shrink-0" />
                 <span>
-                  {location.pathname === "/manager/Logs" || 
+                  {
                    location.pathname === "/manager/Users" || 
                    location.pathname === "/manager/Complaints" || 
                    location.pathname === "/manager/Finance" ||
