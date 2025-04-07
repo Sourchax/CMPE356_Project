@@ -1,6 +1,7 @@
 package group12.Backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.TicketDTO;
 import group12.Backend.service.ActivityLogService;
@@ -10,9 +11,9 @@ import group12.Backend.entity.Voyage;
 import group12.Backend.util.Authentication;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -152,7 +156,20 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @GetMapping("/tickets/{ticketId}/download")
+    public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId) {
+        try {
+            byte[] pdfBytes = ticketService.generateTicketPdfBytes(ticketId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.inline()
+                .filename("ticket-" + ticketId + ".pdf")
+                .build());
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody TicketDTO.TicketRequest ticketRequest, @RequestHeader("Authorization") String auth) throws Exception {
         Claims claims = Authentication.getClaims(auth);

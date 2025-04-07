@@ -100,27 +100,26 @@ const handleCloseModal = () => {
 
 const handleDownloadTicket = async (ticketId) => {
   try {
-    alert(`Downloading ticket ${ticketId}`);
-    
-    // Implementation for actual ticket download
-    // This would typically generate a PDF or similar document
-    
-    // Example of how you might implement a ticket download:
-    // const response = await axios.get(`${API_URL}/tickets/${ticketId}/download`, {
-    //   responseType: 'blob'
-    // });
-    // const url = window.URL.createObjectURL(new Blob([response.data]));
-    // const link = document.createElement('a');
-    // link.href = url;
-    // link.setAttribute('download', `ticket-${ticketId}.pdf`);
-    // document.body.appendChild(link);
-    // link.click();
-    // link.remove();
+    const response = await axios.get(`${API_URL}/tickets/${ticketId}/download`, {
+      headers: {
+        Authorization: `Bearer ${useSessionToken()}`
+      },
+      responseType: 'blob'
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `ticket-${ticketId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   } catch (err) {
     console.error("Error downloading ticket:", err);
     alert("Failed to download ticket. Please try again.");
   }
 };
+
 
 const navigateToContact = () => {
   navigate("/contact");
