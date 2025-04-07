@@ -10,7 +10,6 @@ import com.itextpdf.text.pdf.*;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
-import com.itextpdf.text.Document;
 
 
 public class TicketPDFGenerator {
@@ -26,9 +25,18 @@ public class TicketPDFGenerator {
         public String gate;
         public String boardTill;
         public String ticketClass;
+        public String passengerType;
     }
-
+    
     public static void generateTicketPdfBytes(OutputStream outputStream, List<TicketData> ticketList) throws Exception {
+        BaseFont baseFont = BaseFont.createFont(
+            "src/main/resources/fonts/DejaVuSans.ttf",
+            BaseFont.IDENTITY_H,
+            BaseFont.EMBEDDED
+        );
+        Font headerFont = new Font(baseFont, 16, Font.BOLD, BaseColor.WHITE);
+        Font boldFont = new Font(baseFont, 9, Font.BOLD, new BaseColor(30, 144, 255));
+        Font regularFont = new Font(baseFont, 9);
         Document document = new Document(new Rectangle(800, 250));
         PdfWriter writer = PdfWriter.getInstance(document, outputStream);
         document.open();
@@ -40,8 +48,7 @@ public class TicketPDFGenerator {
             canvas.setColorFill(new BaseColor(30, 144, 255));
             canvas.rectangle(0, 220, 800, 30);
             canvas.fill();
-
-            Font headerFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.WHITE);
+            // Font headerFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.WHITE);
             ColumnText.showTextAligned(canvas, Element.ALIGN_CENTER,
                 new Phrase("SailMate Ferries - Boarding Pass", headerFont), 400, 227, 0);
 
@@ -51,8 +58,8 @@ public class TicketPDFGenerator {
             layout.setSpacingBefore(10);
 
             Image logo = Image.getInstance("assets/logo.png");
-            logo.scaleToFit(200, 200);
-            logo.setAbsolutePosition(200, 10);
+            logo.scaleToFit(160, 160);
+            logo.setAbsolutePosition(240, 10);
             document.add(logo);
 
             String logoPath;
@@ -79,17 +86,19 @@ public class TicketPDFGenerator {
 
             PdfPTable left = new PdfPTable(2);
             left.setWidths(new int[]{1, 2});
-            addInfo(left, "Ticket ID:", data.ticketId);
-            addInfo(left, "Passenger:", data.passengerName);
-            addInfo(left, "Date:", data.date);
-            addInfo(left, "Time:", data.time);
-            addInfo(left, "From:", data.from);
-            addInfo(left, "To:", data.to);
-            addInfo(left, "Seat:", data.seat);
-            addInfo(left, "Gate:", data.gate);
-            addInfo(left, "Board Till:", data.boardTill);
-            addInfo(left, "Class:", data.ticketClass);
-
+            addInfo(left, "Ticket ID:", data.ticketId, boldFont, regularFont);
+            addInfo(left, "Passenger:", data.passengerName, boldFont, regularFont);
+            addInfo(left, "Date:", data.date, boldFont, regularFont);
+            addInfo(left, "Time:", data.time, boldFont, regularFont);
+            addInfo(left, "From:", data.from, boldFont, regularFont);
+            addInfo(left, "To:", data.to, boldFont, regularFont);
+            addInfo(left, "Seat:", data.seat, boldFont, regularFont);
+            addInfo(left, "Gate:", data.gate, boldFont, regularFont);
+            addInfo(left, "Board Till:", data.boardTill, boldFont, regularFont);
+            addInfo(left, "Class:", data.ticketClass, boldFont, regularFont);
+            addInfo(left, "Type:", data.passengerType, boldFont, regularFont);
+            addInfo(left, "Contact us Number:", "+90 546 434 20 22", boldFont, regularFont);
+            addInfo(left, "Email:", "sailmatesup@gmail.com", boldFont, regularFont);
             layout.addCell(noBorderCell(left));
 
             PdfPCell spacer = new PdfPCell();
@@ -101,7 +110,7 @@ public class TicketPDFGenerator {
             String qrData = String.format(
                 "TicketID: %s\nPassenger: %s\nFrom: %s\nTo: %s\nDate: %s %s\nSeat: %s\nGate: %s\nBoard Till: %s\nClass: %s",
                 data.ticketId, data.passengerName, data.from, data.to, data.date, data.time,
-                data.seat, data.gate, data.boardTill, data.ticketClass
+                data.seat, data.gate, data.boardTill, data.ticketClass, data.passengerType
             );
             Image qr = Image.getInstance(generateQRCodeImage(qrData));
             qr.scaleAbsolute(120, 120);
@@ -112,12 +121,12 @@ public class TicketPDFGenerator {
         document.close();
     }
 
-    private static void addInfo(PdfPTable table, String label, String value) {
-        Font bold = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-        Font normal = new Font(Font.FontFamily.HELVETICA, 12);
-        PdfPCell labelCell = new PdfPCell(new Phrase(label, bold));
+    private static void addInfo(PdfPTable table, String label, String value, Font boldFont, Font regularFont) {
+        // Font bold = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+        // Font normal = new Font(Font.FontFamily.HELVETICA, 12);
+        PdfPCell labelCell = new PdfPCell(new Phrase(label, boldFont));
         labelCell.setBorder(Rectangle.NO_BORDER);
-        PdfPCell valueCell = new PdfPCell(new Phrase(value, normal));
+        PdfPCell valueCell = new PdfPCell(new Phrase(value, regularFont));
         valueCell.setBorder(Rectangle.NO_BORDER);
         table.addCell(labelCell);
         table.addCell(valueCell);

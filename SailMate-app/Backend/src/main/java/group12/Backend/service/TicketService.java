@@ -483,6 +483,8 @@ public class TicketService {
             Voyage voyage= voyageOpt.get();
             String fromStation = (voyage.getFromStation()).getTitle();
             String toStation = (voyage.getToStation()).getTitle();
+            String departureDate = voyage.getDepartureDate().toString();
+            String departureTime = voyage.getDepartureTime().toString();
             System.out.println("Raw JSON ticketData: " + ticket.getTicketData());
     
             // Deserialize only the passenger list
@@ -503,13 +505,15 @@ public class TicketService {
                 ticketData.passengerName = (passenger.getName() + " " + passenger.getSurname()).toUpperCase();
                 ticketData.from = fromStation;
                 ticketData.to = toStation;
-                ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
-                ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
+                // ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
+                ticketData.date = departureDate;
+                // ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
+                ticketData.time = departureTime;
                 ticketData.seat = ticket.getSelectedSeats();
                 ticketData.gate = "1";
                 ticketData.boardTill = "Board 15m before";
-                ticketData.ticketClass = ticket.getTicketClass().toUpperCase();;
-    
+                ticketData.ticketClass = ticket.getTicketClass().toUpperCase();
+                ticketData.passengerType = passenger.getPassengerType().toUpperCase();
                 ticketDataList.add(ticketData);
             }
             System.out.println(fromStation);
