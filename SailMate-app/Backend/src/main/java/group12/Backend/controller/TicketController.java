@@ -157,7 +157,10 @@ public class TicketController {
         }
     }
     @GetMapping("/tickets/{ticketId}/download")
-    public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId) {
+    public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         try {
             byte[] pdfBytes = ticketService.generateTicketPdfBytes(ticketId);
             HttpHeaders headers = new HttpHeaders();
