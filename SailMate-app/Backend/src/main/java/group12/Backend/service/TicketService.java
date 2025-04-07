@@ -477,9 +477,12 @@ public class TicketService {
             if (ticketOpt.isEmpty()) {
                 throw new Exception("Ticket not found with ticket_id: " + ticketId);
             }
-    
+            
             Ticket ticket = ticketOpt.get();
-    
+            Optional<Voyage> voyageOpt = voyageRepository.findById(ticket.getVoyageId());
+            Voyage voyage= voyageOpt.get();
+            String fromStation = (voyage.getFromStation()).getTitle();
+            String toStation = (voyage.getToStation()).getTitle();
             System.out.println("Raw JSON ticketData: " + ticket.getTicketData());
     
             // Deserialize only the passenger list
@@ -497,19 +500,19 @@ public class TicketService {
             for (TicketDTO.PassengerInfo passenger : ticketRequest.getPassengers()) {
                 TicketPDFGenerator.TicketData ticketData = new TicketPDFGenerator.TicketData();
                 ticketData.ticketId = ticket.getTicketID();
-                ticketData.passengerName = passenger.getName() + " " + passenger.getSurname();
-                ticketData.from = "FROM";
-                ticketData.to = "TO";
+                ticketData.passengerName = (passenger.getName() + " " + passenger.getSurname()).toUpperCase();
+                ticketData.from = fromStation;
+                ticketData.to = toStation;
                 ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
                 ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
                 ticketData.seat = ticket.getSelectedSeats();
                 ticketData.gate = "1";
                 ticketData.boardTill = "Board 15m before";
-                ticketData.ticketClass = ticket.getTicketClass();
+                ticketData.ticketClass = ticket.getTicketClass().toUpperCase();;
     
                 ticketDataList.add(ticketData);
             }
-    
+            System.out.println(fromStation);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             TicketPDFGenerator.generateTicketPdfBytes(outputStream, ticketDataList);
             return outputStream.toByteArray();
