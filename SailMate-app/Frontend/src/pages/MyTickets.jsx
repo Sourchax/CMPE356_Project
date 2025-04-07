@@ -98,14 +98,14 @@ const handleCloseModal = () => {
   setSelectedTicket(null);
 };
 
-const handleDownloadTicket = async (ticketId) => {
+const handleDownloadTicket = async (ticketId) => {console.log("🔍 selectedTicket received in handleDownloadTicket:", selectedTicket);
   try {
     const response = await axios.get(`${API_URL}/tickets/${ticketId}/download`, {
       headers: {
         Authorization: `Bearer ${useSessionToken()}`
       },
       responseType: 'blob'
-    }); 
+    });
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -248,7 +248,7 @@ return (
                       View Details
                     </Button>
                     <Button
-                      onClick={() => handleDownloadTicket(ticket.id)}
+                      onClick={() => handleDownloadTicket(ticket.ticketID)}
                       variant="outline"
                       size="sm"
                       className="download-button mytickets-button"
@@ -387,7 +387,7 @@ return (
             
             <div className="pt-4 flex justify-between">
               <Button
-                onClick={() => handleDownloadTicket(selectedTicket.id)}
+                onClick={() => handleDownloadTicket(ticket.ticketID)}
                 variant="primary"
                 size="md"
                 className="w-full"

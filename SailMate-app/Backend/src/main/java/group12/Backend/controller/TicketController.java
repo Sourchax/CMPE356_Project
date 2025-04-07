@@ -30,7 +30,7 @@ import org.springframework.http.MediaType;
 @RequestMapping("/api/tickets")
 @CrossOrigin(origins = "*")
 public class TicketController {
-
+    
     private final TicketService ticketService;
     private final VoyageService voyageService;
     private final ActivityLogService activityLogService;
@@ -160,9 +160,11 @@ public class TicketController {
     @GetMapping("/{ticketId}/download")
     public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId, @RequestHeader("Authorization") String auth) throws Exception {
         Claims claims = Authentication.getClaims(auth);
+        
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         try {
+            System.out.println(ticketId);
             byte[] pdfBytes = ticketService.generateTicketPdfBytes(ticketId);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);

@@ -472,33 +472,44 @@ public class TicketService {
         notificationService.createNotification(notificationRequest);
     }
     public byte[] generateTicketPdfBytes(String ticketId) throws Exception {
-        Optional<Ticket> ticketOpt = ticketRepository.findByTicketID(ticketId);
-        if (ticketOpt.isEmpty()) {
-            throw new Exception("Ticket not found with ticket_id: " + ticketId);
+        try {
+            Optional<Ticket> ticketOpt = ticketRepository.findByTicketID(ticketId);
+            if (ticketOpt.isEmpty()) {
+                throw new Exception("Ticket not found with ticket_id: " + ticketId);
+            }
+    
+            Ticket ticket = ticketOpt.get();
+    
+            // Deserialize full TicketRequest
+            TicketDTO.TicketRequest ticketRequest = objectMapper.readValue(
+                ticket.getTicketData(), TicketDTO.TicketRequest.class);
+    
+            List<TicketPDFGenerator.TicketData> ticketDataList = new ArrayList<>();
+            for (TicketDTO.PassengerInfo passenger : ticketRequest.getPassengers()) {
+                TicketPDFGenerator.TicketData ticketData = new TicketPDFGenerator.TicketData();
+                ticketData.ticketId = ticket.getTicketID();
+                System.out.println(ticketData.ticketId);
+                ticketData.passengerName = passenger.getName() + " " + passenger.getSurname();
+                ticketData.from = "FROM";
+                ticketData.to = "TO";
+                ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
+                ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
+                ticketData.seat = ticket.getSelectedSeats();
+                ticketData.gate = "1";
+                ticketData.boardTill = "Board 15m before";
+                ticketData.ticketClass = ticket.getTicketClass();
+    
+                ticketDataList.add(ticketData);
+            }
+    
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            TicketPDFGenerator.generateTicketPdfBytes(outputStream, ticketDataList);
+            return outputStream.toByteArray();
+    
+        } catch (Exception e) {
+            e.printStackTrace(); // <-- This is important
+            throw new Exception("Failed to generate ticket PDF: " + e.getMessage(), e);
         }
-    
-        Ticket ticket = ticketOpt.get();
-    
-        // Deserialize passenger info
-        TicketDTO.PassengerInfo passenger = objectMapper
-            .readValue(ticket.getTicketData(), TicketDTO.PassengerInfo[].class)[0];
-    
-        TicketPDFGenerator.TicketData ticketData = new TicketPDFGenerator.TicketData();
-        ticketData.ticketId = ticket.getTicketID();
-        ticketData.passengerName = passenger.getName() + " " + passenger.getSurname();
-        ticketData.from = "FROM";
-        ticketData.to = "TO";
-        ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
-        ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
-        ticketData.seat = ticket.getSelectedSeats();
-        ticketData.gate = "1";
-        ticketData.boardTill = "Board 15m before";
-        ticketData.ticketClass = ticket.getTicketClass();
-    
-        // Generate the PDF in memory
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        TicketPDFGenerator.generateTicketPdfBytes(outputStream, List.of(ticketData));
-        return outputStream.toByteArray();
     }
     
 }
