@@ -480,15 +480,23 @@ public class TicketService {
     
             Ticket ticket = ticketOpt.get();
     
-            // Deserialize full TicketRequest
-            TicketDTO.TicketRequest ticketRequest = objectMapper.readValue(
-                ticket.getTicketData(), TicketDTO.TicketRequest.class);
+            System.out.println("Raw JSON ticketData: " + ticket.getTicketData());
+    
+            // Deserialize only the passenger list
+            List<TicketDTO.PassengerInfo> passengers = objectMapper.readValue(
+                ticket.getTicketData(),
+                new com.fasterxml.jackson.core.type.TypeReference<List<TicketDTO.PassengerInfo>>() {}
+            );
+    
+            TicketDTO.TicketRequest ticketRequest = new TicketDTO.TicketRequest();
+            ticketRequest.setPassengers(passengers);
+            ticketRequest.setSelectedSeats(ticket.getSelectedSeats());
+            ticketRequest.setTicketClass(ticket.getTicketClass());
     
             List<TicketPDFGenerator.TicketData> ticketDataList = new ArrayList<>();
             for (TicketDTO.PassengerInfo passenger : ticketRequest.getPassengers()) {
                 TicketPDFGenerator.TicketData ticketData = new TicketPDFGenerator.TicketData();
                 ticketData.ticketId = ticket.getTicketID();
-                System.out.println(ticketData.ticketId);
                 ticketData.passengerName = passenger.getName() + " " + passenger.getSurname();
                 ticketData.from = "FROM";
                 ticketData.to = "TO";
@@ -507,7 +515,7 @@ public class TicketService {
             return outputStream.toByteArray();
     
         } catch (Exception e) {
-            e.printStackTrace(); // <-- This is important
+            e.printStackTrace();
             throw new Exception("Failed to generate ticket PDF: " + e.getMessage(), e);
         }
     }
