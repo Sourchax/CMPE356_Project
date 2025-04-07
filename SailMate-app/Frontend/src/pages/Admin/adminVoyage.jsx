@@ -243,8 +243,12 @@ const AdminVoyage = () => {
     setError(null);
     try {
       const data = await voyageService.getVoyages();
-      setVoyages(data);
-      setFilteredVoyages(data);
+      
+      // Process voyages to mark completed ones and set edit/delete permissions
+      const processedData = processVoyagesStatus(data);
+      
+      setVoyages(processedData);
+      setFilteredVoyages(processedData);
       
       // Fetch seats sold data for all voyages
       const voyageIds = data.map(voyage => voyage.id);
@@ -258,6 +262,29 @@ const AdminVoyage = () => {
     }
   };
   
+
+  const processVoyagesStatus = (voyages) => {
+    return voyages.map(voyage => {
+      // Create a copy to avoid mutating the original
+      const processedVoyage = {...voyage};
+      
+      // Check if voyage is completed
+      if (isVoyageCompleted(voyage)) {
+        processedVoyage.status = "completed";
+        processedVoyage.canEdit = false;
+        processedVoyage.canDelete = false;
+      } else if (voyage.status === "active") {
+        processedVoyage.canEdit = true;
+        processedVoyage.canDelete = false; // Active voyages can't be deleted directly
+      } else if (voyage.status === "cancel") {
+        processedVoyage.canEdit = true;
+        processedVoyage.canDelete = true; // Only cancelled voyages can be deleted
+      }
+      
+      return processedVoyage;
+    });
+  };
+
   // Fetch stations for dropdowns
   const fetchStations = async () => {
     try {
@@ -267,7 +294,38 @@ const AdminVoyage = () => {
       showAlert('error', 'Failed to load stations. Please try again.');
     }
   };
-  
+  const isVoyageCompleted = (voyage) => {
+    const voyageDate = new Date(voyage.departureDate);
+    const currentDate = new Date();
+    
+    // If date is in the past
+    if (voyageDate < currentDate && 
+        !(voyageDate.getFullYear() === currentDate.getFullYear() &&
+          voyageDate.getMonth() === currentDate.getMonth() &&
+          voyageDate.getDate() === currentDate.getDate())) {
+      return true;
+    }
+    
+    // If it's today, check if the arrival time has passed
+    if (voyageDate.getFullYear() === currentDate.getFullYear() &&
+        voyageDate.getMonth() === currentDate.getMonth() &&
+        voyageDate.getDate() === currentDate.getDate()) {
+      
+      const [arrivalHours, arrivalMinutes] = voyage.arrivalTime.split(':').map(Number);
+      const [currentHours, currentMinutes] = [
+        currentDate.getHours(), 
+        currentDate.getMinutes()
+      ];
+      
+      // Check if arrival time has passed
+      if (currentHours > arrivalHours || 
+          (currentHours === arrivalHours && currentMinutes > arrivalMinutes)) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
   // Show alert message
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
@@ -276,43 +334,57 @@ const AdminVoyage = () => {
     }, 5000);
   };
 // Apply filters to voyages
-  const applyFilters = () => {
-    let result = [...voyages];
-    
-    // Date filter
-    if (filters.date) {
-      result = result.filter(voyage => voyage.departureDate === filters.date);
+const applyFilters = () => {
+  let result = [...voyages];
+  
+  // Date filter
+  if (filters.date) {
+    result = result.filter(voyage => voyage.departureDate === filters.date);
+  }
+  
+  // Status filter
+  if (filters.status) {
+    // Convert between UI status and API status
+    let apiStatus;
+    switch(filters.status) {
+      case 'normal':
+        apiStatus = 'active';
+        break;
+      case 'cancelled':
+        apiStatus = 'cancel';
+        break;
+      case 'completed':
+        apiStatus = 'completed';
+        break;
+      default:
+        apiStatus = filters.status;
     }
     
-    // Status filter
-    if (filters.status) {
-      // Convert between UI status and API status
-      const apiStatus = filters.status === 'normal' ? 'active' : 'cancel';
-      result = result.filter(voyage => voyage.status === apiStatus);
-    }
-    
-    // Ship type filter
-    if (filters.shipType) {
-      result = result.filter(voyage => voyage.shipType === filters.shipType);
-    }
-    
-    // Fuel type filter
-    if (filters.fuelType !== '') {
-      const fuelTypeValue = filters.fuelType === 'true';
-      result = result.filter(voyage => voyage.fuelType === fuelTypeValue);
-    }
-    
-    // Station filters
-    if (stationFilters.fromStationId) {
-      result = result.filter(voyage => voyage.fromStationId === parseInt(stationFilters.fromStationId));
-    }
-    
-    if (stationFilters.toStationId) {
-      result = result.filter(voyage => voyage.toStationId === parseInt(stationFilters.toStationId));
-    }
-    
-    setFilteredVoyages(result);
-  };
+    result = result.filter(voyage => voyage.status === apiStatus);
+  }
+  
+  // Ship type filter
+  if (filters.shipType) {
+    result = result.filter(voyage => voyage.shipType === filters.shipType);
+  }
+  
+  // Fuel type filter
+  if (filters.fuelType !== '') {
+    const fuelTypeValue = filters.fuelType === 'true';
+    result = result.filter(voyage => voyage.fuelType === fuelTypeValue);
+  }
+  
+  // Station filters
+  if (stationFilters.fromStationId) {
+    result = result.filter(voyage => voyage.fromStationId === parseInt(stationFilters.fromStationId));
+  }
+  
+  if (stationFilters.toStationId) {
+    result = result.filter(voyage => voyage.toStationId === parseInt(stationFilters.toStationId));
+  }
+  
+  setFilteredVoyages(result);
+};
 
   // Reset filters
   const resetFilters = () => {
@@ -378,6 +450,12 @@ const AdminVoyage = () => {
 
   // Open modal for editing voyage
   const openEditModal = (voyage) => {
+    // Don't allow editing of completed voyages
+    if (voyage.status === 'completed') {
+      showAlert('error', 'Completed voyages cannot be edited');
+      return;
+    }
+    
     setIsEditing(true);
     
     // Format the voyage data for the form
@@ -561,11 +639,22 @@ const AdminVoyage = () => {
     }
     
     if (voyage.departureTime && voyage.arrivalTime) {
+      // Check if arrival time is after departure time
       const depTime = new Date(`2000-01-01T${voyage.departureTime}`);
       const arrTime = new Date(`2000-01-01T${voyage.arrivalTime}`);
       
-      if (depTime >= arrTime) {
-        errors.arrivalTime = 'Arrival time must be after departure time';
+      // If arrival time is earlier in the day than departure, assume it's the next day
+      let timeDiffMinutes;
+      if (arrTime < depTime) {
+        // Add a day to arrival time (86400000 ms = 24 hours)
+        arrTime.setTime(arrTime.getTime() + 86400000);
+        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+      } else {
+        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+      }
+      
+      if (timeDiffMinutes < 40) {
+        errors.arrivalTime = 'Voyage must be at least 40 minutes long';
       }
     }
     
@@ -573,16 +662,43 @@ const AdminVoyage = () => {
     if (voyage.departureDate) {
       const voyageDate = new Date(voyage.departureDate);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
       
-      if (voyageDate < today) {
+      if (voyageDate < todayStart) {
         errors.departureDate = 'Voyage date cannot be in the past';
+      }
+      
+      // If the voyage is today, validate that the time is not in the past
+      if (voyageDate.getFullYear() === today.getFullYear() &&
+          voyageDate.getMonth() === today.getMonth() &&
+          voyageDate.getDate() === today.getDate()) {
+        
+        if (voyage.departureTime) {
+          const [depHours, depMinutes] = voyage.departureTime.split(':').map(Number);
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          
+          if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
+            errors.departureTime = 'Departure time must be in the future for today\'s voyages';
+          }
+        }
+        
+        if (voyage.arrivalTime) {
+          const [arrHours, arrMinutes] = voyage.arrivalTime.split(':').map(Number);
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          
+          if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
+            errors.arrivalTime = 'Arrival time must be in the future for today\'s voyages';
+          }
+        }
       }
     }
     
     return errors;
   };
-  
+
   // Validate weekly schedule data
   const validateWeeklySchedule = (schedule) => {
     const errors = {};
@@ -622,11 +738,22 @@ const AdminVoyage = () => {
     }
     
     if (schedule.departureTime && schedule.arrivalTime) {
+      // Check if arrival time is after departure time
       const depTime = new Date(`2000-01-01T${schedule.departureTime}`);
       const arrTime = new Date(`2000-01-01T${schedule.arrivalTime}`);
       
-      if (depTime >= arrTime) {
-        errors.arrivalTime = 'Arrival time must be after departure time';
+      // If arrival time is earlier in the day than departure, assume it's the next day
+      let timeDiffMinutes;
+      if (arrTime < depTime) {
+        // Add a day to arrival time
+        arrTime.setTime(arrTime.getTime() + 86400000); // 86400000 ms = 24 hours
+        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+      } else {
+        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+      }
+      
+      if (timeDiffMinutes < 40) {
+        errors.arrivalTime = 'Voyage must be at least 40 minutes long';
       }
     }
     
@@ -634,10 +761,37 @@ const AdminVoyage = () => {
     if (schedule.startDate) {
       const scheduleDate = new Date(schedule.startDate);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
       
-      if (scheduleDate < today) {
+      if (scheduleDate < todayStart) {
         errors.startDate = 'Start date cannot be in the past';
+      }
+      
+      // If the schedule starts today, validate that the time is not in the past
+      if (scheduleDate.getFullYear() === today.getFullYear() &&
+          scheduleDate.getMonth() === today.getMonth() &&
+          scheduleDate.getDate() === today.getDate()) {
+        
+        if (schedule.departureTime) {
+          const [depHours, depMinutes] = schedule.departureTime.split(':').map(Number);
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          
+          if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
+            errors.departureTime = 'Departure time must be in the future for today\'s voyages';
+          }
+        }
+        
+        if (schedule.arrivalTime) {
+          const [arrHours, arrMinutes] = schedule.arrivalTime.split(':').map(Number);
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          
+          if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
+            errors.arrivalTime = 'Arrival time must be in the future for today\'s voyages';
+          }
+        }
       }
     }
     
@@ -645,9 +799,67 @@ const AdminVoyage = () => {
   };
   // Save voyage (add or update)
   const saveVoyage = async () => {
+    // Check if voyage might have become completed while editing
+    if (isEditing) {
+      // First, get the current status of the voyage from the server
+      try {
+        const response = await voyageService.getVoyages({ id: currentVoyage.id });
+        const serverVoyage = response.find(v => v.id === currentVoyage.id);
+        
+        if (serverVoyage && isVoyageCompleted(serverVoyage)) {
+          showAlert('error', 'This voyage has been completed and cannot be modified.');
+          closeModal();
+          await fetchVoyages(); // Refresh the list to show updated status
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking voyage status:', error);
+        // Continue with validation and attempt to save
+      }
+    }
+    
+    // Double-check if current date/time would make this voyage completed
+    const voyageDate = new Date(currentVoyage.departureDate);
+    const today = new Date();
+    
+    if (voyageDate.getFullYear() === today.getFullYear() &&
+        voyageDate.getMonth() === today.getMonth() &&
+        voyageDate.getDate() === today.getDate()) {
+      
+      // Check if departure time is in the past
+      if (currentVoyage.departureTime) {
+        const [depHours, depMinutes] = currentVoyage.departureTime.split(':').map(Number);
+        const currentHour = today.getHours();
+        const currentMinute = today.getMinutes();
+        
+        if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
+          setValidationErrors(prev => ({
+            ...prev,
+            departureTime: "You cannot select a past time for today's voyage"
+          }));
+          return;
+        }
+      }
+      
+      // Check if arrival time is in the past
+      if (currentVoyage.arrivalTime) {
+        const [arrHours, arrMinutes] = currentVoyage.arrivalTime.split(':').map(Number);
+        const currentHour = today.getHours();
+        const currentMinute = today.getMinutes();
+        
+        if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
+          setValidationErrors(prev => ({
+            ...prev,
+            arrivalTime: "You cannot select a past time for today's voyage"
+          }));
+          return;
+        }
+      }
+    }
+    
     // Validate before saving
     const errors = validateVoyage(currentVoyage);
-    
+  
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       return;
@@ -764,8 +976,13 @@ const AdminVoyage = () => {
 
   // Open delete confirmation
   const openDeleteConfirmation = (voyage) => {
-    setVoyageToDelete(voyage);
-    setDeleteModalOpen(true);
+    // Only allow deletion of cancelled voyages, not completed ones
+    if (voyage.status === 'cancel') {
+      setVoyageToDelete(voyage);
+      setDeleteModalOpen(true);
+    } else if (voyage.status === 'completed') {
+      showAlert('error', 'Completed voyages cannot be deleted');
+    }
   };
 
   // Delete voyage
@@ -805,7 +1022,16 @@ const AdminVoyage = () => {
   
   // Map status from API to UI display
   const mapStatusToUI = (status) => {
-    return status === 'active' ? 'normal' : 'cancelled';
+    switch(status) {
+      case 'active':
+        return 'normal';
+      case 'cancel':
+        return 'cancelled';
+      case 'completed':
+        return 'completed';
+      default:
+        return status;
+    }
   };
   
   // Generate days of week options for weekly schedule
@@ -910,6 +1136,7 @@ const AdminVoyage = () => {
                 <option value="">All Statuses</option>
                 <option value="normal">Normal</option>
                 <option value="cancelled">Cancelled</option>
+                <option value="completed">Completed</option>
               </select>
             </div>
             
@@ -986,7 +1213,13 @@ const AdminVoyage = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {currentVoyages.length > 0 ? (
                     currentVoyages.map((voyage) => (
-                      <tr key={voyage.id} className={voyage.status === 'cancel' ? 'bg-red-50' : ''}>
+                      <tr key={voyage.id} className={
+                        voyage.status === 'cancel' 
+                          ? 'bg-red-50' 
+                          : voyage.status === 'completed'
+                            ? 'bg-gray-50'
+                            : ''
+                      }>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-gray-900">
                             {voyage.fromStationTitle} → {voyage.toStationTitle}
@@ -1000,7 +1233,11 @@ const AdminVoyage = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${voyage.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            ${voyage.status === 'active' 
+                              ? 'bg-green-100 text-green-800' 
+                              : voyage.status === 'cancel'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'}`}>
                             {mapStatusToUI(voyage.status)}
                           </span>
                         </td>
@@ -1018,7 +1255,7 @@ const AdminVoyage = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
-                            {voyage.status !== 'cancel' && (
+                            {voyage.status === 'active' && (
                               <button 
                                 onClick={() => openCancelConfirmation(voyage)}
                                 className="text-yellow-600 hover:text-yellow-900"
@@ -1027,13 +1264,16 @@ const AdminVoyage = () => {
                                 <X size={18} />
                               </button>
                             )}
-                            <button 
-                              onClick={() => openEditModal(voyage)}
-                              className="text-[#06AED5] hover:text-[#058aaa]"
-                              title="Edit Voyage"
-                            >
-                              <Edit size={18} />
-                            </button>
+                            {(voyage.status === 'active' || voyage.status === 'cancel') && (
+                              <button 
+                                onClick={() => openEditModal(voyage)}
+                                className="text-[#06AED5] hover:text-[#058aaa]"
+                                title="Edit Voyage"
+                                disabled={voyage.status === 'completed'}
+                              >
+                                <Edit size={18} />
+                              </button>
+                            )}
                             {voyage.status === 'cancel' && (
                               <button 
                                 onClick={() => openDeleteConfirmation(voyage)}
@@ -1042,6 +1282,16 @@ const AdminVoyage = () => {
                               >
                                 <Trash2 size={18} />
                               </button>
+                            )}
+                            {voyage.status === 'completed' && (
+                              <>
+                                <span className="text-gray-400" title="Completed voyages cannot be edited">
+                                  <Edit size={18} />
+                                </span>
+                                <span className="text-gray-400" title="Completed voyages cannot be deleted">
+                                  <Trash2 size={18} />
+                                </span>
+                              </>
                             )}
                           </div>
                         </td>
