@@ -1,45 +1,197 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Ticket, Mail, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Ticket, MessageSquare, Calendar, Clock, Users, Map, Anchor, DollarSign } from 'lucide-react';
 import Button from "../components/Button";
+import axios from "axios";
+import { useSessionToken } from "../utils/sessions.js";
 import '../assets/styles/ticketcancel.css';
+
+const API_URL = "http://localhost:8080/api";
 
 const TicketCancel = () => {
   const [ticketId, setTicketId] = useState("");
-  const [email, setEmail] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fetchingDetails, setFetchingDetails] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [ticketDetails, setTicketDetails] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("TRY");
+  const [currencyRates, setCurrencyRates] = useState({
+    TRY: 1,
+    USD: 0.031,
+    EUR: 0.028
+  });
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e) => {
+  // Currency symbols for display
+  const currencySymbols = {
+    TRY: '₺',
+    USD: '$',
+    EUR: '€'
+  };
+
+  // Fetch currency rates when component mounts
+  useEffect(() => {
+    const fetchCurrencyRates = async () => {
+      try {
+        // Fetch USD rate
+        const usdResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'USD' }
+        });
+        
+        // Fetch EUR rate
+        const eurResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'EUR' }
+        });
+        
+        setCurrencyRates({
+          TRY: 1,
+          USD: usdResponse.data || 0.031,
+          EUR: eurResponse.data || 0.028
+        });
+      } catch (error) {
+        console.error("Error fetching currency rates:", error);
+        // Keep fallback rates if API fails
+      }
+    };
+    
+    fetchCurrencyRates();
+  }, []);
+
+  // Convert price from TRY to selected currency
+  const convertPrice = (priceTRY) => {
+    if (!priceTRY && priceTRY !== 0) return "";
+    if (selectedCurrency === 'TRY') return priceTRY.toFixed(2);
+    return (priceTRY * currencyRates[selectedCurrency]).toFixed(2);
+  };
+  
+  // Format price with currency symbol
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return "";
+    const symbol = currencySymbols[selectedCurrency] || '₺';
+    return `${symbol}${convertPrice(price)}`;
+  };
+
+  // Extract ticket information from location state if available
+  useEffect(() => {
+    if (location.state && location.state.voyage) {
+      // If we have the full ticket object already
+      if (location.state.voyage.ticketID) {
+        setTicketId(location.state.voyage.ticketID);
+        setTicketDetails(location.state.voyage);
+      }
+    }
+  }, [location]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    // Fetch ticket details if not already available
+    if (!ticketDetails) {
+      try {
+        setFetchingDetails(true);
+        // Use the correct endpoint from your controller - "/ticketID/{ticketID}"
+        const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        if (response.data) {
+          setTicketDetails(response.data);
+          setShowConfirmation(true);
+        } else {
+          throw new Error("Ticket not found");
+        }
+      } catch (error) {
+        console.error("Error fetching ticket details:", error);
+        alert("Could not find ticket details. Please check the ticket ID and try again.");
+      } finally {
+        setFetchingDetails(false);
+        setLoading(false);
+      }
+    } else {
+      // If we already have ticket details, just show confirmation
       setLoading(false);
       setShowConfirmation(true);
-    }, 1500);
+    }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setLoading(true);
     
-    // Simulate API call for actual cancellation
-    setTimeout(() => {
+    try {
+      // Use the correct endpoint for deletion - with numeric ID
+      if (ticketDetails && ticketDetails.id) {
+        await axios.delete(`${API_URL}/tickets/${ticketDetails.id}`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+
+        const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-cancelled`, null, {
+          params: {
+            ticketData: ticketDetails.selectedSeats,
+            voyageId: ticketDetails.voyageId
+          },
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        setLoading(false);
+        alert("Your ticket has been successfully cancelled. Email will be sent shortly.");
+        
+        // Reset form and return to My Tickets
+        setTicketId("");
+        setReason("");
+        setShowConfirmation(false);
+        setTicketDetails(null);
+        navigate("/my-tickets");
+      } else {
+        throw new Error("Missing ticket ID for cancellation");
+      }
+    } catch (error) {
+      console.error("Error cancelling ticket:", error);
       setLoading(false);
-      alert("Your ticket has been successfully cancelled. A confirmation email will be sent shortly.");
-      // Reset form
-      setTicketId("");
-      setEmail("");
-      setReason("");
-      setShowConfirmation(false);
-    }, 1500);
+      alert("There was an error cancelling your ticket. Please try again or contact support.");
+    }
   };
 
   const navigateToContact = () => {
     navigate("/contact");
+  };
+
+  // Helper function to get location display text
+  const getLocationDisplay = (ticket, type) => {
+    if (type === 'from') {
+      return ticket.fromStationTitle || "-";
+    } else {
+      return ticket.toStationTitle || "-";
+    }
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Helper function to format time
+  const formatTime = (timeString) => {
+    if (!timeString) return "-";
+    return timeString.substring(0, 5); // Extract HH:MM from the time string
+  };
+
+  // Helper function to format seats display
+  const formatSeats = (seatsString) => {
+    if (!seatsString) return "-";
+    // If the seats are already in a readable format, return as is
+    // Otherwise, format them for better readability
+    return seatsString.split(',').join(', ');
   };
 
   /* You can also add this if you want a more dramatic effect */
@@ -103,24 +255,6 @@ const TicketCancel = () => {
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 font-sans">
-                  Email Address
-                </label>
-                <div className="input-with-icon">
-                  <input 
-                    type="email" 
-                    id="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter the email used for booking" 
-                    required 
-                    className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
-                  />
-                  <Mail className="input-icon" size={18} />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
                 <label htmlFor="reason" className="block text-sm font-medium text-gray-700 font-sans">
                   Reason for Cancellation (Optional)
                 </label>
@@ -142,11 +276,11 @@ const TicketCancel = () => {
                 variant="primary"
                 fullWidth
                 size="lg"
-                loading={loading}
-                disabled={loading}
+                loading={loading || fetchingDetails}
+                disabled={loading || fetchingDetails}
                 className="ticketcancel-button"
               >
-                Continue to Cancel
+                {fetchingDetails ? "Retrieving Ticket Details..." : "Continue to Cancel"}
               </Button>
               
               <div className="bg-blue-50 text-blue-700 p-4 rounded-md mt-4">
@@ -158,36 +292,108 @@ const TicketCancel = () => {
             </form>
           ) : (
             <div className="animate-[fadeIn_0.5s_ease-out]">
-              <div className="flex flex-col items-center pb-4 border-b border-gray-200">
-                <div className="text-yellow-500 text-4xl mb-3">
-                  <i className="fas fa-exclamation-triangle"></i>
+              <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                <div className="flex items-center">
+                  <div className="text-yellow-500 text-4xl mr-3">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800 font-sans">Confirm Cancellation</h2>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 font-sans">Confirm Cancellation</h2>
+                
+                {/* Currency Selector */}
+                <div className="flex items-center">
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D3A73]"
+                  >
+                    <option value="TRY">₺ TRY</option>
+                    <option value="USD">$ USD</option>
+                    <option value="EUR">€ EUR</option>
+                  </select>
+                </div>
               </div>
               
               <div className="py-4">
                 <p className="text-center text-gray-600 mb-4 font-sans">Are you sure you want to cancel your ticket?</p>
-                <div className="bg-gray-50 rounded-md p-4 space-y-2 mb-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 font-sans">Ticket ID:</span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketId}</span>
+                
+                {ticketDetails && (
+                  <div className="bg-gray-50 rounded-md p-4 mb-4">
+                    <div className="mb-3 pb-3 border-b border-gray-200">
+                      <h3 className="font-bold text-gray-800 text-lg mb-1">
+                        {getLocationDisplay(ticketDetails, 'from')} - {getLocationDisplay(ticketDetails, 'to')}
+                      </h3>
+                      <p className="text-sm text-gray-500">Ferry Ticket</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <Ticket className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Ticket ID</p>
+                          <p className="font-medium">{ticketDetails.ticketID}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Calendar className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Departure Date</p>
+                          <p className="font-medium">{formatDate(ticketDetails.departureDate)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Clock className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Departure Time</p>
+                          <p className="font-medium">{formatTime(ticketDetails.departureTime)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Users className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Passenger Count</p>
+                          <p className="font-medium">{ticketDetails.passengerCount}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Map className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Class</p>
+                          <p className="font-medium">{ticketDetails.ticketClass}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Anchor className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                        <div>
+                          <p className="text-sm text-gray-500">Selected Seats</p>
+                          <p className="font-medium">{formatSeats(ticketDetails.selectedSeats)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="pt-2 mt-2 border-t border-gray-200">
+                        <div className="flex items-start">
+                          <DollarSign className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
+                          <div>
+                            <p className="text-sm text-gray-500">Total Price</p>
+                            <p className="font-medium text-lg">{formatPrice(ticketDetails.totalPrice)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 font-sans">Email:</span>
-                    <span className="font-medium text-gray-700 font-sans">{email}</span>
-                  </div>
-                </div>
+                )}
+                
                 <p className="text-red-600 text-sm italic font-sans">This action cannot be undone. Refund policies will apply according to your ticket terms.</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <Button 
-                  onClick={() => {
-                    setShowConfirmation(false);
-                    setTicketId("");
-                    setEmail("");
-                    setReason("");
-                  }}
+                  onClick={() => setShowConfirmation(false)}
                   variant="outline"
                   size="lg"
                   className="ticketcancel-button px-4 py-3 text-base w-full"
@@ -198,6 +404,8 @@ const TicketCancel = () => {
                   onClick={handleConfirm}
                   variant="primary"
                   size="lg"
+                  loading={loading}
+                  disabled={loading}
                   className="ticketcancel-button px-4 py-3 text-base w-full"
                 >
                   Confirm Cancellation

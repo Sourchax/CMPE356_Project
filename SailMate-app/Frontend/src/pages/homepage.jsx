@@ -27,6 +27,18 @@ const Homepage = () => {
   const [stations, setStations] = useState([]);
   const [stationsLoaded, setStationsLoaded] = useState(false);
   const [stationsArray, setStationsArray] = useState([]);
+  const [currency, setCurrency] = useState("TRY");
+
+  const handleCurrencyChange = (e) => {
+    setCurrency(e.target.value);
+  };
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      currency: currency
+    }));
+  }, [currency]);
   
 
   // Fetch stations on component mount
@@ -197,6 +209,7 @@ const Homepage = () => {
         ...formData,
         tripType,
         passengerTypes: passengerDetails,
+        currency: currency
       };
   
       let voyageData = {
@@ -418,9 +431,20 @@ const Homepage = () => {
         {/* Ferry Tickets Header */}
         <div className="bg-[#0D3A73] text-white rounded-t-xl shadow-lg">
           <div className="py-5 px-8 flex items-center justify-center font-semibold text-lg">
-            <i className="fas fa-ship mr-2"></i> Ferry Tickets
+          <i className="fas fa-ship mr-2"></i> Ferry Tickets
+            </div>
+            <div className="flex items-center">
+              <select
+                value={currency}
+                onChange={handleCurrencyChange}
+                className="bg-[#0D3A73] text-white border border-[#1E4D8C] rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#06AED5]"
+              >
+                <option value="TRY">TRY (₺)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="USD">USD ($)</option>
+              </select>
+            </div>
           </div>
-        </div>
         
         {/* Booking Form */}
         <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-b-xl p-8">

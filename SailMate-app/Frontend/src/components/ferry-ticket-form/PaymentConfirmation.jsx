@@ -2,7 +2,7 @@
 import "../../assets/styles/ferry-ticket-form/paymentconfirmation.css";
 
 
-const PaymentConfirmation = ({ onCCDataChange}) => {
+const PaymentConfirmation = ({ onCCDataChange }) => {
   const termsText = `SailMate Payment Terms & Conditions
 
 By proceeding with payment on SailMate, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions`;
@@ -20,6 +20,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formatCardNumber = (value) => {
     const digits = value.replace(/\D/g, '');
@@ -155,6 +156,11 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      return;
+    }
+    
     const allTouched = Object.keys(formData).reduce((acc, field) => {
       acc[field] = true;
       return acc;
@@ -165,7 +171,13 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
     const isValid = validateForm();
     
     if (isValid) {
+      setIsSubmitting(true);
+      // Pass the form data to the parent component
+      // The parent component will handle the actual API call and ticket creation
       onCCDataChange({...formData});
+      
+      // Note: We're not resetting isSubmitting because we want the button to stay in loading state
+      // until the payment process completes or the user is redirected
     }
   };
 
@@ -200,7 +212,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                 onChange={handleChange}
                 onBlur={handleBlur}
                 placeholder="As shown on card"
-                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.name && errors.name ? "border-red-300 bg-red-50" : touched.name && !errors.name ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                disabled={isSubmitting}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.name && errors.name ? "border-red-300 bg-red-50" : touched.name && !errors.name ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
               />
               {touched.name && errors.name && (
                 <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center">
@@ -223,7 +236,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                 onBlur={handleBlur}
                 placeholder="1234 5678 9012 3456"
                 maxLength="19"
-                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cardNumber && errors.cardNumber ? "border-red-300 bg-red-50" : touched.cardNumber && !errors.cardNumber ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                disabled={isSubmitting}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cardNumber && errors.cardNumber ? "border-red-300 bg-red-50" : touched.cardNumber && !errors.cardNumber ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
               />
               {touched.cardNumber && errors.cardNumber && (
                 <p className="mt-1 text-xs sm:text-sm text-red-600 flex items-center">
@@ -244,7 +258,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                   value={formData.expiryMonth}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryMonth && errors.expiryMonth ? "border-red-300 bg-red-50" : touched.expiryMonth && !errors.expiryMonth ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  disabled={isSubmitting}
+                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryMonth && errors.expiryMonth ? "border-red-300 bg-red-50" : touched.expiryMonth && !errors.expiryMonth ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   <option value="">MM</option>
                   {Array.from({ length: 12 }, (_, i) => {
@@ -265,7 +280,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                   value={formData.expiryYear}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryYear && errors.expiryYear ? "border-red-300 bg-red-50" : touched.expiryYear && !errors.expiryYear ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  disabled={isSubmitting}
+                  className={`w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.expiryYear && errors.expiryYear ? "border-red-300 bg-red-50" : touched.expiryYear && !errors.expiryYear ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   <option value="">YY</option>
                   {Array.from({ length: 10 }, (_, i) => {
@@ -289,7 +305,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                   onBlur={handleBlur}
                   maxLength="3"
                   placeholder="123"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cvv && errors.cvv ? "border-red-300 bg-red-50" : touched.cvv && !errors.cvv ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`}
+                  disabled={isSubmitting}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.cvv && errors.cvv ? "border-red-300 bg-red-50" : touched.cvv && !errors.cvv ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 />
                 {touched.cvv && errors.cvv && (
                   <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.cvv}</p>
@@ -304,7 +321,8 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                   name="termsAccepted"
                   checked={formData.termsAccepted}
                   onChange={handleCheckboxChange}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isSubmitting}
+                  className={`h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 />
                 <span className="text-xs sm:text-sm text-gray-600">
                   I accept the <a href="#" onClick={handleTermsClick} className="text-blue-600">terms and conditions</a>
@@ -319,9 +337,20 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
           <div className="mt-6 sm:mt-8">
             <button
               type="submit"
-              className="w-full py-2 sm:py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm sm:text-base"
+              disabled={isSubmitting}
+              className={`w-full py-2 sm:py-3 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm sm:text-base ${isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
             >
-              Confirm Payment
+              {isSubmitting ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                "Confirm Payment"
+              )}
             </button>
           </div>
         </form>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle, User } from 'lucide-react';
+import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle, User, DollarSign } from 'lucide-react';
 import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
 import { useSessionToken } from "../utils/sessions";
@@ -14,6 +14,12 @@ const TicketCheck = () => {
   const [loading, setLoading] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("TRY");
+  const [currencyRates, setCurrencyRates] = useState({
+    TRY: 1,
+    USD: 0.031,
+    EUR: 0.028
+  });
   const navigate = useNavigate();
 
   // Initialize ticket details with empty values
@@ -34,6 +40,55 @@ const TicketCheck = () => {
     voyageId: null,
     passengers: []
   });
+
+  // Currency symbols for display
+  const currencySymbols = {
+    TRY: '₺',
+    USD: '$',
+    EUR: '€'
+  };
+
+  // Fetch currency rates when component mounts
+  useEffect(() => {
+    const fetchCurrencyRates = async () => {
+      try {
+        // Fetch USD rate
+        const usdResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'USD' }
+        });
+        
+        // Fetch EUR rate
+        const eurResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'EUR' }
+        });
+        
+        setCurrencyRates({
+          TRY: 1,
+          USD: usdResponse.data || 0.031,
+          EUR: eurResponse.data || 0.028
+        });
+      } catch (error) {
+        console.error("Error fetching currency rates:", error);
+        // Keep fallback rates if API fails
+      }
+    };
+    
+    fetchCurrencyRates();
+  }, []);
+
+  // Convert price from TRY to selected currency
+  const convertPrice = (priceTRY) => {
+    if (!priceTRY && priceTRY !== 0) return "";
+    if (selectedCurrency === 'TRY') return priceTRY.toFixed(2);
+    return (priceTRY * currencyRates[selectedCurrency]).toFixed(2);
+  };
+  
+  // Format price with currency symbol
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return "";
+    const symbol = currencySymbols[selectedCurrency] || '₺';
+    return `${symbol}${convertPrice(price)}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -179,12 +234,6 @@ const TicketCheck = () => {
     return date.toLocaleDateString();
   };
 
-  // Helper function to format price
-  const formatPrice = (price) => {
-    if (!price && price !== 0) return "";
-    return `₺${price.toFixed(2)}`;
-  };
-
   // Get departure and destination display
   const getDepartureDisplay = () => {
     return ticketDetails.fromStationCity || ticketDetails.fromStationTitle || "-";
@@ -280,12 +329,27 @@ const TicketCheck = () => {
             </>
           ) : (
             <div className="animate-[fadeIn_0.5s_ease-out] selectable">
-              <div className="flex flex-col items-center pb-4 border-b border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-800 font-sans">Ticket Status</h2>
-                <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>
-                  <span className={`font-medium ${getStatusColor(ticketDetails.status)}`}>
-                    {ticketDetails.status}
-                  </span>
+              <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800 font-sans">Ticket Status</h2>
+                  <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>
+                    <span className={`font-medium ${getStatusColor(ticketDetails.status)}`}>
+                      {ticketDetails.status}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Currency Selector */}
+                <div className="flex items-center">
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D3A73]"
+                  >
+                    <option value="TRY">₺ TRY</option>
+                    <option value="USD">$ USD</option>
+                    <option value="EUR">€ EUR</option>
+                  </select>
                 </div>
               </div>
               
@@ -342,7 +406,10 @@ const TicketCheck = () => {
                   </div>
                   
                   <div className="flex justify-between items-center border-t border-gray-200 pt-2 mt-2">
-                    <span className="text-gray-600 font-sans">Total Price:</span>
+                    <span className="text-gray-600 font-sans flex items-center">
+                      <DollarSign size={16} className="mr-2 text-gray-500" />
+                      Total Price:
+                    </span>
                     <span className="font-bold text-gray-900 font-sans">{formatPrice(ticketDetails.totalPrice)}</span>
                   </div>
                 </div>

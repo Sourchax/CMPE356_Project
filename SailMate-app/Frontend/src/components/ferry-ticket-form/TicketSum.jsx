@@ -1,13 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, Calendar, ChevronRight } from 'lucide-react';
+import axios from 'axios';
+
+const API_URL = "http://localhost:8080/api";
 
 const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculated }) => {
   const [departureTotalPrice, setDepartureTotalPrice] = useState(0);
   const [returnTotalPrice, setReturnTotalPrice] = useState(0);
+  const [currencyRates, setCurrencyRates] = useState({
+    TRY: 1,
+    USD: 0.031,
+    EUR: 0.028
+  });
   
   if (!ticketTripInfo) return <div>No ticket data available</div>;
 
-  const { departure, arrival, departureDate, returnDate, passengers, passengerTypes } = ticketTripInfo;
+  const { departure, arrival, departureDate, returnDate, passengers, passengerTypes, currency = 'TRY' } = ticketTripInfo;
+
+  // Currency symbols for display
+  const currencySymbols = {
+    TRY: '₺',
+    USD: '$',
+    EUR: '€'
+  };
+
+  // Get currency symbol
+  const getCurrencySymbol = () => currencySymbols[currency] || '₺';
+  
+  // Fetch currency rates on component mount
+  useEffect(() => {
+    const fetchCurrencyRates = async () => {
+      if (currency === 'TRY') return; // No need to fetch if using default TRY
+      
+      try {
+        // Fetch USD rate
+        const usdResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'USD' }
+        });
+        
+        // Fetch EUR rate
+        const eurResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'EUR' }
+        });
+        
+        setCurrencyRates({
+          TRY: 1,
+          USD: usdResponse.data || 0.031, // Fallback to default if API fails
+          EUR: eurResponse.data || 0.028  // Fallback to default if API fails
+        });
+      } catch (error) {
+        console.error("Error fetching currency rates:", error);
+        // Keep fallback rates if API fails
+      }
+    };
+    
+    fetchCurrencyRates();
+  }, [currency]);
+  
+  // Convert price from TRY to selected currency
+  const convertPrice = (priceTRY) => {
+    if (currency === 'TRY') return priceTRY;
+    return (priceTRY * currencyRates[currency]).toFixed(2);
+  };
+  
+  // Format price with currency symbol
+  const formatPrice = (price) => {
+    if (price === 'N/A') return 'N/A';
+    const symbol = getCurrencySymbol();
+    return `${symbol}${convertPrice(price)}`;
+  };
 
   // Get prices from props instead of hardcoded values
   const getPrice = (className) => {
@@ -104,11 +165,11 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
   // Update prices and notify parent component when they change
   useEffect(() => {
-    // Set local state
+    // Set local state with original TRY values
     setDepartureTotalPrice(departurePriceValue);
     setReturnTotalPrice(returnPriceValue);
     
-    // Notify parent component through callback with just departure and return prices
+    // Notify parent component through callback with original TRY prices
     if (onPriceCalculated) {
       onPriceCalculated({
         departure: departurePriceValue,
@@ -200,7 +261,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
             <div className="border-t my-2"></div>
 
-            {/* Display passenger counts by type */}
+            {/* Display passenger counts by type with converted prices */}
             <div className="mb-2">
               <div className="font-medium mb-1">Passengers:</div>
               {passengerTypes && (
@@ -210,7 +271,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                       <div className="text-gray-700">Adult × {passengerTypes.adult}</div>
                       {passengerPrices.breakdown.adult && (
                         <div className="font-bold" style={{ color: colorStyle }}>
-                          ₺{passengerPrices.breakdown.adult.total.toFixed(2)}
+                          {formatPrice(passengerPrices.breakdown.adult.total)}
                         </div>
                       )}
                     </div>
@@ -224,7 +285,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                       </div>
                       {passengerPrices.breakdown.student && (
                         <div className="font-bold" style={{ color: colorStyle }}>
-                          ₺{passengerPrices.breakdown.student.total.toFixed(2)}
+                          {formatPrice(passengerPrices.breakdown.student.total)}
                         </div>
                       )}
                     </div>
@@ -238,7 +299,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                       </div>
                       {passengerPrices.breakdown.senior && (
                         <div className="font-bold" style={{ color: colorStyle }}>
-                          ₺{passengerPrices.breakdown.senior.total.toFixed(2)}
+                          {formatPrice(passengerPrices.breakdown.senior.total)}
                         </div>
                       )}
                     </div>
@@ -251,7 +312,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                       </div>
                       {passengerPrices.breakdown.child && (
                         <div className="font-bold" style={{ color: colorStyle }}>
-                          ₺0.00
+                          {formatPrice(0)}
                         </div>
                       )}
                     </div>
@@ -260,42 +321,46 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
               )}
             </div>
 
-            {/* Display only the selected seat type's price */}
+            {/* Display only the selected seat type's price with currency conversion */}
             <div className="flex justify-between items-center mb-2">
               <div className="text-gray-600">Base Price</div>
               <div className="font-bold" style={{ color: colorStyle }}>
-                ₺{selectedPrice}
+                {formatPrice(selectedPrice)}
               </div>
             </div>
 
             <div className="border-t my-2"></div>
 
-            {/* Display Service Fee */}
+            {/* Display Service Fee with currency conversion */}
             <div className="flex justify-between items-center mb-2">
               <div className="text-gray-600">Service Fee</div>
               <div className="font-bold" style={{ color: colorStyle }}>
-                ₺{serviceFee * passengers}
+                {formatPrice(serviceFee * passengers)}
               </div>
             </div>
 
-            {/* Display Total Price */}
+            {/* Display Total Price with currency conversion */}
             <div className="bg-green-500 text-white p-2 flex justify-between items-center" style={{ backgroundColor: colorStyle }}>
               <div>TOTAL</div>
               <div>
-                {ticket.label === "ONE WAY" ? `₺${departurePriceValue.toFixed(2)}` : `₺${returnPriceValue.toFixed(2)}`}
+                {ticket.label === "ONE WAY" 
+                  ? formatPrice(departurePriceValue)
+                  : formatPrice(returnPriceValue)
+                }
               </div>
             </div>
           </div>
         );
       })}
 
-      {/* Total Price at the end */}
+      {/* Grand Total with currency conversion */}
       <div className="bg-green-600 text-white p-4 mt-6 rounded-md shadow-md flex justify-between items-center">
         <div className="text-lg font-bold">Grand Total</div>
         <div className="text-xl font-bold">
-          {returnDate === "" ? 
-            `₺${departurePriceValue.toFixed(2)}` : 
-            `₺${(departurePriceValue + returnPriceValue).toFixed(2)}`}
+          {returnDate === "" 
+            ? formatPrice(departurePriceValue)
+            : formatPrice(departurePriceValue + returnPriceValue)
+          }
         </div>
       </div>
     </>

@@ -4,15 +4,67 @@ import PromoLogo from "../../assets/images/Promo.png";
 import EconomyLogo from "../../assets/images/Economy.png";
 import BusinessLogo from "../../assets/images/Business.png";
 import { Ship, Clock, Users, ChevronUp, ChevronDown, Calendar, ArrowRight } from "lucide-react";
+import axios from 'axios';
+
+const API_URL = "http://localhost:8080/api";
 
 const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectReturn, prices }) => {
-
   const [departureTrips, setDepartureTrips] = useState([]);
   const [returnTrips, setReturnTrips] = useState([]);
   const [selectedOption, setSelectedOption] = useState({
     departure: null,
     return: null
   });
+  const [currencyRates, setCurrencyRates] = useState({
+    TRY: 1,
+    USD: 0.031,
+    EUR: 0.028
+  });
+
+  // Get the selected currency from tripData
+  const selectedCurrency = tripData.currency || 'TRY';
+  
+  // Currency symbols for display
+  const currencySymbols = {
+    TRY: '₺',
+    USD: '$',
+    EUR: '€'
+  };
+  
+  // Fetch currency rates on component mount
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (selectedCurrency === 'TRY') return; // No need to fetch if using default TRY
+      
+      try {
+        // Use your API to get conversion rates
+        const usdResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'USD' }
+        });
+        
+        const eurResponse = await axios.get(`${API_URL}/currency/convert`, {
+          params: { amount: 1, from: 'TRY', to: 'EUR' }
+        });
+        
+        setCurrencyRates({
+          TRY: 1,
+          USD: usdResponse.data || 0.031, // Fallback to default if API fails
+          EUR: eurResponse.data || 0.028  // Fallback to default if API fails
+        });
+      } catch (error) {
+        console.error("Error fetching currency rates:", error);
+        // Keep fallback rates if API fails
+      }
+    };
+    
+    fetchRates();
+  }, [selectedCurrency]);
+  
+  // Convert price from TRY to selected currency
+  const convertPrice = (priceTRY) => {
+    if (selectedCurrency === 'TRY') return priceTRY;
+    return (priceTRY * currencyRates[selectedCurrency]).toFixed(2);
+  };
 
   // Get price values from the price prop
   const getPrice = (className) => {
@@ -20,7 +72,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     return priceItem ? priceItem.value : 0;
   };
 
-  // Get all required prices from props
+  // Get all required prices from props - these are in TRY
   const promoPrice = getPrice("Promo")*tripData.passengers;
   const economyPrice = getPrice("Economy")*tripData.passengers;
   const businessPrice = getPrice("Business")*tripData.passengers;
@@ -231,7 +283,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             onClick={() => !promoDisabled && handleSelectTrip(trip, "promo", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Promo</div>
-            <div className="text-base font-bold">{trip.promo}₺</div>
+            <div className="text-base font-bold">{convertPrice(trip.promo)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
               {promoDisabled ? 'Not enough seats' : `${trip.promoSeats} seats`}
@@ -253,7 +305,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             onClick={() => !economyDisabled && handleSelectTrip(trip, "economy", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Economy</div>
-            <div className="text-base font-bold">{trip.economy}₺</div>
+            <div className="text-base font-bold">{convertPrice(trip.economy)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
               {economyDisabled ? 'Not enough seats' : `${trip.economySeats} seats`}
@@ -275,7 +327,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             onClick={() => !businessDisabled && handleSelectTrip(trip, "business", isReturn)}
           >
             <div className="text-xs font-medium mb-1">Business</div>
-            <div className="text-base font-bold">{trip.business}₺</div>
+            <div className="text-base font-bold">{convertPrice(trip.business)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
               {businessDisabled ? 'Not enough seats' : `${trip.businessSeats} seats`}
@@ -370,7 +422,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                         ? "text-black" 
                         : ""
                     }`}>
-                      {trip.promo}₺
+                      {convertPrice(trip.promo)}{currencySymbols[selectedCurrency]}
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "promo" && 
@@ -408,7 +460,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                         ? "text-black" 
                         : ""
                     }`}>
-                      {trip.economy}₺
+                      {convertPrice(trip.economy)}{currencySymbols[selectedCurrency]}
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "economy" && 
@@ -446,7 +498,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                         ? "text-white" 
                         : ""
                     }`}>
-                      {trip.business}₺
+                      {convertPrice(trip.business)}{currencySymbols[selectedCurrency]}
                     </div>
                     
                     {selectedOption[isReturn ? "return" : "departure"]?.type === "business" && 
@@ -562,7 +614,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <div className="flex items-center justify-between md:justify-end md:space-x-4">
               <div className="text-right">
                 <div className="text-sm text-gray-500">Base Price</div>
-                <div className="text-xl font-bold text-blue-600">{basePrice}₺</div>
+                <div className="text-xl font-bold text-blue-600">{convertPrice(basePrice)}{currencySymbols[selectedCurrency]}</div>
               </div>
               
               <button 
@@ -647,7 +699,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <div className="flex items-center justify-between md:justify-end md:space-x-4">
               <div className="text-right">
                 <div className="text-sm text-gray-500">Base Price</div>
-                <div className="text-xl font-bold text-blue-600">{basePrice}₺</div>
+                <div className="text-xl font-bold text-blue-600">{convertPrice(basePrice)}{currencySymbols[selectedCurrency]}</div>
               </div>
               
               <button 

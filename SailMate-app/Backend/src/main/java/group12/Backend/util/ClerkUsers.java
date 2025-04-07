@@ -8,6 +8,7 @@ import com.clerk.backend_api.models.components.User;
 import com.clerk.backend_api.models.operations.DeleteUserResponse;
 import com.clerk.backend_api.models.operations.GetUserListRequest;
 import com.clerk.backend_api.models.operations.GetUserListResponse;
+import com.clerk.backend_api.models.operations.GetUserResponse;
 import com.clerk.backend_api.models.operations.UpdateUserMetadataRequestBody;
 import com.clerk.backend_api.models.operations.UpdateUserMetadataResponse;
 
@@ -89,6 +90,29 @@ public class ClerkUsers {
             
         } catch (Exception e) {
             throw new Exception("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    public static HashMap<String, Object> getUserEmail(String userId) throws Exception {
+        Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
+        Clerk sdk = Clerk.builder()
+            .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
+            .build();
+        
+        try{
+            GetUserResponse res = sdk.users().get()
+                .userId(userId)
+                .call();
+
+            HashMap<String, Object> user = new HashMap<>();
+            user.put("full_name", res.user().get().firstName().get() + " " + res.user().get().lastName().get());
+            if (res.user().get().emailAddresses().isPresent())
+                user.put("email", res.user().get().emailAddresses().get().getFirst().emailAddress());
+
+            return user;
+        }
+        catch (Exception e) {
+            throw new Exception("Error getting user: " + e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package group12.Backend.controller;
 
+import com.clerk.backend_api.Clerk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.TicketDTO;
@@ -8,16 +9,19 @@ import group12.Backend.service.TicketService;
 import group12.Backend.service.VoyageService;
 import group12.Backend.entity.Voyage;
 import group12.Backend.util.Authentication;
-
+import group12.Backend.util.ClerkUsers;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +33,9 @@ public class TicketController {
     private final TicketService ticketService;
     private final VoyageService voyageService;
     private final ActivityLogService activityLogService;
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @Autowired
     public TicketController(TicketService ticketService, VoyageService voyageService, ActivityLogService activityLogService) {
@@ -46,14 +53,6 @@ public class TicketController {
         Claims claims = Authentication.getClaims(auth);
         
         List<TicketDTO.TicketResponse> tickets = ticketService.getAllTickets();
-        
-        // Log the activity
-        ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
-        logRequest.setActionType("READ");
-        logRequest.setEntityType("TICKET");
-        logRequest.setEntityId("all");
-        logRequest.setDescription("Retrieved all tickets");
-        activityLogService.createActivityLog(logRequest, claims);
         
         return ResponseEntity.ok(tickets);
     }
@@ -105,13 +104,6 @@ public class TicketController {
             }
         }
         
-        // Log the activity
-        ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
-        logRequest.setActionType("READ");
-        logRequest.setEntityType("TICKET");
-        logRequest.setEntityId("user/" + claims.getSubject());
-        logRequest.setDescription("Retrieved all tickets for user ID: " + claims.getSubject());
-        activityLogService.createActivityLog(logRequest, claims);
         
         return ResponseEntity.ok(tickets);
     }
@@ -264,9 +256,15 @@ public class TicketController {
     public ResponseEntity<Void> deleteTicket(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
         Claims claims = Authentication.getClaims(auth);
         
+        if(claims == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        }
         // Get ticket details for the log before deletion
         Optional<TicketDTO.TicketResponse> ticketToDelete = ticketService.getTicketById(id);
+
         String ticketID = ticketToDelete.isPresent() ? ticketToDelete.get().getTicketID() : String.valueOf(id);
+
+        HashMap<String, Object> user = ClerkUsers.getUserEmail(claims.getSubject());
         
         boolean deleted = ticketService.deleteTicket(id);
         
@@ -285,8 +283,81 @@ public class TicketController {
                         ticket.getToStationTitle(),
                         ticket.getDepartureDate()
                     ));
+                    
+                    // Send email notification about ticket cancellation
+                    try {
+                        SimpleMailMessage message = new SimpleMailMessage();
+                        message.setFrom("sailmatesup@gmail.com");
+                        message.setTo((String) user.get("email"));
+                        message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
+                        message.setText("Dear " + user.get("full_name")+",\n\n" +
+                                "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                                "Voyage Details:\n" +
+                                "From: " + ticket.getFromStationTitle() + "\n" +
+                                "To: " + ticket.getToStationTitle() + "\n" +
+                                "Departure Date: " + ticket.getDepartureDate() + "\n" +
+                                "Passenger Count: " + ticket.getPassengerCount() + "\n" +
+                                "Seat Class: " + ticket.getTicketClass() + "\n" +
+                                "Selected Seats: " + ticket.getSelectedSeats() + "\n\n" +
+                                "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                                "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                                "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                                "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                                "Smooth sailing,\n" +
+                                "The SailMate Team");
+                        
+                        emailSender.send(message);
+                        System.out.println("Cancellation email sent successfully to: " + (String) user.get("email"));
+                    } catch (Exception e) {
+                        // Log the error but don't fail the request
+                        System.err.println("Failed to send cancellation email: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
                     // If enrichment fails, continue without voyage details
+                    // Still try to send a basic cancellation email
+                    try {
+                        SimpleMailMessage message = new SimpleMailMessage();
+                        message.setFrom("sailmatesup@gmail.com");
+                        message.setTo((String) user.get("email"));
+                        message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
+                        message.setText("Dear " + user.get("full_name")+",\n\n" +
+                                "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                                "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                                "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                                "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                                "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                                "Smooth sailing,\n" +
+                                "The SailMate Team");
+                        
+                        emailSender.send(message);
+                        System.out.println("Basic cancellation email sent successfully to: " + (String) user.get("email"));
+                    } catch (Exception mailEx) {
+                        System.err.println("Failed to send basic cancellation email: " + mailEx.getMessage());
+                        mailEx.printStackTrace();
+                    }
+                }
+            } else {
+                // Send a basic cancellation email if ticket details aren't available
+                try {
+                    SimpleMailMessage message = new SimpleMailMessage();
+                    message.setFrom("sailmatesup@gmail.com");
+                        message.setTo((String) user.get("email"));
+                        message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
+                        message.setText("Dear " + user.get("full_name")+",\n\n" +
+                            "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                            "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                            "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                            "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                            "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                            "Smooth sailing,\n" +
+                            "The SailMate Team");
+                    
+                    emailSender.send(message);
+                    System.out.println("Basic cancellation email sent successfully to: " + (String) user.get("email"));
+                } catch (Exception e) {
+                    System.err.println("Failed to send basic cancellation email: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
             
@@ -331,6 +402,20 @@ public class TicketController {
             } catch (Exception e) {
                 throw new RuntimeException("Error fetching voyage information: " + e.getMessage(), e);
             }
+        }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTicketCount(@RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            return ResponseEntity.ok(ticketService.getTicketCount());
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
     }
 }

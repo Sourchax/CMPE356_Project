@@ -16,19 +16,48 @@ import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useSessionToken } from "../../utils/sessions";
 
-
 const ManagerDashboard = () => {
   const { user } = useUser();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loaded, setLoaded] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
-    activeUsers: 0, // Initialize to 0, will be updated from API
-    pendingComplaints: 0, // Initialize to 0, will be updated from API
+    activeUsers: 0,
+    pendingComplaints: 0,
     ticketTypes: 8,
-    charts: 2
+    charts: 2,
+    ticketsSold: 0 // New state for tickets sold
   });
   const [loading, setLoading] = useState(true);
   const [userCountLoading, setUserCountLoading] = useState(true);
+  const [ticketSoldLoading, setTicketSoldLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTicketsSold = async () => {
+      try {
+        setTicketSoldLoading(true);
+        const response = await axios.get('http://localhost:8080/api/tickets/count', {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        if (response.data) {
+          setDashboardStats(prevStats => ({
+            ...prevStats,
+            charts: response.data,
+            ticketsSold: response.data
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching tickets purchased:", error);
+        // In case of error, keep the default value
+      } finally {
+        setTicketSoldLoading(false);
+      }
+    };
+
+    fetchTicketsSold();
+  }, []);
 
   // Fetch pending complaints count
   useEffect(() => {
@@ -123,7 +152,12 @@ const ManagerDashboard = () => {
       loading: loading 
     },
     { label: "Ticket Types", value: dashboardStats.ticketTypes, icon: DollarSign },
-    { label: "Charts", value: dashboardStats.charts, icon: TrendingUp }
+    { 
+      label: "Total Tickets Purchased", 
+      value: dashboardStats.charts, 
+      icon: TrendingUp,
+      loading: ticketSoldLoading 
+    }
   ];
 
   // Card data
@@ -169,14 +203,16 @@ const ManagerDashboard = () => {
       bgColor: "#EEF2FF",
       borderColor: "border-indigo-200",
       path: "/manager/Charts",
-      count: dashboardStats.charts
+      count: dashboardStats.charts,
+      loading: ticketSoldLoading,
+      countLabel: "total tickets purchased"
     }
   ];
 
   // Quick actions
   const quickActions = [
     {
-      title: "Add New User",
+      title: "Manage Users",
       description: "Create a new user account",
       path: "/manager/Users",
       state: { openAddModal: true }

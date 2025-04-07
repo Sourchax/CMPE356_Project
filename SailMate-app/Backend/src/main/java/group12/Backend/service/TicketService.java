@@ -469,4 +469,7 @@ public class TicketService {
         
         notificationService.createNotification(notificationRequest);
     }
+    public long getTicketCount() {
+        return ticketRepository.count();
+    }
 }
