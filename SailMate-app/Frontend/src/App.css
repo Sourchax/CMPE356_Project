@@ -6,10 +6,6 @@ body {
     user-select: none;
   }
 
-.selectable {
-  user-select: text !important;
-}
-
 * {
     margin: 0;
     padding: 0;
