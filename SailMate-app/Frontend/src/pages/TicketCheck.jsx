@@ -115,26 +115,28 @@ const TicketCheck = () => {
     navigate("/contact");
   };
 
-  const handleDownloadTicket = async () => {
+  const handleDownloadTicket = async (ticketId) => {console.log("🔍 selectedTicket received in handleDownloadTicket:", ticketDetails);
     try {
-      alert(`Downloading ticket ${ticketDetails.ticketID}...`);
-      
-      // Real implementation would fetch a PDF or generate one
-      // const response = await axios.get(`${API_URL}/tickets/${ticketDetails.id}/download`, {
-      //   responseType: 'blob'
-      // });
-      // const url = window.URL.createObjectURL(new Blob([response.data]));
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', `ticket-${ticketDetails.ticketID}.pdf`);
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
+      const response = await axios.get(`${API_URL}/tickets/${ticketId}/download`, {
+        headers: {
+          Authorization: `Bearer ${useSessionToken()}`
+        },
+        responseType: 'blob'
+      });
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `ticket-${ticketId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (err) {
       console.error("Error downloading ticket:", err);
       alert("Failed to download ticket. Please try again.");
     }
   };
+  
 
   /* You can also add this if you want a more dramatic effect */
   const heroStyles = `
@@ -436,7 +438,7 @@ const TicketCheck = () => {
                   Go Back
                 </Button>
                 <Button 
-                  onClick={handleDownloadTicket}
+                  onClick={() => handleDownloadTicket(ticketDetails.ticketID)}
                   variant="primary"
                   size="lg"
                   disabled={ticketDetails.status.toLowerCase() === "canceled"}
