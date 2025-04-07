@@ -1,6 +1,7 @@
 package group12.Backend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper;
 
 import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.TicketDTO;
@@ -156,7 +157,7 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/tickets/{ticketId}/download")
+    @GetMapping("/{ticketId}/download")
     public ResponseEntity<byte[]> downloadTicket(@PathVariable String ticketId, @RequestHeader("Authorization") String auth) throws Exception {
         Claims claims = Authentication.getClaims(auth);
         if (claims == null)
@@ -170,7 +171,7 @@ public class TicketController {
                 .build());
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate ticket PDF: " + e.getMessage());
         }
     }
     @PostMapping

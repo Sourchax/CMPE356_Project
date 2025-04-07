@@ -105,7 +105,7 @@ const handleDownloadTicket = async (ticketId) => {
         Authorization: `Bearer ${useSessionToken()}`
       },
       responseType: 'blob'
-    });
+    }); 
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
