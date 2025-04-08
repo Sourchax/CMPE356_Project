@@ -7,18 +7,21 @@ import {
   Clock,
   User,
   Send,
-  Tag
+  Tag,
+  LogIn
 } from "lucide-react";
 import {useSessionToken} from "../utils/sessions";
 import { FaFacebookF, FaXTwitter, FaInstagram} from 'react-icons/fa6';
 import Button from "../components/Button";
 import axios from "axios";
-import { useUser } from "@clerk/clerk-react"; // Import Clerk's useUser hook
+import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const Contact = () => {
   // Get userId from Clerk authentication
   const { user, isSignedIn } = useUser();
   const userId = isSignedIn ? user.id : "guest";
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -31,9 +34,6 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-
-  // Rest of your validation functions remain the same
-  // validateField, handleChange, handleBlur, validateForm, getCharacterCount
 
   const validateField = (name, value) => {
     let error = null;
@@ -131,9 +131,12 @@ const Contact = () => {
     return `${formData.message.length}/1000`;
   };
   
-  // Updated handleSubmit function to create a complaint
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // If user is not signed in, return early
+    if (!isSignedIn) return;
+    
     setSubmitError(null);
     
     if (validateForm()) {
@@ -291,11 +294,12 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Your name"
-                    className={errors.name ? "error" : ""}
+                    className={`${errors.name ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.name ? "true" : "false"}
                     aria-describedby={errors.name ? "name-error" : undefined}
                     maxLength={50}
                     required
+                    disabled={!isSignedIn}
                   />
                   <User className="input-icon" size={18} />
                 </div>
@@ -313,11 +317,12 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Your email"
-                    className={errors.email ? "error" : ""}
+                    className={`${errors.email ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.email ? "true" : "false"}
                     aria-describedby={errors.email ? "email-error" : undefined}
                     maxLength={100}
                     required
+                    disabled={!isSignedIn}
                   />
                   <Mail className="input-icon" size={18} />
                 </div>
@@ -335,11 +340,12 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Message subject"
-                    className={errors.subject ? "error" : ""}
+                    className={`${errors.subject ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.subject ? "true" : "false"}
                     aria-describedby={errors.subject ? "subject-error" : undefined}
                     maxLength={100}
                     required
+                    disabled={!isSignedIn}
                   />
                   <Tag className="input-icon" size={18} />
                 </div>
@@ -356,11 +362,12 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Your message"
-                    className={errors.message ? "error" : ""}
+                    className={`${errors.message ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.message ? "true" : "false"}
                     aria-describedby={errors.message ? "message-error" : undefined}
                     maxLength={1000}
                     required
+                    disabled={!isSignedIn}
                   ></textarea>
                   <Send className="input-icon" size={18} />
                   <div className="character-count">{getCharacterCount()}</div>
@@ -372,16 +379,35 @@ const Contact = () => {
                 <span className="required">*</span> Required fields
               </div>
               
-              <Button 
-                type="submit" 
-                loading={loading}
-                variant="primary"
-                fullWidth
-                size="lg"
-                className="contact-submit-btn mt-4"
-              >
-                Send Message
-              </Button>
+              {!isSignedIn ? (
+                <div className="mt-6 p-6 bg-gray-50 border border-dashed border-gray-200 rounded-lg text-center animate-pulse">
+                  <div className="flex items-center justify-center gap-3 text-gray-600 mb-4">
+                    <LogIn size={18} />
+                    <p className="m-0 text-base">Please sign in to send us a message</p>
+                  </div>
+                  <Button 
+                    type="button"
+                    variant="secondary"
+                    fullWidth
+                    size="lg"
+                    className="font-medium transition-all duration-300 mt-4"
+                    onClick={() => navigate("/sign-in")}
+                  >
+                    Sign In
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  type="submit" 
+                  loading={loading}
+                  variant="primary"
+                  fullWidth
+                  size="lg"
+                  className="contact-submit-btn mt-4"
+                >
+                  Send Message
+                </Button>
+              )}
             </form>
           </div>
         </div>
