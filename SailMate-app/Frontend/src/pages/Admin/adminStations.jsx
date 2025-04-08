@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle, Loader } from "lucide-react";
 import {useSessionToken} from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -16,6 +16,7 @@ const AdminStations = () => {
   const [editingStation, setEditingStation] = useState(null);
   const [formData, setFormData] = useState({ title: "", personnel: "", phoneno: "", city: "", address: "", status: "active" });
   const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
   
   // For delete confirmation modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -86,11 +87,11 @@ const AdminStations = () => {
       newErrors.phoneno = "Please enter a valid phone number with at least 10 digits";
     }
     
-    // City validation - allow letters, spaces, hyphens, and common punctuation
+    // City validation - allow only letters, spaces, hyphens, and apostrophes, including Turkish characters
     if (!formData.city.trim()) {
       newErrors.city = "City is required";
-    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.personnel.trim())) {
-      newErrors.city = "City can only contain letters, spaces, and basic punctuation";
+    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.city.trim())) {
+      newErrors.city = "City can only contain letters, spaces, hyphens, and apostrophes";
     }
     
     // Address validation - more comprehensive
@@ -102,6 +103,30 @@ const AdminStations = () => {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle input change with real-time validation for city field
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Set the form data
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear previous error for this field
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
+    
+    // Real-time validation for city field
+    if (name === "city" && value) {
+      // Check if city contains only letters (including Turkish characters), spaces, hyphens, and apostrophes
+      if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]*$/.test(value)) {
+        setErrors({ 
+          ...errors, 
+          [name]: "City can only contain letters, spaces, hyphens, and apostrophes" 
+        });
+      }
+    }
   };
 
   const checkActiveVoyages = async (stationId) => {
@@ -174,7 +199,10 @@ const AdminStations = () => {
   const handleSave = async (event) => {
     event.preventDefault();
     if (!validateForm()) return;
+    
+    setIsSaving(true);
     const token = useSessionToken();
+    
     try {
       if (editingStation) {
         // Update existing station
@@ -203,6 +231,8 @@ const AdminStations = () => {
     } catch (err) {
       console.error("Error saving station:", err);
       setError("Failed to save station. Please check your input and try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -339,42 +369,128 @@ const AdminStations = () => {
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg sm:text-xl font-semibold mb-4">{editingStation ? "Edit Station" : "Add Station"}</h2>
             <form onSubmit={handleSave} className="space-y-4">
-              {[
-                { field: "title", placeholder: "Station Name" },
-                { field: "personnel", placeholder: "Contact Person" },
-                { field: "phoneno", placeholder: "Phone Number" },
-                { field: "city", placeholder: "City" },
-                { field: "address", placeholder: "Address" }
-              ].map((item, index) => (
-                <div key={index} className="flex flex-col">
-                  <div className="flex items-center border p-2 rounded-md">
-                    {React.createElement(icons[index], { size: 20, className: "text-gray-500 mr-2 flex-shrink-0" })}
-                    <input
-                      type="text"
-                      name={item.field}
-                      value={formData[item.field]}
-                      onChange={(e) => setFormData({ ...formData, [item.field]: e.target.value })}
-                      placeholder={item.placeholder}
-                      className="w-full outline-none text-sm sm:text-base"
-                      required
-                    />
-                  </div>
-                  {errors[item.field] && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors[item.field]}</p>}
+              {/* Station Title */}
+              <div className="flex flex-col">
+                <label htmlFor="title" className="text-sm text-gray-600 mb-1 ml-1">Station Name</label>
+                <div className={`flex items-center border rounded-md overflow-hidden ${errors.title ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
+                  <span className="bg-gray-50 p-2 border-r border-gray-200">
+                    <MapPin size={20} className="text-gray-500" />
+                  </span>
+                  <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="Enter station name"
+                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                  />
                 </div>
-              ))}
-              <div className="flex justify-between gap-2 mt-4">
+                {errors.title && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.title}</p>}
+              </div>
+
+              {/* Contact Person */}
+              <div className="flex flex-col">
+                <label htmlFor="personnel" className="text-sm text-gray-600 mb-1 ml-1">Contact Person</label>
+                <div className={`flex items-center border rounded-md overflow-hidden ${errors.personnel ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
+                  <span className="bg-gray-50 p-2 border-r border-gray-200">
+                    <User size={20} className="text-gray-500" />
+                  </span>
+                  <input
+                    id="personnel"
+                    type="text"
+                    name="personnel"
+                    value={formData.personnel}
+                    onChange={handleInputChange}
+                    placeholder="Enter contact person"
+                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                  />
+                </div>
+                {errors.personnel && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.personnel}</p>}
+              </div>
+
+              {/* Phone Number */}
+              <div className="flex flex-col">
+                <label htmlFor="phoneno" className="text-sm text-gray-600 mb-1 ml-1">Phone Number</label>
+                <div className={`flex items-center border rounded-md overflow-hidden ${errors.phoneno ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
+                  <span className="bg-gray-50 p-2 border-r border-gray-200">
+                    <Phone size={20} className="text-gray-500" />
+                  </span>
+                  <input
+                    id="phoneno"
+                    type="text"
+                    name="phoneno"
+                    value={formData.phoneno}
+                    onChange={handleInputChange}
+                    placeholder="Enter phone number"
+                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                  />
+                </div>
+                {errors.phoneno && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.phoneno}</p>}
+              </div>
+
+              {/* City */}
+              <div className="flex flex-col">
+                <label htmlFor="city" className="text-sm text-gray-600 mb-1 ml-1">City</label>
+                <div className={`flex items-center border rounded-md overflow-hidden ${errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
+                  <span className="bg-gray-50 p-2 border-r border-gray-200">
+                    <Building size={20} className="text-gray-500" />
+                  </span>
+                  <input
+                    id="city"
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="Enter city name"
+                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                  />
+                </div>
+                {errors.city && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.city}</p>}
+              </div>
+
+              {/* Address */}
+              <div className="flex flex-col">
+                <label htmlFor="address" className="text-sm text-gray-600 mb-1 ml-1">Address</label>
+                <div className={`flex items-center border rounded-md overflow-hidden ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
+                  <span className="bg-gray-50 p-2 border-r border-gray-200">
+                    <Home size={20} className="text-gray-500" />
+                  </span>
+                  <input
+                    id="address"
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Enter address"
+                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                  />
+                </div>
+                {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address}</p>}
+              </div>
+
+              <div className="flex justify-between gap-2 mt-6">
                 <button 
                   type="button" 
                   onClick={closeModal} 
-                  className="bg-gray-300 px-3 sm:px-4 py-2 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1"
+                  className="bg-gray-300 px-3 sm:px-4 py-2.5 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1 disabled:opacity-70"
+                  disabled={isSaving}
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1"
+                  disabled={isSaving}
+                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1 disabled:opacity-70 flex justify-center items-center"
                 >
-                  Save
+                  {isSaving ? (
+                    <>
+                      <Loader size={18} className="animate-spin mr-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
                 </button>
               </div>
             </form>
