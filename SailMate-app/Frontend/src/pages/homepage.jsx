@@ -28,6 +28,54 @@ const Homepage = () => {
   const [stationsLoaded, setStationsLoaded] = useState(false);
   const [stationsArray, setStationsArray] = useState([]);
   const [currency, setCurrency] = useState("TRY");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showError, setShowError] = useState(false);
+
+  // Error notification component
+  const ErrorNotification = () => {
+    if (!showError) return null;
+    
+    return (
+      <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease-out]">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-md">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">{errorMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  onClick={() => setShowError(false)}
+                  className="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-200 focus:outline-none"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Helper function to display error
+  const displayError = (message) => {
+    setErrorMessage(message);
+    setShowError(true);
+    
+    // Auto-hide after 6 seconds
+    setTimeout(() => {
+      setShowError(false);
+    }, 6000);
+  };
 
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
@@ -56,11 +104,13 @@ const Homepage = () => {
           // Fallback to hardcoded values if API returns empty array
           console.log("API returned empty array, using hardcoded stations");
           setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+          displayError("Could not load stations from server. Using default stations instead.");
         }
       } catch (err) {
         console.error("Error fetching stations:", err);
         // Fallback to hardcoded stations if API fails
         setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
+        displayError("Failed to connect to server. Using default stations instead.");
       } finally {
         setStationsLoaded(true);
       }
@@ -190,17 +240,17 @@ const Homepage = () => {
     }
   
     if (formData.departure === formData.arrival) {
-      alert("Departure and arrival locations cannot be the same. Please select different locations.");
+      displayError("Departure and arrival locations cannot be the same. Please select different locations.");
       return;
     }
   
     if (formData.passengers === 0) {
-      alert("Please enter a valid number of passengers.");
+      displayError("Please enter a valid number of passengers.");
       return;
     }
   
     if (passengerDetails.child !== 0 && passengerDetails.adult === 0 && passengerDetails.senior === 0) {
-      alert("There should be at least 1 adult passenger for children!");
+      displayError("There should be at least 1 adult passenger for children!");
       return;
     }
   
@@ -235,7 +285,7 @@ const Homepage = () => {
         });
   
         if (response1.data.length === 0 || response2.data.length === 0) {
-          alert("No voyages available for your selected route and date. Please try different options.");
+          displayError("No voyages available for your selected route and date. Please try different options.");
           return;
         }
   
@@ -264,7 +314,7 @@ const Homepage = () => {
         });
   
         if (response.data.length === 0) {
-          alert("No voyages available for your selected route and date. Please try different options.");
+          displayError("No voyages available for your selected route and date. Please try different options.");
           return;
         }
   
@@ -298,24 +348,21 @@ const Homepage = () => {
       console.log(tripData);
     } catch (error) {
       console.error("Error searching for voyages:", error);
-      alert("There was a problem searching for voyages. Please try again later.");
+      displayError("There was a problem searching for voyages. Please try again later.");
     }
   };
   
-  
-  // Add this useEffect hook near your other hooks at the top of the component
+
   const [dropdownPosition, setDropdownPosition] = useState('bottom');
 
-  // Add this effect to handle dropdown positioning
   useEffect(() => {
     if (showPassengerModal) {
-      // Check if we need to render dropdown upward
       const handleDropdownPosition = () => {
         const passengerElement = document.getElementById('passenger-dropdown-button');
         if (passengerElement) {
           const rect = passengerElement.getBoundingClientRect();
           const spaceBelow = window.innerHeight - rect.bottom;
-          const dropdownHeight = 350; // Approximate height of the dropdown
+          const dropdownHeight = 350;
           
           if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
             setDropdownPosition('top');
@@ -335,9 +382,9 @@ const Homepage = () => {
       };
     }
   }, [showPassengerModal]);
-
   return (
     <>
+      <ErrorNotification />
       {/* Modern Hero Section with Dynamic Elements */}
       <section className="relative h-[65vh] md:h-[75vh] flex items-center justify-center overflow-hidden">
         {/* Background Image Slider with Enhanced Overlay */}
