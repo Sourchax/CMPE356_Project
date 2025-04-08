@@ -482,24 +482,38 @@ const FerryTicketForm = () => {
     return () => clearInterval(timer);
   }, [time, navigate]);
 
-  useEffect(() => {
-    if (currentStep === 4) {
-      const progressTimer = setInterval(() => {
-        setFormData((prevData) => {
-          if (prevData.progress < 100) {
-            return { ...prevData, progress: prevData.progress + 1 };
-          } else {
-            clearInterval(progressTimer);
-            setTimeout(() => {
+// Replace your current useEffect with this improved version
+useEffect(() => {
+  let progressTimer;
+  let navigationTimeout;
+  
+  if (currentStep === 4) {
+    progressTimer = setInterval(() => {
+      setFormData((prevData) => {
+        if (prevData.progress < 100) {
+          return { ...prevData, progress: prevData.progress + 1 };
+        } else {
+          clearInterval(progressTimer);
+          // Store the timeout reference so we can clear it if needed
+          navigationTimeout = setTimeout(() => {
+            // Check if component is still mounted before navigation
+            if (document.body.contains(document.getElementById('ferry-form-container'))) {
               navigate('/');
-            }, 500);
-            return { ...prevData, progress: 100 };
-          }
-        });
-      }, 30);
-      console.log("Form Submitted:", formData); // To fill the bar over 3 seconds
-    }
-  }, [currentStep, navigate]);
+            }
+          }, 500);
+          return { ...prevData, progress: 100 };
+        }
+      });
+    }, 30);
+    console.log("Form Submitted:", formData);
+  }
+  
+  // Clean up function that runs when component unmounts or dependencies change
+  return () => {
+    if (progressTimer) clearInterval(progressTimer);
+    if (navigationTimeout) clearTimeout(navigationTimeout);
+  };
+}, [currentStep, navigate]);
 
   // Get the total count of passengers (one way)
   const totalPassengers = formData.departureDetails.passengerCount || 0;
