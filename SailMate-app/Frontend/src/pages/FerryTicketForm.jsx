@@ -298,7 +298,7 @@ const FerryTicketForm = () => {
         voyageId: formData.selectedDeparture.voyageId,
         passengerCount: formData.departureDetails.passengerCount,
         totalPrice: departurePrice,
-        ticketClass: formData.selectedDeparture.type ,
+        ticketClass: formData.selectedDeparture.type,
         selectedSeats: formData.selectedDeparture.selectedSeats || "auto",
         userId: userId, // From your Clerk authentication
         passengers: departurePassengers
@@ -365,9 +365,22 @@ const FerryTicketForm = () => {
         returnTicket: returnTicketResponse ? returnTicketResponse.data : null
       };
       
-      // Could save this to state or localStorage for display on Thank You page
-      localStorage.setItem('lastTicketInfo', JSON.stringify(ticketInfo));
-      
+      // Send email notifications with PDF attachments if the user opted in
+      if (formData.notifyByEmail) {
+        try {
+          const emailResponse = await axios.post(`${API_URL}/tickets/send-email`, ticketInfo, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          console.log("Ticket confirmation emails with PDFs sent", emailResponse.data);
+        } catch (emailError) {
+          console.error("Error sending ticket confirmation email:", emailError);
+          // Don't fail the ticket creation if email sending fails
+          // Just log the error and continue
+        }
+      }
+  
       return true;
     } catch (error) {
       console.error("Error creating tickets:", error);
