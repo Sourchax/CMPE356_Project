@@ -17,6 +17,7 @@ import ferry1 from "../assets/images/ferry1.png";
 import ferry3 from "../assets/images/ferry3.png";
 import ferry4 from "../assets/images/ferry4.png";
 import Button from "../components/Button";
+import WeatherComponent from "../components/WeatherCondition.jsx"
 
 const API_URL = "http://localhost:8080/api";
 
@@ -787,7 +788,7 @@ const Homepage = () => {
         </form>
       </div>
     </section>
-
+          <WeatherComponent/>
       {/* Latest Announcements */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6">
