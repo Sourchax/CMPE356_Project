@@ -28,9 +28,6 @@ const ThankYouPage = () => {
       setTimeout(() => {
         setShowMessage(false);
         // Add a small delay before redirecting for a smoother transition
-        setTimeout(() => {
-          navigate('/');  // Navigate to the homepage
-        }, 300);
       }, 3000);
       
       return () => {

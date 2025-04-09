@@ -56,94 +56,148 @@ const FastFerrySeatMap = ({
     return seats;
   };
 
+  // Helper function to render window indicators on sides
+  const renderWindowIndicators = (side) => {
+    return [...Array(8)].map((_, i) => (
+      <div key={`${side}-window-${i}`} className="w-1 h-6 bg-blue-300 rounded-sm my-3" />
+    ));
+  };
+
+  // Helper function to render restrooms
+  const renderRestrooms = () => {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
+          <Toilet className="text-blue-600" size={14} />
+        </div>
+        <span className="text-xs text-blue-700">Restrooms</span>
+      </div>
+    );
+  };
+
+  // Helper function to render information
+  const renderInformation = () => {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
+          <Circle className="text-blue-600" size={14} />
+        </div>
+        <span className="text-xs text-blue-700">Information</span>
+      </div>
+    );
+  };
+
+  // Helper function to render stairs with label
+  const renderStairs = (label) => {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="bg-gray-200 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
+          <ArrowUpDown className="text-gray-600" size={14} />
+        </div>
+        <span className="text-xs text-gray-700">{label}</span>
+      </div>
+    );
+  };
+
   const renderUpperDeck = () => (
     <div className="relative">
-      <div className="relative w-full bg-blue-50 rounded-lg p-4 border border-blue-200">
-        <div className="absolute -top-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="mr-1">Bow</span>
-          <ArrowRight size={16} />
+      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">Upper Deck</div>
+      <div className="relative w-full max-w-lg mx-auto bg-gray-100 p-2">
+        {/* Windows on left side */}
+        <div className="absolute top-0 bottom-0 left-0 flex flex-col justify-around">
+          {renderWindowIndicators('left')}
+        </div>
+        
+        {/* Windows on right side */}
+        <div className="absolute top-0 bottom-0 right-0 flex flex-col justify-around">
+          {renderWindowIndicators('right')}
         </div>
 
-        <div className="absolute top-2 left-0 right-0 flex justify-between px-4">
-          {[...Array(15)].map((_, i) => (
-            <div key={`top-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
-          ))}
-        </div>
-        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4">
-          {[...Array(15)].map((_, i) => (
-            <div key={`bottom-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
-          ))}
-        </div>
-
-        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('business')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-blue-800">Business Class</span>
-            <Gem className="text-yellow-500" size={12} />
+        <div className="mb-4">
+          <div className="text-center font-bold text-white py-2 bg-red-600 rounded-sm">
+            Business Class
           </div>
-          <div className="flex justify-center mb-1">
-            {renderSeatRow('A', 1, 10, 'business')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('B', 11, 20, 'business')}
-          </div>
-        </div>
-
-        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('economy')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-blue-600">Economy Class</span>
-            <Circle className="text-blue-500 fill-blue-500" size={10} />
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('C', 1, 10, 'economy')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('D', 11, 20, 'economy')}
-          </div>
-
-          <div className="flex justify-between items-center my-2">
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <ArrowUpDown className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">Stairs</span>
+          <div className="bg-white p-3 rounded-sm">
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('A', 1, 10, 'business')}
             </div>
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <Toilet className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">Toilet</span>
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('B', 11, 20, 'business')}
             </div>
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <Wind className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">A/C</span>
+            <div className="flex justify-center">
+              {renderSeatRow('C', 21, 30, 'business')}
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-center">
-            {renderSeatRow('E', 21, 30, 'economy')}
+        <div className="mb-4">
+          <div className="text-center font-bold text-white py-2 bg-green-600 rounded-sm">
+            Economy Class
           </div>
-          <div className="flex justify-center">
-            {renderSeatRow('F', 31, 40, 'economy')}
+          <div className="bg-white p-3 rounded-sm">
+            <div className="grid grid-cols-2 gap-8">
+              <div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('D', 1, 6, 'economy')}
+                </div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('E', 7, 12, 'economy')}
+                </div>
+                <div className="flex justify-center">
+                  {renderSeatRow('F', 13, 18, 'economy')}
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('G', 19, 24, 'economy')}
+                </div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('H', 25, 30, 'economy')}
+                </div>
+                <div className="flex justify-center">
+                  {renderSeatRow('I', 31, 36, 'economy')}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-center items-center space-x-8 my-4">
+              {renderStairs('To Lower Deck')}
+              {renderInformation()}
+              {renderRestrooms()}
+            </div>
           </div>
         </div>
 
-        <div className={`${getClassHighlight('promo')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-purple-700">Promo Class</span>
-            <Circle className="text-purple-500 fill-purple-500" size={10} />
+        <div>
+          <div className="text-center font-bold text-white py-2 bg-yellow-500 rounded-sm">
+            Promo Class
           </div>
-          <div className="flex justify-center">
-            {renderSeatRow('G', 1, 10, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('H', 11, 20, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('I', 21, 30, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('J', 31, 40, 'promo')}
+          <div className="bg-white p-3 rounded-sm">
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('J', 1, 10, 'promo')}
+            </div>
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('K', 11, 20, 'promo')}
+            </div>
+            
+            <div className="flex justify-center items-center space-x-8 my-4">
+              {renderRestrooms()}
+              {renderInformation()}
+              {renderRestrooms()}
+            </div>
+            
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('L', 21, 30, 'promo')}
+            </div>
+            <div className="flex justify-center">
+              {renderSeatRow('M', 31, 40, 'promo')}
+            </div>
           </div>
         </div>
-
-        <div className="absolute -bottom-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="mr-1">Stern</span>
+        
+        {/* Stern indicator */}
+        <div className="absolute -bottom-8 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">Stern</span>
         </div>
       </div>
     </div>
@@ -151,114 +205,110 @@ const FastFerrySeatMap = ({
 
   const renderLowerDeck = () => (
     <div className="relative">
-      <div className="relative w-full bg-blue-50 rounded-lg p-4 border border-blue-200">
-        <div className="absolute -top-6 right-1/2 text-gray-600 flex items-center">
-          <span className="mr-1">Bow</span>
-          <ArrowRight size={16} />
+      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">Main Deck</div>
+      <div className="relative w-full max-w-lg mx-auto bg-gray-100 p-2">
+        {/* Windows on left side */}
+        <div className="absolute top-0 bottom-0 left-0 flex flex-col justify-around">
+          {renderWindowIndicators('left')}
+        </div>
+        
+        {/* Windows on right side */}
+        <div className="absolute top-0 bottom-0 right-0 flex flex-col justify-around">
+          {renderWindowIndicators('right')}
         </div>
 
-        <div className="absolute top-2 left-0 right-0 flex justify-between px-4">
-          {[...Array(15)].map((_, i) => (
-            <div key={`top-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
-          ))}
-        </div>
-        <div className="absolute bottom-2 left-0 right-0 flex justify-between px-4">
-          {[...Array(15)].map((_, i) => (
-            <div key={`bottom-window-${i}`} className="w-3 h-1 bg-blue-300 rounded-sm" />
-          ))}
-        </div>
-
-        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('business')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-blue-800">Business Class</span>
-            <Gem className="text-yellow-500" size={12} />
+        <div className="mb-4">
+          <div className="text-center font-bold text-white py-2 bg-red-600 rounded-sm">
+            Business Class
           </div>
-          <div className="flex justify-center mb-1">
-            {renderSeatRow('A', 1, 10, 'business')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('B', 11, 20, 'business')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('C', 21, 30, 'business')}
-          </div>
-        </div>
-
-        <div className={`mb-4 pb-2 border-b border-dashed border-gray-300 ${getClassHighlight('economy')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-blue-600">Economy Class</span>
-            <Circle className="text-blue-500 fill-blue-500" size={10} />
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('D', 1, 10, 'economy')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('E', 11, 20, 'economy')}
-          </div>
-
-          <div className="flex justify-between items-center my-2">
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <ArrowUpDown className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">Stairs</span>
+          <div className="bg-white p-3 rounded-sm">
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('A', 1, 10, 'business')}
             </div>
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <Toilet className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">Toilet</span>
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('B', 11, 20, 'business')}
             </div>
-            <div className="bg-gray-200 p-1 rounded flex items-center">
-              <Wind className="text-gray-600 mr-1" size={14} />
-              <span className="text-xs">A/C</span>
+            <div className="flex justify-center">
+              {renderSeatRow('C', 21, 30, 'business')}
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-center">
-            {renderSeatRow('F', 21, 30, 'economy')}
+        <div className="mb-4">
+          <div className="text-center font-bold text-white py-2 bg-green-600 rounded-sm">
+            Economy Class
           </div>
-          <div className="flex justify-center">
-            {renderSeatRow('G', 31, 40, 'economy')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('H', 41, 50, 'economy')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('I', 51, 60, 'economy')}
+          <div className="bg-white p-3 rounded-sm">
+            <div className="grid grid-cols-2 gap-8">
+              <div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('D', 1, 6, 'economy')}
+                </div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('E', 7, 12, 'economy')}
+                </div>
+                <div className="flex justify-center">
+                  {renderSeatRow('F', 13, 18, 'economy')}
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('G', 19, 24, 'economy')}
+                </div>
+                <div className="flex justify-center mb-1">
+                  {renderSeatRow('H', 25, 30, 'economy')}
+                </div>
+                <div className="flex justify-center">
+                  {renderSeatRow('I', 31, 36, 'economy')}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-center items-center space-x-8 my-4">
+              {renderStairs('To Upper Deck')}
+              {renderInformation()}
+              {renderRestrooms()}
+            </div>
           </div>
         </div>
 
-        <div className={`${getClassHighlight('promo')}`}>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-purple-700">Promo Class</span>
-            <Circle className="text-purple-500 fill-purple-500" size={10} />
+        <div>
+          <div className="text-center font-bold text-white py-2 bg-yellow-500 rounded-sm">
+            Promo Class
           </div>
-          <div className="flex justify-center">
-            {renderSeatRow('J', 1, 10, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('K', 11, 20, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('L', 21, 30, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('M', 31, 40, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('N', 41, 50, 'promo')}
-          </div>
-          <div className="flex justify-center">
-            {renderSeatRow('O', 51, 60, 'promo')}
+          <div className="bg-white p-3 rounded-sm">
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('N', 1, 10, 'promo')}
+            </div>
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('O', 11, 20, 'promo')}
+            </div>
+            
+            <div className="flex justify-center items-center space-x-8 my-4">
+              {renderRestrooms()}
+              {renderInformation()}
+              {renderRestrooms()}
+            </div>
+            
+            <div className="flex justify-center mb-1">
+              {renderSeatRow('P', 21, 30, 'promo')}
+            </div>
+            <div className="flex justify-center">
+              {renderSeatRow('Q', 31, 40, 'promo')}
+            </div>
           </div>
         </div>
-
-        <div className="absolute -bottom-6 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="mr-1">Stern</span>
+        
+        {/* Stern indicator */}
+        <div className="absolute -bottom-8 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
+          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">Stern</span>
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="p-2">
+    <div className="p-2 max-w-lg mx-auto">
       {currentDeck === 'upper' ? renderUpperDeck() : renderLowerDeck()}
     </div>
   );

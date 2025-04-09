@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import JourneyCatagory from "../components/ferry-ticket-form/JourneyCatagory.jsx";
 import TicketSum from "../components/ferry-ticket-form/TicketSum.jsx";
 import PaymentConfirmation from "../components/ferry-ticket-form/PaymentConfirmation.jsx";
@@ -482,39 +482,42 @@ const FerryTicketForm = () => {
     return () => clearInterval(timer);
   }, [time, navigate]);
 
-// Replace your current useEffect with this improved version
-useEffect(() => {
-  let progressTimer;
-  let navigationTimeout;
-  
-  if (currentStep === 4) {
-    progressTimer = setInterval(() => {
-      setFormData((prevData) => {
-        if (prevData.progress < 100) {
-          return { ...prevData, progress: prevData.progress + 1 };
-        } else {
-          clearInterval(progressTimer);
-          // Store the timeout reference so we can clear it if needed
-          navigationTimeout = setTimeout(() => {
-            // Check if component is still mounted before navigation
-            if (document.body.contains(document.getElementById('ferry-form-container'))) {
-              navigate('/');
-            }
-          }, 500);
-          return { ...prevData, progress: 100 };
-        }
-      });
-    }, 30);
-    console.log("Form Submitted:", formData);
-  }
-  
-  // Clean up function that runs when component unmounts or dependencies change
-  return () => {
-    if (progressTimer) clearInterval(progressTimer);
-    if (navigationTimeout) clearTimeout(navigationTimeout);
-  };
-}, [currentStep, navigate]);
+  const progressTimerRef = useRef(null);
+  const navigationTimeoutRef = useRef(null);
+  const cancelledRef = useRef(false);
 
+  useEffect(() => {
+    cancelledRef.current = false; // reset on mount
+
+    if (currentStep === 4) {
+      progressTimerRef.current = setInterval(() => {
+        setFormData((prevData) => {
+          if (cancelledRef.current) return prevData; // prevent updates after unmount
+
+          if (prevData.progress < 100) {
+            return { ...prevData, progress: prevData.progress + 1 };
+          } else {
+            clearInterval(progressTimerRef.current);
+            navigationTimeoutRef.current = setTimeout(() => {
+              if (!cancelledRef.current) {
+                navigate('/');
+              }
+            }, 500);
+            return { ...prevData, progress: 100 };
+          }
+        });
+      }, 30);
+
+      console.log("Form Submitted:", formData);
+    }
+
+    return () => {
+      // Cleanup on unmount or step change
+      cancelledRef.current = true;
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+      if (navigationTimeoutRef.current) clearTimeout(navigationTimeoutRef.current);
+    };
+  }, [currentStep, navigate]);
   // Get the total count of passengers (one way)
   const totalPassengers = formData.departureDetails.passengerCount || 0;
   const isRoundTrip = formData.tripData && formData.tripData.returnDate !== "";
