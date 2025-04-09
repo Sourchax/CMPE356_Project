@@ -73,10 +73,11 @@ const VoyageTimes = () => {
     const fetchStations = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/stations/active`);
-        setStations(response.data);
+        setStations(response.data || []);
       } catch (err) {
         console.error("Error fetching stations:", err);
         setError(t("voyagePage.voyagesList.error"));
+        setStations([]);
       }
     };
 
@@ -103,17 +104,23 @@ const VoyageTimes = () => {
         }
         
         const response = await axios.get(url);
-        setVoyages(response.data);
+        // Handle empty array or undefined response
+        setVoyages(response.data || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching voyages:", err);
         setError(t("voyagePage.voyagesList.error"));
+        setVoyages([]);
         setLoading(false);
       }
     };
 
     if (stations.length > 0) {
       fetchVoyages();
+    } else {
+      // If there are no stations, don't try to fetch voyages
+      setVoyages([]);
+      setLoading(false);
     }
   }, [selectedFrom, selectedTo, stations, t]);
 

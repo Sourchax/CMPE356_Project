@@ -103,15 +103,14 @@ const Homepage = () => {
           setStations(stationTitles);
         } else {
           // Fallback to hardcoded values if API returns empty array
-          console.log("API returned empty array, using hardcoded stations");
-          setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
-          displayError("Could not load stations from server. Using default stations instead.");
+          setStations([]);
+          displayError("Could not load stations from server.");
         }
       } catch (err) {
         console.error("Error fetching stations:", err);
         // Fallback to hardcoded stations if API fails
-        setStations(["Yenikapı", "Bursa", "Bandırma", "Yalova"]);
-        displayError("Failed to connect to server. Using default stations instead.");
+        setStations([]);
+        displayError("Failed to connect to server.");
       } finally {
         setStationsLoaded(true);
       }

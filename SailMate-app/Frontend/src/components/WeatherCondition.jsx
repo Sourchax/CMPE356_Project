@@ -17,18 +17,25 @@ const WeatherComponent = () => {
         // First fetch stations from your backend API
         const stationsResponse = await axios.get(`${API_URL}/stations`);
         
+        // Check if station data is valid
         if (!stationsResponse.data || !Array.isArray(stationsResponse.data) || stationsResponse.data.length === 0) {
-          throw new Error("No stations found");
+          console.log("No stations found or empty response, showing default cities");
+          // If stations response is empty, just show data for Istanbul, Izmir, and Bursa
+          const defaultData = await getDefaultCitiesWeatherData();
+          setWeatherData(defaultData);
+          setLoading(false);
+          return; // Exit the function early
         }
         
         // Extract unique cities from station data
         const uniqueCities = [...new Set(stationsResponse.data.map(station => station.city))];
         
         // For each unique city, fetch weather data
-        const weatherPromises = uniqueCities.map(city => 
-          // Using OpenMeteo API which doesn't require an API key
-          axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${getCityCoordinates(city).lat}&longitude=${getCityCoordinates(city).lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`)
-        );
+        const weatherPromises = uniqueCities.map(city => {
+          const coords = getCityCoordinates(city);
+          console.log(`Fetching weather for ${city} at coordinates: lat=${coords.lat}, lon=${coords.lon}`);
+          return axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`);
+        });
         
         // Wait for all requests to complete
         const responses = await Promise.all(weatherPromises);
@@ -59,11 +66,18 @@ const WeatherComponent = () => {
         setLoading(false);
       } catch (err) {
         console.error("Error fetching weather data:", err);
-        setError("Failed to fetch weather data. Please try again later.");
+        setError("Showing data for major cities.");
         setLoading(false);
         
-        // Set mock data for demo purposes when API fails
-        setWeatherData(getMockWeatherData());
+        try {
+          // Show only Istanbul, Izmir, and Bursa when there's an error
+          const defaultData = await getDefaultCitiesWeatherData();
+          setWeatherData(defaultData);
+        } catch (fallbackErr) {
+          console.error("Error fetching default cities data:", fallbackErr);
+          // Use static data as last resort
+          setWeatherData(getStaticDefaultCitiesData());
+        }
       }
     };
 
@@ -77,13 +91,24 @@ const WeatherComponent = () => {
     
     if (!city) return defaultCoords;
     
-    // Case insensitive search through our city coordinates
-    const cityNormalized = city.trim().toLowerCase();
+    // Special handling for cities with dotted İ character
+    if (city.toLowerCase().includes("i̇")) {
+      if (city.toLowerCase().includes("i̇stanbul")) {
+        return { lat: 41.0082, lon: 28.9784 };
+      }
+      if (city.toLowerCase().includes("i̇zmir")) {
+        return { lat: 38.4237, lon: 27.1428 };
+      }
+    }
     
-    const cityCoordinates = {
+    // Direct mapping for common Turkish city names (with or without accents)
+    const cityMap = {
       "istanbul": { lat: 41.0082, lon: 28.9784 },
-      "bursa": { lat: 40.1885, lon: 29.0610 },
+      "İstanbul": { lat: 41.0082, lon: 28.9784 },
       "izmir": { lat: 38.4237, lon: 27.1428 },
+      "İzmir": { lat: 38.4237, lon: 27.1428 },
+      "bursa": { lat: 40.1885, lon: 29.0610 },
+      "Bursa": { lat: 40.1885, lon: 29.0610 },
       "bandirma": { lat: 40.3520, lon: 27.9739 },
       "bandırma": { lat: 40.3520, lon: 27.9739 },
       "yalova": { lat: 40.6550, lon: 29.2866 },
@@ -106,7 +131,23 @@ const WeatherComponent = () => {
       "mugla": { lat: 37.2153, lon: 28.3636 }
     };
     
-    return cityCoordinates[cityNormalized] || defaultCoords;
+    // Try direct city match first
+    if (cityMap[city]) {
+      console.log(`Direct match found for ${city}`);
+      return cityMap[city];
+    }
+    
+    // Try case-insensitive match
+    const lowerCity = city.toLowerCase();
+    for (const [key, coords] of Object.entries(cityMap)) {
+      if (key.toLowerCase() === lowerCity) {
+        console.log(`Case-insensitive match found for ${city} -> ${key}`);
+        return coords;
+      }
+    }
+    
+    console.log(`No match found for ${city}, using default coordinates`);
+    return defaultCoords;
   };
 
   // Function to convert OpenMeteo weather codes to weather conditions
@@ -157,15 +198,66 @@ const WeatherComponent = () => {
     return "03d";
   };
 
-  // Mock weather data for demonstration or when API fails
-  const getMockWeatherData = () => {
+  // Default cities weather data (Istanbul, Izmir, Bursa) when there's an error or empty station response
+  const getDefaultCitiesWeatherData = async () => {
+    try {
+      // Try to fetch actual weather data for the default cities
+      const defaultCities = ["İstanbul", "İzmir", "Bursa"];
+      
+      const weatherPromises = defaultCities.map(city => {
+        const coords = getCityCoordinates(city);
+        console.log(`Fetching default city weather for ${city} at coordinates: lat=${coords.lat}, lon=${coords.lon}`);
+        return axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`);
+      });
+      
+      const responses = await Promise.all(weatherPromises);
+      
+      const processedData = responses.map((response, index) => {
+        const data = response.data;
+        const cityName = defaultCities[index];
+        
+        return {
+          name: cityName,
+          main: { 
+            temp: data.current.temperature_2m, 
+            feels_like: data.current.apparent_temperature, 
+            humidity: data.current.relative_humidity_2m 
+          },
+          weather: [{ 
+            main: getWeatherCondition(data.current.weather_code), 
+            description: getWeatherDescription(data.current.weather_code), 
+            icon: getWeatherIconCode(data.current.weather_code) 
+          }],
+          wind: { speed: data.current.wind_speed_10m },
+          sys: { sunrise: 0, sunset: 0 }
+        };
+      });
+      
+      console.log("Default cities data processed:", processedData);
+      return processedData;
+    } catch (err) {
+      console.error("Error fetching default cities weather:", err);
+      // Fallback to static data if API call fails
+      return getStaticDefaultCitiesData();
+    }
+  };
+  
+  // Static default data as a last resort
+  const getStaticDefaultCitiesData = () => {
     return [
       {
-        name: "Istanbul",
+        name: "İstanbul",
         main: { temp: 22, feels_like: 21, humidity: 65 },
         weather: [{ main: "Clear", description: "clear sky", icon: "01d" }],
         wind: { speed: 5.2 },
         sys: { sunrise: 1649130000, sunset: 1649175000 }
+      },
+      {
+        name: "İzmir",
+        main: { temp: 25, feels_like: 26, humidity: 58 },
+        weather: [{ main: "Clear", description: "clear sky", icon: "01d" }],
+        wind: { speed: 3.8 },
+        sys: { sunrise: 1649131000, sunset: 1649176000 }
       },
       {
         name: "Bursa",
@@ -173,27 +265,6 @@ const WeatherComponent = () => {
         weather: [{ main: "Clouds", description: "scattered clouds", icon: "03d" }],
         wind: { speed: 4.1 },
         sys: { sunrise: 1649132000, sunset: 1649177000 }
-      },
-      {
-        name: "Izmir",
-        main: { temp: 24, feels_like: 23, humidity: 60 },
-        weather: [{ main: "Sunny", description: "sunny", icon: "01d" }],
-        wind: { speed: 3.5 },
-        sys: { sunrise: 1649131000, sunset: 1649176000 }
-      },
-      {
-        name: "Bandirma",
-        main: { temp: 19, feels_like: 18, humidity: 75 },
-        weather: [{ main: "Rain", description: "light rain", icon: "10d" }],
-        wind: { speed: 6.2 },
-        sys: { sunrise: 1649133000, sunset: 1649178000 }
-      },
-      {
-        name: "Yalova",
-        main: { temp: 21, feels_like: 20, humidity: 68 },
-        weather: [{ main: "Partly Cloudy", description: "partly cloudy", icon: "02d" }],
-        wind: { speed: 4.8 },
-        sys: { sunrise: 1649132500, sunset: 1649177500 }
       }
     ];
   };
