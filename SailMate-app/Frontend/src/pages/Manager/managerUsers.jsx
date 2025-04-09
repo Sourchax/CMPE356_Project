@@ -11,6 +11,10 @@ const ManageUsers = () => {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
 
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
     const { user: currentUser } = useUser(); // Get current logged-in user
     
     // Filter states
@@ -184,6 +188,9 @@ const ManageUsers = () => {
     };
 
     const handleDeleteConfirm = async () => {
+        if (isDeleting) return;
+        
+        setIsDeleting(true);
         try {
             // Make API call to delete user
             const response = await axios.delete(
@@ -207,6 +214,8 @@ const ManageUsers = () => {
             // For demo purposes, still update the UI to show the deletion
             setUsers(users.filter((user) => user.id !== deleteConfirm.id));
             setDeleteConfirm({ show: false, id: null });
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -236,8 +245,10 @@ const ManageUsers = () => {
         }, {});
         setTouched(allTouched);
         
-        if (!validateForm()) return;
-
+        if (!validateForm() || isUpdatingRole) return;
+        
+        setIsUpdatingRole(true);
+    
         try {
             // Make API call to update user role using the update-role endpoint
             // Convert role to lowercase for backend
@@ -290,10 +301,14 @@ const ManageUsers = () => {
             setFormData({ name: "", email: "", role: "User" });
             setErrors({});
             setTouched({});
+        } finally {
+            setIsUpdatingRole(false);
         }
     };
 
     const closeModal = () => {
+        if (isUpdatingRole) return;
+        
         setIsModalOpen(false);
         setEditingUser(null);
         setFormData({ name: "", email: "", role: "User" });
@@ -338,20 +353,22 @@ const ManageUsers = () => {
             <p className="text-gray-600 text-sm mb-4 truncate">{user.email}</p>
             
             <div className="flex justify-end gap-2">
-                <button 
-                    onClick={() => handleEdit(user)} 
-                    className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full shadow-sm"
-                    aria-label={`Edit ${user.name}`}
-                >
-                    <Edit size={16} />
-                </button>
-                <button 
-                    onClick={() => handleDeleteRequest(user.id)} 
-                    className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full shadow-sm"
-                    aria-label={`Delete ${user.name}`}
-                >
-                    <Trash2 size={16} />
-                </button>
+            <button 
+                onClick={() => handleEdit(user)} 
+                className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={`Edit ${user.name}`}
+                disabled={isUpdatingRole || isDeleting}
+            >
+                <Edit size={16} />
+            </button>
+            <button 
+                onClick={() => handleDeleteRequest(user.id)} 
+                className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={`Delete ${user.name}`}
+                disabled={isDeleting || isUpdatingRole}
+            >
+                <Trash2 size={16} />
+            </button>
             </div>
         </div>
     );
@@ -372,30 +389,25 @@ const ManageUsers = () => {
             {deleteConfirm.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">Confirm Delete</h3>
-                            <button 
-                                onClick={handleDeleteCancel}
-                                className="text-gray-400 hover:text-gray-500"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="mb-5">
-                            <p className="text-gray-700">Are you sure you want to delete this user? This action cannot be undone.</p>
-                        </div>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleDeleteCancel}
-                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition"
+                                disabled={isDeleting}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition"
+                                disabled={isDeleting}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                Delete
+                                {isDeleting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                        Deleting...
+                                    </>
+                                ) : "Delete"}
                             </button>
                         </div>
                     </div>
@@ -651,19 +663,18 @@ const ManageUsers = () => {
                             </div>
                             
                             <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-                                <button 
-                                    type="button" 
-                                    onClick={closeModal} 
-                                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition w-full sm:w-auto shadow-sm"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition w-full sm:w-auto shadow-sm"
-                                >
-                                    Update Role
-                                </button>
+                            <button 
+                                type="submit" 
+                                disabled={isUpdatingRole}
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition w-full sm:w-auto shadow-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                                {isUpdatingRole ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                        Updating...
+                                    </>
+                                ) : "Update Role"}
+                            </button>
                             </div>
                         </form>
                     </div>

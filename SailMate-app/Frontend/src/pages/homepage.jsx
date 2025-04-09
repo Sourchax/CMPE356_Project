@@ -91,6 +91,24 @@ const Homepage = () => {
     }));
   }, [currency]);
   
+  const calculateMinMaxDates = () => {
+    // Get today's date
+    const today = new Date();
+    
+    // Format today's date as YYYY-MM-DD for min date
+    const minDate = today.toISOString().split('T')[0];
+    
+    // Calculate date 6 months from now
+    const maxDate = new Date(today);
+    maxDate.setMonth(today.getMonth() + 6);
+    
+    // Format max date as YYYY-MM-DD
+    const maxDateStr = maxDate.toISOString().split('T')[0];
+    
+    return { minDate, maxDateStr };
+  };
+  
+  const { minDate, maxDateStr } = calculateMinMaxDates();
 
   // Fetch stations on component mount
   useEffect(() => {
@@ -614,7 +632,8 @@ const Homepage = () => {
                   type="date" 
                   name="departureDate"
                   value={formData.departureDate}
-                  min={today}
+                  min={minDate}
+                  max={maxDateStr}
                   onChange={handleInputChange}
                   className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm h-[50px]"
                   required
@@ -629,7 +648,8 @@ const Homepage = () => {
                     type="date" 
                     name="returnDate"
                     value={formData.returnDate}
-                    min={formData.departureDate || today}
+                    min={formData.departureDate || minDate}
+                    max={maxDateStr}
                     onChange={handleInputChange}
                     className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm h-[50px]"
                     required={tripType === "round-trip"}

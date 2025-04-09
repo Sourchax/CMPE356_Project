@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle, Loader } from "lucide-react";
+import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, AlertTriangle, Loader, RefreshCw } from "lucide-react";
 import {useSessionToken} from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -11,6 +11,7 @@ const AdminStations = () => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false); // New loading state for refresh
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStation, setEditingStation] = useState(null);
@@ -23,6 +24,7 @@ const AdminStations = () => {
   const [stationToDelete, setStationToDelete] = useState(null);
   const [hasActiveVoyages, setHasActiveVoyages] = useState(false);
   const [checkingVoyages, setCheckingVoyages] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); // New loading state for delete operation
 
   const icons = [MapPin, User, Phone, Building, Home];
   
@@ -32,8 +34,11 @@ const AdminStations = () => {
   }, []);
 
   const fetchStations = async () => {
+    if (refreshing) return; // Prevent multiple calls
+
     try {
       setLoading(true);
+      setRefreshing(true); // Set refreshing state to true
       const response = await axios.get(`${API_URL}/stations`);
       setStations(response.data);
       setError(null);
@@ -42,6 +47,7 @@ const AdminStations = () => {
       setError("Failed to load stations. Please try again.");
     } finally {
       setLoading(false);
+      setRefreshing(false); // Reset refreshing state
     }
   };
   
@@ -130,6 +136,8 @@ const AdminStations = () => {
   };
 
   const checkActiveVoyages = async (stationId) => {
+    if (checkingVoyages) return false; // Prevent multiple calls
+    
     setCheckingVoyages(true);
     const token = useSessionToken();
     try {
@@ -151,18 +159,21 @@ const AdminStations = () => {
   };
 
   const openDeleteConfirmation = async (id) => {
+    // Don't open delete confirmation if already checking voyages
+    if (checkingVoyages) return;
+    
     const station = stations.find(s => s.id === id);
     setStationToDelete(station);
+    setDeleteModalOpen(true);
     
-    // Check for active voyages before showing the modal
+    // Check for active voyages after showing the modal
     const activeVoyagesExist = await checkActiveVoyages(id);
     setHasActiveVoyages(activeVoyagesExist);
-    
-    setDeleteModalOpen(true);
   };
 
   const handleDelete = async () => {
-    if (stationToDelete) {
+    if (stationToDelete && !isDeleting) {
+      setIsDeleting(true);
       const token = useSessionToken();
       try {
         await axios.delete(`${API_URL}/stations/${stationToDelete.id}`, {
@@ -177,6 +188,8 @@ const AdminStations = () => {
       } catch (err) {
         console.error("Error deleting station:", err);
         setError("Failed to delete station. Please try again.");
+      } finally {
+        setIsDeleting(false);
       }
     }
   };
@@ -198,7 +211,7 @@ const AdminStations = () => {
 
   const handleSave = async (event) => {
     event.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm() || isSaving) return;
     
     setIsSaving(true);
     const token = useSessionToken();
@@ -237,6 +250,9 @@ const AdminStations = () => {
   };
 
   const closeModal = () => {
+    // Don't close modal if saving is in progress
+    if (isSaving) return;
+    
     setIsModalOpen(false);
     setEditingStation(null);
     setFormData({ title: "", personnel: "", phoneno: "", city: "", address: "", status: "active" });
@@ -266,17 +282,25 @@ const AdminStations = () => {
         </div>
       </div>
       <div className="flex justify-end gap-4 mt-3">
-        <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
+        <button 
+          onClick={() => handleEdit(station)} 
+          className="text-[#06AED5] hover:text-[#058aaa] transition disabled:opacity-50"
+          disabled={isSaving || checkingVoyages}
+        >
           <Edit size={18} />
         </button>
-        <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
+        <button 
+          onClick={() => openDeleteConfirmation(station.id)} 
+          className="text-red-600 hover:text-red-800 transition disabled:opacity-50"
+          disabled={checkingVoyages || isDeleting}
+        >
           <Trash2 size={18} />
         </button>
       </div>
     </div>
   );
 
-  if (loading) {
+  if (loading && stations.length === 0) {
     return (
         <div className="text-center py-8">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
@@ -293,9 +317,15 @@ const AdminStations = () => {
           <p className="text-red-600 mb-4">{error}</p>
           <button 
             onClick={fetchStations}
-            className="bg-[#06AED5] text-white px-4 py-2 rounded-md hover:bg-[#058aaa] transition"
+            disabled={refreshing}
+            className="bg-[#06AED5] text-white px-4 py-2 rounded-md hover:bg-[#058aaa] transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Try Again
+            {refreshing ? (
+              <span className="flex items-center gap-2">
+                <RefreshCw size={16} className="animate-spin" />
+                Trying...
+              </span>
+            ) : "Try Again"}
           </button>
         </div>
       </div>
@@ -306,12 +336,23 @@ const AdminStations = () => {
     <div className="p-2 sm:p-4 md:p-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 sm:gap-0">
         <h1 className="text-xl sm:text-3xl font-semibold text-gray-800">Manage Stations</h1>
-        <button 
-          onClick={openAddModal} 
-          className="flex items-center gap-2 bg-[#06AED5] text-white px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition w-full sm:w-auto justify-center sm:justify-start"
-        >
-          <Plus size={20} /> Add Station
-        </button>
+        <div className="flex gap-3 w-full sm:w-auto">
+          <button 
+            onClick={fetchStations}
+            disabled={refreshing}
+            className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-md hover:bg-gray-200 transition w-1/2 sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed border border-gray-300"
+          >
+            <RefreshCw size={16} className={`${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+          <button 
+            onClick={openAddModal} 
+            disabled={isSaving}
+            className="flex items-center justify-center gap-2 bg-[#06AED5] text-white px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition w-1/2 sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            <Plus size={20} /> Add Station
+          </button>
+        </div>
       </div>
       
       {error && (
@@ -342,10 +383,18 @@ const AdminStations = () => {
                   <td className="p-4 text-base">{station.city}</td>
                   <td className="p-4 text-base">{station.address}</td>
                   <td className="p-4 flex justify-center gap-5">
-                    <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
+                    <button 
+                      onClick={() => handleEdit(station)} 
+                      className="text-[#06AED5] hover:text-[#058aaa] transition disabled:opacity-50"
+                      disabled={isSaving || checkingVoyages}
+                    >
                       <Edit size={20} />
                     </button>
-                    <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
+                    <button 
+                      onClick={() => openDeleteConfirmation(station.id)} 
+                      className="text-red-600 hover:text-red-800 transition disabled:opacity-50"
+                      disabled={checkingVoyages || isDeleting}
+                    >
                       <Trash2 size={20} />
                     </button>
                   </td>
@@ -384,6 +433,7 @@ const AdminStations = () => {
                     onChange={handleInputChange}
                     placeholder="Enter station name"
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    disabled={isSaving}
                   />
                 </div>
                 {errors.title && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.title}</p>}
@@ -404,6 +454,7 @@ const AdminStations = () => {
                     onChange={handleInputChange}
                     placeholder="Enter contact person"
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    disabled={isSaving}
                   />
                 </div>
                 {errors.personnel && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.personnel}</p>}
@@ -424,6 +475,7 @@ const AdminStations = () => {
                     onChange={handleInputChange}
                     placeholder="Enter phone number"
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    disabled={isSaving}
                   />
                 </div>
                 {errors.phoneno && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.phoneno}</p>}
@@ -444,6 +496,7 @@ const AdminStations = () => {
                     onChange={handleInputChange}
                     placeholder="Enter city name"
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    disabled={isSaving}
                   />
                 </div>
                 {errors.city && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.city}</p>}
@@ -464,6 +517,7 @@ const AdminStations = () => {
                     onChange={handleInputChange}
                     placeholder="Enter address"
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    disabled={isSaving}
                   />
                 </div>
                 {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address}</p>}
@@ -473,7 +527,7 @@ const AdminStations = () => {
                 <button 
                   type="button" 
                   onClick={closeModal} 
-                  className="bg-gray-300 px-3 sm:px-4 py-2.5 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1 disabled:opacity-70"
+                  className="bg-gray-300 px-3 sm:px-4 py-2.5 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1 disabled:opacity-70 disabled:cursor-not-allowed"
                   disabled={isSaving}
                 >
                   Cancel
@@ -481,7 +535,7 @@ const AdminStations = () => {
                 <button 
                   type="submit" 
                   disabled={isSaving}
-                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1 disabled:opacity-70 flex justify-center items-center"
+                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
                 >
                   {isSaving ? (
                     <>
@@ -539,15 +593,24 @@ const AdminStations = () => {
                       setStationToDelete(null);
                       setHasActiveVoyages(false);
                     }} 
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                    disabled={isDeleting}
                   >
                     Cancel
                   </button>
                   <button 
                     onClick={handleDelete} 
-                    className={`px-4 py-2 ${hasActiveVoyages ? 'bg-orange-500 hover:bg-orange-600' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md transition`}
+                    className={`px-4 py-2 ${hasActiveVoyages ? 'bg-orange-500 hover:bg-orange-600' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+                    disabled={isDeleting}
                   >
-                    {hasActiveVoyages ? "Delete Anyway" : "Delete"}
+                    {isDeleting ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      hasActiveVoyages ? "Delete Anyway" : "Delete"
+                    )}
                   </button>
                 </div>
               </>

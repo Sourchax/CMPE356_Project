@@ -13,6 +13,9 @@ const ManageComplaints = () => {
     const [replyData, setReplyData] = useState({ id: null, message: "" });
     const [expandedComplaint, setExpandedComplaint] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+    // Add loading states for reply and delete operations
+    const [replyLoading, setReplyLoading] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     // Fetch all complaints from the backend
     const fetchComplaints = async () => {
@@ -64,7 +67,11 @@ const ManageComplaints = () => {
     };
 
     const handleDeleteConfirm = async () => {
+        if (deleteLoading) return; // Prevent multiple clicks
+        
         try {
+            setDeleteLoading(true);
+            
             // Call the backend to delete the complaint
             await axios.delete(`http://localhost:8080/api/complaints/${deleteConfirm.id}`, {
                 headers: {
@@ -82,6 +89,8 @@ const ManageComplaints = () => {
         } catch (err) {
             console.error("Error deleting complaint:", err);
             alert("Failed to delete complaint. Please try again.");
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -91,9 +100,11 @@ const ManageComplaints = () => {
     };
 
     const handleReply = async (id) => {
-        if (!replyData.message.trim()) return;
+        if (!replyData.message.trim() || replyLoading === id) return;
         
         try {
+            setReplyLoading(id);
+            
             // Update the complaint status to "solved" and add reply in the backend
             await axios.put(`http://localhost:8080/api/complaints/${id}`, {
                 status: "solved",
@@ -121,6 +132,8 @@ const ManageComplaints = () => {
         } catch (err) {
             console.error("Error updating complaint:", err);
             alert("Failed to send reply. Please try again.");
+        } finally {
+            setReplyLoading(null);
         }
     };
 
@@ -177,9 +190,15 @@ const ManageComplaints = () => {
                         <p className="text-red-700 mb-4">{error}</p>
                         <button 
                             onClick={fetchComplaints}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition shadow-sm"
+                            disabled={refreshing}
+                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition shadow-sm disabled:bg-red-400 disabled:cursor-not-allowed"
                         >
-                            Try Again
+                            {refreshing ? (
+                                <span className="flex items-center gap-2">
+                                    <RefreshCw size={16} className="animate-spin" />
+                                    Trying...
+                                </span>
+                            ) : "Try Again"}
                         </button>
                     </div>
                 </div>
@@ -201,7 +220,8 @@ const ManageComplaints = () => {
                             <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
                             <button 
                                 onClick={handleDeleteCancel}
-                                className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full p-1 transition"
+                                disabled={deleteLoading}
+                                className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full p-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <X size={20} />
                             </button>
@@ -212,15 +232,22 @@ const ManageComplaints = () => {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleDeleteCancel}
-                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium border border-gray-200"
+                                disabled={deleteLoading}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm font-medium border border-red-700"
+                                disabled={deleteLoading}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm font-medium border border-red-700 disabled:bg-red-400 disabled:cursor-not-allowed"
                             >
-                                Delete
+                                {deleteLoading ? (
+                                    <span className="flex items-center gap-2">
+                                        <RefreshCw size={16} className="animate-spin" />
+                                        Deleting...
+                                    </span>
+                                ) : "Delete"}
                             </button>
                         </div>
                     </div>
@@ -271,10 +298,10 @@ const ManageComplaints = () => {
                             <button 
                                 onClick={fetchComplaints}
                                 disabled={refreshing}
-                                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 transition px-4 py-2 rounded-lg font-medium text-sm border border-blue-200 shadow-sm"
+                                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 transition px-4 py-2 rounded-lg font-medium text-sm border border-blue-200 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 <RefreshCw size={16} className={`${refreshing ? 'animate-spin' : ''}`} />
-                                Refresh
+                                {refreshing ? 'Refreshing...' : 'Refresh'}
                             </button>
                         </div>
                     </div>
@@ -347,15 +374,25 @@ const ManageComplaints = () => {
                                                         e.stopPropagation();
                                                         setReplyData({ ...replyData, id: complaint.id });
                                                     }}
+                                                    disabled={replyLoading === complaint.id}
                                                 />
                                                 <div className="bg-gray-50 p-2 flex justify-end border-t border-gray-200">
                                                     <button
                                                         onClick={() => handleReply(complaint.id)}
-                                                        disabled={!replyData.message.trim() || replyData.id !== complaint.id}
+                                                        disabled={!replyData.message.trim() || replyData.id !== complaint.id || replyLoading === complaint.id}
                                                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm text-sm font-medium border border-blue-700"
                                                     >
-                                                        <Send size={15} />
-                                                        Send Reply
+                                                        {replyLoading === complaint.id ? (
+                                                            <span className="flex items-center gap-2">
+                                                                <RefreshCw size={15} className="animate-spin" />
+                                                                Sending...
+                                                            </span>
+                                                        ) : (
+                                                            <>
+                                                                <Send size={15} />
+                                                                Send Reply
+                                                            </>
+                                                        )}
                                                     </button>
                                                 </div>
                                             </div>

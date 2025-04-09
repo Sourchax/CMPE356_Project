@@ -668,7 +668,24 @@ const applyFilters = () => {
       if (voyageDate < todayStart) {
         errors.departureDate = 'Voyage date cannot be in the past';
       }
-      
+
+      if (voyage.departureDate) {
+        const voyageDate = new Date(voyage.departureDate);
+        const today = new Date();
+        const todayStart = new Date(today);
+        todayStart.setHours(0, 0, 0, 0);
+        
+        // Get date one year from today
+        const oneYearFromNow = new Date(todayStart);
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+        
+        if (voyageDate < todayStart) {
+          errors.departureDate = 'Voyage date cannot be in the past';
+        } else if (voyageDate > oneYearFromNow) {
+          errors.departureDate = 'Voyage date cannot be more than one year in the future';
+        }
+      }
+
       // If the voyage is today, validate that the time is not in the past
       if (voyageDate.getFullYear() === today.getFullYear() &&
           voyageDate.getMonth() === today.getMonth() &&
@@ -756,7 +773,22 @@ const applyFilters = () => {
         errors.arrivalTime = 'Voyage must be at least 40 minutes long';
       }
     }
-    
+    if (schedule.startDate) {
+      const scheduleDate = new Date(schedule.startDate);
+      const today = new Date();
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
+      
+      // Get date one year from today
+      const oneYearFromNow = new Date(todayStart);
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+      
+      if (scheduleDate < todayStart) {
+        errors.startDate = 'Start date cannot be in the past';
+      } else if (scheduleDate > oneYearFromNow) {
+        errors.startDate = 'Start date cannot be more than one year in the future';
+      }
+    }
     // Date validation - ensure start date is not in the past
     if (schedule.startDate) {
       const scheduleDate = new Date(schedule.startDate);
