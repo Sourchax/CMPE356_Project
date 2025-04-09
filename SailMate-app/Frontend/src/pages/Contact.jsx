@@ -16,12 +16,14 @@ import Button from "../components/Button";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
   // Get userId from Clerk authentication
   const { user, isSignedIn } = useUser();
   const userId = isSignedIn ? user.id : "guest";
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     name: "",

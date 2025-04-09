@@ -5,6 +5,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import {useSessionToken} from "../utils/sessions.js";
 import { Filter, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
@@ -19,6 +20,7 @@ const getLocationDisplay = (ticket, type) => {
 };
 
 const MyTickets = () => {
+  const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -284,11 +286,9 @@ const MyTickets = () => {
     return isTicketCompleted(ticket) ? "Completed" : "Active";
   };
 
-  // Get count of active tickets for the filter badge
-  const activeTicketsCount = tickets.filter(ticket => !isTicketCompleted(ticket)).length;
-  
-  // Get count of completed tickets for the filter badge
-  const completedTicketsCount = tickets.filter(ticket => isTicketCompleted(ticket)).length;
+  // Calculate active and completed ticket counts
+  const activeTickets = tickets.filter(ticket => !isTicketCompleted(ticket)).length;
+  const completedTickets = tickets.filter(ticket => isTicketCompleted(ticket)).length;
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white">
@@ -308,8 +308,8 @@ const MyTickets = () => {
 
       <div className="relative z-10 mt-[20vh] px-4 flex flex-col items-center flex-grow">
         <div className="text-center text-white mb-5 animate-[fadeIn_0.8s_ease-out]">
-          <h1 className="text-4xl font-bold mb-1">My Tickets</h1>
-          <p className="text-base opacity-90 max-w-[600px] mx-auto">View and manage all your purchased tickets</p>
+          <h1 className="text-4xl font-bold mb-1">{t('myTickets.title')}</h1>
+          <p className="text-base opacity-90 max-w-[600px] mx-auto">{t('myTickets.subtitle')}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg w-full max-w-[950px] p-6 mb-8 animate-[fadeIn_1s_ease-out]">
@@ -318,7 +318,7 @@ const MyTickets = () => {
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
                 <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
               </div>
-              <p className="text-gray-600 mt-4">Loading your tickets...</p>
+              <p className="text-gray-600 mt-4">{t('myTickets.loading')}</p>
             </div>
           ) : error ? (
             <div className="text-center py-8 text-red-600">
@@ -329,19 +329,19 @@ const MyTickets = () => {
                 size="lg"
                 className="reload-button mytickets-button"
               >
-                Try Again
+                {t('common.tryAgain')}
               </Button>
             </div>
           ) : tickets.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <p className="text-gray-600 mb-4">You don't have any tickets yet.</p>
+              <p className="text-gray-600 mb-4">{t('myTickets.noTickets')}</p>
               <Button 
                 onClick={() => navigate("/")} 
                 variant="primary"
                 size="lg"
                 className="cta-button mytickets-button"
               >
-                Book a Ferry
+                {t('myTickets.bookFerry')}
               </Button>
             </div>
           ) : (
@@ -351,7 +351,7 @@ const MyTickets = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center text-gray-700 font-medium">
                     <Filter size={18} className="mr-2" />
-                    <span>Filter by status:</span>
+                    <span>{t('myTickets.filterByStatus')}:</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -362,7 +362,7 @@ const MyTickets = () => {
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      All ({tickets.length})
+                      {t('myTickets.all')} ({tickets.length})
                     </button>
                     <button
                       onClick={() => setStatusFilter("active")}
@@ -372,7 +372,7 @@ const MyTickets = () => {
                           : "bg-green-100 text-green-800 hover:bg-green-200"
                       }`}
                     >
-                      Active ({activeTicketsCount})
+                      {t('myTickets.active')} ({activeTickets})
                     </button>
                     <button
                       onClick={() => setStatusFilter("completed")}
@@ -382,7 +382,7 @@ const MyTickets = () => {
                           : "bg-blue-100 text-blue-800 hover:bg-blue-200"
                       }`}
                     >
-                      Completed ({completedTicketsCount})
+                      {t('myTickets.completed')} ({completedTickets})
                     </button>
                   </div>
                 </div>
@@ -390,28 +390,28 @@ const MyTickets = () => {
                 {/* Currency Selector */}
                 <div className="flex items-center">
                   <div className="flex items-center text-gray-700 font-medium mr-2">
-                    <span>Currency:</span>
+                    <span>{t('myTickets.currency')}:</span>
                   </div>
                   <select
                     value={selectedCurrency}
                     onChange={(e) => setSelectedCurrency(e.target.value)}
                     className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                   >
-                    <option value="TRY">Turkish Lira (₺)</option>
-                    <option value="USD">US Dollar ($)</option>
-                    <option value="EUR">Euro (€)</option>
+                    <option value="TRY">₺ TRY</option>
+                    <option value="USD">$ USD</option>
+                    <option value="EUR">€ EUR</option>
                   </select>
                 </div>
               </div>
 
               {filteredTickets.length === 0 ? (
                 <div className="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-lg">
-                  <p className="text-gray-600 mb-2">No {statusFilter} tickets found.</p>
+                  <p className="text-gray-600 mb-2">{t('myTickets.noFilteredTickets', { status: statusFilter.toLowerCase() })}</p>
                   <button 
                     onClick={() => setStatusFilter("all")}
                     className="text-[#0D3A73] font-medium hover:underline"
                   >
-                    Show all tickets
+                    {t('myTickets.showAllTickets')}
                   </button>
                 </div>
               ) : (
@@ -432,15 +432,15 @@ const MyTickets = () => {
                       
                       <div className="flex flex-col md:flex-row justify-between p-4">
                         <div className="space-y-2 md:flex-1">
-                          <p className="text-gray-600"><span className="font-medium text-gray-700">Ticket ID:</span> {ticket.ticketID}</p>
+                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.ticketId')}:</span> {ticket.ticketID}</p>
                           <p className="text-gray-600">
-                            <span className="font-medium text-gray-700">Departure:</span> {formatDate(ticket.departureDate)}, {formatTime(ticket.departureTime)}
+                            <span className="font-medium text-gray-700">{t('myTickets.departure')}:</span> {formatDate(ticket.departureDate)}, {formatTime(ticket.departureTime)}
                           </p>
-                          <p className="text-gray-600"><span className="font-medium text-gray-700">Class:</span> {ticket.ticketClass}</p>
-                          <p className="text-gray-600"><span className="font-medium text-gray-700">Passenger Count:</span> {ticket.passengerCount}</p>
-                          <p className="text-gray-600"><span className="font-medium text-gray-700">Price:</span> {formatPrice(ticket.totalPrice)}</p>
+                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.class')}:</span> {ticket.ticketClass}</p>
+                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.passengerCount')}:</span> {ticket.passengerCount}</p>
+                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.price')}:</span> {formatPrice(ticket.totalPrice)}</p>
                           {ticket.createdAt && (
-                            <p className="text-gray-600"><span className="font-medium text-gray-700">Booked on:</span> {formatDateTime(ticket.createdAt)}</p>
+                            <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.bookedOn')}:</span> {formatDateTime(ticket.createdAt)}</p>
                           )}
                         </div>
                         
@@ -451,7 +451,7 @@ const MyTickets = () => {
                             size="sm"
                             className="view-button mytickets-button"
                           >
-                            View Details
+                            {t('myTickets.viewDetails')}
                           </Button>
                           <Button
                             onClick={() => handleDownloadTicket(ticket)}
@@ -459,7 +459,7 @@ const MyTickets = () => {
                             size="sm"
                             className="download-button mytickets-button"
                           >
-                            Download Ticket
+                            {t('myTickets.downloadTicket')}
                           </Button>
                           {/* Only show cancel button for active tickets */}
                           {getTicketStatus(ticket) === 'Active' && (
@@ -469,7 +469,7 @@ const MyTickets = () => {
                               size="sm"
                               className="cancel-button mytickets-button text-red-600 border-red-300 hover:bg-red-50"
                             >
-                              Cancel Ticket
+                              {t('myTickets.cancelTicket')}
                             </Button>
                           )}
                         </div>
@@ -483,12 +483,12 @@ const MyTickets = () => {
           
           <div className="text-center mt-8">
             <p className="text-gray-600">
-              Having trouble with your tickets?{" "}
+              {t('myTickets.needHelp')}
               <span 
                 onClick={navigateToContact} 
                 className="text-[#0D3A73] font-medium hover:text-[#06AED5] underline cursor-pointer transition-colors duration-300"
               >
-                Contact our support team
+                {t('myTickets.contactSupport')}
               </span>
             </p>
           </div>
@@ -500,7 +500,7 @@ const MyTickets = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 selectable">
           <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4 animate-[fadeIn_0.3s_ease-out] max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Ticket Details</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('myTickets.ticketDetails')}</h2>
               <button 
                 onClick={handleCloseModal}
                 className="text-gray-500 hover:text-gray-700"
@@ -516,16 +516,16 @@ const MyTickets = () => {
                 <h3 className="text-lg font-medium text-gray-800 mb-1">
                   {getLocationDisplay(selectedTicket, 'from')} - {getLocationDisplay(selectedTicket, 'to')}
                 </h3>
-                <p className="text-sm text-gray-500">Ferry Ticket</p>
+                <p className="text-sm text-gray-500">{t('myTickets.ferryTicket')}</p>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Ticket ID</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.ticketId')}</p>
                   <p className="font-medium">{selectedTicket.ticketID}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Status</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.status')}</p>
                   <p className={`font-medium ${
                     getTicketStatus(selectedTicket) === 'Active' ? 'text-green-600' : 'text-blue-600'
                   }`}>
@@ -534,43 +534,43 @@ const MyTickets = () => {
                 </div>
                 {selectedTicket.createdAt && (
                   <div>
-                    <p className="text-sm text-gray-500">Booked on</p>
+                    <p className="text-sm text-gray-500">{t('myTickets.bookedOn')}</p>
                     <p className="font-medium">{formatDateTime(selectedTicket.createdAt)}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-sm text-gray-500">Departure City</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.departureCity')}</p>
                   <p className="font-medium">{getLocationDisplay(selectedTicket, 'from')}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Arrival City</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.arrivalCity')}</p>
                   <p className="font-medium">{getLocationDisplay(selectedTicket, 'to')}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Class</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.class')}</p>
                   <p className="font-medium">{selectedTicket.ticketClass}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Date</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.date')}</p>
                   <p className="font-medium">{formatDate(selectedTicket.departureDate)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Time</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.time')}</p>
                   <p className="font-medium">{formatTime(selectedTicket.departureTime)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Seats</p>
+                  <p className="text-sm text-gray-500">{t('myTickets.seats')}</p>
                   <p className="font-medium">{selectedTicket.selectedSeats}</p>
                 </div>
                 <div className="md:col-span-3 flex justify-between items-center">
                   <div>
-                    <p className="text-sm text-gray-500">Price</p>
+                    <p className="text-sm text-gray-500">{t('myTickets.price')}</p>
                     <p className="font-medium text-lg">{formatPrice(selectedTicket.totalPrice)}</p>
                   </div>
                   
                   {/* Currency Selector in Modal */}
                   <div className="flex items-center">
-                    <label className="text-sm text-gray-600 mr-2">View in:</label>
+                    <label className="text-sm text-gray-600 mr-2">{t('myTickets.viewIn')}:</label>
                     <select
                       value={selectedCurrency}
                       onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -586,18 +586,18 @@ const MyTickets = () => {
               
               {/* Passengers Information */}
               <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-lg font-semibold mb-3">Passengers</h3>
+                <h3 className="text-lg font-semibold mb-3">{t('myTickets.passengers')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedTicket.passengers && selectedTicket.passengers.map((passenger, index) => (
                     <div key={index} className="bg-gray-50 p-3 rounded border border-gray-100">
                       <p className="font-medium">{passenger.name} {passenger.surname}</p>
                       <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                         <div>
-                          <p className="text-gray-500">Birth Date</p>
+                          <p className="text-gray-500">{t('common.birthDate')}</p>
                           <p>{passenger.birthDate}</p>
                         </div>
                         <div>
-                          <p className="text-gray-500">Type</p>
+                          <p className="text-gray-500">{t('myTickets.type')}</p>
                           <p>{passenger.passengerType || "Adult"}</p>
                         </div>
                         
@@ -606,13 +606,13 @@ const MyTickets = () => {
                           <>
                             {passenger.email && (
                               <div>
-                                <p className="text-gray-500">Email</p>
+                                <p className="text-gray-500">{t('common.email')}</p>
                                 <p className="truncate">{passenger.email}</p>
                               </div>
                             )}
                             {passenger.phoneNo && (
                               <div>
-                                <p className="text-gray-500">Phone</p>
+                                <p className="text-gray-500">{t('common.phone')}</p>
                                 <p>{passenger.phoneNo}</p>
                               </div>
                             )}
@@ -631,7 +631,7 @@ const MyTickets = () => {
                   size="md"
                   className="flex-1"
                 >
-                  Download Ticket
+                  {t('myTickets.downloadTicket')}
                 </Button>
                 
                 {/* Add Cancel button in the modal for active tickets */}
@@ -645,7 +645,7 @@ const MyTickets = () => {
                     size="md"
                     className="flex-1 text-red-600 border-red-300 hover:bg-red-50"
                   >
-                    Cancel Ticket
+                    {t('myTickets.cancelTicket')}
                   </Button>
                 )}
               </div>

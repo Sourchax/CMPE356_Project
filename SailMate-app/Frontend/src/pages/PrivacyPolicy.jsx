@@ -1,8 +1,10 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const PrivacyPolicy = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     
     const navigateToContact = () => {
         navigate("/contact");
@@ -21,13 +23,12 @@ const PrivacyPolicy = () => {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="mb-3 text-5xl font-bold text-[#0D3A73]">Privacy Policy</h1>
+                    <h1 className="mb-3 text-5xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.pageTitle')}</h1>
                     <div className="mx-auto mt-4 h-1 w-24 rounded bg-[#F0C808]"></div>
                     <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-                        At SailMate, we value your privacy and are committed to protecting your personal information.
-                        We only collect what's necessary to provide our ferry ticketing and booking services.
+                        {t('privacyPolicyPage.pageSubtitle')}
                     </p>
-                    <div className="mt-3 text-sm text-gray-500">Last Updated: March 2025</div>
+                    <div className="mt-3 text-sm text-gray-500">{t('privacyPolicyPage.lastUpdated')}</div>
                 </div>
                 
                 {/* Content */}
@@ -35,105 +36,85 @@ const PrivacyPolicy = () => {
                     <div className="mb-12 space-y-10">
                         {/* Introduction */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">Introduction</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.introduction.title')}</h2>
                             <p className="text-base text-gray-700 leading-relaxed">
-                                This Privacy Policy explains how SailMate collects, uses, and protects information about you when you use our ferry ticketing platform.
-                                We respect your privacy and only collect data necessary to facilitate your ferry bookings and provide a seamless travel experience. 
-                                We do not store your payment card details on our servers or collect any special categories of personal data beyond what's required for your ferry travel.
-                                We may update this Privacy Policy periodically. If we make significant changes, we will notify you by revising the date at the top
-                                of the policy and, where appropriate, by email.
+                                {t('privacyPolicyPage.introduction.content')}
                             </p>
                         </div>
 
                         {/* Information We Collect */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">Information We Collect</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.informationWeCollect.title')}</h2>
                             
-                            <h3 className="mt-6 mb-3 text-xl font-semibold text-[#06AED5]">Information You Provide to Us</h3>
+                            <h3 className="mt-6 mb-3 text-xl font-semibold text-[#06AED5]">{t('privacyPolicyPage.informationWeCollect.providedInfo.title')}</h3>
                             <p className="text-base text-gray-700 leading-relaxed mb-4">
-                                We collect information you provide directly to us when you book ferry tickets, create an account, 
-                                subscribe to notifications, or communicate with us. This may include:
+                                {t('privacyPolicyPage.informationWeCollect.providedInfo.intro')}
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-base text-gray-700 mb-6">
-                                <li>Contact information (name, email address, phone number)</li>
-                                <li>Profile information (username, password)</li>
-                                <li>Passenger information (names, ages, nationality where required by ferry operators)</li>
-                                <li>Payment information (processed securely through our payment processors, not stored on our servers)</li>
-                                <li>Travel details (routes, dates, times, vehicle information if applicable)</li>
-                                <li>Communications you send to our customer support team</li>
+                                {t('privacyPolicyPage.informationWeCollect.providedInfo.items', { returnObjects: true }).map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
                             </ul>
                             
-                            <h3 className="mt-6 mb-3 text-xl font-semibold text-[#06AED5]">Information We Collect Automatically</h3>
+                            <h3 className="mt-6 mb-3 text-xl font-semibold text-[#06AED5]">{t('privacyPolicyPage.informationWeCollect.automaticInfo.title')}</h3>
                             <p className="text-base text-gray-700 leading-relaxed mb-4">
-                                When you access or use our ferry booking platform, we may automatically collect:
+                                {t('privacyPolicyPage.informationWeCollect.automaticInfo.intro')}
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-base text-gray-700">
-                                <li>Log information (IP address, browser type, pages viewed, time spent on site)</li>
-                                <li>Device information (device type, operating system, unique device identifiers)</li>
-                                <li>Location information (with your consent, to suggest nearby ports or routes)</li>
-                                <li>Cookies and similar technologies (to remember your preferences and improve your experience)</li>
+                                {t('privacyPolicyPage.informationWeCollect.automaticInfo.items', { returnObjects: true }).map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
                             </ul>
                         </div>
 
                         {/* How We Use Information */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">How We Use Your Information</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.howWeUse.title')}</h2>
                             <p className="text-base text-gray-700 leading-relaxed mb-4">
-                                We use the information we collect to:
+                                {t('privacyPolicyPage.howWeUse.intro')}
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-base text-gray-700">
-                                <li>Process and confirm your ferry bookings</li>
-                                <li>Issue electronic tickets and boarding passes</li>
-                                <li>Send booking confirmations, changes, and travel updates</li>
-                                <li>Facilitate check-in processes with ferry operators</li>
-                                <li>Provide customer support for booking inquiries</li>
-                                <li>Notify you about schedule changes, cancellations, or service disruptions</li>
-                                <li>Process refunds or booking modifications</li>
-                                <li>Improve our ferry route offerings and service</li>
-                                <li>Personalize your ferry booking experience</li>
-                                <li>Prevent fraudulent transactions and ticket fraud</li>
-                                <li>Comply with legal obligations and ferry operator requirements</li>
+                                {t('privacyPolicyPage.howWeUse.items', { returnObjects: true }).map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
                             </ul>
                         </div>
 
                         {/* Sharing of Information */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">Sharing of Information</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.sharingInfo.title')}</h2>
                             <p className="text-base text-gray-700 leading-relaxed mb-4">
-                                We may share the information we collect as follows:
+                                {t('privacyPolicyPage.sharingInfo.intro')}
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-base text-gray-700">
-                                <li><span className="font-medium text-[#F05D5E]">With ferry operators and port authorities:</span> To process your booking, issue tickets, and fulfill regulatory requirements</li>
-                                <li><span className="font-medium text-[#F05D5E]">With payment processors:</span> To complete your ferry ticket payment transactions</li>
-                                <li><span className="font-medium text-[#F05D5E]">With service providers:</span> Who help us operate our platform, such as cloud storage, email services, and customer support tools</li>
-                                <li><span className="font-medium text-[#F05D5E]">In response to legal process:</span> Such as a court order or subpoena, or to comply with maritime and transport regulations</li>
-                                <li><span className="font-medium text-[#F05D5E]">To protect safety:</span> Of passengers, vessels, port facilities, or to respond to emergencies</li>
-                                <li><span className="font-medium text-[#F05D5E]">In connection with a business transfer:</span> Such as a merger, acquisition, or sale of our ferry booking business</li>
+                                {t('privacyPolicyPage.sharingInfo.items', { returnObjects: true }).map((item, index) => (
+                                    <li key={index}>
+                                        <span className="font-medium text-[#F05D5E]">{item.label}:</span> {item.content}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
 
                         {/* Security */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">Data Security</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.security.title')}</h2>
                             <p className="text-base text-gray-700 leading-relaxed">
-                                We take reasonable measures to help protect information about you from loss, theft, misuse, 
-                                unauthorized access, disclosure, alteration, and destruction. However, no security system is impenetrable, 
-                                and we cannot guarantee the security of our systems or your information.
+                                {t('privacyPolicyPage.security.content')}
                             </p>
                         </div>
 
                         {/* Your Rights */}
                         <div>
-                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">Your Rights and Choices</h2>
+                            <h2 className="mb-4 text-2xl font-bold text-[#0D3A73]">{t('privacyPolicyPage.yourRights.title')}</h2>
                             <p className="text-base text-gray-700 leading-relaxed mb-4">
-                                You have several rights regarding your personal information:
+                                {t('privacyPolicyPage.yourRights.intro')}
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-base text-gray-700">
-                                <li><span className="font-medium text-[#06AED5]">Account Information:</span> You can update your account information by logging into your account settings</li>
-                                <li><span className="font-medium text-[#06AED5]">Cookies:</span> Most web browsers accept cookies by default. You can usually set your browser to remove or reject cookies</li>
-                                <li><span className="font-medium text-[#06AED5]">Promotional Communications:</span> You can opt out of receiving promotional emails by following the instructions in those emails</li>
-                                <li><span className="font-medium text-[#06AED5]">Data Access and Portability:</span> You can request a copy of your personal data we hold</li>
-                                <li><span className="font-medium text-[#06AED5]">Data Deletion:</span> You can request that we delete your personal information</li>
+                                {t('privacyPolicyPage.yourRights.items', { returnObjects: true }).map((item, index) => (
+                                    <li key={index}>
+                                        <span className="font-medium text-[#06AED5]">{item.label}:</span> {item.content}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
@@ -142,12 +123,12 @@ const PrivacyPolicy = () => {
                 {/* Contact Information */}
                 <div className="mt-16 text-center">
                     <p className="text-gray-600">
-                        Have questions about our privacy practices?{" "}
+                        {t('privacyPolicyPage.contactInfo.question')}{" "}
                         <span 
                             onClick={navigateToContact} 
                             className="text-[#0D3A73] font-medium hover:text-[#06AED5] underline cursor-pointer transition-colors duration-300"
                         >
-                            Contact our support team
+                            {t('privacyPolicyPage.contactInfo.contact')}
                         </span>
                     </p>
                 </div>

@@ -1,0 +1,988 @@
+{
+  "common": {
+    "welcome": "Hoşgeldiniz",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "home": "Ana Sayfa",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "search": "Ara",
+    "book": "Rezerve Et",
+    "bookNow": "Şimdi Rezerve Et",
+    "findTicket": "Bilet Bul",
+    "from": "Nereden",
+    "to": "Nereye",
+    "date": "Tarih",
+    "time": "Saat",
+    "passengers": "Yolcular",
+    "passengerSingular": "Yolcu",
+    "passengersPlural": "Yolcu",
+    "price": "Fiyat",
+    "currency": "Para Birimi",
+    "next": "İleri",
+    "back": "Geri",
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "submit": "Gönder",
+    "email": "E-posta",
+    "password": "Şifre",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "phone": "Telefon",
+    "address": "Adres",
+    "city": "Şehir",
+    "country": "Ülke",
+    "save": "Kaydet",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "stations": "İstasyonlar",
+    "tickets": "Biletler",
+    "cancelTicket": "Bilet İptal",
+    "checkTicket": "Bilet Kontrol",
+    "myTickets": "Biletlerim",
+    "voyageTimes": "Sefer Saatleri",
+    "aboutUs": "Hakkımızda",
+    "language": "Dil",
+    "terms": "Kullanım Şartları",
+    "privacy": "Gizlilik",
+    "company": "Şirket",
+    "resources": "Kaynaklar",
+    "sustainability": "Sürdürülebilirlik",
+    "faq": "Sık Sorulan Sorular",
+    "travellingRules": "Seyahat Kuralları",
+    "accessibility": "Erişilebilirlik",
+    "allRightsReserved": "Tüm hakları saklıdır.",
+    "oneWay": "Tek Yön",
+    "roundTrip": "Gidiş-Dönüş",
+    "selectDeparture": "Kalkış Yeri Seçin",
+    "selectArrival": "Varış Yeri Seçin",
+    "departureDate": "Gidiş Tarihi",
+    "returnDate": "Dönüş Tarihi",
+    "adults": "Yetişkinler",
+    "adultsAge": "20+ yaş",
+    "students": "Öğrenciler",
+    "studentsAge": "8-25 yaş",
+    "seniors": "Yaşlılar",
+    "seniorsAge": "65+ yaş",
+    "children": "Çocuklar",
+    "childrenAge": "0-8 yaş",
+    "apply": "Uygula",
+    "searchTickets": "Bilet Ara",
+    "viewOnMap": "Haritada Görüntüle",
+    "all": "Tümü"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Konfor ve Stil ile Seyahat Edin",
+      "subtitle": "Türkiye'nin en güzel sularında hızlı ve güvenilir feribot hizmeti"
+    },
+    "searchSection": {
+      "title": "Feribotunuzu Bulun",
+      "subtitle": "Bir sonraki yolculuğunuzu arayın ve rezerve edin"
+    },
+    "latestAnnouncements": "Son Duyurular",
+    "featuresIntro": "Premium hizmetlerimiz ve müşteri odaklı yaklaşımımızla en iyi deniz seyahatini deneyimleyin",
+    "featuresSection": {
+      "title": "Neden SailMate'i Seçmelisiniz",
+      "feature1": {
+        "title": "Güvenli Ödemeler",
+        "description": "Anında onay ve e-biletlerle çeşitli güvenli ödeme seçenekleri. İşleminizin güvenli ve korumalı olmasını sağlıyoruz."
+      },
+      "feature2": {
+        "title": "Modern Filo",
+        "description": "Rahat koltuklar, yemek seçenekleri ve eğlence ile modern gemilerimizle seyahat ederek yolculuğunuzun keyifli geçmesini sağlıyoruz."
+      },
+      "feature3": {
+        "title": "Yolcu Odaklı",
+        "description": "Müşteri hizmetleri ekibimiz, rezervasyonlar, değişiklikler veya sorularınız için 7/24 hizmetinizdedir."
+      }
+    },
+    "ferryExplorer": {
+      "title": "Feribotlarımızı Keşfedin",
+      "subtitle": "Size uygun mükemmel yolculuğu bulmak için öne çıkan feribotlarımıza ve rotalarımıza göz atın."
+    },
+    "testimonials": {
+      "title": "Müşterilerimiz Ne Diyor",
+      "subtitle": "Hizmetlerimizi deneyimleyen yolcuların görüşlerini dinleyin",
+      "testimonial1": {
+        "name": "Emir Ö.",
+        "text": "\"Çevrimiçi rezervasyon süreci çok kolaydı ve feribot temiz ve rahattı. Kesinlikle bir sonraki seyahatimde yine SailMate'i tercih edeceğim!\""
+      },
+      "testimonial2": {
+        "name": "Ozan K.",
+        "text": "\"Yenikapı ve Bandırma arasında her hafta seyahat ediyorum ve SailMate yolculuğumu çok daha keyifli hale getirdi. Personel her zaman dostça ve yardımsever.\""
+      },
+      "testimonial3": {
+        "name": "Ekin A.",
+        "text": "\"Yolculuk boyunca manzara muhteşemdi! Feribot zamanında geldi ve koltuklar rahattı. Bölgede seyahat eden herkese tavsiye ederim.\""
+      }
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "title": "Daha Rahat Bir Yolculuk İçin Yelken Açıyoruz",
+      "subtitle": "İnsanların suda seyahat etme şeklini değiştiren devrim niteliğindeki feribot biletleme sistemi SailMate'in hikayesini keşfedin."
+    },
+    "ourStory": {
+      "title": "Hikayemiz",
+      "sectionTitle": "Nasıl Başladı",
+      "paragraph1": "SailMate, 2025 yılında kalabalık bir feribot terminalindeki rahatsız edici bir deneyimden doğdu. Kurucumuz, bilet almak için uzun bir kuyrukta beklerken, feribot rezervasyonunun neden diğer modern seyahat deneyimleri kadar sorunsuz olamayacağını merak etti.",
+      "paragraph2": "Feribot biletlerini dijitalleştirmek için basit bir fikir olarak başlayan şey, hızla su yolu taşımacılığının kendine özgü zorluklarını ele alan kapsamlı bir platforma dönüştü. Bugün SailMate, dünya genelinde binlerce yolcuya ve onlarca feribot işletmecisine hizmet veriyor."
+    },
+    "ourMission": {
+      "title": "Misyonumuz",
+      "description": "Su yolu seyahatini, insanları verimli, stressiz feribot deneyimlerine bağlayan ve kıyı ve ada topluluklarını destekleyen teknolojiler yaratarak dönüştürmek.",
+      "stats": {
+        "boardingTime": "Biniş süresinde azalma",
+        "routes": "Kapsanan feribot rotası",
+        "travelers": "Mutlu yolcu"
+      }
+    },
+    "team": {
+      "title": "Ekibimizle Tanışın",
+      "members": {
+        "ceo": "Kurucu ve CEO",
+        "cto": "CTO",
+        "customerExperience": "Müşteri Deneyimi Başkanı"
+      }
+    },
+    "values": {
+      "title": "SailMate Farkı",
+      "innovation": {
+        "title": "Yenilik",
+        "description": "Feribot rezervasyonunu ve seyahatini sorunsuz bir şekilde verimli hale getirmek için akıllı çözümler geliştiriyoruz."
+      },
+      "reliability": {
+        "title": "Güvenilirlik",
+        "description": "Yolculuğunuzu planlayabileceğiniz zamanında kalkışlar ve doğru tarifeler."
+      },
+      "sustainability": {
+        "title": "Sürdürülebilirlik",
+        "description": "Üzerinde yol aldığımız güzel suları koruyan çevre dostu gemiler ve uygulamalar."
+      },
+      "comfort": {
+        "title": "Konfor",
+        "description": "Su üzerinde rahat bir yolculuk için özenle tasarlanmış alanlar ve olanaklar."
+      }
+    },
+    "testimonials": {
+      "title": "İnsanlar Ne Diyor",
+      "testimonial1": {
+        "quote": "SailMate, feribotlarımızı işletme şeklimizi değiştirdi. Daha az kuyruk, daha mutlu müşteriler, daha iyi iş.",
+        "author": "Coastal Ferries Ltd.",
+        "role": "Feribot İşletmecisi"
+      },
+      "testimonial2": {
+        "quote": "Körfez boyunca günlük işe gidip gelmek için uygulamayı kullanıyorum. Kuyrukta bekleyerek geçirdiğim sayısız saatten tasarruf ettim.",
+        "author": "Maria J.",
+        "role": "Günlük Yolcu"
+      },
+      "testimonial3": {
+        "quote": "Adadan adaya tatilimizi planlamak SailMate ile çok kolaydı. Her seferinde sorunsuz bağlantılar.",
+        "author": "Robinson Ailesi",
+        "role": "Tatil Yolcuları" 
+      }
+    },
+    "cta": {
+      "title": "Feribot Seyahatinizi Basitleştirmeye Hazır mısınız?",
+      "subtitle": "Daha iyi bir yelken açma yolu keşfeden binlerce yolcuya katılın.",
+      "button": "Bugün Başlayın"
+    }
+  },
+  "stationsPage": {
+    "title": "Feribot İstasyonları",
+    "subtitle": "En yakın SailMate istasyonunu bulun ve yerel temsilcilerimizle iletişime geçin",
+    "personnel": "Personel",
+    "turkeyText": "Türkiye",
+    "emptyStateTitle": "İstasyon Bulunamadı",
+    "emptyStateMessage": "Filtrenize uygun istasyon bulamadık. Lütfen başka bir şehir deneyin veya tüm istasyonları görüntüleyin.",
+    "viewAllStations": "Tüm İstasyonları Görüntüle"
+  },
+  "contactPage": {
+    "getInTouch": "Bizimle İletişime Geçin",
+    "getInTouchText": "Sizden haber almak isteriz. Formu doldurun ve en kısa sürede size geri döneceğiz.",
+    "ourLocation": "Konumumuz",
+    "phoneNumber": "Telefon Numarası",
+    "emailAddress": "E-posta Adresi",
+    "workingHours": "Çalışma Saatleri",
+    "workingHoursValue": "Pazartesi-Cuma: 9:00 - 18:00",
+    "followUs": "Bizi Takip Edin",
+    "facebookTooltip": "Facebook",
+    "twitterTooltip": "X",
+    "instagramTooltip": "Instagram",
+    "contactUs": "Bize Ulaşın",
+    "successMessage": "Mesajınız için teşekkürler! En kısa sürede size geri döneceğiz.",
+    "fullName": "Ad Soyad",
+    "yourName": "Adınız",
+    "yourEmail": "E-posta adresiniz",
+    "subject": "Konu",
+    "messageSubject": "Mesaj konusu",
+    "message": "Mesaj",
+    "yourMessage": "Mesajınız",
+    "requiredFields": "Zorunlu alanlar",
+    "sendMessage": "Mesaj Gönder",
+    "formErrors": {
+      "nameRequired": "İsim gereklidir",
+      "nameMinLength": "İsim en az 2 karakter olmalıdır",
+      "nameMaxLength": "İsim 50 karakteri geçemez",
+      "nameInvalid": "İsim sadece harfler, boşluklar, tireler ve kesme işaretleri içerebilir",
+      "emailRequired": "E-posta gereklidir",
+      "emailInvalid": "Lütfen geçerli bir e-posta adresi girin",
+      "emailMaxLength": "E-posta 100 karakteri geçemez",
+      "subjectRequired": "Konu gereklidir",
+      "subjectMinLength": "Konu en az 3 karakter olmalıdır",
+      "subjectMaxLength": "Konu 100 karakteri geçemez",
+      "messageRequired": "Mesaj gereklidir",
+      "messageMinLength": "Mesaj en az 10 karakter olmalıdır",
+      "messageMaxLength": "Mesaj 1000 karakteri geçemez",
+      "submitError": "Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+    }
+  },
+  "ferryExplorer": {
+    "exploreRoutes": "Rotaları Keşfedin",
+    "seabus": {
+      "title": "Modern Seabus Filosu",
+      "description": "Çevre dostu Seabus'larımızla rahat bir yolculuğun keyfini çıkarın",
+      "feature1": "Panoramik Manzara",
+      "feature2": "Gemide Hizmetler",
+      "feature3": "Aile Dostu",
+      "tag": "Seabus"
+    },
+    "fastFerry": {
+      "title": "Modern Fast Ferry Filosu",
+      "description": "Hızlı ve konforlu Fast Ferry'lerimizle seyahat edin",
+      "feature1": "Hızlı Seyahat",
+      "feature2": "Premium Hizmet",
+      "feature3": "Geniş Alan",
+      "tag": "Fast Ferry"
+    }
+  },
+  "footer": {
+    "companyDescription": "Modern teknoloji ve üstün hizmet ile feribot seyahatini yeniden şekillendiriyoruz."
+  },
+  "ticketCheck": {
+    "title": "Biletinizi Kontrol Edin",
+    "subtitle": "Rezervasyon bilgilerinizi görüntülemek için bilet detaylarınızı girin",
+    "enterTicketId": "Bilet Numaranızı Girin",
+    "ticketIdLabel": "Bilet No / Rezervasyon Numarası",
+    "ticketIdPlaceholder": "Bilet numaranızı girin",
+    "enterEmail": "E-postanızı Girin",
+    "emailLabel": "Rezervasyon için Kullanılan E-posta Adresi",
+    "emailPlaceholder": "Rezervasyon için kullanılan e-posta adresini girin",
+    "checkStatus": "Bilet Durumunu Kontrol Et",
+    "ticketStatus": "Bilet Durumu",
+    "ticketDetails": "Bilet Detayları",
+    "journey": "Sefer",
+    "departureDate": "Kalkış Tarihi",
+    "departureTime": "Kalkış Saati",
+    "passengerCount": "Yolcu Sayısı",
+    "class": "Sınıf",
+    "totalPrice": "Toplam Fiyat",
+    "passengerInfo": "Yolcu Bilgileri",
+    "birthDate": "Doğum Tarihi", 
+    "phoneNumber": "Telefon",
+    "needHelp": "Yardıma mı ihtiyacınız var?",
+    "contactSupport": "Destek ekibimizle iletişime geçin",
+    "downloadTicket": "Bileti İndir",
+    "goBack": "Geri Dön",
+    "errorMessage": "Bilet yüklenemedi. Lütfen bilet numaranızı ve e-postanızı kontrol edin.",
+    "status": {
+      "confirmed": "Biletiniz onaylandı! Lütfen limana kalkıştan en az 30 dakika önce gelin.",
+      "upcoming": "Seyahatiniz yakında! Lütfen limana kalkıştan en az 30 dakika önce gelin.",
+      "completed": "Bu seyahat tamamlandı. Umarız bizimle yolculuğunuzun tadını çıkarmışsınızdır!",
+      "canceled": "Bu bilet iptal edildi. Eğer siz iptal etmediyseniz, lütfen destek ekibimizle iletişime geçin."
+    }
+  },
+  "ticketCancel": {
+    "title": "Biletinizi İptal Edin",
+    "subtitle": "İptal etmeniz gerektiği için üzgünüz. Lütfen bilet detaylarınızı aşağıya girin.",
+    "enterTicketId": "Bilet Numaranızı Girin",
+    "ticketIdLabel": "Bilet No / Rezervasyon Numarası",
+    "ticketIdPlaceholder": "Bilet numaranızı girin",
+    "enterReason": "İptal Nedeni (İsteğe Bağlı)",
+    "reasonPlaceholder": "Lütfen neden iptal ettiğinizi bize bildirin",
+    "continueButton": "İptal İşlemine Devam Et",
+    "retrievingDetails": "Bilet Detayları Alınıyor...",
+    "cancelPolicy": "Lütfen dikkat: Bilet tipinize ve kalkış saatine ne kadar yakın olduğunuza bağlı olarak iptal ücretleri uygulanabilir.",
+    "confirmTitle": "İptali Onaylayın",
+    "confirmPrompt": "Biletinizi iptal etmek istediğinizden emin misiniz?",
+    "confirmWarning": "Bu işlem geri alınamaz. İade politikaları bilet koşullarınıza göre uygulanacaktır.",
+    "confirmButton": "İptali Onayla",
+    "goBack": "Geri Dön",
+    "ticketDetails": "Bilet Detayları",
+    "id": "Bilet No",
+    "departureDate": "Kalkış Tarihi",
+    "departureTime": "Kalkış Saati",
+    "passengerCount": "Yolcu Sayısı",
+    "class": "Sınıf",
+    "seats": "Seçilen Koltuklar",
+    "totalPrice": "Toplam Fiyat",
+    "ferryTicket": "Feribot Bileti",
+    "needHelp": "Yardıma mı ihtiyacınız var?",
+    "contactSupport": "Destek ekibimizle iletişime geçin",
+    "errorMessages": {
+      "notFound": "Bilet detayları bulunamadı. Lütfen bilet numaranızı kontrol edin ve tekrar deneyin.",
+      "alreadyDeparted": "Bu bilet iptal edilemez çünkü sefer zaten gerçekleşmiş veya tamamlanmıştır.",
+      "cancelError": "Biletinizi iptal ederken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibimizle iletişime geçin."
+    },
+    "successMessage": "Biletiniz başarıyla iptal edildi. Kısa süre içinde e-posta gönderilecektir."
+  },
+  "myTickets": {
+    "title": "Biletlerim",
+    "subtitle": "Satın aldığınız tüm biletleri görüntüleyin ve yönetin",
+    "loading": "Biletleriniz yükleniyor...",
+    "noTickets": "Henüz biletiniz yok.",
+    "bookFerry": "Feribot Rezervasyonu Yap",
+    "filterByStatus": "Duruma göre filtrele:",
+    "all": "Tümü",
+    "active": "Aktif",
+    "completed": "Tamamlanmış",
+    "currency": "Para Birimi",
+    "noFilteredTickets": "Hiç {status} bilet bulunamadı.",
+    "showAllTickets": "Tüm biletleri göster",
+    "needHelp": "Biletlerinizle ilgili sorun mu yaşıyorsunuz?",
+    "contactSupport": "Destek ekibimizle iletişime geçin",
+    "ticketId": "Bilet No",
+    "departure": "Kalkış",
+    "class": "Sınıf",
+    "passengerCount": "Yolcu Sayısı",
+    "price": "Fiyat",
+    "bookedOn": "Rezervasyon Tarihi",
+    "viewDetails": "Detayları Görüntüle",
+    "downloadTicket": "Bileti İndir",
+    "cancelTicket": "Bileti İptal Et",
+    "ticketDetails": "Bilet Detayları",
+    "status": "Durum",
+    "departureCity": "Kalkış Şehri",
+    "arrivalCity": "Varış Şehri",
+    "date": "Tarih",
+    "time": "Saat",
+    "seats": "Koltuklar",
+    "viewIn": "Görüntüleme:",
+    "passengers": "Yolcular",
+    "birthDate": "Doğum Tarihi",
+    "type": "Tip",
+    "email": "E-posta",
+    "phone": "Telefon"
+  },
+  "dashboard": {
+    "welcome": "Kontrol panelinize hoş geldiniz",
+    "overview": "Sisteminize genel bir bakış",
+    "statistics": "İstatistikler",
+    "recentActivity": "Son Aktiviteler",
+    "notifications": "Bildirimler",
+    "settings": "Ayarlar"
+  },
+  "errors": {
+    "required": "Bu alan zorunludur",
+    "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+    "invalidPhone": "Lütfen geçerli bir telefon numarası girin",
+    "invalidPassword": "Şifre en az 8 karakter olmalıdır",
+    "notFound": "Bulunamadı",
+    "serverError": "Sunucu hatası oluştu"
+  },
+  "sustainabilityPage": {
+    "pageTitle": "Sürdürülebilirlik Taahhüdümüz",
+    "pageSubtitle": "SailMate, çevreye duyarlı feribot seyahati ve karbon ayak izimizi azaltmaya adanmıştır.",
+    "features": {
+      "ecoFriendlyVessels": {
+        "title": "Çevre Dostu Gemiler",
+        "description": "Düşük emisyon ve yakıt verimli teknoloji"
+      },
+      "wasteReduction": {
+        "title": "Atık Azaltma",
+        "description": "Plastiği minimuma indiren ve geri dönüşüm uygulayan sistemler"
+      },
+      "carbonOffset": {
+        "title": "Karbon Dengeleme",
+        "description": "Çevresel etkimizi dengelemek için projeler"
+      }
+    },
+    "vision": {
+      "title": "Sürdürülebilir Feribot Seyahati Vizyonumuz",
+      "paragraph1": "2025 yılında kurulan yeni bir şirket olarak, SailMate temel değerlerine sürdürülebilirliği yerleştirerek kuruldu. Temel ulaşım hizmetleri sağlarken okyanuslarımızı ve deniz ortamlarını korumanın kritik önemini kabul ediyoruz.",
+      "paragraph2": "Hedefimiz, 2030 yılına kadar sektördeki en çevre dostu feribot hizmeti olmak ve operasyonlarımızın en başından itibaren sürdürülebilir deniz seyahati için yeni standartlar belirlemektir.",
+      "paragraph3": "Eski gemileri yenilemek veya mevcut sistemleri uyarlamak yerine, çevresel etkiyi en aza indirirken seyahat deneyimini geliştiren yenilikçi teknolojiler, sürdürülebilir uygulamalar ve ileriye dönük ortaklıklarla yeni başlıyoruz."
+    },
+    "initiatives": {
+      "fleet": {
+        "title": "Filo Sürdürülebilirlik Girişimleri",
+        "intro": "Çevre dostu gemilere olan bağlılığımız şunları içerir:",
+        "items": [
+          "Yakıt tüketimini %30'a kadar azaltan hibrit-elektrikli tahrik sistemlerine yatırım",
+          "Su direncini azaltmak ve yakıt verimliliğini artırmak için gövde optimizasyon teknolojisi uygulaması",
+          "Sülfür emisyonlarını azaltmak için egzoz gazı temizleme sistemleri (scrubber) kurulumu",
+          "Düzenleyici gereksinimlerin önünde düşük kükürtlü deniz yakıtlarına geçiş",
+          "Kısa rotalar için hidrojen ve tamamen elektrikli gemi seçeneklerini araştırma",
+          "Optimum motor performansı ve en aza indirilmiş emisyonlar için düzenli bakım programları"
+        ],
+        "target": "2026 Hedefi: Endüstri standartlarından %30 daha az emisyon üreten gemilerle filomuzu inşa etmek"
+      },
+      "waste": {
+        "title": "Atık Yönetimi ve Geri Dönüşüm",
+        "intro": "Atıkla birden fazla cephede mücadele ediyoruz:",
+        "items": [
+          "Tüm operasyonlarımızda tek kullanımlık plastikleri ortadan kaldırma",
+          "Yolcular ve mürettebat için kapsamlı gemide geri dönüşüm programları uygulama",
+          "Gemideki kafelerimizde biyolojik olarak parçalanabilir ve kompostlanabilir gıda ambalajları kullanma",
+          "Dijital biletleme ve iletişim yoluyla kağıt tüketimini azaltma",
+          "Tüm tehlikeli atık malzemelerini sorumlu bir şekilde imha etme",
+          "Tedarik zincirimizde ambalaj atığını azaltmak için tedarikçilerle çalışma"
+        ],
+        "target": "2025-2026 Hedefi: Sıfır tek kullanımlık plastikle başlamak ve çöp depolama alanlarından %80 atık saptırma uygulamak"
+      },
+      "water": {
+        "title": "Su Koruma ve Koruma",
+        "intro": "Deniz ekosistemi koruma taahhüdümüz şunları içerir:",
+        "items": [
+          "Deniz suyu kalitesini korumak için tüm gemilerde gelişmiş atık su arıtma sistemleri",
+          "İstilacı türlerin transferini önlemek için düzenli gövde temizliği ve bakımı",
+          "Tüm operasyonlarımızda çevre dostu temizlik ürünleri kullanımı",
+          "Tüm gemilerde tatlı su koruma önlemleri",
+          "Hassas habitatlarda azaltılmış hızlar dahil olmak üzere deniz vahşi yaşam koruma protokolleri",
+          "Deniz koruma organizasyonları ile ortaklıklar"
+        ],
+        "outro": "Faaliyet alanlarımızda düzenli olarak su kalitesini izliyor ve rotalarımız boyunca kıyı temizleme girişimlerine katılıyoruz."
+      },
+      "carbon": {
+        "title": "Karbon Dengeleme Programları",
+        "intro": "Doğrudan emisyonlarımızı azaltmak için çalışırken, aynı zamanda karbon dengeleme projelerine de yatırım yapıyoruz:",
+        "items": [
+          "Rotalarımız boyunca kıyı bölgelerinde yeniden ağaçlandırma girişimleri",
+          "Yenilenebilir enerji projelerine yatırım",
+          "Mangrov ve deniz çayırı yataklarını koruyan ve restore eden mavi karbon projelerine destek",
+          "Doğrulanmış karbon dengeleme sağlayıcıları ile ortaklık"
+        ],
+        "outro": "Yolcular, bu projeleri desteklemek için bilet fiyatlarına küçük bir katkı eklemeyi tercih edebilirler ve SailMate her katkıyı eşleştirir."
+      },
+      "terminal": {
+        "title": "Yeşil Terminal Operasyonları",
+        "intro": "Sürdürülebilirlik çabalarımız terminal tesislerimize kadar uzanır:",
+        "items": [
+          "Yenilenebilir enerji üretmek için büyük terminallere kurulan güneş panelleri",
+          "Enerji verimli aydınlatma ve iklim kontrol sistemleri",
+          "Terminal park alanlarında elektrikli araç şarj istasyonları",
+          "Motorları çalıştırmak yerine demirlemiş gemilerin karasal elektrik kullanmasına olanak tanıyan kıyı gücü yetenekleri",
+          "Terminal bakımı ve peyzaj için yağmur suyu toplama sistemleri",
+          "Terminal tesislerinde yeşil alanlar ve yerel yerli bitki dikimleri"
+        ]
+      },
+      "food": {
+        "title": "Sürdürülebilir Yiyecek ve İçecek",
+        "intro": "Gemimizdeki yemek seçenekleri sürdürülebilirliği ön planda tutar:",
+        "items": [
+          "Rotalarımız boyunca yerel gıda üreticileri ile ortaklık",
+          "Gıda taşıma emisyonlarını azaltmak için mevsimsel menü öğeleri",
+          "Çevresel etkisi daha düşük bitki bazlı menü seçenekleri",
+          "Deniz İdare Konseyi tarafından sertifikalandırılmış sürdürülebilir kaynaklı deniz ürünleri",
+          "Mümkün olduğunda kompostlama dahil gıda atığı azaltma programları",
+          "Yeniden kullanılabilir veya kompostlanabilir yemek malzemeleri"
+        ],
+        "outro": "Çevresel ayak izimizi en aza indirirken hizmet verdiğimiz bölgelerin lezzetlerini sergilemekten gurur duyuyoruz."
+      }
+    },
+    "roadmap": {
+      "title": "Sürdürülebilirlik Yol Haritamız",
+      "phases": {
+        "launch": {
+          "title": "2025: Başlangıç",
+          "description": "SailMate, sürdürülebilirliği kurucu bir ilke olarak operasyonlarına başlar. İlk filo, yakıt verimli teknoloji, sıfır tek kullanımlık plastik politikası ve ilk günden kapsamlı geri dönüşüm programları ile donatılmıştır."
+        },
+        "expansion": {
+          "title": "2026-2027: Genişleme",
+          "description": "Filomuzu giderek daha verimli gemilerle büyütme, kıyı elektrik bağlantıları uygulama, terminallerde yenilenebilir enerji kullanımını genişletme ve su tasarrufu sistemlerini geliştirme."
+        },
+        "innovation": {
+          "title": "2028-2029: Yenilik",
+          "description": "Kısa rotalarda hibrit-elektrikli gemilerin tanıtılması, karbon-nötr terminal operasyonları ve gıda hizmetinden bakım malzemelerine tamamen sürdürülebilir bir tedarik zinciri."
+        },
+        "leadership": {
+          "title": "2030: Sektör Liderliği",
+          "description": "Sürdürülebilir operasyonlara olan bağlılığımız, rakiplerden önemli ölçüde daha düşük emisyonlar, deniz ekosistemlerine olumlu katkılar ve yenilikçi temiz enerji seyahat çözümleri ile feribot endüstrisi için yeni standartlar belirleme."
+        }
+      }
+    },
+    "joinUs": {
+      "title": "Sürdürülebilirlik Yolculuğumuza Katılın",
+      "description": "Sürdürülebilir seyahat seçenekleri tercih ederek, karbon dengeleme programımıza katılarak veya çevresel iyileştirmeler için fikirlerinizi paylaşarak fark yaratmamıza yardımcı olun.",
+      "button": "Fikirlerinizi Paylaşın"
+    }
+  },
+  "voyagePage": {
+    "title": "SailMate Seferleri",
+    "subtitle": "Bir sonraki deniz yolculuğunuzu bulun ve rezerve edin",
+    "filterSection": {
+      "title": "Seferinizi Bulun",
+      "departure": "Kalkış",
+      "arrival": "Varış",
+      "allDepartures": "Tüm Kalkışlar",
+      "allArrivals": "Tüm Varışlar",
+      "startDate": "Başlangıç Tarihi",
+      "endDate": "Bitiş Tarihi"
+    },
+    "voyagesList": {
+      "title": "Mevcut Seferler",
+      "loading": "Seferler yükleniyor...",
+      "error": "Seferler yüklenirken hata oluştu",
+      "tryAgain": "Tekrar Dene",
+      "noVoyages": "Sefer bulunamadı",
+      "adjustSearch": "Arama kriterlerinizi ayarlamayı deneyin",
+      "resetFilters": "Filtreleri Sıfırla"
+    },
+    "voyageTable": {
+      "voyage": "Sefer",
+      "times": "Saatler",
+      "date": "Tarih",
+      "status": "Durum",
+      "shipType": "Gemi Tipi",
+      "fuel": "Yakıt",
+      "action": "İşlem",
+      "dep": "Klk",
+      "arr": "Var",
+      "normal": "Normal",
+      "voyageCancel": "Sefer İptal",
+      "buyTicket": "Bilet Al",
+      "notAvailable": "Mevcut Değil"
+    },
+    "pagination": {
+      "showing": "Gösteriliyor",
+      "to": "-",
+      "of": "/",
+      "results": "sonuç",
+      "perPage": "sayfa başına",
+      "first": "İlk",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "last": "Son"
+    },
+    "fuelType": {
+      "lpg": "LPG",
+      "noLpg": "LPG Yok"
+    }
+  },
+  "faqPage": {
+    "pageTitle": "Sık Sorulan Sorular",
+    "pageSubtitle": "SailMate'in feribot rezervasyon hizmetleri hakkında en yaygın soruların cevaplarını bulun.",
+    "features": {
+      "quickBooking": {
+        "title": "Hızlı Rezervasyon",
+        "description": "2 dakikadan kısa sürede feribot bileti alın"
+      },
+      "securePayments": {
+        "title": "Güvenli Ödemeler",
+        "description": "%100 güvenli ödeme işlemi"
+      },
+      "support": {
+        "title": "7/24 Destek",
+        "description": "Günün her saati müşteri hizmetleri"
+      }
+    },
+    "questions": [
+      {
+        "question": "SailMate ile feribot bileti nasıl rezerve edebilirim?",
+        "answer": "SailMate ile rezervasyon yapmak çok kolay! Ana sayfamızı ziyaret edin ve rezervasyon formunu kullanarak kalkış ve varış yerlerinizi, tercih ettiğiniz tarihleri ve yolcu sayısını girin. Hesabınıza giriş yaptıktan sonra, tercih ettiğiniz sefer saatini seçebilir, ekstra hizmetleri belirleyebilir ve ödemenizi güvenli bir şekilde tamamlayabilirsiniz. Onaylandıktan sonra, e-biletiniz e-posta adresinize gönderilecek ve ayrıca hesap panelinizde de mevcut olacaktır."
+      },
+      {
+        "question": "Rezervasyonumu iptal edebilir veya değiştirebilir miyim?",
+        "answer": "Evet, kalkıştan 24 saat öncesine kadar rezervasyonunuzu iptal edebilir veya değiştirebilirsiniz. Bunu yapmak için, web sitemizin 'Bilet Kontrol' veya 'Bilet İptal' bölümlerini ziyaret edin ve rezervasyon referans numaranızı girin. İptal işlemleri için, iadeler politikamıza göre işlenir: kalkıştan 7+ gün önce iptal edilirse tam iade, 3-6 gün öncesinde %75 iade ve kalkıştan 1-2 gün önce %50 iade yapılır. Değişiklikler, uygunluğa bağlıdır ve yeni ücret daha yüksekse ek ücretler oluşabilir."
+      },
+      {
+        "question": "Kalkıştan ne kadar önce gelmem gerekiyor?",
+        "answer": "Yaya yolcular için planlanan kalkıştan en az 45 dakika önce, araçlı yolcular için ise en az 90 dakika önce gelmenizi öneririz. Bu, check-in, güvenlik prosedürleri ve biniş için yeterli zaman sağlar. Yüksek sezon (Haziran-Ağustos) veya tatil günlerinde, herhangi bir gecikmeyi önlemek için önerilen sürelerden 30 dakika daha erken gelmeyi düşünün."
+      },
+      {
+        "question": "Biletimi yazdırmam gerekiyor mu yoksa mobil bilet kullanabilir miyim?",
+        "answer": "SailMate hem basılı hem de mobil biletleri destekler. Çoğu rota için, check-in sırasında e-biletinizi akıllı telefonunuzda veya tabletinizde gösterebilirsiniz. Biletinizdeki QR kodu doğrulama için taranacaktır. Basılı bilet tercih ederseniz, onay e-postanızdaki PDF ekini yazdırabilirsiniz. Basılı bir kopya getirseniz bile dijital bir yedeğinizin olmasını öneririz."
+      },
+      {
+        "question": "Kötü hava durumu veya iptaller durumunda ne olur?",
+        "answer": "Şiddetli hava koşulları veya teknik sorunlar nedeniyle iptaller durumunda, mümkün olan en kısa sürede size e-posta ve SMS yoluyla bilgi vereceğiz. Size bilet tipinizden bağımsız olarak, ek ücret ödemeden bir sonraki uygun sefere yeniden rezervasyon yapma veya tam geri ödeme alma seçeneği sunulacaktır. Önemli gecikmeler (2 saatten fazla) için, terminallerimizde ücretsiz ikramlar sağlıyoruz. Olumsuz hava koşulları sırasında gerçek zamanlı güncellemeler için web sitemizi kontrol etmenizi veya müşteri hizmetlerimizle iletişime geçmenizi öneririz."
+      },
+      {
+        "question": "Gemide Wi-Fi var mı?",
+        "answer": "Evet, tüm feribotlarımızda ücretsiz Wi-Fi mevcuttur. Bağlantı kalitesi, denizdeki konumunuza bağlı olarak değişebilir. İş veya yayın akışı için daha hızlı bağlantılara ihtiyaç duyan yolcular için premium yüksek hızlı Wi-Fi gemide satın alınabilir. Çoğu gemide ayrıca cihazlarınız için ortak alanlarda şarj istasyonları bulunmaktadır. Yoğun seyahat zamanlarında, yüksek kullanım nedeniyle bant genişliği sınırlı olabilir."
+      }
+    ],
+    "stillHaveQuestions": "Hala sorularınız mı var?",
+    "contactSupport": "Destek ekibimizle iletişime geçin"
+  },
+  "travellingRulesPage": {
+    "pageTitle": "Gemide Kurallar",
+    "pageSubtitle": "Gemi kurallarımız ve düzenlemelerimiz, tüm yolcular için güvenli ve keyifli bir deniz deneyimi sağlamak üzere tasarlanmıştır. Lütfen yolculuğunuza başlamadan önce bu kuralları okuyun.",
+    "lastUpdated": "Son Güncelleme: Mart 2025",
+    "introduction": {
+      "title": "Deniz Güvenliği ve Davranış Kuralları",
+      "content": "SailMate'de, yolcularımızın ve mürettebatımızın güvenliği en yüksek önceliğimizdir. Bu gemide uyulması gereken kurallar, denizcilik yönetmelikleri ve sektör en iyi uygulamaları doğrultusunda oluşturulmuştur. Gemilerimizde herkes için güvenli ve rahat bir yolculuk sağlamak amacıyla tüm yolcuların bu kurallara uyması zorunludur."
+    },
+    "sections": [
+      {
+        "title": "1. Biniş ve Gemiye Alınma",
+        "items": [
+          { "label": "Varış Zamanları", "content": "Yaya yolcular, planlanan kalkıştan en az 45 dakika önce terminale gelmelidir. Araçlı yolcular, uygun yükleme sıralaması ve gemi dengesinin hesaplanması için 90 dakika önceden gelmelidir." },
+          { "label": "Belgeler", "content": "Tüm yolcular check-in sırasında geçerli kimlik ve biniş belgelerini ibraz etmelidir. QR kodu görünür ve taranabilir olması şartıyla, mobil cihazlarda gösterilen elektronik biletler kabul edilmektedir." },
+          { "label": "Biniş Prosedürleri", "content": "Yolcular biniş ve iniş sırasında mürettebatın talimatlarına uymalıdır. Yapılandırılmış biniş sürecimiz, bu kritik operasyonlar sırasında gemi stabilitesini ve yolcu güvenliğini sağlar." },
+          { "label": "Geç Gelenler", "content": "Güvenlik ve operasyonel nedenlerden dolayı, biniş kalkıştan 15 dakika önce kapanır. Gemiler navigasyon güvenliğini sağlamak için sıkı kalkış programlarını korumalıdır, bu nedenle geç kalanlar iade almaksızın binişten mahrum bırakılabilir." }
+        ]
+      },
+      {
+        "title": "2. Gemide Güvenlik",
+        "items": [
+          { "label": "Güvenlik Bilgilendirmeleri", "content": "Tüm yolcular, seyahatin başında sağlanan güvenlik bilgilendirmelerinden haberdar olmalıdır. Bunlar can yeleği konumları, acil çıkışlar ve toplanma istasyonları hakkında bilgileri içerir." },
+          { "label": "Seyahat Sırasında Hareket", "content": "Gemi dalgalı sularda seyir halindeyken yolcular yerlerinde oturmalıdır. Gemi içinde dolaşırken, beklenmedik dalga hareketleri sırasında düşmeleri önlemek için merdivenlerde üç nokta teması sağlayın ve korkulukları tutun." },
+          { "label": "Acil Durum Prosedürleri", "content": "Acil durumda, derhal mürettebat talimatlarını izleyin ve belirtilen toplanma istasyonuna gidin. Acil durum alarmları etkinleştirildiğinde eşyalarınızı almak için kabinlere veya araç güvertelerine dönmeyin." },
+          { "label": "Kısıtlı Alanlar", "content": "Makine dairesi, köprü, mürettebat bölümleri ve operasyonel alanlar yolcular için kesinlikle yasaktır. Bu kısıtlamalar, denizcilik düzenlemelerine uygun olarak hem güvenlik hem de emniyet nedenleriyle uygulanmaktadır." }
+        ]
+      },
+      {
+        "title": "3. Yasaklı Maddeler",
+        "intro": "Denizcilik güvenlik düzenlemeleri uyarınca aşağıdaki maddeler SailMate gemilerinde yasaktır:",
+        "items": [
+          "Gemi güvenliğini tehlikeye atabilecek yanıcı sıvılar, gazlar veya katılar dahil tehlikeli maddeler",
+          "Patlayıcılar, havai fişekler veya her türlü piroteknik cihazlar",
+          "Ateşli silahlar, mühimmat, bıçak uzunluğu 6 cm'yi geçen bıçaklar veya yaralanmaya neden olmak için tasarlanmış herhangi bir eşya dahil silahlar",
+          "Zorunlu tıbbi ekipman veya araçlarda depolanan küçük kamp tüpleri hariç silindirlerde sıkıştırılmış gazlar",
+          "Yasa dışı maddeler veya uyuşturucular",
+          "Gemi dengesini veya tahliye prosedürlerini tehlikeye atabilecek aşırı büyük veya ağır eşyalar"
+        ],
+        "subitems": [
+          { "label": "Araç Kısıtlamaları", "content": "Yakıt sızıntıları veya tehlike oluşturan diğer mekanik sorunları olan araçların gemiye binmesine izin verilmeyecektir. Elektrikli araçlar, yardım almadan inebilecek kadar şarja sahip olmalıdır." },
+          { "label": "Eşyalara El Konulması", "content": "Yasaklı maddelere, biniş öncesinde veya seyahat sırasında bulunursa el konulabilir. Eşyalar inişte iade edilebilir veya yasanın gerektirdiği şekilde uygun yetkililere teslim edilebilir." }
+        ]
+      },
+      {
+        "title": "4. Yolcu Davranışı",
+        "items": [
+          { "label": "Genel Davranış", "content": "Yolcular, başkalarının rahatlığını veya güvenliğini engellemeyecek şekilde davranmalıdır. Küfürlü dil, tehditkar davranış veya gemi operasyonlarını bozan eylemler yasaktır." },
+          { "label": "Sigara İçme Düzenlemeleri", "content": "Sigara içmek, e-sigaralar dahil olmak üzere yalnızca gemi güvertelerinde açıkça işaretlenmiş belirlenmiş açık alanlarda serbesttir. Kabinlerde, kapalı alanlarda veya işaretlenmemiş alanlarda sigara içmek kesinlikle yasaktır ve yangın algılama sistemlerini tetikleyebilir." },
+          { "label": "Alkol Tüketimi", "content": "Alkollü içecekler sadece gemideki tesislerden satın alınırsa tüketilebilir. Rahatsız edici davranışlara yol açan aşırı tüketim, içecek servisi kısıtlamalarına ve güvenlik personelinin olası müdahalesine neden olacaktır." },
+          { "label": "Çocuk Gözetimi", "content": "12 yaşın altındaki çocuklar her zaman bir yetişkin tarafından gözetilmelidir. Çocukların, hava koşulları ne olursa olsun, öngörülemeyen deniz koşulları nedeniyle yetişkin gözetimi olmadan açık güvertelerde bulunmasına izin verilmez." }
+        ]
+      },
+      {
+        "title": "5. Bagaj ve Kişisel Eşyalar",
+        "items": [
+          { "label": "Bagaj İzni", "content": "Her yolcunun 10 kg'ı ve 55 cm x 40 cm x 20 cm boyutlarını aşmayan bir el bagajına izin verilir. Ek bagajlar, belirlenmiş bagaj bölümlerinde kontrol edilmeli ve istiflenmelidir." },
+          { "label": "Bagaj Güvenliği", "content": "Yolcular her zaman kişisel eşyalarından sorumludur. SailMate, kayıp, hasar görmüş veya çalınmış eşyalardan sorumlu değildir. Gözetimsiz eşyalar mürettebat tarafından toplanabilir ve güvenlik kontrolüne tabi tutulabilir." },
+          { "label": "Değerli Eşyalar", "content": "Değerli eşyalar, kontrol edilen bagajda değil, kişinin üzerinde tutulmalıdır. Özellikle değerli eşyalar için daha uzun yolculuklarda kasa tesisleri mevcuttur." },
+          { "label": "Güverte Depolama", "content": "Kişisel eşyalar koridorları, acil çıkışları veya halka açık yürüyüş yollarını engellememeli. Bu alanları engelleyen eşyalar, bildirim yapılmadan mürettebat üyeleri tarafından yeri değiştirilecektir." }
+        ]
+      },
+      {
+        "title": "6. Çevresel Sorumluluk",
+        "items": [
+          { "label": "Atık Yönetimi", "content": "Tüm atıklar uygun çöp kutularına atılmalıdır. Denizcilik çevre düzenlemelerine uygun olarak geri dönüştürülebilir malzemeler, yiyecek atıkları ve genel çöp için ayrı konteynerler sağlanmaktadır." },
+          { "label": "Deniz Koruma", "content": "Herhangi bir öğenin gemiden dışarı atılması kesinlikle yasaktır ve önemli para cezalarına neden olabilir. Bu, yiyecek atıkları, sigara izmaritleri veya kağıt ürünleri gibi görünüşte zararsız öğeleri de içerir." },
+          { "label": "Yaban Hayatı Gözlemi", "content": "Seyahat sırasında karşılaşılan deniz canlılarına uygun mesafeyi korumak esastır. Açık güvertelerden deniz kuşlarını beslemeye çalışmayın, çünkü bu doğal beslenme düzenlerini bozar." },
+          { "label": "Kaynak Koruma", "content": "Yolcuların seyahat sırasında su ve elektrik tasarrufu yapmaları teşvik edilir. Lütfen kabinlerden çıkarken ışıkları kapatın ve su sızıntılarını derhal mürettebat üyelerine bildirin." }
+        ]
+      },
+      {
+        "title": "7. Sağlık ve Acil Durum Prosedürleri",
+        "intro": "Yolcular, gemide aşağıdaki sağlık ve acil durum kurallarına uymalıdır:",
+        "items": [
+          { "label": "Tıbbi Yardım", "content": "Herhangi bir tıbbi acil durumu derhal mürettebat üyelerine bildirin. Tüm gemiler ilk yardım tesisleri ve denizcilik ortamlarına uygun acil tıbbi müdahale konusunda eğitimli personelle donatılmıştır." },
+          { "label": "Deniz Tutması", "content": "Hareket hastalığı yaşarsanız, geminin hareketin en az olduğu merkezinde oturun. Deniz tutması önleyici ilaçlar purser ofisinden temin edilebilir. Deniz tutmasına eğiliminiz varsa, hidrate kalın ve alkolden kaçının." },
+          { "label": "Tahliye Prosedürleri", "content": "Olası bir tahliye durumunda, oturma pozisyonunuzda hazır değilse can yelekleri dağıtılacaktır. Aydınlatılmış yolları ve mürettebat talimatlarını takip ederek sakin bir şekilde belirlenen toplanma istasyonuna gidin." },
+          { "label": "Hava Olayları", "content": "Olumsuz hava koşullarında, gevşek eşyaları sabitleyin ve mürettebat tarafından talimat verildiğinde oturun. Şiddetli rüzgar veya yüksek denizler sırasında yolcu güvenliği için açık güverte erişimi kısıtlanabilir." }
+        ]
+      }
+    ],
+    "contactInfo": {
+      "question": "Gemide kurallarımız hakkında sorularınız mı var?",
+      "contact": "Deniz güvenlik ekibimizle iletişime geçin"
+    }
+  },
+  "accessibilityPage": {
+    "pageTitle": "Erişilebilirlik",
+    "pageSubtitle": "Feribot seyahatini herkes için erişilebilir kılmaya kararlıyız. Sunduğumuz imkanlar ve her yeteneğe sahip yolcular için nasıl rahat bir yolculuk sağladığımız hakkında bilgi edinin.",
+    "lastUpdated": "Son Güncelleme: Mart 2025",
+    "introduction": {
+      "title": "Erişilebilirlik Taahhüdümüz",
+      "content": "SailMate'de, açık denizlerin herkes için erişilebilir olması gerektiğine inanıyoruz. Tüm yolcularımızın çeşitli ihtiyaçlarını karşılayan kapsayıcı bir feribot seyahat deneyimi sunmaya adanmış durumdayız. Erişilebilirlik girişimlerimiz, herkesin rahat ve saygın deniz seyahati deneyimleri yaşamasını sağlamak için gemilerimizi, terminallerimizi, dijital platformlarımızı ve müşteri hizmetlerimizi kapsamaktadır."
+    },
+    "sections": [
+      {
+        "title": "1. Gemi Erişilebilirliği",
+        "items": [
+          { "label": "Erişilebilir Feribot Tasarımı", "content": "Feribotlarımız, seyahat boyunca mobiliteyi sağlamak için erişilebilir girişler, rampalar ve tüm büyük gemilerde güverteler arasında asansörlerle donatılmıştır." },
+          { "label": "Özel Oturma Alanları", "content": "Panoramik manzaralı ve olanaklara yakın özel erişilebilir oturma alanları sunuyoruz, deniz deneyiminden ödün vermeden konfor sağlıyoruz." },
+          { "label": "Erişilebilir Tesisler", "content": "Tüm gemilerimizde her güvertede erişilebilir tuvaletler, tekerlekli sandalye dostu yollar ve servis hayvanları için olanaklar bulunur." },
+          { "label": "Öncelikli Hizmetler", "content": "Sorunsuz bir biniş ve iniş süreci sağlamak için hareket kabiliyeti gereksinimlerine sahip yolcular için öncelikli biniş ve iniş hizmetleri sunuyoruz." }
+        ]
+      },
+      {
+        "title": "2. Terminal Erişilebilirliği",
+        "items": [
+          { "label": "Liman Erişimi", "content": "Tüm feribot terminallerimiz, müşteri alanlarında basamaksız erişim ve otopark alanlarından biniş noktalarına kadar erişilebilir yollar sunar." },
+          { "label": "Check-in Hizmetleri", "content": "Tüm lokasyonlarda, personelimizle rahat etkileşim sağlayan daha alçak yükseklikte tekerlekli sandalye erişimine uygun check-in kontuarları mevcuttur." },
+          { "label": "Yönlendirme Yardımı", "content": "Terminallerimiz, görme engelli yolcular için hissedilebilir döşemeler ve hem görsel hem de işitsel formatlarda net işaretler ve anons sistemleri içerir." },
+          { "label": "Öncelikli Tesisler", "content": "Terminal girişlerinin yakınında, gemilerimize olan seyahat mesafesini en aza indiren belirlenmiş erişilebilir park alanları mevcuttur." }
+        ]
+      },
+      {
+        "title": "3. Dijital Erişilebilirlik",
+        "items": [
+          { "label": "Web Sitesi Standartları", "content": "SailMate web sitesi, dijital yolculuğumuzun fiziksel olanımız kadar erişilebilir olmasını sağlayacak şekilde WCAG 2.1 AA uyumluluk standartlarına göre tasarlanmıştır." },
+          { "label": "Rezervasyon Erişilebilirliği", "content": "Rezervasyon sistemimiz, tüm özellikler için klavye navigasyonu, ekran okuyucu uyumluluğu ve net etiketlere sahip erişilebilir formlar içerir." },
+          { "label": "Uyarlanabilir Arayüz", "content": "Kullanıcılar, dijital deneyimlerini görsel ihtiyaçlarına göre özelleştirmek için metin boyutunu ayarlayabilir ve yüksek kontrast seçeneklerine erişebilir." },
+          { "label": "Basitleştirilmiş Süreç", "content": "Yolcuların rezervasyonları sırasında erişilebilirlik gereksinimleri belirtmelerine ve özel düzenlemeler talep etmelerine olanak tanıyan kolaylaştırılmış bir rezervasyon süreci oluşturduk." }
+        ]
+      },
+      {
+        "title": "4. Personel Eğitimi ve Yardımı",
+        "items": [
+          { "label": "Mürettebat Eğitimi", "content": "Tüm SailMate mürettebat üyeleri, engelli farkındalığı ve deniz yolculukları boyunca çeşitli ihtiyaçları olan yolculara nasıl yardımcı olunacağı konusunda kapsamlı eğitim alır." },
+          { "label": "Biniş Desteği", "content": "Erişilebilirlik ekipmanlarının kullanımı da dahil olmak üzere biniş ve iniş prosedürlerine yardımcı olmak için özel personel mevcuttur." },
+          { "label": "Yolculuk Yardımı", "content": "Seyahatiniz boyunca, tesislere erişim, güverteler arasında hareket etme ve herhangi bir erişilebilirlik endişesini ele alma konusunda yardım sağlamak için mürettebat üyeleri mevcuttur." },
+          { "label": "İletişim Desteği", "content": "Personel, işitme engelli yolcularla, temel işaret dili ve gerektiğinde yazılı iletişim kullanımı dahil olmak üzere etkili bir şekilde iletişim kurmak üzere eğitilmiştir." }
+        ]
+      },
+      {
+        "title": "5. Özel Düzenlemeler",
+        "intro": "SailMate aşağıdaki özel düzenlemeleri sunar:",
+        "items": [
+          "Yardıma ihtiyaç duyan yolcularla seyahat eden kişisel bakım asistanları için ücretsiz biletler",
+          "Kayıtlı servis hayvanları için ek ücret talep edilmez",
+          "Erişilebilirlik ekipmanına sahip araçlar için öncelikli araç yükleme",
+          "Talep üzerine alternatif formatlarda (büyük baskı, Braille) bilgi mevcuttur",
+          "Hareket zorlukları yolcu alanlarına geçmeyi zorlaştırıyorsa, daha kısa geçişlerde aracınızda kalma imkanı",
+          "Engelli yolcular için özel deniz tahliye prosedürleri"
+        ]
+      },
+      {
+        "title": "6. Erişilebilir Seyahatinizi Planlama",
+        "intro": "Deniz yolculuğunuzun mümkün olduğunca sorunsuz olmasını sağlamak için aşağıdaki adımları almanızı öneriyoruz:",
+        "items": [
+          { "label": "Rezervasyon Öncesi", "content": "Erişilebilirlik seçeneklerimizi inceleyin veya seyahatiniz için belirli gereksinimleri görüşmek üzere seyahatten en az 48 saat önce deniz erişilebilirlik ekibimizle iletişime geçin." },
+          { "label": "Rezervasyon Sırasında", "content": "Rezervasyon süreci sırasında ilgili erişilebilirlik seçeneklerini seçin ve deniz seyahatiniz için ihtiyaç duyabileceğiniz özel düzenlemeler hakkında ayrıntılar sağlayın." },
+          { "label": "Kalkış Öncesi", "content": "Öncelikli biniş ve gemiye binme konusunda gerekli yardım için zaman tanımak amacıyla planlanan kalkıştan en az 60 dakika önce terminale gelin." },
+          { "label": "Seyahatiniz Sırasında", "content": "Sorularınız veya yardım talepleriniz için herhangi bir mürettebat üyesine yaklaşmaktan çekinmeyin - denizcilik personelimiz, yolculuğunuzun rahat geçmesini sağlamak üzere eğitilmiştir." }
+        ]
+      }
+    ],
+    "contactInfo": {
+      "question": "Erişilebilirlik hizmetlerimiz hakkında daha fazla bilgiye mi ihtiyacınız var?",
+      "contact": "Destek ekibimizle iletişime geçin"
+    }
+  },
+  "termsOfServicePage": {
+    "pageTitle": "Hizmet Şartları",
+    "pageSubtitle": "SailMate'in feribot biletleme platformunu kullanmadan önce lütfen bu şartları dikkatle okuyun. Hizmetlerimizi kullanarak, feribot seyahati rezervasyonu için bu şartları ve koşulları kabul etmiş olursunuz.",
+    "lastUpdated": "Son Güncelleme: Mart 2025",
+    "introduction": {
+      "title": "Giriş",
+      "content": "SailMate ('Platform'), birden fazla operatör ve rota arasında feribot bileti aramanıza, karşılaştırmanıza ve rezervasyon yapmanıza olanak tanıyan bir feribot biletleme hizmetidir. Platform, SailMate Ltd. tarafından sahiplenilmekte ve işletilmektedir (bu Hizmet Şartları'nda 'biz', 'bizim' veya 'SailMate' olarak anılmaktadır). Bu Hizmet Şartları, feribot rezervasyon hizmetlerimizin kullanımınızla ilgili olarak sizinle SailMate arasında yasal olarak bağlayıcı bir anlaşma oluşturur."
+    },
+    "sections": [
+      {
+        "title": "1. Uygulama",
+        "items": [
+          "Bu Hizmet Şartları, SailMate feribot rezervasyon platformuna erişiminiz ve kullanımınız için geçerlidir. Platformumuza erişerek veya kullanarak, bu Hizmet Şartları ile bağlı olmayı kabul edersiniz.",
+          "Bu Hizmet Şartlarını, feribot operatörü politikalarındaki, yasal gerekliliklerdeki veya rezervasyon hizmetlerimizdeki değişiklikleri yansıtacak şekilde değiştirebiliriz. Bunu yaparsak, bu Hizmet Şartlarının üstündeki tarihi güncelleyerek sizi bilgilendireceğiz.",
+          "Bu Hizmet Şartlarını kabul etmiyorsanız, feribot bileti rezervasyonu yapmak için Platforma erişemez veya kullanamazsınız."
+        ]
+      },
+      {
+        "title": "2. Hesap Kaydı",
+        "items": [
+          "Platformumuz aracılığıyla feribot bileti rezervasyonu yapmak için bir SailMate hesabı oluşturmanız ve belirli kişisel ve seyahat bilgilerini sağlamanız gerekebilir.",
+          "Kayıt ve rezervasyon süreci sırasında doğru, güncel ve eksiksiz bilgi sağlamayı kabul edersiniz. Yanlış bilgiler, rezervasyon hatalarına veya feribot operatörleri tarafından binişin reddedilmesine neden olabilir.",
+          "SailMate hesap kimlik bilgilerinizi ve hesabınız altında gerçekleşen tüm feribot rezervasyonlarını ve faaliyetleri korumaktan siz sorumlusunuz."
+        ]
+      },
+      {
+        "title": "3. Feribot Rezervasyon Koşulları",
+        "items": [
+          { "label": "Feribot Biletleme Süreci", "content": "SailMate üzerinden feribot bileti rezervasyonu yaptığınızda, feribot operatörüyle bir taşıma anlaşması yapıyorsunuz. SailMate, bilet satışını kolaylaştıran bir aracı platform olarak hareket eder." },
+          { "label": "Feribot Bileti Onayı", "content": "Feribot rezervasyonunuz onaylandıktan sonra, e-posta ile elektronik bilet veya rezervasyon onayı alacaksınız. Bunu, gerekli kimlik belgeleriyle birlikte check-in sırasında ibraz etmelisiniz." },
+          { "label": "Feribot Fiyatlandırması ve Ödemeler", "content": "Tüm feribot bileti fiyatları, rezervasyon süreci sırasında belirtilen para biriminde görüntülenir ve rezervasyon ücretlerini içerebilir. Feribot rezervasyonunuzu onaylamak için tam ödeme gereklidir." },
+          { "label": "Program Değişiklikleri ve İptaller", "content": "Feribot programları hava koşulları, teknik sorunlar veya diğer durumlar nedeniyle değişebilir. İptal ve iade politikaları feribot operatörüne göre değişir ve rezervasyon süreci sırasında belirtilir." },
+          { "label": "Check-in Gereksinimleri", "content": "Feribot operatörü tarafından belirtilen saatte, genellikle kalkıştan 30-90 dakika önce, check-in için feribot terminaline gelmelisiniz. Geç varış, geri ödeme yapılmadan biniş reddiyle sonuçlanabilir." }
+        ]
+      },
+      {
+        "title": "4. Kullanıcı Davranışı",
+        "intro": "Feribot rezervasyon platformumuzu kullanırken şunları yapmamayı kabul edersiniz:",
+        "items": [
+          "Denizcilik veya göçmenlik yasalarına aykırı veya yasadışı amaçlar için feribot bileti rezervasyonu yapmak",
+          "Sahte ödeme yöntemleri kullanmak veya yolcu bilgilerini tahrif etmek",
+          "Fiyatlandırmayı, müsaitliği veya rezervasyon sistemlerini manipüle etmeye çalışmak",
+          "Feribot operatöründen izin almadan feribot biletlerini yeniden satmak",
+          "Kullanmayı düşünmediğiniz birden fazla spekülatif rezervasyon yapmak",
+          "Diğer kullanıcıların feribot rezervasyon hizmetlerimize erişim yeteneğine müdahale etmek"
+        ]
+      },
+      {
+        "title": "5. Sorumluluk Sınırlaması",
+        "items": [
+          "SailMate bir biletleme platformudur ve feribot operatörlerinin eylemlerinden, ihmallerinden veya hizmet kalitesinden, feribot seyahati sırasındaki gecikmeler, iptaller, kazalar veya kişisel yaralanmalar dahil olmak üzere sorumlu değildir.",
+          "Doğru feribot bilgisi sağlamak için çaba gösteriyoruz, ancak platformumuzda açıklanan tüm programların, imkanların veya hizmetlerin tam doğruluğunu garanti edemeyiz, çünkü bunlar feribot operatörleri tarafından sağlanmaktadır.",
+          "Doğrudan kontrolümüz altındaki herhangi bir rezervasyon sorunu (ödeme işleme hataları gibi) için toplam sorumluluğumuz, etkilenen feribot bileti için SailMate'e ödenen rezervasyon ücretini aşmayacaktır."
+        ]
+      },
+      {
+        "title": "6. Garanti Reddi",
+        "intro": "SAILMATE FERİBOT REZERVASYON PLATFORMU, FERİBOT BİLGİLERİNİN DOĞRULUĞU, BİLET BULUNABILIRLIĞI VEYA PLATFORM İŞLEVSELLİĞİ İLE İLGİLİ AÇIK VEYA ZIMNİ HİÇBİR GARANTİ OLMAKSIZIN \"OLDUĞU GİBİ\" VE \"MEVCUT OLDUĞU GİBİ\" SUNULMAKTADIR.",
+        "content": "Feribot rezervasyon platformumuzun kesintisiz, hatasız olacağını veya tüm feribot hizmetlerinin tam olarak açıklandığı gibi çalışacağını garanti etmiyoruz. Hava koşulları, teknik sorunlar veya feribot şirketleri tarafından operasyonel kararlar rezerve edilmiş yolculuğunuzu etkileyebilir. En güncel bilgiler için seyahatten önce her zaman doğrudan feribot operatörüyle kontrol edin."
+      }
+    ],
+    "contactInfo": {
+      "question": "Hala sorularınız mı var?",
+      "contact": "Destek ekibimizle iletişime geçin"
+    }
+  },
+  "privacyPolicyPage": {
+    "pageTitle": "Gizlilik Politikası",
+    "pageSubtitle": "SailMate'de gizliliğinize değer veriyor ve kişisel bilgilerinizi korumaya kararlıyız. Sadece feribot biletleme ve rezervasyon hizmetlerimizi sağlamak için gerekli olanı topluyoruz.",
+    "lastUpdated": "Son Güncelleme: Mart 2025",
+    "introduction": {
+      "title": "Giriş",
+      "content": "Bu Gizlilik Politikası, feribot biletleme platformumuzu kullandığınızda SailMate'in sizinle ilgili bilgileri nasıl topladığını, kullandığını ve koruduğunu açıklar. Gizliliğinize saygı duyuyoruz ve yalnızca feribot rezervasyonlarınızı kolaylaştırmak ve sorunsuz bir seyahat deneyimi sağlamak için gerekli verileri topluyoruz. Ödeme kartı bilgilerinizi sunucularımızda saklamıyoruz veya feribot seyahatiniz için gerekli olanın ötesinde özel veri kategorilerini toplamıyoruz. Bu Gizlilik Politikasını periyodik olarak güncelleyebiliriz. Önemli değişiklikler yaparsak, politikanın üstündeki tarihi güncelleyerek ve uygun olduğu durumlarda e-posta yoluyla sizi bilgilendireceğiz."
+    },
+    "informationWeCollect": {
+      "title": "Topladığımız Bilgiler",
+      "providedInfo": {
+        "title": "Bize Sağladığınız Bilgiler",
+        "intro": "Feribot bileti ayırtırken, hesap oluştururken, bildirimlere abone olurken veya bizimle iletişim kurduğunuzda doğrudan bize sağladığınız bilgileri topluyoruz. Bunlar şunları içerebilir:",
+        "items": [
+          "İletişim bilgileri (ad, e-posta adresi, telefon numarası)",
+          "Profil bilgileri (kullanıcı adı, şifre)",
+          "Yolcu bilgileri (feribot operatörleri tarafından gerekli görüldüğünde isimler, yaşlar, milliyet)",
+          "Ödeme bilgileri (ödeme işlemcilerimiz aracılığıyla güvenli bir şekilde işlenir, sunucularımızda saklanmaz)",
+          "Seyahat detayları (rotalar, tarihler, saatler, varsa araç bilgileri)",
+          "Müşteri destek ekibimize gönderdiğiniz iletişimler"
+        ]
+      },
+      "automaticInfo": {
+        "title": "Otomatik Olarak Topladığımız Bilgiler",
+        "intro": "Feribot rezervasyon platformumuza eriştiğinizde veya kullandığınızda, otomatik olarak şunları toplayabiliriz:",
+        "items": [
+          "Günlük bilgileri (IP adresi, tarayıcı türü, görüntülenen sayfalar, sitede geçirilen süre)",
+          "Cihaz bilgileri (cihaz türü, işletim sistemi, benzersiz cihaz tanımlayıcıları)",
+          "Konum bilgileri (izninizle, yakındaki limanları veya rotaları önermek için)",
+          "Çerezler ve benzer teknolojiler (tercihlerinizi hatırlamak ve deneyiminizi iyileştirmek için)"
+        ]
+      }
+    },
+    "howWeUse": {
+      "title": "Bilgilerinizi Nasıl Kullanıyoruz",
+      "intro": "Topladığımız bilgileri şunlar için kullanıyoruz:",
+      "items": [
+        "Feribot rezervasyonlarınızı işlemek ve onaylamak",
+        "Elektronik biletler ve biniş kartları çıkarmak",
+        "Rezervasyon onayları, değişiklikler ve seyahat güncellemeleri göndermek",
+        "Feribot operatörleriyle check-in süreçlerini kolaylaştırmak",
+        "Rezervasyon sorguları için müşteri desteği sağlamak",
+        "Program değişiklikleri, iptaller veya hizmet kesintileri hakkında sizi bilgilendirmek",
+        "İade işlemleri veya rezervasyon değişikliklerini gerçekleştirmek",
+        "Feribot rota tekliflerimizi ve hizmetimizi iyileştirmek",
+        "Feribot rezervasyon deneyiminizi kişiselleştirmek",
+        "Sahte işlemleri ve bilet dolandırıcılığını önlemek",
+        "Yasal yükümlülüklere ve feribot operatörü gereksinimlerine uymak"
+      ]
+    },
+    "sharingInfo": {
+      "title": "Bilgi Paylaşımı",
+      "intro": "Topladığımız bilgileri aşağıdaki şekilde paylaşabiliriz:",
+      "items": [
+        { "label": "Feribot operatörleri ve liman yetkilileriyle", "content": "Rezervasyonunuzu işlemek, bilet vermek ve yasal gereklilikleri yerine getirmek için" },
+        { "label": "Ödeme işlemcileriyle", "content": "Feribot bileti ödeme işlemlerinizi tamamlamak için" },
+        { "label": "Hizmet sağlayıcılarla", "content": "Bulut depolama, e-posta hizmetleri ve müşteri destek araçları gibi platformumuzu işletmemize yardımcı olan" },
+        { "label": "Yasal süreçlere yanıt olarak", "content": "Mahkeme emri veya celp gibi, veya denizcilik ve ulaşım düzenlemelerine uymak için" },
+        { "label": "Güvenliği korumak için", "content": "Yolcuların, gemilerin, liman tesislerinin güvenliğini sağlamak veya acil durumlara yanıt vermek için" },
+        { "label": "Bir iş transferi bağlamında", "content": "Feribot rezervasyon işimizin birleşme, satın alma veya satışı gibi" }
+      ]
+    },
+    "security": {
+      "title": "Veri Güvenliği",
+      "content": "Sizinle ilgili bilgileri kayıp, hırsızlık, kötüye kullanım, yetkisiz erişim, açıklama, değiştirme ve imha edilmesinden korumak için makul önlemler alıyoruz. Ancak, hiçbir güvenlik sistemi geçilemez değildir ve sistemlerimizin veya bilgilerinizin güvenliğini garanti edemeyiz."
+    },
+    "yourRights": {
+      "title": "Haklarınız ve Seçenekleriniz",
+      "intro": "Kişisel bilgilerinizle ilgili birkaç hakkınız vardır:",
+      "items": [
+        { "label": "Hesap Bilgileri", "content": "Hesap ayarlarınıza giriş yaparak hesap bilgilerinizi güncelleyebilirsiniz" },
+        { "label": "Çerezler", "content": "Çoğu web tarayıcısı varsayılan olarak çerezleri kabul eder. Genellikle tarayıcınızı çerezleri kaldıracak veya reddedecek şekilde ayarlayabilirsiniz" },
+        { "label": "Tanıtım İletişimleri", "content": "Bu e-postalardaki talimatları izleyerek tanıtım e-postalarını almayı reddedebilirsiniz" },
+        { "label": "Veri Erişimi ve Taşınabilirlik", "content": "Tuttuğumuz kişisel verilerinizin bir kopyasını talep edebilirsiniz" },
+        { "label": "Veri Silme", "content": "Kişisel bilgilerinizin silinmesini talep edebilirsiniz" }
+      ]
+    },
+    "contactInfo": {
+      "question": "Gizlilik uygulamalarımız hakkında sorularınız mı var?",
+      "contact": "Destek ekibimizle iletişime geçin"
+    }
+  },
+  "ferryTicketForm": {
+    "journeyCategory": {
+      "shipClasses": {
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      },
+      "noSeatsAvailable": "Yeterli koltuk yok",
+      "seatsLeft": "koltuk kaldı",
+      "departureTime": "Kalkış",
+      "arrivalTime": "Varış",
+      "shipType": "Gemi Tipi"
+    },
+    "seatSelection": {
+      "fastFerry": "Fast Ferry",
+      "seabus": "Seabus",
+      "mainDeck": "Ana Güverte",
+      "upperDeck": "Üst Güverte",
+      "occupied": "Dolu",
+      "available": "Müsait",
+      "selected": "Seçildi",
+      "restricted": "Kısıtlı",
+      "selectSeat": "Bir koltuğu seçmek için tıklayın. Her iki güverteden de koltuk seçebilirsiniz.",
+      "class": "Sınıf"
+    }
+  },
+  "admin": {
+    "menu": {
+      "dashboard": "Yönetici Paneli",
+      "stations": "İstasyonlar",
+      "voyages": "Seferler",
+      "announcements": "Duyurular",
+      "logs": "Kayıtlar"
+    },
+    "stations": {
+      "title": "İstasyonları Yönet",
+      "addStation": "Yeni İstasyon Ekle",
+      "editStation": "İstasyonu Düzenle",
+      "stationName": "İstasyon Adı",
+      "contactPerson": "İletişim Kişisi",
+      "phoneNumber": "Telefon Numarası",
+      "city": "Şehir",
+      "address": "Adres",
+      "status": "Durum",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "deleteConfirmation": "İstasyonu Sil",
+      "deleteWarning": "Bu istasyonu silmek istediğinizden emin misiniz?",
+      "activeVoyagesWarning": "Bu istasyona ait aktif seferler bulunmaktadır ve silinemez.",
+      "loading": "İstasyonlar yükleniyor...",
+      "error": "İstasyonlar yüklenemedi. Lütfen tekrar deneyin.",
+      "saveError": "İstasyon kaydedilemedi. Lütfen girdilerinizi kontrol edip tekrar deneyin.",
+      "deleteError": "İstasyon silinemedi. Lütfen tekrar deneyin.",
+      "validation": {
+        "stationNameRequired": "İstasyon adı zorunludur",
+        "stationNameMinLength": "İstasyon adı en az 3 karakter olmalıdır",
+        "contactPersonRequired": "İletişim kişisi zorunludur",
+        "contactPersonInvalid": "İletişim kişisi sadece harf, boşluk, tire ve kesme işareti içerebilir",
+        "phoneRequired": "Telefon numarası zorunludur",
+        "phoneInvalid": "Lütfen en az 10 haneli geçerli bir telefon numarası girin",
+        "cityRequired": "Şehir zorunludur",
+        "cityInvalid": "Şehir sadece harf, boşluk, tire ve kesme işareti içerebilir",
+        "addressRequired": "Adres zorunludur",
+        "addressMinLength": "Adres en az 5 karakter olmalıdır"
+      }
+    }
+  }
+} 

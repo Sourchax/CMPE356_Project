@@ -4,12 +4,15 @@ import { MapPin, Clock, Bell, Menu, X, Activity } from 'lucide-react';
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const AdminHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { signOut } = useClerk();
   const { user } = useUser();
   const location = useLocation();
+  const { t } = useTranslation();
   
   // Get current path for active link highlighting
   const isActive = (path) => {
@@ -81,43 +84,44 @@ const AdminHeader = () => {
             width={128} 
             height={32} 
           />
-          <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white whitespace-nowrap">Admin</h1>
+          <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white whitespace-nowrap">{t('admin.menu.dashboard')}</h1>
         </Link>
 
-        {/* Desktop Navigation - exactly like manager header */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex md:space-x-1 lg:space-x-4">
           <NavLink 
             to="/admin/Stations" 
             icon={MapPin} 
-            text="Stations" 
+            text={t('admin.menu.stations')}
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Stations")}
           />
           <NavLink 
             to="/admin/Voyage" 
             icon={Clock} 
-            text="Voyages" 
+            text={t('admin.menu.voyages')}
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Voyage")}
           />
           <NavLink 
             to="/admin/Announce" 
             icon={Bell} 
-            text="Announcements" 
+            text={t('admin.menu.announcements')}
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Announce")}
           />
           <NavLink 
             to="/admin/Logs" 
             icon={Activity} 
-            text="Logs" 
+            text={t('admin.menu.logs')}
             className="md:text-xs lg:text-sm xl:text-base"
             isActive={isActive("/admin/Logs")}
           />
         </nav>
 
-        {/* User Profile Button and Mobile Menu Button */}
+        {/* User Profile Button, Language Switcher and Mobile Menu Button */}
         <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+          <LanguageSwitcher />
           <CustomUserButton user={user} handleSignOut={handleSignOut} />
           
           {/* Mobile Menu Button */}
@@ -134,7 +138,7 @@ const AdminHeader = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation with improved transition */}
+      {/* Mobile Navigation */}
       <div 
         id="mobile-menu"
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
@@ -145,28 +149,28 @@ const AdminHeader = () => {
           <NavLink 
             to="/admin/Stations" 
             icon={MapPin} 
-            text="Stations" 
+            text={t('admin.menu.stations')}
             mobile={true} 
             isActive={isActive("/admin/Stations")}
           />
           <NavLink 
             to="/admin/Voyage" 
             icon={Clock} 
-            text="Voyages" 
+            text={t('admin.menu.voyages')}
             mobile={true} 
             isActive={isActive("/admin/Voyage")}
           />
           <NavLink 
             to="/admin/Announce" 
             icon={Bell} 
-            text="Announcements" 
+            text={t('admin.menu.announcements')}
             mobile={true} 
             isActive={isActive("/admin/Announce")}
           />
           <NavLink 
             to="/admin/Logs" 
             icon={Activity} 
-            text="Logs" 
+            text={t('admin.menu.logs')}
             mobile={true} 
             isActive={isActive("/admin/Logs")}
           />

@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6"; // New X logo
 import "../assets/styles/footer.css";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-gray-900 text-white py-12 relative">
       {/* Background Overlay - Similar to Contact page */}
@@ -16,42 +19,42 @@ const Footer = () => {
           <div>
             <div className="text-[#F0C808] font-bold text-3xl mb-4">SailMate</div>
             <p className="text-sm opacity-80">
-              Revolutionizing ferry travel with modern technology and exceptional service.
+              {t('footer.companyDescription')}
             </p>
           </div>
           
           {/* Company Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Company</h3>
+            <h3 className="font-bold text-lg mb-4">{t('common.company')}</h3>
             <ul className="space-y-2 list-none">
               <li>
-                <Link to="/about" className="text-white opacity-80 hover:opacity-100">About Us</Link>
+                <Link to="/about" className="text-white opacity-80 hover:opacity-100">{t('common.aboutUs')}</Link>
               </li>
               <li>
-                <Link to="/sustainability" className="text-white opacity-80 hover:opacity-100">Sustainability</Link>
+                <Link to="/sustainability" className="text-white opacity-80 hover:opacity-100">{t('common.sustainability')}</Link>
               </li>
             </ul>
           </div>
 
           {/* Resources Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Resources</h3>
+            <h3 className="font-bold text-lg mb-4">{t('common.resources')}</h3>
             <ul className="space-y-2 list-none">
               <li>
-                <Link to="/faq" className="text-white opacity-80 hover:opacity-100">Frequently Asked Questions</Link>
+                <Link to="/faq" className="text-white opacity-80 hover:opacity-100">{t('common.faq')}</Link>
               </li>
               <li>
-                <Link to="/travelling-rules" className="text-white opacity-80 hover:opacity-100">Travelling Rules</Link>
+                <Link to="/travelling-rules" className="text-white opacity-80 hover:opacity-100">{t('common.travellingRules')}</Link>
               </li>
               <li>
-                <Link to="/accessibility" className="text-white opacity-80 hover:opacity-100">Accessibility</Link>
+                <Link to="/accessibility" className="text-white opacity-80 hover:opacity-100">{t('common.accessibility')}</Link>
               </li>
             </ul>
           </div>
 
           {/* Contact Information */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Contact</h3>
+            <h3 className="font-bold text-lg mb-4">{t('common.contact')}</h3>
             <ul className="space-y-2 list-none">
               <li className="text-white opacity-80">sailmatesup@gmail.com</li>
               <li className="text-white opacity-80">+90 546 434 20 22</li>
@@ -62,10 +65,10 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-white/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm opacity-70">© 2025 SailMate. All rights reserved.</div>
+          <div className="text-sm opacity-70">© 2025 SailMate. {t('common.allRightsReserved')}</div>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/terms-of-service" className="text-white opacity-70 hover:opacity-100">Terms</Link>
-            <Link to="/privacy-policy" className="text-white opacity-70 hover:opacity-100">Privacy</Link>
+            <Link to="/terms-of-service" className="text-white opacity-70 hover:opacity-100">{t('common.terms')}</Link>
+            <Link to="/privacy-policy" className="text-white opacity-70 hover:opacity-100">{t('common.privacy')}</Link>
           </div>
         </div>
       </div>

@@ -3,11 +3,13 @@ import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, A
 import {useSessionToken} from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
 const AdminStations = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,37 +70,37 @@ const AdminStations = () => {
     
     // Station title validation
     if (!formData.title.trim()) {
-      newErrors.title = "Station name is required";
+      newErrors.title = t('admin.stations.validation.stationNameRequired');
     } else if (formData.title.trim().length < 3) {
-      newErrors.title = "Station name must be at least 3 characters";
+      newErrors.title = t('admin.stations.validation.stationNameMinLength');
     }
     
-    // Contact person validation - allow letters, spaces, hyphens, and apostrophes
+    // Contact person validation
     if (!formData.personnel.trim()) {
-      newErrors.personnel = "Contact person is required";
+      newErrors.personnel = t('admin.stations.validation.contactPersonRequired');
     } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.personnel.trim())){
-      newErrors.personnel = "Contact person can only contain letters, spaces, hyphens, and apostrophes";
+      newErrors.personnel = t('admin.stations.validation.contactPersonInvalid');
     }
     
-    // Phone validation - more flexible to allow different formats
+    // Phone validation
     if (!formData.phoneno.trim()) {
-      newErrors.phoneno = "Phone number is required";
+      newErrors.phoneno = t('admin.stations.validation.phoneRequired');
     } else if (!/^(\+?\d{1,3}[- ]?)?\d{3,}[- \d]*$/.test(formData.phoneno.trim()) || formData.phoneno.replace(/[^\d]/g, '').length < 10) {
-      newErrors.phoneno = "Please enter a valid phone number with at least 10 digits";
+      newErrors.phoneno = t('admin.stations.validation.phoneInvalid');
     }
     
-    // City validation - allow only letters, spaces, hyphens, and apostrophes, including Turkish characters
+    // City validation
     if (!formData.city.trim()) {
-      newErrors.city = "City is required";
+      newErrors.city = t('admin.stations.validation.cityRequired');
     } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.city.trim())) {
-      newErrors.city = "City can only contain letters, spaces, hyphens, and apostrophes";
+      newErrors.city = t('admin.stations.validation.cityInvalid');
     }
     
-    // Address validation - more comprehensive
+    // Address validation
     if (!formData.address.trim()) {
-      newErrors.address = "Address is required";
+      newErrors.address = t('admin.stations.validation.addressRequired');
     } else if (formData.address.trim().length < 5) {
-      newErrors.address = "Address must be at least 5 characters";
+      newErrors.address = t('admin.stations.validation.addressMinLength');
     }
     
     setErrors(newErrors);
@@ -278,24 +280,28 @@ const AdminStations = () => {
 
   if (loading) {
     return (
-        <div className="text-center py-8">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading Stations...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-t-4 border-[#06AED5] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">{t('admin.stations.loading')}</p>
         </div>
+      </div>
     );
   }
 
-  if (error && stations.length === 0) {
+  if (error) {
     return (
-      <div className="p-6 max-w-6xl mx-auto">
-        <div className="text-center p-8 bg-red-50 rounded-lg border border-red-200">
-          <AlertCircle size={48} className="text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 mb-4">{error}</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+          <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <AlertCircle size={32} className="text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('admin.stations.error')}</h2>
           <button 
-            onClick={fetchStations}
-            className="bg-[#06AED5] text-white px-4 py-2 rounded-md hover:bg-[#058aaa] transition"
+            onClick={() => window.location.reload()}
+            className="px-5 py-2.5 bg-[#06AED5] hover:bg-[#0599c2] text-white rounded-lg transition-colors"
           >
-            Try Again
+            {t('common.tryAgain')}
           </button>
         </div>
       </div>
@@ -303,193 +309,205 @@ const AdminStations = () => {
   }
 
   return (
-    <div className="p-2 sm:p-4 md:p-6 max-w-6xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 sm:gap-0">
-        <h1 className="text-xl sm:text-3xl font-semibold text-gray-800">Manage Stations</h1>
-        <button 
-          onClick={openAddModal} 
-          className="flex items-center gap-2 bg-[#06AED5] text-white px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition w-full sm:w-auto justify-center sm:justify-start"
-        >
-          <Plus size={20} /> Add Station
-        </button>
-      </div>
-      
-      {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-          <p>{error}</p>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">{t('admin.stations.title')}</h1>
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-2 px-4 py-2 bg-[#06AED5] text-white rounded-lg hover:bg-[#0599c2] transition-colors"
+          >
+            <Plus size={20} />
+            <span>{t('admin.stations.addStation')}</span>
+          </button>
         </div>
-      )}
 
-      <div className="hidden md:block bg-white shadow-xl rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead className="bg-[#06AED5] text-white">
-              <tr>
-                <th className="p-4 text-left font-semibold text-base">Title</th>
-                <th className="p-4 text-left font-semibold text-base">Contact Person</th>
-                <th className="p-4 text-left font-semibold text-base">Phone No.</th>
-                <th className="p-4 text-left font-semibold text-base">City</th>
-                <th className="p-4 text-left font-semibold text-base">Address</th>
-                <th className="p-4 text-center font-semibold text-base">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stations.map((station) => (
-                <tr key={station.id} className="border-b hover:bg-gray-100 transition">
-                  <td className="p-4 text-base">{station.title}</td>
-                  <td className="p-4 text-base">{station.personnel}</td>
-                  <td className="p-4 text-base">{station.phoneno}</td>
-                  <td className="p-4 text-base">{station.city}</td>
-                  <td className="p-4 text-base">{station.address}</td>
-                  <td className="p-4 flex justify-center gap-5">
-                    <button onClick={() => handleEdit(station)} className="text-[#06AED5] hover:text-[#058aaa] transition">
-                      <Edit size={20} />
-                    </button>
-                    <button onClick={() => openDeleteConfirmation(station.id)} className="text-red-600 hover:text-red-800 transition">
-                      <Trash2 size={20} />
-                    </button>
-                  </td>
+        {/* Mobile view */}
+        <div className="md:hidden space-y-4">
+          {stations.map((station) => (
+            <MobileStationCard key={station.id} station={station} />
+          ))}
+        </div>
+
+        {/* Desktop view */}
+        <div className="hidden md:block bg-white shadow-xl rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gradient-to-r from-[#E6F7FB] to-[#F5FBFD] text-[#06AED5] border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">{t('admin.stations.stationName')}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t('admin.stations.contactPerson')}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t('admin.stations.phoneNumber')}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t('admin.stations.city')}</th>
+                  <th className="px-4 py-3 text-left font-medium">{t('admin.stations.status')}</th>
+                  <th className="px-4 py-3 text-center font-medium w-24">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {stations.map((station) => (
+                  <tr key={station.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{station.title}</td>
+                    <td className="px-4 py-3">{station.personnel}</td>
+                    <td className="px-4 py-3">{station.phoneno}</td>
+                    <td className="px-4 py-3">{station.city}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        station.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {station.status === 'active' ? t('admin.stations.active') : t('admin.stations.inactive')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => handleEdit(station)}
+                          className="p-2 text-[#06AED5] hover:bg-[#06AED5] hover:text-white rounded-lg transition-colors"
+                          title={t('admin.stations.edit')}
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => openDeleteConfirmation(station.id)}
+                          className="p-2 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
+                          title={t('admin.stations.delete')}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Card view for mobile screens */}
-      <div className="md:hidden">
-        {stations.map((station) => (
-          <MobileStationCard key={station.id} station={station} />
-        ))}
-      </div>
-
-      {/* Edit/Add Station Modal */}
+      {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">{editingStation ? "Edit Station" : "Add Station"}</h2>
-            <form onSubmit={handleSave} className="space-y-4">
-              {/* Station Title */}
-              <div className="flex flex-col">
-                <label htmlFor="title" className="text-sm text-gray-600 mb-1 ml-1">Station Name</label>
-                <div className={`flex items-center border rounded-md overflow-hidden ${errors.title ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
-                  <span className="bg-gray-50 p-2 border-r border-gray-200">
-                    <MapPin size={20} className="text-gray-500" />
-                  </span>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              {editingStation ? t('admin.stations.editStation') : t('admin.stations.addStation')}
+            </h2>
+            <form onSubmit={handleSave}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.stationName')}
+                  </label>
                   <input
-                    id="title"
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    placeholder="Enter station name"
-                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${
+                      errors.title ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
                 </div>
-                {errors.title && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.title}</p>}
-              </div>
 
-              {/* Contact Person */}
-              <div className="flex flex-col">
-                <label htmlFor="personnel" className="text-sm text-gray-600 mb-1 ml-1">Contact Person</label>
-                <div className={`flex items-center border rounded-md overflow-hidden ${errors.personnel ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
-                  <span className="bg-gray-50 p-2 border-r border-gray-200">
-                    <User size={20} className="text-gray-500" />
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.contactPerson')}
+                  </label>
                   <input
-                    id="personnel"
                     type="text"
                     name="personnel"
                     value={formData.personnel}
                     onChange={handleInputChange}
-                    placeholder="Enter contact person"
-                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${
+                      errors.personnel ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.personnel && <p className="mt-1 text-sm text-red-500">{errors.personnel}</p>}
                 </div>
-                {errors.personnel && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.personnel}</p>}
-              </div>
 
-              {/* Phone Number */}
-              <div className="flex flex-col">
-                <label htmlFor="phoneno" className="text-sm text-gray-600 mb-1 ml-1">Phone Number</label>
-                <div className={`flex items-center border rounded-md overflow-hidden ${errors.phoneno ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
-                  <span className="bg-gray-50 p-2 border-r border-gray-200">
-                    <Phone size={20} className="text-gray-500" />
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.phoneNumber')}
+                  </label>
                   <input
-                    id="phoneno"
                     type="text"
                     name="phoneno"
                     value={formData.phoneno}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
-                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${
+                      errors.phoneno ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.phoneno && <p className="mt-1 text-sm text-red-500">{errors.phoneno}</p>}
                 </div>
-                {errors.phoneno && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.phoneno}</p>}
-              </div>
 
-              {/* City */}
-              <div className="flex flex-col">
-                <label htmlFor="city" className="text-sm text-gray-600 mb-1 ml-1">City</label>
-                <div className={`flex items-center border rounded-md overflow-hidden ${errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
-                  <span className="bg-gray-50 p-2 border-r border-gray-200">
-                    <Building size={20} className="text-gray-500" />
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.city')}
+                  </label>
                   <input
-                    id="city"
                     type="text"
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="Enter city name"
-                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${
+                      errors.city ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
                 </div>
-                {errors.city && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.city}</p>}
-              </div>
 
-              {/* Address */}
-              <div className="flex flex-col">
-                <label htmlFor="address" className="text-sm text-gray-600 mb-1 ml-1">Address</label>
-                <div className={`flex items-center border rounded-md overflow-hidden ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
-                  <span className="bg-gray-50 p-2 border-r border-gray-200">
-                    <Home size={20} className="text-gray-500" />
-                  </span>
-                  <input
-                    id="address"
-                    type="text"
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.address')}
+                  </label>
+                  <textarea
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Enter address"
-                    className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
+                    rows="3"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5] ${
+                      errors.address ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   />
+                  {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
                 </div>
-                {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address}</p>}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('admin.stations.status')}
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06AED5]"
+                  >
+                    <option value="active">{t('admin.stations.active')}</option>
+                    <option value="inactive">{t('admin.stations.inactive')}</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="flex justify-between gap-2 mt-6">
-                <button 
-                  type="button" 
-                  onClick={closeModal} 
-                  className="bg-gray-300 px-3 sm:px-4 py-2.5 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1 disabled:opacity-70"
-                  disabled={isSaving}
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
-                  Cancel
+                  {t('admin.stations.cancel')}
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSaving}
-                  className="bg-[#06AED5] text-white px-3 sm:px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition text-sm sm:text-base flex-1 disabled:opacity-70 flex justify-center items-center"
+                  className="px-4 py-2 bg-[#06AED5] text-white rounded-lg hover:bg-[#0599c2] transition-colors disabled:opacity-50"
                 >
                   {isSaving ? (
-                    <>
-                      <Loader size={18} className="animate-spin mr-2" />
-                      Saving...
-                    </>
+                    <div className="flex items-center gap-2">
+                      <Loader className="animate-spin" size={16} />
+                      <span>{t('common.saving')}</span>
+                    </div>
                   ) : (
-                    'Save'
+                    t('admin.stations.save')
                   )}
                 </button>
               </div>
@@ -499,59 +517,40 @@ const AdminStations = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteModalOpen && stationToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
-            {checkingVoyages ? (
-              <div className="text-center py-4">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-                <p className="mt-2 text-gray-600">Checking for active voyages...</p>
-              </div>
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+            <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <AlertTriangle size={32} className="text-red-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+              {t('admin.stations.deleteConfirmation')}
+            </h2>
+            {hasActiveVoyages ? (
+              <p className="text-gray-600 mb-6 text-center">
+                {t('admin.stations.activeVoyagesWarning')}
+              </p>
             ) : (
-              <>
-                <div className="flex items-center gap-3 mb-4">
-                  {hasActiveVoyages ? (
-                    <AlertTriangle size={24} className="text-orange-500" />
-                  ) : (
-                    <AlertCircle size={24} className="text-red-600" />
-                  )}
-                  <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
-                </div>
-                
-                <p className="mb-4">Are you sure you want to delete the station <span className="font-semibold">{stationToDelete.title}</span>? This action cannot be undone.</p>
-                
-                {hasActiveVoyages && (
-                  <div className="p-3 mb-4 bg-orange-50 border-l-4 border-orange-500 text-orange-700 rounded">
-                    <div className="flex items-start">
-                      <AlertTriangle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium">Warning: Active Voyages Detected</p>
-                        <p className="text-sm mt-1">This station has active voyages assigned to it. Deleting it may cause issues with scheduled trips.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex justify-end gap-3 mt-5">
-                  <button 
-                    onClick={() => {
-                      setDeleteModalOpen(false);
-                      setStationToDelete(null);
-                      setHasActiveVoyages(false);
-                    }} 
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={handleDelete} 
-                    className={`px-4 py-2 ${hasActiveVoyages ? 'bg-orange-500 hover:bg-orange-600' : 'bg-red-600 hover:bg-red-700'} text-white rounded-md transition`}
-                  >
-                    {hasActiveVoyages ? "Delete Anyway" : "Delete"}
-                  </button>
-                </div>
-              </>
+              <p className="text-gray-600 mb-6 text-center">
+                {t('admin.stations.deleteWarning')}
+              </p>
             )}
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setDeleteModalOpen(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                {t('admin.stations.cancel')}
+              </button>
+              {!hasActiveVoyages && (
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  {t('admin.stations.delete')}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

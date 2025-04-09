@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 import commerImage from '../assets/images/commer.png';
 import Button from "../components/Button";
 import "../assets/styles/aboutus.css"; // Make sure CSS is imported
+import { useTranslation } from 'react-i18next';
 
 const AboutUs = () => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
   const { isSignedIn } = useUser(); // Clerk hook to check if the user is signed in
@@ -38,10 +40,10 @@ const AboutUs = () => {
             className="text-center"
           >
             <h1 className="text-5xl font-extrabold tracking-tight mb-4">
-              Setting Sail for a <span className="text-[#F0C808]">Smoother Journey</span>
+              {t('aboutPage.hero.title')} <span className="text-[#F0C808]"></span>
             </h1>
             <p className="text-xl max-w-3xl mx-auto">
-              Discover the story behind SailMate, the revolutionary ferry ticketing system changing how people travel on water.
+              {t('aboutPage.hero.subtitle')}
             </p>
           </motion.div>
         </div>
@@ -67,7 +69,7 @@ const AboutUs = () => {
           viewport={{ once: true }}
           transition={{ duration: 1 }}
         >
-          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">Our Story</h2>
+          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">{t('aboutPage.ourStory.title')}</h2>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -88,12 +90,12 @@ const AboutUs = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold text-[#0D3A73] mb-4">How It All Began</h3>
+            <h3 className="text-2xl font-bold text-[#0D3A73] mb-4">{t('aboutPage.ourStory.sectionTitle')}</h3>
             <p className="text-gray-700 mb-6">
-              SailMate was born from a frustrating experience at a crowded ferry terminal in 2025. Our founder, waiting in a long queue for tickets, wondered why ferry booking couldn't be as seamless as other modern travel experiences.
+              {t('aboutPage.ourStory.paragraph1')}
             </p>
             <p className="text-gray-700">
-              What started as a simple idea to digitize ferry tickets quickly evolved into a comprehensive platform addressing the unique challenges of waterway transportation. Today, SailMate serves thousands of travelers and dozens of ferry operators worldwide.
+              {t('aboutPage.ourStory.paragraph2')}
             </p>
           </motion.div>
         </div>
@@ -109,22 +111,22 @@ const AboutUs = () => {
             transition={{ duration: 0.5 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h2 className="text-4xl font-bold mb-8">Our Mission</h2>
+            <h2 className="text-4xl font-bold mb-8">{t('aboutPage.ourMission.title')}</h2>
             <p className="text-xl mb-10">
-              To transform waterway travel by creating technology that connects people to efficient, stress-free ferry experiences while supporting coastal and island communities.
+              {t('aboutPage.ourMission.description')}
             </p>
             <div className="flex flex-wrap justify-center gap-6">
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
                 <div className="text-[#F0C808] text-5xl font-bold mb-2">95%</div>
-                <div>Reduction in boarding time</div>
+                <div>{t('aboutPage.ourMission.stats.boardingTime')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
                 <div className="text-[#F0C808] text-5xl font-bold mb-2">500+</div>
-                <div>Ferry routes covered</div>
+                <div>{t('aboutPage.ourMission.stats.routes')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg w-full md:w-64">
                 <div className="text-[#F0C808] text-5xl font-bold mb-2">2M+</div>
-                <div>Happy travelers</div>
+                <div>{t('aboutPage.ourMission.stats.travelers')}</div>
               </div>
             </div>
           </motion.div>
@@ -139,32 +141,32 @@ const AboutUs = () => {
           viewport={{ once: true }}
           transition={{ duration: 1 }}
         >
-          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">Meet Our Team</h2>
+          <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">{t('aboutPage.team.title')}</h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {[
             {
               name: "Erk Demirel",
-              title: "Founder & CEO",
+              title: t('aboutPage.team.members.ceo'),
               image: "https://evo.khas.edu.tr/wp-content/uploads/2024/03/Erk_Demirel.jpg",
               delay: 0
             },
             {
               name: "Ekmel Beyza Akın",
-              title: "CTO",
+              title: t('aboutPage.team.members.cto'),
               image: "https://media.licdn.com/dms/image/v2/D4E03AQHYUQU-e-Zrxg/profile-displayphoto-shrink_200_200/B4EZXT3DgiH0AY-/0/1743016180461?e=1748476800&v=beta&t=M0aNiHnBXxGgUPnSVcydBE0QMYEghL5x3qOMwUrkVFI",
               delay: 0.2
             },
             {
               name: "Ege Kaptanoğlu",
-              title: "Head of Customer Experience",
+              title: t('aboutPage.team.members.customerExperience'),
               image: "https://media.licdn.com/dms/image/v2/C4D03AQHdnIrOjIAOxQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1650220552799?e=1746057600&v=beta&t=dS4cN8SonvQfPD2yfTNGvot_oBAdiLHtOYX3EGgGC-U",
               delay: 0.4
             },
             {
               name: "Ali Utku Özaslan",
-              title: "Head of Customer Experience",
+              title: t('aboutPage.team.members.customerExperience'),
               image: "https://evo.khas.edu.tr/wp-content/uploads/2024/03/AliUtku_Ozaslan_We%CC%82bsitePhoto-768x768.jpg",
               delay: 0.6
             }
@@ -196,33 +198,33 @@ const AboutUs = () => {
             viewport={{ once: true }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl text-white font-bold text-center mb-16">The SailMate Difference</h2>
+            <h2 className="text-4xl text-white font-bold text-center mb-16">{t('aboutPage.values.title')}</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                title: "Innovation",
+                title: t('aboutPage.values.innovation.title'),
                 icon: "⚓",
-                description: "We pioneer smart solutions to make ferry booking and travel seamlessly efficient.",
+                description: t('aboutPage.values.innovation.description'),
                 delay: 0
               },
               {
-                title: "Reliability",
+                title: t('aboutPage.values.reliability.title'),
                 icon: "⏱️",
-                description: "Punctual departures and accurate schedules you can build your journey around.",
+                description: t('aboutPage.values.reliability.description'),
                 delay: 0.2
               },
               {
-                title: "Sustainability",
+                title: t('aboutPage.values.sustainability.title'),
                 icon: "🌊",
-                description: "Eco-friendly vessels and practices that protect the beautiful waters we sail.",
+                description: t('aboutPage.values.sustainability.description'),
                 delay: 0.4
               },
               {
-                title: "Comfort",
+                title: t('aboutPage.values.comfort.title'),
                 icon: "🛋️",
-                description: "Thoughtfully designed spaces and amenities for a relaxing journey across the water.",
+                description: t('aboutPage.values.comfort.description'),
                 delay: 0.6
               }
             ].map((value, index) => (
@@ -252,27 +254,27 @@ const AboutUs = () => {
             viewport={{ once: true }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">What People Say</h2>
+            <h2 className="text-4xl text-[#0D3A73] font-bold text-center mb-16">{t('aboutPage.testimonials.title')}</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                quote: "SailMate transformed how we operate our ferries. Reduced lines, happier customers, better business.",
-                author: "Coastal Ferries Ltd.",
-                role: "Ferry Operator",
+                quote: t('aboutPage.testimonials.testimonial1.quote'),
+                author: t('aboutPage.testimonials.testimonial1.author'),
+                role: t('aboutPage.testimonials.testimonial1.role'),
                 delay: 0
               },
               {
-                quote: "I use the app for my daily commute across the bay. It's saved me countless hours of waiting in line.",
-                author: "Maria J.",
-                role: "Daily Commuter",
+                quote: t('aboutPage.testimonials.testimonial2.quote'),
+                author: t('aboutPage.testimonials.testimonial2.author'),
+                role: t('aboutPage.testimonials.testimonial2.role'),
                 delay: 0.2
               },
               {
-                quote: "Planning our island-hopping vacation was a breeze with SailMate. Seamless connections every time.",
-                author: "The Robinson Family",
-                role: "Vacation Travelers",
+                quote: t('aboutPage.testimonials.testimonial3.quote'),
+                author: t('aboutPage.testimonials.testimonial3.author'),
+                role: t('aboutPage.testimonials.testimonial3.role'),
                 delay: 0.4
               }
             ].map((testimonial, index) => (
@@ -310,9 +312,9 @@ const AboutUs = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl text-[#0D3A73] font-bold mb-6">Ready to Simplify Ferry Travel?</h2>
+            <h2 className="text-4xl text-[#0D3A73] font-bold mb-6">{t('aboutPage.cta.title')}</h2>
             <p className="text-xl text-[#0D3A73] mb-8">
-              Join thousands of travelers who have discovered a better way to sail.
+              {t('aboutPage.cta.subtitle')}
             </p>
             <div className="aboutus-button-container">
               <Button 
@@ -321,7 +323,7 @@ const AboutUs = () => {
                 className="cta-button"
                 onClick={handleClick}
               >
-                Get Started Today
+                {t('aboutPage.cta.button')}
               </Button>
             </div>
           </motion.div>

@@ -4,16 +4,19 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import "../assets/styles/voyageTimes.css";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const VoyageTimes = () => {
+  const { t } = useTranslation();
+  
   useEffect(() => {
-    document.title = "Voyage Times | SailMate";
+    document.title = `${t('common.voyageTimes')} | SailMate`;
     
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (viewportMeta) {
       viewportMeta.content = "width=device-width, initial-scale=1.0, viewport-fit=cover";
     }
-  }, []);
+  }, [t]);
 
   const { isSignedIn } = useSession();
   const navigate = useNavigate();
@@ -73,12 +76,12 @@ const VoyageTimes = () => {
         setStations(response.data);
       } catch (err) {
         console.error("Error fetching stations:", err);
-        setError("Failed to load stations. Please try again later.");
+        setError(t("voyagePage.voyagesList.error"));
       }
     };
 
     fetchStations();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchVoyages = async () => {
@@ -104,7 +107,7 @@ const VoyageTimes = () => {
         setLoading(false);
       } catch (err) {
         console.error("Error fetching voyages:", err);
-        setError("Failed to load voyages. Please try again later.");
+        setError(t("voyagePage.voyagesList.error"));
         setLoading(false);
       }
     };
@@ -112,7 +115,7 @@ const VoyageTimes = () => {
     if (stations.length > 0) {
       fetchVoyages();
     }
-  }, [selectedFrom, selectedTo, stations]);
+  }, [selectedFrom, selectedTo, stations, t]);
 
   const handleDateChange = (e, setter) => {
     const newDate = e.target.value;
@@ -180,7 +183,7 @@ const VoyageTimes = () => {
       ? "bg-[#D1FFD7] text-[#0D3A73]" 
       : "bg-red-100 text-red-800";
     
-    const statusText = isActive ? "Normal" : "Voyage Cancel";
+    const statusText = isActive ? t("voyagePage.voyageTable.normal") : t("voyagePage.voyageTable.voyageCancel");
     
     return (
       <span className={`status-badge ${colorClass}`}>
@@ -200,7 +203,7 @@ const VoyageTimes = () => {
   };
 
   const FuelBadge = ({ fuel }) => {
-    const fuelText = fuel ? "LPG" : "No LPG";
+    const fuelText = fuel ? t("voyagePage.fuelType.lpg") : t("voyagePage.fuelType.noLpg");
     const colorClass = fuel 
       ? "bg-[#06AED5] text-white" 
       : "bg-[#F0C808] text-[#0D3A73]";
@@ -229,8 +232,8 @@ const VoyageTimes = () => {
     <div className="voyage-page bg-gray-50">
       <div className="voyage-header bg-[#0D3A73]">
         <div className="voyage-container">
-          <h1 className="text-white">SailMate Voyages</h1>
-          <p className="text-[#06AED5]">Find and book your next sea journey</p>
+          <h1 className="text-white">{t("voyagePage.title")}</h1>
+          <p className="text-[#06AED5]">{t("voyagePage.subtitle")}</p>
         </div>
       </div>
       
@@ -241,19 +244,19 @@ const VoyageTimes = () => {
               <svg className="h-5 w-5 text-[#0D3A73]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
               </svg>
-              <span className="font-medium text-[#0D3A73]">Find Your Voyage</span>
+              <span className="font-medium text-[#0D3A73]">{t("voyagePage.filterSection.title")}</span>
             </div>
             
             <div className="filter-body">
               <div className="filter-row">
                 <div className="filter-group">
-                  <label className="filter-label text-gray-700">Departure</label>
+                  <label className="filter-label text-gray-700">{t("voyagePage.filterSection.departure")}</label>
                   <select 
                     value={selectedFrom} 
                     onChange={(e) => setSelectedFrom(e.target.value)}
                     className="filter-select focus:ring-[#06AED5] focus:border-[#06AED5]"
                   >
-                    <option value="">All Departures</option>
+                    <option value="">{t("voyagePage.filterSection.allDepartures")}</option>
                     {stations.map(station => (
                       <option key={`from-${station.id}`} value={station.title}>{station.title}</option>
                     ))}
@@ -261,13 +264,13 @@ const VoyageTimes = () => {
                 </div>
                 
                 <div className="filter-group">
-                  <label className="filter-label text-gray-700">Arrival</label>
+                  <label className="filter-label text-gray-700">{t("voyagePage.filterSection.arrival")}</label>
                   <select 
                     value={selectedTo} 
                     onChange={(e) => setSelectedTo(e.target.value)}
                     className="filter-select focus:ring-[#06AED5] focus:border-[#06AED5]"
                   >
-                    <option value="">All Arrivals</option>
+                    <option value="">{t("voyagePage.filterSection.allArrivals")}</option>
                     {stations.map(station => (
                       <option key={`to-${station.id}`} value={station.title}>{station.title}</option>
                     ))}
@@ -277,7 +280,7 @@ const VoyageTimes = () => {
               
               <div className="filter-row mt-3">
                 <div className="filter-group">
-                  <label className="filter-label text-gray-700">Start Date</label>
+                  <label className="filter-label text-gray-700">{t("voyagePage.filterSection.startDate")}</label>
                   <input
                     type="date"
                     value={startDate}
@@ -288,7 +291,7 @@ const VoyageTimes = () => {
                 </div>
                 
                 <div className="filter-group">
-                  <label className="filter-label text-gray-700">End Date</label>
+                  <label className="filter-label text-gray-700">{t("voyagePage.filterSection.endDate")}</label>
                   <input
                     type="date"
                     value={endDate}
@@ -305,20 +308,20 @@ const VoyageTimes = () => {
         <section className="voyage-section">
           <div className="voyages-card">
             <div className="voyages-header bg-[#06AED5]">
-              <h2 className="text-lg font-medium text-white">Available Voyages</h2>
+              <h2 className="text-lg font-medium text-white">{t("voyagePage.voyagesList.title")}</h2>
             </div>
             
             {loading ? (
               <div className="voyages-empty">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#06AED5]"></div>
-                <p className="mt-4 text-gray-600">Loading voyages...</p>
+                <p className="mt-4 text-gray-600">{t("voyagePage.voyagesList.loading")}</p>
               </div>
             ) : error ? (
               <div className="voyages-empty">
                 <svg className="voyages-empty-icon text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h3 className="text-sm font-medium text-gray-900">Error loading voyages</h3>
+                <h3 className="text-sm font-medium text-gray-900">{t("voyagePage.voyagesList.error")}</h3>
                 <p className="mt-1 text-sm text-gray-500">{error}</p>
                 <Button
                   onClick={() => window.location.reload()}
@@ -326,7 +329,7 @@ const VoyageTimes = () => {
                   size="md"
                   className="mt-4 voyage-button"
                 >
-                  Try Again
+                  {t("voyagePage.voyagesList.tryAgain")}
                 </Button>
               </div>
             ) : filteredVoyages.length === 0 ? (
@@ -334,8 +337,8 @@ const VoyageTimes = () => {
                 <svg className="voyages-empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <h3 className="text-sm font-medium text-gray-900">No voyages found</h3>
-                <p className="mt-1 text-sm text-gray-500">Try adjusting your search criteria</p>
+                <h3 className="text-sm font-medium text-gray-900">{t("voyagePage.voyagesList.noVoyages")}</h3>
+                <p className="mt-1 text-sm text-gray-500">{t("voyagePage.voyagesList.adjustSearch")}</p>
                 <Button
                   onClick={() => {
                     setSelectedFrom("");
@@ -350,7 +353,7 @@ const VoyageTimes = () => {
                   size="md"
                   className="mt-4 voyage-button"
                 >
-                  Reset Filters
+                  {t("voyagePage.voyagesList.resetFilters")}
                 </Button>
               </div>
             ) : (
@@ -381,10 +384,10 @@ const VoyageTimes = () => {
                             size="sm"
                             className="voyage-button"
                           >
-                            Buy Ticket
+                            {t("voyagePage.voyageTable.buyTicket")}
                           </Button>
                         ) : (
-                          <span className="text-gray-400 text-sm">Not Available</span>
+                          <span className="text-gray-400 text-sm">{t("voyagePage.voyageTable.notAvailable")}</span>
                         )}
                       </div>
                     </div>
@@ -395,13 +398,13 @@ const VoyageTimes = () => {
                   <table className="voyage-table">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col">Voyage</th>
-                        <th scope="col">Times</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Ship Type</th>
-                        <th scope="col">Fuel</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">{t("voyagePage.voyageTable.voyage")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.times")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.date")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.status")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.shipType")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.fuel")}</th>
+                        <th scope="col">{t("voyagePage.voyageTable.action")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -414,8 +417,8 @@ const VoyageTimes = () => {
                             {voyage.fromStationTitle} - {voyage.toStationTitle}
                           </td>
                           <td className="text-gray-700">
-                            <div>Dep: {formatTime(voyage.departureTime)}</div>
-                            <div>Arr: {formatTime(voyage.arrivalTime)}</div>
+                            <div>{t("voyagePage.voyageTable.dep")}: {formatTime(voyage.departureTime)}</div>
+                            <div>{t("voyagePage.voyageTable.arr")}: {formatTime(voyage.arrivalTime)}</div>
                           </td>
                           <td className="text-gray-700">
                             {formatDate(voyage.departureDate)}
@@ -437,10 +440,10 @@ const VoyageTimes = () => {
                               size="sm"
                               className="voyage-button"
                             >
-                              Buy Ticket
+                              {t("voyagePage.voyageTable.buyTicket")}
                             </Button>
                           ) : (
-                            <span className="text-gray-400 text-sm">Not Available</span>
+                            <span className="text-gray-400 text-sm">{t("voyagePage.voyageTable.notAvailable")}</span>
                           )}
                           </td>
                         </tr>
@@ -455,11 +458,11 @@ const VoyageTimes = () => {
                 <div className="flex-1 flex flex-col sm:flex-row items-center justify-between w-full">
                   <div className="mb-4 sm:mb-0">
                     <p className="text-sm text-gray-700">
-                      Showing <span className="font-medium">{indexOfFirstVoyage + 1}</span> to{" "}
+                      {t("voyagePage.pagination.showing")} <span className="font-medium">{indexOfFirstVoyage + 1}</span> {t("voyagePage.pagination.to")}{" "}
                       <span className="font-medium">
                         {Math.min(indexOfLastVoyage, filteredVoyages.length)}
                       </span>{" "}
-                      of <span className="font-medium">{filteredVoyages.length}</span> results
+                      {t("voyagePage.pagination.of")} <span className="font-medium">{filteredVoyages.length}</span> {t("voyagePage.pagination.results")}
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row items-center">
@@ -469,9 +472,9 @@ const VoyageTimes = () => {
                         value={rowsPerPage}
                         onChange={handleRowsPerPageChange}
                       >
-                        <option value={5}>5 per page</option>
-                        <option value={10}>10 per page</option>
-                        <option value={20}>20 per page</option>
+                        <option value={5}>5 {t("voyagePage.pagination.perPage")}</option>
+                        <option value={10}>10 {t("voyagePage.pagination.perPage")}</option>
+                        <option value={20}>20 {t("voyagePage.pagination.perPage")}</option>
                       </select>
                     </div>
                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
@@ -484,7 +487,7 @@ const VoyageTimes = () => {
                             : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="sr-only">First</span>
+                        <span className="sr-only">{t("voyagePage.pagination.first")}</span>
                         <span className="h-5 w-5 flex justify-center items-center">«</span>
                       </button>
                       <button
@@ -496,7 +499,7 @@ const VoyageTimes = () => {
                             : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="sr-only">Previous</span>
+                        <span className="sr-only">{t("voyagePage.pagination.previous")}</span>
                         <span className="h-5 w-5 flex justify-center items-center">‹</span>
                       </button>
                       
@@ -542,7 +545,7 @@ const VoyageTimes = () => {
                             : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="sr-only">Next</span>
+                        <span className="sr-only">{t("voyagePage.pagination.next")}</span>
                         <span className="h-5 w-5 flex justify-center items-center">›</span>
                       </button>
                       <button
@@ -554,7 +557,7 @@ const VoyageTimes = () => {
                             : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
-                        <span className="sr-only">Last</span>
+                        <span className="sr-only">{t("voyagePage.pagination.last")}</span>
                         <span className="h-5 w-5 flex justify-center items-center">»</span>
                       </button>
                     </nav>

@@ -1,0 +1,988 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "search": "Search",
+    "book": "Book",
+    "bookNow": "Book Now",
+    "findTicket": "Find Ticket",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "time": "Time",
+    "passengers": "Passengers",
+    "passengerSingular": "Passenger",
+    "passengersPlural": "Passengers",
+    "price": "Price",
+    "currency": "Currency",
+    "next": "Next",
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "submit": "Submit",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "stations": "Stations",
+    "tickets": "Tickets",
+    "cancelTicket": "Cancel Ticket",
+    "checkTicket": "Check Ticket",
+    "myTickets": "My Tickets",
+    "voyageTimes": "Voyage Times",
+    "aboutUs": "About Us",
+    "language": "Language",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "company": "Company",
+    "resources": "Resources",
+    "sustainability": "Sustainability",
+    "faq": "Frequently Asked Questions",
+    "travellingRules": "Travelling Rules",
+    "accessibility": "Accessibility",
+    "allRightsReserved": "All rights reserved.",
+    "oneWay": "One-Way",
+    "roundTrip": "Round-Trip",
+    "selectDeparture": "Select Departure",
+    "selectArrival": "Select Arrival",
+    "departureDate": "Departure Date",
+    "returnDate": "Return Date",
+    "adults": "Adults",
+    "adultsAge": "20+ years",
+    "students": "Students",
+    "studentsAge": "8-25 years",
+    "seniors": "Seniors",
+    "seniorsAge": "65+ years",
+    "children": "Children",
+    "childrenAge": "0-8 years",
+    "apply": "Apply",
+    "searchTickets": "Search Tickets",
+    "viewOnMap": "View on Map",
+    "all": "All"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Sail with Comfort & Style",
+      "subtitle": "Fast, reliable ferry service across Turkey's most beautiful waters"
+    },
+    "searchSection": {
+      "title": "Find Your Ferry",
+      "subtitle": "Search and book your next journey"
+    },
+    "latestAnnouncements": "Latest Announcements",
+    "featuresIntro": "Experience the best sea travel with our premium services and customer-focused approach",
+    "featuresSection": {
+      "title": "Why Choose SailMate",
+      "feature1": {
+        "title": "Secure Payments",
+        "description": "Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected."
+      },
+      "feature2": {
+        "title": "Modern Fleet",
+        "description": "Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable."
+      },
+      "feature3": {
+        "title": "Passenger Focused",
+        "description": "Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have."
+      }
+    },
+    "ferryExplorer": {
+      "title": "Explore Our Ferries",
+      "subtitle": "Check out our featured ferries and routes to find the perfect journey for you."
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "subtitle": "Hear from travelers who have experienced our services",
+      "testimonial1": {
+        "name": "Emir Ö.",
+        "text": "\"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!\""
+      },
+      "testimonial2": {
+        "name": "Ozan K.",
+        "text": "\"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful.\""
+      },
+      "testimonial3": {
+        "name": "Ekin A.",
+        "text": "\"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area.\""
+      }
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "title": "Setting Sail for a Smoother Journey",
+      "subtitle": "Discover the story behind SailMate, the revolutionary ferry ticketing system changing how people travel on water."
+    },
+    "ourStory": {
+      "title": "Our Story",
+      "sectionTitle": "How It All Began",
+      "paragraph1": "SailMate was born from a frustrating experience at a crowded ferry terminal in 2025. Our founder, waiting in a long queue for tickets, wondered why ferry booking couldn't be as seamless as other modern travel experiences.",
+      "paragraph2": "What started as a simple idea to digitize ferry tickets quickly evolved into a comprehensive platform addressing the unique challenges of waterway transportation. Today, SailMate serves thousands of travelers and dozens of ferry operators worldwide."
+    },
+    "ourMission": {
+      "title": "Our Mission",
+      "description": "To transform waterway travel by creating technology that connects people to efficient, stress-free ferry experiences while supporting coastal and island communities.",
+      "stats": {
+        "boardingTime": "Reduction in boarding time",
+        "routes": "Ferry routes covered",
+        "travelers": "Happy travelers"
+      }
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "members": {
+        "ceo": "Founder & CEO",
+        "cto": "CTO",
+        "customerExperience": "Head of Customer Experience"
+      }
+    },
+    "values": {
+      "title": "The SailMate Difference",
+      "innovation": {
+        "title": "Innovation",
+        "description": "We pioneer smart solutions to make ferry booking and travel seamlessly efficient."
+      },
+      "reliability": {
+        "title": "Reliability",
+        "description": "Punctual departures and accurate schedules you can build your journey around."
+      },
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "Eco-friendly vessels and practices that protect the beautiful waters we sail."
+      },
+      "comfort": {
+        "title": "Comfort",
+        "description": "Thoughtfully designed spaces and amenities for a relaxing journey across the water."
+      }
+    },
+    "testimonials": {
+      "title": "What People Say",
+      "testimonial1": {
+        "quote": "SailMate transformed how we operate our ferries. Reduced lines, happier customers, better business.",
+        "author": "Coastal Ferries Ltd.",
+        "role": "Ferry Operator"
+      },
+      "testimonial2": {
+        "quote": "I use the app for my daily commute across the bay. It's saved me countless hours of waiting in line.",
+        "author": "Maria J.",
+        "role": "Daily Commuter"
+      },
+      "testimonial3": {
+        "quote": "Planning our island-hopping vacation was a breeze with SailMate. Seamless connections every time.",
+        "author": "The Robinson Family",
+        "role": "Vacation Travelers" 
+      }
+    },
+    "cta": {
+      "title": "Ready to Simplify Ferry Travel?",
+      "subtitle": "Join thousands of travelers who have discovered a better way to sail.",
+      "button": "Get Started Today"
+    }
+  },
+  "voyagePage": {
+    "title": "SailMate Voyages",
+    "subtitle": "Find and book your next sea journey",
+    "filterSection": {
+      "title": "Find Your Voyage",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "allDepartures": "All Departures",
+      "allArrivals": "All Arrivals",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "voyagesList": {
+      "title": "Available Voyages",
+      "loading": "Loading voyages...",
+      "error": "Error loading voyages",
+      "tryAgain": "Try Again",
+      "noVoyages": "No voyages found",
+      "adjustSearch": "Try adjusting your search criteria",
+      "resetFilters": "Reset Filters"
+    },
+    "voyageTable": {
+      "voyage": "Voyage",
+      "times": "Times",
+      "date": "Date",
+      "status": "Status",
+      "shipType": "Ship Type",
+      "fuel": "Fuel",
+      "action": "Action",
+      "dep": "Dep",
+      "arr": "Arr",
+      "normal": "Normal",
+      "voyageCancel": "Voyage Cancel",
+      "buyTicket": "Buy Ticket",
+      "notAvailable": "Not Available"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "results": "results",
+      "perPage": "per page",
+      "first": "First",
+      "previous": "Previous",
+      "next": "Next",
+      "last": "Last"
+    },
+    "fuelType": {
+      "lpg": "LPG",
+      "noLpg": "No LPG"
+    }
+  },
+  "faqPage": {
+    "pageTitle": "Frequently Asked Questions",
+    "pageSubtitle": "Find answers to the most common questions about SailMate's ferry booking services.",
+    "features": {
+      "quickBooking": {
+        "title": "Quick Booking",
+        "description": "Get ferry tickets in less than 2 minutes"
+      },
+      "securePayments": {
+        "title": "Secure Payments",
+        "description": "100% secure payment processing"
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Customer service at all hours"
+      }
+    },
+    "questions": [
+      {
+        "question": "How do I book a ferry ticket with SailMate?",
+        "answer": "Booking with SailMate is easy! Visit our homepage and use the booking form to enter your departure and arrival locations, preferred dates, and number of passengers. Once logged in to your account, you can select your preferred sailing time, choose additional services, and complete your payment securely. After confirmation, your e-ticket will be sent to your email address and also be available in your account dashboard."
+      },
+      {
+        "question": "Can I cancel or change my reservation?",
+        "answer": "Yes, you can cancel or change your reservation up to 24 hours before departure. To do so, visit the 'Check Ticket' or 'Cancel Ticket' sections of our website and enter your booking reference number. For cancellations, refunds are processed according to our policy: full refund if cancelled 7+ days before departure, 75% refund for 3-6 days prior, and 50% refund for 1-2 days before departure. Changes are subject to availability and may incur additional fees if the new fare is higher."
+      },
+      {
+        "question": "How early should I arrive before departure?",
+        "answer": "We recommend arriving at least 45 minutes before scheduled departure for foot passengers, and at least 90 minutes for vehicle passengers. This allows sufficient time for check-in, security procedures, and boarding. During high season (June-August) or on holiday dates, consider arriving 30 minutes earlier than the recommended times to avoid any delays."
+      },
+      {
+        "question": "Do I need to print my ticket or can I use a mobile ticket?",
+        "answer": "SailMate supports both printed and mobile tickets. For most routes, you can show your e-ticket on your smartphone or tablet during check-in. The QR code on your ticket will be scanned for verification. If you prefer a printed ticket, you can print the PDF attachment in your confirmation email. We recommend having a digital backup even if you bring a printed copy."
+      },
+      {
+        "question": "What happens in case of bad weather or cancellations?",
+        "answer": "In case of cancellations due to severe weather conditions or technical issues, we will inform you as soon as possible via email and SMS. You will be offered the option to rebook on the next available sailing at no additional cost or receive a full refund, regardless of your ticket type. For significant delays (more than 2 hours), we provide complimentary refreshments at our terminals. We recommend checking our website or contacting our customer service for real-time updates during adverse weather conditions."
+      },
+      {
+        "question": "Is there Wi-Fi on board?",
+        "answer": "Yes, free Wi-Fi is available on all our ferries. Connection quality may vary depending on your location at sea. Premium high-speed Wi-Fi can be purchased onboard for passengers who need faster connections for work or streaming. Most vessels also have charging stations in common areas for your devices. During busy travel times, bandwidth may be limited due to high usage."
+      }
+    ],
+    "stillHaveQuestions": "Still have questions?",
+    "contactSupport": "Contact our support team"
+  },
+  "contactPage": {
+    "getInTouch": "Get in Touch",
+    "getInTouchText": "We'd love to hear from you. Fill out the form and we'll respond as soon as possible.",
+    "ourLocation": "Our Location",
+    "phoneNumber": "Phone Number",
+    "emailAddress": "Email Address",
+    "workingHours": "Working Hours",
+    "workingHoursValue": "Mon-Fri: 9am - 6pm",
+    "followUs": "Follow Us",
+    "facebookTooltip": "Facebook",
+    "twitterTooltip": "X",
+    "instagramTooltip": "Instagram",
+    "contactUs": "Contact Us",
+    "successMessage": "Thank you for your message! We'll get back to you soon.",
+    "fullName": "Full Name",
+    "yourName": "Your name",
+    "yourEmail": "Your email",
+    "subject": "Subject",
+    "messageSubject": "Message subject",
+    "message": "Message",
+    "yourMessage": "Your message",
+    "requiredFields": "Required fields",
+    "sendMessage": "Send Message",
+    "formErrors": {
+      "nameRequired": "Name is required",
+      "nameMinLength": "Name must be at least 2 characters",
+      "nameMaxLength": "Name cannot exceed 50 characters",
+      "nameInvalid": "Name can only contain letters, spaces, hyphens and apostrophes",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "emailMaxLength": "Email cannot exceed 100 characters",
+      "subjectRequired": "Subject is required",
+      "subjectMinLength": "Subject must be at least 3 characters",
+      "subjectMaxLength": "Subject cannot exceed 100 characters",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters",
+      "messageMaxLength": "Message cannot exceed 1000 characters",
+      "submitError": "There was an error submitting your message. Please try again later."
+    }
+  },
+  "ferryExplorer": {
+    "exploreRoutes": "Explore Routes",
+    "seabus": {
+      "title": "Modern Seabus Fleet",
+      "description": "Enjoy a comfortable journey with our eco-friendly Seabus",
+      "feature1": "Panoramic View",
+      "feature2": "Onboard Services",
+      "feature3": "Family Friendly",
+      "tag": "Seabus"
+    },
+    "fastFerry": {
+      "title": "Modern Fast Ferry Fleet",
+      "description": "Travel with our fast and comfortable Fast Ferry",
+      "feature1": "Fast Travel",
+      "feature2": "Premium Service",
+      "feature3": "Spacious Area",
+      "tag": "Fast Ferry"
+    }
+  },
+  "footer": {
+    "companyDescription": "Revolutionizing ferry travel with modern technology and exceptional service."
+  },
+  "stationsPage": {
+    "title": "Ferry Stations",
+    "subtitle": "Find your nearest SailMate station and get in touch with our local representatives",
+    "personnel": "Personnel",
+    "turkeyText": "Turkey",
+    "emptyStateTitle": "No Stations Found",
+    "emptyStateMessage": "We couldn't find any stations matching your filter. Please try another city or view all stations.",
+    "viewAllStations": "View All Stations"
+  },
+  "ticketCheck": {
+    "title": "Check Your Ticket",
+    "subtitle": "Enter your ticket details below to view your booking information",
+    "enterTicketId": "Enter Your Ticket ID",
+    "ticketIdLabel": "Ticket ID / Reservation Number",
+    "ticketIdPlaceholder": "Enter your ticket ID",
+    "enterEmail": "Enter Your Email",
+    "emailLabel": "Any Email Address used for Booking",
+    "emailPlaceholder": "Enter the email used for booking",
+    "checkStatus": "Check Ticket Status",
+    "ticketStatus": "Ticket Status",
+    "ticketDetails": "Ticket Details",
+    "journey": "Journey",
+    "departureDate": "Departure Date",
+    "departureTime": "Departure Time",
+    "passengerCount": "Passengers",
+    "class": "Class",
+    "totalPrice": "Total Price",
+    "passengerInfo": "Passenger Information",
+    "birthDate": "Birth Date", 
+    "phoneNumber": "Phone",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact our support team",
+    "downloadTicket": "Download Ticket",
+    "goBack": "Go Back",
+    "errorMessage": "Failed to load ticket. Please check your ticket ID and email.",
+    "status": {
+      "confirmed": "Your ticket is confirmed! Please arrive at the port at least 30 minutes before departure.",
+      "upcoming": "Your journey is coming soon! Please arrive at the port at least 30 minutes before departure.",
+      "completed": "This journey has been completed. We hope you enjoyed your trip with us!",
+      "canceled": "This ticket has been canceled. If you did not cancel it, please contact our support."
+    }
+  },
+  "ticketCancel": {
+    "title": "Cancel Your Ticket",
+    "subtitle": "We're sorry you need to cancel. Please enter your ticket details below.",
+    "enterTicketId": "Enter Your Ticket ID",
+    "ticketIdLabel": "Ticket ID / Reservation Number",
+    "ticketIdPlaceholder": "Enter your ticket ID",
+    "enterReason": "Reason for Cancellation (Optional)",
+    "reasonPlaceholder": "Please let us know why you're cancelling",
+    "continueButton": "Continue to Cancel",
+    "retrievingDetails": "Retrieving Ticket Details...",
+    "cancelPolicy": "Please note: Cancellation fees may apply depending on your ticket type and how close to departure you are cancelling.",
+    "confirmTitle": "Confirm Cancellation",
+    "confirmPrompt": "Are you sure you want to cancel your ticket?",
+    "confirmWarning": "This action cannot be undone. Refund policies will apply according to your ticket terms.",
+    "confirmButton": "Confirm Cancellation",
+    "goBack": "Go Back",
+    "ticketDetails": "Ticket Details",
+    "id": "Ticket ID",
+    "departureDate": "Departure Date",
+    "departureTime": "Departure Time",
+    "passengerCount": "Passenger Count",
+    "class": "Class",
+    "seats": "Selected Seats",
+    "totalPrice": "Total Price",
+    "ferryTicket": "Ferry Ticket",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact our support team",
+    "errorMessages": {
+      "notFound": "Could not find ticket details. Please check the ticket ID and try again.",
+      "alreadyDeparted": "This ticket cannot be cancelled because the voyage has already departed or is completed.",
+      "cancelError": "There was an error cancelling your ticket. Please try again or contact support."
+    },
+    "successMessage": "Your ticket has been successfully cancelled. Email will be sent shortly."
+  },
+  "dashboard": {
+    "welcome": "Welcome to your dashboard",
+    "overview": "Here's an overview of your system",
+    "statistics": "Statistics",
+    "recentActivity": "Recent Activity",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidPhone": "Please enter a valid phone number",
+    "invalidPassword": "Password must be at least 8 characters",
+    "notFound": "Not found",
+    "serverError": "Server error occurred"
+  },
+  "sustainabilityPage": {
+    "pageTitle": "Our Commitment to Sustainability",
+    "pageSubtitle": "SailMate is dedicated to environmentally responsible ferry travel and reducing our carbon footprint.",
+    "features": {
+      "ecoFriendlyVessels": {
+        "title": "Eco-Friendly Vessels",
+        "description": "Lower emissions and fuel-efficient technology"
+      },
+      "wasteReduction": {
+        "title": "Waste Reduction",
+        "description": "Minimizing plastic and implementing recycling"
+      },
+      "carbonOffset": {
+        "title": "Carbon Offset",
+        "description": "Projects to balance our environmental impact"
+      }
+    },
+    "vision": {
+      "title": "Our Vision for Sustainable Ferry Travel",
+      "paragraph1": "As a new company founded in 2025, SailMate was built with sustainability at our core. We recognize the critical importance of protecting our oceans and marine environments while providing essential transportation services.",
+      "paragraph2": "Our goal is to become the most environmentally responsible ferry service in the industry by 2030, setting new standards for sustainable maritime travel from the very beginning of our operations.",
+      "paragraph3": "Rather than retrofitting older vessels or adapting existing systems, we're starting fresh with innovative technologies, sustainable practices, and forward-thinking partnerships that minimize environmental impact while enhancing the travel experience."
+    },
+    "initiatives": {
+      "fleet": {
+        "title": "Fleet Sustainability Initiatives",
+        "intro": "Our commitment to eco-friendly vessels includes:",
+        "items": [
+          "Investing in hybrid-electric propulsion systems that reduce fuel consumption by up to 30%",
+          "Implementing hull optimization technology to reduce water resistance and improve fuel efficiency",
+          "Installing exhaust gas cleaning systems (scrubbers) to reduce sulfur emissions",
+          "Transitioning to low-sulfur marine fuels ahead of regulatory requirements",
+          "Exploring hydrogen and fully electric vessel options for shorter routes",
+          "Regular maintenance schedules to ensure optimal engine performance and minimized emissions"
+        ],
+        "target": "2026 Target: Build our fleet with vessels that produce 30% fewer emissions than industry standards"
+      },
+      "waste": {
+        "title": "Waste Management & Recycling",
+        "intro": "We're tackling waste on multiple fronts:",
+        "items": [
+          "Eliminating single-use plastics throughout our operations",
+          "Implementing comprehensive onboard recycling programs for passengers and crew",
+          "Using biodegradable and compostable food packaging in our onboard cafés",
+          "Reducing paper consumption through digital ticketing and communications",
+          "Responsibly disposing of all hazardous waste materials",
+          "Working with suppliers to reduce packaging waste in our supply chain"
+        ],
+        "target": "2025-2026 Target: Launch with zero single-use plastics and implement 80% waste diversion from landfills"
+      },
+      "water": {
+        "title": "Water Conservation & Protection",
+        "intro": "Our commitment to marine ecosystem protection includes:",
+        "items": [
+          "Advanced wastewater treatment systems on all vessels to protect marine water quality",
+          "Regular cleaning and maintenance of hulls to prevent invasive species transfer",
+          "Use of environmentally friendly cleaning products throughout our operations",
+          "Fresh water conservation measures on all vessels",
+          "Marine wildlife protection protocols, including reduced speeds in sensitive habitats",
+          "Partnerships with marine conservation organizations"
+        ],
+        "outro": "We regularly monitor water quality in our operating areas and participate in coastal cleanup initiatives along our routes."
+      },
+      "carbon": {
+        "title": "Carbon Offset Programs",
+        "intro": "While we work to reduce our direct emissions, we also invest in carbon offset projects:",
+        "items": [
+          "Reforestation initiatives in coastal areas along our routes",
+          "Investment in renewable energy projects",
+          "Support for blue carbon projects that protect and restore mangroves and seagrass beds",
+          "Partnership with verified carbon offset providers"
+        ],
+        "outro": "Passengers can opt to add a small contribution to their ticket price to support these projects, with SailMate matching every contribution."
+      },
+      "terminal": {
+        "title": "Green Terminal Operations",
+        "intro": "Our sustainability efforts extend to our terminal facilities:",
+        "items": [
+          "Solar panels installed at major terminals to generate renewable energy",
+          "Energy-efficient lighting and climate control systems",
+          "Electric vehicle charging stations in terminal parking areas",
+          "Shore power capabilities allowing docked vessels to use land-based electricity instead of running engines",
+          "Rainwater harvesting systems for terminal maintenance and landscaping",
+          "Green spaces and local native plantings at terminal facilities"
+        ]
+      },
+      "food": {
+        "title": "Sustainable Food & Beverage",
+        "intro": "Our onboard dining options prioritize sustainability:",
+        "items": [
+          "Partnership with local food producers along our routes",
+          "Seasonal menu items to reduce food transportation emissions",
+          "Plant-based menu options with lower environmental impact",
+          "Sustainably sourced seafood certified by the Marine Stewardship Council",
+          "Food waste reduction programs including composting where possible",
+          "Reusable or compostable dining materials"
+        ],
+        "outro": "We're proud to showcase the flavors of the regions we serve while minimizing our environmental footprint."
+      }
+    },
+    "roadmap": {
+      "title": "Our Sustainability Roadmap",
+      "phases": {
+        "launch": {
+          "title": "2025: Launch",
+          "description": "SailMate begins operations with sustainability as a founding principle. Initial fleet equipped with fuel-efficient technology, zero single-use plastics policy, and comprehensive recycling programs from day one."
+        },
+        "expansion": {
+          "title": "2026-2027: Expansion",
+          "description": "Growing our fleet with increasingly efficient vessels, implementing shore power connections, expanding renewable energy use at terminals, and enhancing water conservation systems."
+        },
+        "innovation": {
+          "title": "2028-2029: Innovation",
+          "description": "Introduction of hybrid-electric vessels on shorter routes, carbon-neutral terminal operations, and a fully sustainable supply chain from food service to maintenance materials."
+        },
+        "leadership": {
+          "title": "2030: Industry Leadership",
+          "description": "Setting new standards for the ferry industry with our commitment to sustainable operations, significantly lower emissions than competitors, positive contributions to marine ecosystems, and innovative clean energy travel solutions."
+        }
+      }
+    },
+    "joinUs": {
+      "title": "Join Our Sustainability Journey",
+      "description": "Help us make a difference by choosing sustainable travel options, participating in our carbon offset program, or sharing your ideas for environmental improvements.",
+      "button": "Share Your Ideas"
+    }
+  },
+  "myTickets": {
+    "title": "My Tickets",
+    "subtitle": "View and manage all your purchased tickets",
+    "loading": "Loading your tickets...",
+    "noTickets": "You don't have any tickets yet.",
+    "bookFerry": "Book a Ferry",
+    "filterByStatus": "Filter by status:",
+    "all": "All",
+    "active": "Active",
+    "completed": "Completed",
+    "currency": "Currency",
+    "noFilteredTickets": "No {status} tickets found.",
+    "showAllTickets": "Show all tickets",
+    "needHelp": "Having trouble with your tickets?",
+    "contactSupport": "Contact our support team",
+    "ticketId": "Ticket ID",
+    "departure": "Departure",
+    "class": "Class",
+    "passengerCount": "Passenger Count",
+    "price": "Price",
+    "bookedOn": "Booked on",
+    "viewDetails": "View Details",
+    "downloadTicket": "Download Ticket",
+    "cancelTicket": "Cancel Ticket",
+    "ticketDetails": "Ticket Details",
+    "status": "Status",
+    "departureCity": "Departure City",
+    "arrivalCity": "Arrival City",
+    "date": "Date",
+    "time": "Time",
+    "seats": "Seats",
+    "viewIn": "View in:",
+    "passengers": "Passengers",
+    "birthDate": "Birth Date",
+    "type": "Type",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "travellingRulesPage": {
+    "pageTitle": "Onboard Rules",
+    "pageSubtitle": "Our vessel rules and regulations are designed to ensure a safe and enjoyable maritime experience for all passengers. Please review these rules before starting your journey.",
+    "lastUpdated": "Last Updated: March 2025",
+    "introduction": {
+      "title": "Maritime Safety and Conduct Regulations",
+      "content": "At SailMate, the safety of our passengers and crew is our highest priority. These onboard rules have been established in accordance with maritime regulations and industry best practices. Adherence to these rules is mandatory for all passengers to ensure a safe and comfortable journey aboard our vessels."
+    },
+    "sections": [
+      {
+        "title": "1. Boarding and Embarkation",
+        "items": [
+          { "label": "Arrival Times", "content": "Foot passengers must arrive at the terminal at least 45 minutes before scheduled departure. Vehicle passengers should arrive 90 minutes in advance to allow for proper loading sequence and vessel stability calculations." },
+          { "label": "Documentation", "content": "All passengers must present valid identification and boarding documents at check-in. Electronic tickets displayed on mobile devices are accepted provided the QR code is visible and scannable." },
+          { "label": "Boarding Procedures", "content": "Passengers must follow crew instructions during boarding and disembarkation. Our structured boarding process ensures vessel stability and passenger safety during these critical operations." },
+          { "label": "Late Arrivals", "content": "For safety and operational reasons, boarding closes 15 minutes before departure. Vessels must maintain strict departure schedules to ensure navigational safety, thus latecomers may be denied boarding without refund." }
+        ]
+      },
+      {
+        "title": "2. Onboard Safety",
+        "items": [
+          { "label": "Safety Briefings", "content": "All passengers must be aware of safety briefings provided at the beginning of the journey. These include information about life jacket locations, emergency exits, and muster stations." },
+          { "label": "Movement During Transit", "content": "Passengers should remain seated when the vessel is navigating rough waters. When moving around the vessel, maintain three-point contact on stairs and hold handrails to prevent falls during unexpected wave movements." },
+          { "label": "Emergency Procedures", "content": "In an emergency, follow crew instructions immediately and proceed to the designated muster station. Do not return to cabins or vehicle decks to retrieve belongings when emergency alarms are activated." },
+          { "label": "Restricted Areas", "content": "Engine rooms, bridge, crew quarters, and operational areas are strictly off-limits to passengers. These restrictions are enforced for both security and safety reasons in accordance with maritime regulations." }
+        ]
+      },
+      {
+        "title": "3. Prohibited Items",
+        "intro": "Per maritime security regulations, the following items are prohibited on SailMate vessels:",
+        "items": [
+          "Dangerous goods including flammable liquids, gases, or solids that may compromise vessel safety",
+          "Explosives, fireworks, or any pyrotechnic devices",
+          "Weapons including firearms, ammunition, knives with blades exceeding 6 cm, or any item designed to cause injury",
+          "Compressed gases in cylinders except required medical equipment or small camping cylinders stored in vehicles",
+          "Illegal substances or drugs",
+          "Excessively large or heavy items that may compromise vessel stability or evacuation procedures"
+        ],
+        "subitems": [
+          { "label": "Vehicle Restrictions", "content": "Vehicles with fuel leaks or other mechanical issues posing a hazard will not be permitted to board. Electric vehicles must have sufficient charge to disembark without assistance." },
+          { "label": "Confiscation of Items", "content": "Prohibited items may be confiscated if found during boarding or during the journey. Items may be returned upon disembarkation or handed over to appropriate authorities as required by law." }
+        ]
+      },
+      {
+        "title": "4. Passenger Conduct",
+        "items": [
+          { "label": "General Behavior", "content": "Passengers must conduct themselves in a manner that does not interfere with the comfort or safety of others. Abusive language, threatening behavior, or actions that disrupt vessel operations are prohibited." },
+          { "label": "Smoking Regulations", "content": "Smoking, including e-cigarettes, is permitted only in designated open-air areas on vessel decks that are clearly marked. Smoking in cabins, enclosed areas, or unmarked areas is strictly prohibited and may trigger fire detection systems." },
+          { "label": "Alcohol Consumption", "content": "Alcoholic beverages may only be consumed if purchased from onboard facilities. Excessive consumption leading to disruptive behavior will result in drink service restrictions and possible intervention by security personnel." },
+          { "label": "Child Supervision", "content": "Children under 12 years of age must be supervised by an adult at all times. Children are not permitted on open decks without adult supervision regardless of weather conditions due to unpredictable sea conditions." }
+        ]
+      },
+      {
+        "title": "5. Luggage and Personal Belongings",
+        "items": [
+          { "label": "Luggage Allowance", "content": "Each passenger is permitted one hand luggage not exceeding 10 kg and dimensions of 55 cm x 40 cm x 20 cm. Additional luggage should be checked and stowed in designated luggage compartments." },
+          { "label": "Luggage Security", "content": "Passengers are responsible for their personal belongings at all times. SailMate is not liable for lost, damaged, or stolen items. Unattended items may be collected by crew and subject to security checks." },
+          { "label": "Valuables", "content": "Valuables should be kept on your person, not in checked luggage. Safe facilities are available for particularly valuable items on longer journeys." },
+          { "label": "Deck Storage", "content": "Personal belongings must not obstruct corridors, emergency exits, or public walkways. Items blocking these areas will be relocated by crew members without notice." }
+        ]
+      },
+      {
+        "title": "6. Environmental Responsibility",
+        "items": [
+          { "label": "Waste Management", "content": "All waste must be disposed of in appropriate receptacles. Separate containers for recyclable materials, food waste, and general trash are provided in accordance with maritime environmental regulations." },
+          { "label": "Marine Conservation", "content": "Throwing any items overboard from the vessel is strictly prohibited and may result in significant fines. This includes seemingly harmless items such as food waste, cigarette butts, or paper products." },
+          { "label": "Wildlife Observation", "content": "Maintaining appropriate distance from marine life encountered during the journey is essential. Do not attempt to feed seabirds from open decks, as this disrupts natural feeding patterns." },
+          { "label": "Resource Conservation", "content": "Passengers are encouraged to conserve water and electricity during their journey. Please turn off lights when leaving cabins and report water leaks to crew members immediately." }
+        ]
+      },
+      {
+        "title": "7. Health and Emergency Procedures",
+        "intro": "Passengers must adhere to the following health and emergency rules onboard:",
+        "items": [
+          { "label": "Medical Assistance", "content": "Report any medical emergency to crew members immediately. All vessels are equipped with first aid facilities and personnel trained in emergency medical response appropriate for maritime environments." },
+          { "label": "Motion Sickness", "content": "If you experience motion sickness, sit in the center of the vessel where motion is minimized. Motion sickness preventative medications are available from the purser's office. If prone to seasickness, stay hydrated and avoid alcohol." },
+          { "label": "Evacuation Procedures", "content": "In the event of a possible evacuation, life jackets will be distributed if not already at your seating position. Proceed calmly to the designated muster station following illuminated pathways and crew instructions." },
+          { "label": "Weather Events", "content": "During adverse weather conditions, secure loose items and remain seated when instructed by crew. Open deck access may be restricted during high winds or heavy seas for passenger safety." }
+        ]
+      }
+    ],
+    "contactInfo": {
+      "question": "Have questions about our onboard rules?",
+      "contact": "Contact our maritime safety team"
+    }
+  },
+  "accessibilityPage": {
+    "pageTitle": "Accessibility",
+    "pageSubtitle": "We're committed to making ferry travel accessible to everyone. Learn about our accommodations and how we ensure a comfortable journey for passengers of all abilities.",
+    "lastUpdated": "Last Updated: March 2025",
+    "introduction": {
+      "title": "Our Accessibility Commitment",
+      "content": "At SailMate, we believe that the open waters should be accessible to everyone. We're dedicated to providing an inclusive ferry travel experience that accommodates the diverse needs of all our passengers. Our accessibility initiatives span our vessels, terminals, digital platforms, and customer service to ensure that everyone can enjoy comfortable and dignified maritime travel experiences."
+    },
+    "sections": [
+      {
+        "title": "1. Vessel Accessibility",
+        "items": [
+          { "label": "Accessible Ferry Design", "content": "Our ferries are equipped with accessible entrances, ramps, and elevators between decks on all large vessels to ensure mobility throughout the journey." },
+          { "label": "Dedicated Seating Areas", "content": "We provide dedicated accessible seating areas with panoramic views and proximity to amenities, ensuring comfort without compromising the sea experience." },
+          { "label": "Accessible Facilities", "content": "All our vessels feature accessible restrooms on every deck, wheelchair-friendly pathways, and accommodations for service animals." },
+          { "label": "Priority Services", "content": "We offer priority boarding and disembarkation for passengers with mobility requirements to ensure a smooth embarkation and debarkation process." }
+        ]
+      },
+      {
+        "title": "2. Terminal Accessibility",
+        "items": [
+          { "label": "Harbor Access", "content": "All our ferry terminals feature step-free access throughout customer areas, with accessible paths from parking areas to boarding points." },
+          { "label": "Check-in Services", "content": "Wheelchair-accessible check-in counters at a lower height are available at all locations, ensuring comfortable interaction with our staff." },
+          { "label": "Navigation Assistance", "content": "Our terminals include tactile paving for visually impaired travelers, along with clear signage and announcement systems in both visual and audio formats." },
+          { "label": "Priority Facilities", "content": "Designated accessible parking spaces are available close to terminal entrances, minimizing travel distance to our vessels." }
+        ]
+      },
+      {
+        "title": "3. Digital Accessibility",
+        "items": [
+          { "label": "Website Standards", "content": "The SailMate website is designed to WCAG 2.1 AA compliance standards, ensuring that our digital journey is as accessible as our physical one." },
+          { "label": "Booking Accessibility", "content": "Our booking engine includes keyboard navigation for all features, screen reader compatibility, and accessible forms with clear labels." },
+          { "label": "Adaptable Interface", "content": "Users can adjust text sizing and access high contrast options to customize their digital experience to their visual needs." },
+          { "label": "Simplified Process", "content": "We've created a streamlined booking process that allows passengers to indicate accessibility requirements and request specific accommodations during their reservation." }
+        ]
+      },
+      {
+        "title": "4. Staff Training and Assistance",
+        "items": [
+          { "label": "Crew Training", "content": "All SailMate crew members receive comprehensive training in disability awareness and how to assist passengers with various needs throughout their maritime journey." },
+          { "label": "Embarkation Support", "content": "Dedicated staff are available to assist with boarding and disembarkation procedures, including the operation of accessibility equipment." },
+          { "label": "Journey Assistance", "content": "Throughout your voyage, crew members are available to provide assistance with accessing facilities, moving between decks, and addressing any accessibility concerns." },
+          { "label": "Communication Support", "content": "Staff are trained to communicate effectively with passengers who have hearing impairments, including basic sign language and use of written communication when needed." }
+        ]
+      },
+      {
+        "title": "5. Special Accommodations",
+        "intro": "SailMate offers the following special accommodations:",
+        "items": [
+          "Complimentary tickets for personal care assistants traveling with passengers who require assistance",
+          "No additional charges for registered service animals",
+          "Priority vehicle loading for vehicles with accessibility equipment",
+          "Information available in alternative formats (large print, Braille) upon request",
+          "Ability to remain in your vehicle during shorter crossings if mobility challenges make moving to passenger areas difficult",
+          "Specialized maritime evacuation procedures for passengers with disabilities"
+        ]
+      },
+      {
+        "title": "6. Planning Your Accessible Voyage",
+        "intro": "We recommend taking the following steps to ensure your maritime journey is as smooth as possible:",
+        "items": [
+          { "label": "Before Booking", "content": "Review our accessibility options or contact our maritime accessibility team at least 48 hours before travel to discuss specific requirements for your voyage." },
+          { "label": "During Booking", "content": "Select relevant accessibility options during the reservation process and provide details about any special accommodations you may need for your journey at sea." },
+          { "label": "Pre-Departure", "content": "Arrive at the terminal at least 60 minutes before scheduled departure to allow time for priority boarding and any necessary assistance with embarking the vessel." },
+          { "label": "During Your Voyage", "content": "Don't hesitate to approach any crew member with questions or requests for assistance – our maritime staff are trained to ensure your journey is comfortable." }
+        ]
+      }
+    ],
+    "contactInfo": {
+      "question": "Need more information about our accessibility services?",
+      "contact": "Contact our support team"
+    }
+  },
+  "termsOfServicePage": {
+    "pageTitle": "Terms of Service",
+    "pageSubtitle": "Please read these terms carefully before using SailMate's ferry ticketing platform. By using our services, you agree to these terms and conditions for booking ferry travel.",
+    "lastUpdated": "Last Updated: March 2025",
+    "introduction": {
+      "title": "Introduction",
+      "content": "SailMate (the 'Platform') is a ferry ticketing service that allows you to search, compare, and book ferry tickets across multiple operators and routes. The Platform is owned and operated by SailMate Ltd (referred to in these Terms of Service as 'we', 'us' or 'SailMate'). These Terms of Service constitute a legally binding agreement between you and SailMate regarding your use of our ferry booking services."
+    },
+    "sections": [
+      {
+        "title": "1. Application",
+        "items": [
+          "These Terms of Service apply to your access to and use of the SailMate ferry booking platform. By accessing or using our Platform, you agree to be bound by these Terms of Service.",
+          "We may modify these Terms of Service to reflect changes in ferry operator policies, legal requirements, or our booking services. If we do so, we will notify you by updating the date at the top of these Terms of Service.",
+          "If you do not agree to these Terms of Service, you may not access or use the Platform to book ferry tickets."
+        ]
+      },
+      {
+        "title": "2. Account Registration",
+        "items": [
+          "To book ferry tickets through our Platform, you may be required to create a SailMate account and provide certain personal and travel information.",
+          "You agree to provide accurate, current, and complete information during the registration and booking process. Inaccurate information may result in booking errors or denied boarding by ferry operators.",
+          "You are responsible for safeguarding your SailMate account credentials and for all ferry bookings and activities that occur under your account."
+        ]
+      },
+      {
+        "title": "3. Ferry Booking Conditions",
+        "items": [
+          { "label": "Ferry Ticketing Process", "content": "When you book ferry tickets through SailMate, you are entering into a transportation agreement with the ferry operator. SailMate acts as an intermediary platform facilitating the ticket sale." },
+          { "label": "Ferry Ticket Confirmation", "content": "Once your ferry booking is confirmed, you will receive an electronic ticket or booking confirmation by email. You must present this at check-in along with required identification documents." },
+          { "label": "Ferry Pricing and Payments", "content": "All ferry ticket prices are displayed in the currency specified during the booking process and may include booking fees. Full payment is required to confirm your ferry reservation." },
+          { "label": "Schedule Changes and Cancellations", "content": "Ferry schedules may change due to weather conditions, technical issues, or other circumstances. Cancellation and refund policies vary by ferry operator and are specified during the booking process." },
+          { "label": "Check-in Requirements", "content": "You must arrive at the ferry terminal for check-in at the time specified by the ferry operator, typically 30-90 minutes before departure. Late arrival may result in denied boarding with no refund." }
+        ]
+      },
+      {
+        "title": "4. User Conduct",
+        "intro": "When using our ferry booking platform, you agree not to:",
+        "items": [
+          "Book ferry tickets for illegal purposes or in violation of maritime or immigration laws",
+          "Use fraudulent payment methods or falsify passenger information",
+          "Attempt to manipulate pricing, availability, or booking systems",
+          "Resell ferry tickets without authorization from the ferry operator",
+          "Make multiple speculative bookings that you do not intend to use",
+          "Interfere with other users' ability to access our ferry booking services"
+        ]
+      },
+      {
+        "title": "5. Limitation of Liability",
+        "items": [
+          "SailMate is a ticketing platform and is not liable for the actions, omissions, or service quality of ferry operators, including delays, cancellations, accidents, or personal injury during ferry travel.",
+          "We strive to provide accurate ferry information but cannot guarantee the complete accuracy of all schedules, amenities, or services described on our platform, as these are provided by the ferry operators.",
+          "Our total liability for any booking issue within our direct control (such as payment processing errors) shall not exceed the booking fee paid to SailMate for the affected ferry ticket."
+        ]
+      },
+      {
+        "title": "6. Disclaimer of Warranties",
+        "intro": "THE SAILMATE FERRY BOOKING PLATFORM IS PROVIDED \"AS IS\" AND \"AS AVAILABLE\" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, REGARDING THE ACCURACY OF FERRY INFORMATION, TICKET AVAILABILITY, OR PLATFORM FUNCTIONALITY.",
+        "content": "We do not guarantee that our ferry booking platform will be uninterrupted, error-free, or that all ferry services will operate exactly as described. Weather conditions, technical issues, or operational decisions by ferry companies may affect your booked journey. Always check with the ferry operator directly before travel for the most current information."
+      }
+    ],
+    "contactInfo": {
+      "question": "Still have questions?",
+      "contact": "Contact our support team"
+    }
+  },
+  "privacyPolicyPage": {
+    "pageTitle": "Privacy Policy",
+    "pageSubtitle": "At SailMate, we value your privacy and are committed to protecting your personal information. We only collect what's necessary to provide our ferry ticketing and booking services.",
+    "lastUpdated": "Last Updated: March 2025",
+    "introduction": {
+      "title": "Introduction",
+      "content": "This Privacy Policy explains how SailMate collects, uses, and protects information about you when you use our ferry ticketing platform. We respect your privacy and only collect data necessary to facilitate your ferry bookings and provide a seamless travel experience. We do not store your payment card details on our servers or collect any special categories of personal data beyond what's required for your ferry travel. We may update this Privacy Policy periodically. If we make significant changes, we will notify you by revising the date at the top of the policy and, where appropriate, by email."
+    },
+    "informationWeCollect": {
+      "title": "Information We Collect",
+      "providedInfo": {
+        "title": "Information You Provide to Us",
+        "intro": "We collect information you provide directly to us when you book ferry tickets, create an account, subscribe to notifications, or communicate with us. This may include:",
+        "items": [
+          "Contact information (name, email address, phone number)",
+          "Profile information (username, password)",
+          "Passenger information (names, ages, nationality where required by ferry operators)",
+          "Payment information (processed securely through our payment processors, not stored on our servers)",
+          "Travel details (routes, dates, times, vehicle information if applicable)",
+          "Communications you send to our customer support team"
+        ]
+      },
+      "automaticInfo": {
+        "title": "Information We Collect Automatically",
+        "intro": "When you access or use our ferry booking platform, we may automatically collect:",
+        "items": [
+          "Log information (IP address, browser type, pages viewed, time spent on site)",
+          "Device information (device type, operating system, unique device identifiers)",
+          "Location information (with your consent, to suggest nearby ports or routes)",
+          "Cookies and similar technologies (to remember your preferences and improve your experience)"
+        ]
+      }
+    },
+    "howWeUse": {
+      "title": "How We Use Your Information",
+      "intro": "We use the information we collect to:",
+      "items": [
+        "Process and confirm your ferry bookings",
+        "Issue electronic tickets and boarding passes",
+        "Send booking confirmations, changes, and travel updates",
+        "Facilitate check-in processes with ferry operators",
+        "Provide customer support for booking inquiries",
+        "Notify you about schedule changes, cancellations, or service disruptions",
+        "Process refunds or booking modifications",
+        "Improve our ferry route offerings and service",
+        "Personalize your ferry booking experience",
+        "Prevent fraudulent transactions and ticket fraud",
+        "Comply with legal obligations and ferry operator requirements"
+      ]
+    },
+    "sharingInfo": {
+      "title": "Sharing of Information",
+      "intro": "We may share the information we collect as follows:",
+      "items": [
+        { "label": "With ferry operators and port authorities", "content": "To process your booking, issue tickets, and fulfill regulatory requirements" },
+        { "label": "With payment processors", "content": "To complete your ferry ticket payment transactions" },
+        { "label": "With service providers", "content": "Who help us operate our platform, such as cloud storage, email services, and customer support tools" },
+        { "label": "In response to legal process", "content": "Such as a court order or subpoena, or to comply with maritime and transport regulations" },
+        { "label": "To protect safety", "content": "Of passengers, vessels, port facilities, or to respond to emergencies" },
+        { "label": "In connection with a business transfer", "content": "Such as a merger, acquisition, or sale of our ferry booking business" }
+      ]
+    },
+    "security": {
+      "title": "Data Security",
+      "content": "We take reasonable measures to help protect information about you from loss, theft, misuse, unauthorized access, disclosure, alteration, and destruction. However, no security system is impenetrable, and we cannot guarantee the security of our systems or your information."
+    },
+    "yourRights": {
+      "title": "Your Rights and Choices",
+      "intro": "You have several rights regarding your personal information:",
+      "items": [
+        { "label": "Account Information", "content": "You can update your account information by logging into your account settings" },
+        { "label": "Cookies", "content": "Most web browsers accept cookies by default. You can usually set your browser to remove or reject cookies" },
+        { "label": "Promotional Communications", "content": "You can opt out of receiving promotional emails by following the instructions in those emails" },
+        { "label": "Data Access and Portability", "content": "You can request a copy of your personal data we hold" },
+        { "label": "Data Deletion", "content": "You can request that we delete your personal information" }
+      ]
+    },
+    "contactInfo": {
+      "question": "Have questions about our privacy practices?",
+      "contact": "Contact our support team"
+    }
+  },
+  "ferryTicketForm": {
+    "journeyCategory": {
+      "shipClasses": {
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      },
+      "noSeatsAvailable": "Not enough seats",
+      "seatsLeft": "seats left",
+      "departureTime": "Departure",
+      "arrivalTime": "Arrival",
+      "shipType": "Ship Type"
+    },
+    "seatSelection": {
+      "fastFerry": "Fast Ferry",
+      "seabus": "Seabus",
+      "mainDeck": "Main Deck",
+      "upperDeck": "Upper Deck",
+      "occupied": "Occupied",
+      "available": "Available",
+      "selected": "Selected",
+      "restricted": "Restricted",
+      "selectSeat": "Click on a seat to select it. You can select seats from both decks.",
+      "class": "Class"
+    }
+  },
+  "admin": {
+    "menu": {
+      "dashboard": "Admin Dashboard",
+      "stations": "Stations",
+      "voyages": "Voyages",
+      "announcements": "Announcements",
+      "logs": "Logs"
+    },
+    "stations": {
+      "title": "Manage Stations",
+      "addStation": "Add New Station",
+      "editStation": "Edit Station",
+      "stationName": "Station Name",
+      "contactPerson": "Contact Person",
+      "phoneNumber": "Phone Number",
+      "city": "City",
+      "address": "Address",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "deleteConfirmation": "Delete Station",
+      "deleteWarning": "Are you sure you want to delete this station?",
+      "activeVoyagesWarning": "This station has active voyages and cannot be deleted.",
+      "loading": "Loading stations...",
+      "error": "Failed to load stations. Please try again.",
+      "saveError": "Failed to save station. Please check your input and try again.",
+      "deleteError": "Failed to delete station. Please try again.",
+      "validation": {
+        "stationNameRequired": "Station name is required",
+        "stationNameMinLength": "Station name must be at least 3 characters",
+        "contactPersonRequired": "Contact person is required",
+        "contactPersonInvalid": "Contact person can only contain letters, spaces, hyphens, and apostrophes",
+        "phoneRequired": "Phone number is required",
+        "phoneInvalid": "Please enter a valid phone number with at least 10 digits",
+        "cityRequired": "City is required",
+        "cityInvalid": "City can only contain letters, spaces, hyphens, and apostrophes",
+        "addressRequired": "Address is required",
+        "addressMinLength": "Address must be at least 5 characters"
+      }
+    }
+  }
+} 

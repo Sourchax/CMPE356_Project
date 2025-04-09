@@ -2,6 +2,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -10,7 +11,7 @@ import seabus from "../assets/images/seabus.jpg";
 import fastFerries from "../assets/images/fast-ferries.jpg";
 
 const FerrySlider = () => {
-
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   const handleClick = () => {
@@ -21,17 +22,25 @@ const FerrySlider = () => {
   const slides = [
     {
       image: seabus,
-      title: "Modern Seabus Fleet",
-      description: "Enjoy smooth sailing with our eco-friendly Seabus vessels",
-      features: ["Panoramic Views", "Onboard Amenities", "Family Friendly"],
-      tag: "Seabus"
+      title: t('ferryExplorer.seabus.title', 'Modern Seabus Fleet'),
+      description: t('ferryExplorer.seabus.description', 'Enjoy smooth sailing with our eco-friendly Seabus vessels'),
+      features: [
+        t('ferryExplorer.seabus.feature1', 'Panoramic Views'), 
+        t('ferryExplorer.seabus.feature2', 'Onboard Amenities'), 
+        t('ferryExplorer.seabus.feature3', 'Family Friendly')
+      ],
+      tag: t('ferryExplorer.seabus.tag', 'Seabus')
     },
     {
       image: fastFerries,
-      title: "High-Speed Fast Ferries",
-      description: "Rapid connections between destinations with superior comfort",
-      features: ["30% Faster Travel", "Premium Seating", "LPG Powered"],
-      tag: "Fast Ferry FC"
+      title: t('ferryExplorer.fastFerry.title', 'High-Speed Fast Ferries'),
+      description: t('ferryExplorer.fastFerry.description', 'Rapid connections between destinations with superior comfort'),
+      features: [
+        t('ferryExplorer.fastFerry.feature1', '30% Faster Travel'), 
+        t('ferryExplorer.fastFerry.feature2', 'Premium Seating'), 
+        t('ferryExplorer.fastFerry.feature3', 'LPG Powered')
+      ],
+      tag: t('ferryExplorer.fastFerry.tag', 'Fast Ferry FC')
     }
   ];
 
@@ -93,7 +102,7 @@ const FerrySlider = () => {
                   onClick={handleClick}
                   className="bg-[#06AED5] hover:bg-[#D1FFD7] hover:text-[#0D3A73] text-white transition-colors duration-300 px-6 py-3 rounded-lg font-medium flex items-center"
                 >
-                  Explore Routes
+                  {t('ferryExplorer.exploreRoutes', 'Explore Routes')}
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                   </svg>
