@@ -69,11 +69,11 @@ const FastFerrySeatMap = ({
   // Helper function to render restrooms
   const renderRestrooms = () => {
     return (
-      <div className="text-center">
-        <div className="w-12 h-8 bg-gray-200 mx-auto mb-1 rounded-sm flex items-center justify-center text-gray-600 text-xs border border-gray-300">
-          WC
+      <div className="flex flex-col items-center">
+        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
+          <Toilet className="text-blue-600" size={14} />
         </div>
-        <span className="text-xs text-gray-500">{t('ferryTicketing.facilities.restrooms')}</span>
+        <span className="text-xs text-blue-700">{t('ferryTicketing.facilities.restrooms')}</span>
       </div>
     );
   };
@@ -81,11 +81,11 @@ const FastFerrySeatMap = ({
   // Helper function to render information
   const renderInformation = () => {
     return (
-      <div className="text-center">
-        <div className="w-12 h-8 bg-blue-100 mx-auto mb-1 rounded-sm flex items-center justify-center text-blue-600 text-xs border border-blue-300">
-          i
+      <div className="flex flex-col items-center">
+        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
+          <Circle className="text-blue-600" size={14} />
         </div>
-        <span className="text-xs text-gray-500">{t('ferryTicketing.facilities.information')}</span>
+        <span className="text-xs text-blue-700">{t('ferryTicketing.facilities.information')}</span>
       </div>
     );
   };

@@ -67,24 +67,32 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     
     // Check for spaces or tabs as standalone input
     if (/^\s+$/.test(value)) {
-      error = `${field} cannot be empty or contain only spaces/tabs`;
+      error = t("ferryTicketing.validation.onlySpaces", { field: t(`common.${field.toLowerCase()}`) });
     } else {
       switch (field) {
         case "Name":
-          case "Surname":
-            if (!value.trim()) error = `${field} is required`;
-            else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value.trim())) error = `${field} invalid entry`;
-            break;
+        case "Surname":
+          if (!value.trim()) {
+            error = t("ferryTicketing.validation.required", { field: t(`common.${field.toLowerCase()}`) });
+          } else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value.trim())) {
+            error = t("ferryTicketing.validation.invalidName", { field: t(`common.${field.toLowerCase()}`) });
+          }
+          break;
         case "Phone":
           if (!isChild) { // Skip validation for child
-            if (!value.trim()) error = "Phone is required";
-            else if (!/^\+?[1-9]\d{9,14}$/.test(value.trim())) error = "Invalid phone number";
+            if (!value.trim()) {
+              error = t("ferryTicketing.validation.required", { field: t("common.phone") });
+            } else if (!/^\+?[1-9]\d{9,14}$/.test(value.trim())) {
+              error = t("ferryTicketing.validation.invalidPhone");
+            }
           }
           break;
         case "BirthDate":
-          if (!value.trim()) error = "Birth Date is required";
-          else if (!/\d{4}-\d{2}-\d{2}/.test(value.trim())) error = "Invalid date format. Use YYYY-MM-DD";
-          else {
+          if (!value.trim()) {
+            error = t("ferryTicketing.validation.required", { field: t("common.birthDate") });
+          } else if (!/\d{4}-\d{2}-\d{2}/.test(value.trim())) {
+            error = t("ferryTicketing.validation.invalidDate");
+          } else {
             const today = new Date();
             const birthDate = new Date(value.trim());
             const age = today.getFullYear() - birthDate.getFullYear();
@@ -97,36 +105,36 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
             const maxDate = today.toISOString().split("T")[0];
 
             if (value.trim() > maxDate) {
-              error = "Birth date cannot be in the future";
+              error = t("ferryTicketing.validation.futureBirthDate");
             } else if (value.trim() < minDate) {
-              error = "Birth date cannot be older than 100 years";
+              error = t("ferryTicketing.validation.tooOld");
             } else if (passengerType === "student") {
               if (adjustedAge > 25) {
-                error = "Student passengers must be 25 years old or younger";
+                error = t("ferryTicketing.validation.studentTooOld");
               } else if (adjustedAge < 10) {
-                error = "Student passengers must be at least 10 years old";
+                error = t("ferryTicketing.validation.studentTooYoung");
               }
             } else if (passengerType === "senior" && adjustedAge < 65) {
-              error = "Senior passengers must be 65 years old or older";
+              error = t("ferryTicketing.validation.seniorTooYoung");
             } else if (passengerType === "adult" && adjustedAge < 20) {
-              error = "Adult passengers must be 20 years old or older";
+              error = t("ferryTicketing.validation.adultTooYoung");
             } else if (passengerType === "child" && adjustedAge >= 8) {
-              error = "Child passengers must be under 8 years old";
+              error = t("ferryTicketing.validation.childTooOld");
             }
           }
           break;
         case "Email":
           if (!isChild) { // Skip validation for child
             if (!value) {
-              error = "Email is required";
+              error = t("ferryTicketing.validation.required", { field: t("common.email") });
             } else if (value !== value.trim()) {
               // Check specifically for leading or trailing spaces
-              error = "Email cannot have leading or trailing spaces";
+              error = t("ferryTicketing.validation.emailSpaces");
             } else if (/\s/.test(value)) {
               // Check for spaces anywhere in the email
-              error = "Email cannot contain spaces";
+              error = t("ferryTicketing.validation.emailSpaces");
             } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-              error = "Invalid email address";
+              error = t("ferryTicketing.validation.invalidEmail");
             }
           }
           break;
