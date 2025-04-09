@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSessionToken } from '../utils/sessions';
 import { X, Bell, Check, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -10,6 +11,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'unread', or 'read'
+  const navigate = useNavigate();
 
   // Fetch notifications when modal opens
   useEffect(() => {
@@ -44,6 +46,36 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       setError('Failed to load notifications. Please try again later.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle notification click - mark as read and navigate to /my-tickets
+  const handleNotificationClick = async (notification) => {
+    if (!notification.isRead) {
+      try {
+        const token = useSessionToken();
+        await axios.put(`${API_BASE_URL}/notifications/${notification.id}/read`, { isRead: true }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        // Update local state
+        setNotifications(notifications.map(notif => 
+          notif.id === notification.id ? { ...notif, isRead: true } : notif
+        ));
+      } catch (err) {
+        console.error('Error marking notification as read:', err);
+        setError('Failed to update notification. Please try again later.');
+      }
+    }
+  
+    // Only navigate and close modal if not a broadcast notification
+    if (notification.type !== 'BROADCAST') {
+      // Close the modal
+      onClose();
+      
+      // Navigate to /my-tickets page
+      navigate('/my-tickets');
     }
   };
 
@@ -260,9 +292,12 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                         key={notification.id}
                         className={`border rounded-lg overflow-hidden ${
                           notification.isRead ? 'bg-white' : 'bg-blue-50'
-                        }`}
+                        } cursor-pointer`}
                       >
-                        <div className="p-4">
+                        <div 
+                          className="p-4"
+                          onClick={() => handleNotificationClick(notification)}
+                        >
                           <div className="flex items-start">
                             <div className={`mr-4 ${getNotificationColor(notification.type)}`}>
                               <Bell size={20} />
@@ -274,7 +309,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                                 {new Date(notification.createdAt).toLocaleString()}
                               </p>
                             </div>
-                            <div className="flex space-x-2">
+                            <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
                               {notification.isRead ? (
                                 <button
                                   onClick={(e) => markAsUnread(notification.id, e)}

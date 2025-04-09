@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SignedIn, SignedOut, useClerk, useUser } from '@clerk/clerk-react';
 import sailMatelogo from "../assets/images/SailMate_logo.png";
 import { useSessionToken } from "../utils/sessions";
@@ -67,6 +67,7 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
@@ -104,23 +105,34 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
     }
   };
 
-  // Mark a notification as read
-  const markAsRead = async (id) => {
-    try {
-      const token = useSessionToken();
-      await axios.put(`${API_BASE_URL}/notifications/${id}/read`, { isRead: true }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
-      // Update the local state
-      setNotifications(notifications.map(notif => 
-        notif.id === id ? { ...notif, isRead: true } : notif
-      ));
-      // Update unread count
-      fetchUnreadCount();
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
+  // Mark a notification as read and navigate to /my-tickets
+  const handleNotificationClick = async (notification) => {
+    if (!notification.isRead) {
+      try {
+        const token = useSessionToken();
+        await axios.put(`${API_BASE_URL}/notifications/${notification.id}/read`, { isRead: true }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        // Update the local state
+        setNotifications(notifications.map(notif => 
+          notif.id === notification.id ? { ...notif, isRead: true } : notif
+        ));
+        // Update unread count
+        fetchUnreadCount();
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+    
+    // Only navigate and close dropdown if not a broadcast notification
+    if (notification.type !== 'BROADCAST') {
+      // Close the dropdown
+      setIsDropdownOpen(false);
+      
+      // Navigate to /my-tickets page
+      navigate('/my-tickets');
     }
   };
 
@@ -247,7 +259,7 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
                   <div 
                     key={notification.id} 
                     className={`py-2 px-4 border-b hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`}
-                    onClick={() => !notification.isRead && markAsRead(notification.id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start">
                       <div className={`mr-3 mt-1 ${getNotificationColor(notification.type)}`}>
