@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useSessionToken } from "../utils/sessions";
 import placeholder from "../assets/images/placeholder.jpg";
 import axios from "axios";
 import { X } from "lucide-react";
@@ -23,18 +22,12 @@ export default function Announcements() {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const token = useSessionToken();
-
   // Fetch announcements from backend
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(API_BASE_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(API_BASE_URL);
         setAnnouncements(Array.isArray(response.data) ? response.data : []);
         setError(null);
       } catch (err) {
@@ -45,10 +38,8 @@ export default function Announcements() {
       }
     };
 
-    if (token) {
-      fetchAnnouncements();
-    }
-  }, [token]);
+    fetchAnnouncements();
+  }, []);
 
   // Open modal with selected announcement
   const openAnnouncementModal = (announcement) => {
@@ -100,7 +91,6 @@ export default function Announcements() {
     <>
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          
           <div className="grid md:grid-cols-3 gap-6">
             {announcements.map((announcement) => (
               <motion.div
@@ -108,7 +98,6 @@ export default function Announcements() {
                 className="relative group cursor-pointer"
                 whileHover={{ scale: 1.05 }}
               >
-                {/* Image */}
                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                   <img
                     src={announcement.imageBase64 
@@ -118,8 +107,6 @@ export default function Announcements() {
                     className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => { e.target.src = placeholder; }}
                   />
-                  
-                  {/* Hover Overlay */}
                   <div 
                     className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4"
                     onClick={() => openAnnouncementModal(announcement)}
@@ -153,7 +140,6 @@ export default function Announcements() {
             className="bg-white max-w-6xl w-full rounded-xl shadow-2xl overflow-hidden relative flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 z-10 text-gray-600 hover:text-gray-900 bg-white bg-opacity-20 hover:bg-opacity-50 rounded-full p-2 transition"
@@ -161,9 +147,7 @@ export default function Announcements() {
               <X size={24} />
             </button>
 
-            {/* Modal Content */}
             <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-              {/* Image Side - Full width on mobile, half width on desktop */}
               <div className="w-full md:w-2/3 max-h-[70vh] flex items-center justify-center">
                 <img
                   src={selectedAnnouncement.imageBase64 
@@ -174,8 +158,6 @@ export default function Announcements() {
                   onError={(e) => { e.target.src = placeholder; }}
                 />
               </div>
-
-              {/* Text Side - Full width on mobile, half width on desktop */}
               <div className="w-full md:w-1/3 p-6 overflow-y-auto">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 break-words">
                   {selectedAnnouncement.title}
