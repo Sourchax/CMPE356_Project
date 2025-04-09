@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Sailboat, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ThankYouPage = () => {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(100);
   const [showMessage, setShowMessage] = useState(true);
   const navigate = useNavigate();
@@ -53,10 +55,10 @@ const ThankYouPage = () => {
               <CheckCircle size={36} className="text-blue-600" />
             </div>
             
-            <h1 className="text-2xl font-bold text-gray-800">Success! Your Voyage is Booked!</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t('ferryTicketing.success.title')}</h1>
             
             <p className="text-gray-600">
-              Your SailMate ticket has been successfully issued. Smooth sailing ahead and thank you for choosing our fleet!
+              {t('ferryTicketing.success.message')}
             </p>
             
             <div className="w-full mt-4 mb-2">
@@ -67,13 +69,13 @@ const ThankYouPage = () => {
                 />
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                Navigating to homepage in {Math.ceil(progress/33)} seconds...
+                {t('ferryTicketing.success.navigating', { seconds: Math.ceil(progress/33) })}
               </p>
             </div>
 
             <div className="pt-4 border-t border-gray-100 w-full">
               <p className="text-sm text-gray-500">
-                Need assistance? Our crew is standing by at sailmatesup@gmail.com
+                {t('ferryTicketing.success.assistance', { email: 'sailmatesup@gmail.com' })}
               </p>
             </div>
           </div>

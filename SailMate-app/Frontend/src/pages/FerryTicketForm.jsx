@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import JourneyCatagory from "../components/ferry-ticket-form/JourneyCatagory.jsx";
 import TicketSum from "../components/ferry-ticket-form/TicketSum.jsx";
 import PaymentConfirmation from "../components/ferry-ticket-form/PaymentConfirmation.jsx";
@@ -12,6 +12,8 @@ import SeatSelectionModal from '../components/ferry-ticket-form/seatSelectionMod
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import {useSessionToken} from "../utils/sessions.js"
+import { useTranslation } from "react-i18next";
+
 const steps = [
   { label: "Select Voyage", icon: "📅" },
   { label: "Passenger Details", icon: "🧑" },
@@ -55,7 +57,9 @@ const ProgressBar = ({ currentStep, width }) => {
 };
 
 const FerryTicketForm = () => {
-
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [prices, setPrices] = useState([]);
 
   useEffect(() => {
@@ -77,9 +81,7 @@ const FerryTicketForm = () => {
     fetchPrices();
   }, []);
 
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const location = useLocation();
   const { userId, isLoaded } = useAuth();
   const [isDepartureSeatModalOpen, setIsDepartureSeatModalOpen] = useState(false);
   const [isReturnSeatModalOpen, setIsReturnSeatModalOpen] = useState(false);
@@ -522,6 +524,20 @@ const FerryTicketForm = () => {
   const totalPassengers = formData.departureDetails.passengerCount || 0;
   const isRoundTrip = formData.tripData && formData.tripData.returnDate !== "";
 
+  // Function to format passenger header according to the current language
+  const formatPassengerHeader = (index, type) => {
+    const isTurkish = i18n.language.startsWith('tr');
+    
+    // Translate the passenger type using the translation keys
+    const translatedType = t(`ferryTicketing.passengerType.${type.toLowerCase()}`);
+    
+    if (isTurkish) {
+      return `${index}. Yolcu - ${translatedType}`;
+    } else {
+      return `Passenger ${index} - ${translatedType}`;
+    }
+  };
+
   return (
     currentStep === 4 ? (
       <ThankYouPage />
@@ -532,7 +548,7 @@ const FerryTicketForm = () => {
             onClick={() => navigate("/")} 
             className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base"
           >
-            Back to Homepage
+            {t('common.backToHomepage')}
           </button>
         )}
 
@@ -555,13 +571,13 @@ const FerryTicketForm = () => {
                 <div className="w-full bg-white rounded-md shadow-sm">
                   <div className="flex justify-between items-center p-2 sm:p-4 border-b flex-wrap gap-2">
                     <div className="text-gray-600 text-sm sm:text-base">
-                      Your remaining time to complete the ticket purchase... <FaClock className="inline text-amber-500" /> {formatTime(time)}
+                      {t('ferryTicketing.remainingTime')} <FaClock className="inline text-amber-500" /> {formatTime(time)}
                     </div>
                   </div>
 
                   <div className="p-2 sm:p-4 border-b">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                      <h2 className="text-blue-800 text-lg sm:text-xl font-bold">Departure Travel Information</h2>
+                      <h2 className="text-blue-800 text-lg sm:text-xl font-bold">{t('ferryTicketing.departureTravelInfo')}</h2>
                       <div className="flex items-center gap-2 text-sm sm:text-base">
                         <span>{formData.tripData.departure}</span>
                         <span className="bg-blue-800 text-white p-1 rounded-sm">&#8652;</span>
@@ -594,7 +610,7 @@ const FerryTicketForm = () => {
                     index < totalPassengers ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
                         <div className="mb-3 text-base sm:text-lg font-semibold text-blue-600">
-                          Passenger {index + 1} - {passenger.PassengerType}
+                          {formatPassengerHeader(index + 1, passenger.PassengerType)}
                         </div>
                         <DepartureInfo 
                           passengerIndex={index} 
@@ -609,7 +625,7 @@ const FerryTicketForm = () => {
                   {isRoundTrip && (
                     <div className="p-2 sm:p-4 border-b">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <h2 className="text-red-800 text-lg sm:text-xl font-bold">Return Travel Information</h2>
+                        <h2 className="text-red-800 text-lg sm:text-xl font-bold">{t('ferryTicketing.returnTravelInfo')}</h2>
                         <div className="flex items-center gap-2 text-sm sm:text-base">
                           <span>{formData.tripData.arrival}</span>
                           <span className="bg-red-800 text-white p-1 rounded-sm">&#8652;</span>
@@ -649,7 +665,7 @@ const FerryTicketForm = () => {
                     index >= totalPassengers && index < totalPassengers * 2 ? (
                       <div key={index} className="bg-white rounded-md shadow-sm p-3 sm:p-4 mb-4 border border-gray-300">
                         <div className="mb-3 text-base sm:text-lg font-semibold text-red-600">
-                          Passenger {index - totalPassengers + 1} - {passenger.PassengerType}
+                          {formatPassengerHeader(index - totalPassengers + 1, passenger.PassengerType)}
                         </div>
                         <DepartureInfo 
                           passengerIndex={index}
@@ -691,7 +707,7 @@ const FerryTicketForm = () => {
               onClick={handleBack} 
               className="bg-gray-300 px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base"
             >
-              Back
+              {t('common.back')}
             </button>
           }
           
@@ -701,7 +717,7 @@ const FerryTicketForm = () => {
               className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
               disabled={isNextDisabled()}
             >
-              Next
+              {t('common.next')}
             </button>
           )}
           
@@ -711,7 +727,7 @@ const FerryTicketForm = () => {
               className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base ${isNextDisabled() ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
               disabled={isNextDisabled()}
             >
-              Next
+              {t('common.next')}
             </button>
           )}
         </div>

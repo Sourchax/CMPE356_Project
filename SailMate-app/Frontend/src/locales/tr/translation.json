@@ -30,6 +30,7 @@
     "firstName": "Ad",
     "lastName": "Soyad",
     "phone": "Telefon",
+    "birthDate": "Doğum Tarihi",
     "address": "Adres",
     "city": "Şehir",
     "country": "Ülke",
@@ -70,7 +71,16 @@
     "apply": "Uygula",
     "searchTickets": "Bilet Ara",
     "viewOnMap": "Haritada Görüntüle",
-    "all": "Tümü"
+    "all": "Tümü",
+    "backToHomepage": "Ana Sayfaya Dön",
+    "total": "TOPLAM",
+    "grandTotal": "Genel Toplam",
+    "basePrice": "Taban Fiyat",
+    "serviceFee": "Hizmet Bedeli",
+    "departure": "Kalkış",
+    "arrival": "Varış",
+    "departureArrival": "Kalkış - Varış",
+    "passengers": "Yolcular:"
   },
   "homepage": {
     "hero": {
@@ -1021,5 +1031,158 @@
         "addressMinLength": "Adres en az 5 karakter olmalıdır"
       }
     }
+  },
+  "ferryTicketing": {
+    "journeyPlanning": "Yolculuk Planlaması",
+    "departureTrip": "Gidiş Seferi",
+    "returnTrip": "Dönüş Seferi",
+    "selectDepartureOption": "Lütfen gidiş seçeneğinizi seçin",
+    "selectReturnOption": "Lütfen dönüş seçeneğinizi seçin",
+    "departure": "Kalkış",
+    "arrival": "Varış",
+    "shipType": "Gemi Tipi",
+    "promo": "Promo",
+    "economy": "Economy",
+    "business": "Business",
+    "seatsLeft": "koltuk kaldı",
+    "notEnoughSeats": "Yeterli koltuk yok",
+    "fastFerry": "Fast Ferry",
+    "seabus": "Seabus",
+    "next": "İleri",
+    "oneWay": "Tek Yön",
+    "date": "Tarih",
+    "placeholders": {
+      "name": "Adınızı Girin",
+      "surname": "Soyadınızı Girin",
+      "phone": "Telefonunuzu Girin",
+      "email": "E-postanızı Girin"
+    },
+    "passengers": {
+      "title": "Yolcular:",
+      "adult": "Yetişkin × 1"
+    },
+    "pricing": {
+      "basePrice": "Taban Fiyat",
+      "serviceFee": "Hizmet Bedeli",
+      "total": "TOPLAM",
+      "grandTotal": "Genel Toplam"
+    },
+    "backToHomepage": "Ana Sayfaya Dön",
+    "noJourneysFound": "Bu tarih için sefer bulunamadı",
+    "departureArrival": "Kalkış - Varış",
+    "selectJourney": "Sefer Seçin",
+    "departureDate": "Gidiş Tarihi",
+    "returnDate": "Dönüş Tarihi",
+    "passengerDetails": "Yolcu Bilgileri",
+    "payment": {
+      "title": "Satın Alma İşlemini Tamamla",
+      "transactionId": "İşlem #{{id}}",
+      "cardholderName": "Kart Sahibinin İsmi",
+      "nameOnCard": "Kartta gösterildiği gibi",
+      "cardNumber": "Kart Numarası",
+      "month": "Ay",
+      "year": "Yıl",
+      "cvv": "CVV",
+      "acceptTerms": "Kabul ediyorum",
+      "termsAndConditions": "şartlar ve koşullar",
+      "confirmPayment": "Ödemeyi Onayla",
+      "processing": "İşleniyor...",
+      "termsText": "SailMate Ödeme Şartları ve Koşulları\n\nSailMate'de ödeme işlemine devam ederek, aşağıdaki şartları ve koşulları okuduğunuzu, anladığınızı ve bunlara bağlı olmayı kabul ettiğinizi onaylarsınız",
+      "termsPlaceholder": "Lütfen şartlar metni için termsText prop'unu sağlayın.",
+      "validation": {
+        "nameRequired": "İsim gereklidir",
+        "nameNoNumbers": "İsim rakam içermemelidir",
+        "validCardNumber": "Lütfen geçerli bir 16 haneli kart numarası girin",
+        "required": "Gerekli",
+        "cvvRequired": "3 haneli CVV gereklidir",
+        "acceptTerms": "Şartları kabul etmelisiniz"
+      }
+    },
+    "success": {
+      "title": "Başarılı! Yolculuğunuz Rezerve Edildi!",
+      "message": "SailMate biletiniz başarıyla düzenlenmiştir. İyi yolculuklar ve filomuzu tercih ettiğiniz için teşekkür ederiz!",
+      "navigating": "{{seconds}} saniye içinde ana sayfaya yönlendiriliyorsunuz...",
+      "assistance": "Yardıma mı ihtiyacınız var? Ekibimiz {{email}} adresinden destek için hazır bekliyor"
+    },
+    "remainingTime": "Bilet satın alma işlemini tamamlamak için kalan süreniz...",
+    "departureTravelInfo": "Gidiş Seyahat Bilgileri",
+    "returnTravelInfo": "Dönüş Seyahat Bilgileri",
+    "departureSeats": "Gidiş Koltukları",
+    "returnSeats": "Dönüş Koltukları",
+    "selectSeat": "Koltuğunuzu Seçin",
+    "selectSeats": "Koltuklarınızı Seçin",
+    "changeSeats": "Koltukları Değiştir",
+    "changeSeat": "Koltuğu Değiştir",
+    "pleaseSelectSeat": "Devam etmek için lütfen koltuk seçin",
+    "seatsSelected": "Koltuklar seçildi!",
+    "seatSelected": "Koltuk seçildi!",
+    "passenger": "Yolcu",
+    "dataPolicyText": "Kişisel Verilerin Korunması ve İşlenmesi Politikası, Gizlilik ve Veri Güvenliği Politikası...",
+    "notifyBySMS": "SMS ile Bilgilendirme",
+    "notifyByEmail": "E-posta ile Bilgilendirme",
+    "wantETicket": "E-Bilet İstiyorum",
+    "eTicketInvoiceNote": "Biletinizin fatura olması için 'E-Bilet İstiyorum' kutucuğunu işaretleyin.",
+    "passengerType": {
+      "adult": "Yetişkin",
+      "student": "Öğrenci",
+      "senior": "Yaşlı",
+      "child": "Çocuk"
+    },
+    "departureSeatSelection": "Gidiş Koltuğu Seçimi",
+    "returnSeatSelection": "Dönüş Koltuğu Seçimi",
+    "automaticSelection": "Otomatik Seçim",
+    "manualSelection": "Manuel Seçim",
+    "selectedSeats": "Seçilen koltuklar",
+    "cancel": "İptal",
+    "confirmSelection": "Seçimi Onayla",
+    "validation": {
+      "required": "Bu alan zorunludur",
+      "invalidName": "Geçersiz isim",
+      "invalidPhone": "Geçersiz telefon numarası",
+      "invalidDate": "Geçersiz tarih formatı. YYYY-AA-GG kullanın",
+      "dateInFuture": "Doğum tarihi gelecekte olamaz",
+      "dateTooOld": "Doğum tarihi 100 yaşından büyük olamaz",
+      "studentAge": "Öğrenci yolcular 10-25 yaş arasında olmalıdır",
+      "seniorAge": "Yaşlı yolcular 65 yaş ve üstü olmalıdır",
+      "adultAge": "Yetişkin yolcular 20 yaş ve üstü olmalıdır",
+      "childAge": "Çocuk yolcular 8 yaşından küçük olmalıdır",
+      "emailRequired": "E-posta gereklidir",
+      "emailSpaces": "E-posta boşluk içeremez",
+      "invalidEmail": "Geçersiz e-posta adresi"
+    },
+    "seatLegend": {
+      "occupied": "Dolu",
+      "available": "Boş",
+      "selected": "Seçildi",
+      "restricted": "Kısıtlı"
+    },
+    "deck": {
+      "main": "Ana Güverte",
+      "upper": "Üst Güverte",
+      "mainDeck": "ANA GÜVERTE",
+      "upperDeck": "ÜST GÜVERTE"
+    },
+    "seatHelp": "Seçmek için bir koltuğa tıklayın. Her iki güverteden de koltuk seçebilirsiniz.",
+    "clickToSelect": "Seçmek için bir koltuğa tıklayın",
+    "selectSeatFor": "Koltuk seçimi:",
+    "passenger": "Yolcu",
+    "selectingForPassenger": "Yolcu {number} için seçim",
+    "bow": "Ön",
+    "stern": "Arka",
+    "seatSummary": "Koltuk Özeti:",
+    "notSelected": "Seçilmedi",
+    "autoSelectionHelp": "Tüm yolcular için otomatik olarak koltuklar seçtik. Farklı koltuklar seçmek için lütfen Manuel Seçim'e geçin.",
+    "classLabels": {
+      "business": "Business Class", 
+      "economy": "Economy Class",
+      "promo": "Promo Class"
+    },
+    "facilities": {
+      "information": "Bilgi",
+      "restrooms": "Tuvaletler",
+      "toUpperDeck": "Üst Güverteye",
+      "toLowerDeck": "Alt Güverteye"
+    },
+    "passengerHeader": "{number}. Yolcu - {type}"
   }
 } 

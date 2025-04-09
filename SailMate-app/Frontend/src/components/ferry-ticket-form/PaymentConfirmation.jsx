@@ -1,11 +1,14 @@
 ﻿import React, { useState } from "react";
 import "../../assets/styles/ferry-ticket-form/paymentconfirmation.css";
-
+import { useTranslation } from "react-i18next";
 
 const PaymentConfirmation = ({ onCCDataChange }) => {
-  const termsText = `SailMate Payment Terms & Conditions
+  const { t } = useTranslation();
+  
+  const termsText = t('ferryTicketing.payment.termsText', 
+    `SailMate Payment Terms & Conditions
 
-By proceeding with payment on SailMate, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions`;
+By proceeding with payment on SailMate, you acknowledge that you have read, understood, and agree to be bound by the following terms and conditions`);
 
   
   const [formData, setFormData] = useState({
@@ -64,28 +67,28 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
     switch (fieldName) {
       case "name":
         if (!formData.name.trim()) {
-          newError.name = "Name is required";
+          newError.name = t('ferryTicketing.payment.validation.nameRequired');
         } else if (/\d/.test(formData.name)) {
-          newError.name = "Name should not contain numbers";
+          newError.name = t('ferryTicketing.payment.validation.nameNoNumbers');
         }
         break;
       case "cardNumber":
         if (!formData.cardNumber.replace(/\s/g, '') || !/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, '')))
-          newError.cardNumber = "Please enter a valid 16-digit card number";
+          newError.cardNumber = t('ferryTicketing.payment.validation.validCardNumber');
         break;
       case "expiryMonth":
-        if (!formData.expiryMonth) newError.expiryMonth = "Required";
+        if (!formData.expiryMonth) newError.expiryMonth = t('ferryTicketing.payment.validation.required');
         break;
       case "expiryYear":
-        if (!formData.expiryYear) newError.expiryYear = "Required";
+        if (!formData.expiryYear) newError.expiryYear = t('ferryTicketing.payment.validation.required');
         break;
       case "cvv":
         if (!formData.cvv || !/^\d{3}$/.test(formData.cvv))
-          newError.cvv = "3-digit CVV required";
+          newError.cvv = t('ferryTicketing.payment.validation.cvvRequired');
         break;
       case "termsAccepted":
         if (!formData.termsAccepted)
-          newError.termsAccepted = "You must accept the terms";
+          newError.termsAccepted = t('ferryTicketing.payment.validation.acceptTerms');
         break;
       default:
         break;
@@ -106,40 +109,40 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
       switch (field) {
         case "name":
           if (!fieldValue.trim()) {
-            newErrors.name = "Name is required";
+            newErrors.name = t('ferryTicketing.payment.validation.nameRequired');
             formIsValid = false;
           } else if (/\d/.test(fieldValue)) {
-            newErrors.name = "Name should not contain numbers";
+            newErrors.name = t('ferryTicketing.payment.validation.nameNoNumbers');
             formIsValid = false;
           }
           break;
         case "cardNumber":
           if (!fieldValue.replace(/\s/g, '') || !/^\d{16}$/.test(fieldValue.replace(/\s/g, ''))) {
-            newErrors.cardNumber = "Please enter a valid 16-digit card number";
+            newErrors.cardNumber = t('ferryTicketing.payment.validation.validCardNumber');
             formIsValid = false;
           }
           break;
         case "expiryMonth":
           if (!fieldValue) {
-            newErrors.expiryMonth = "Required";
+            newErrors.expiryMonth = t('ferryTicketing.payment.validation.required');
             formIsValid = false;
           }
           break;
         case "expiryYear":
           if (!fieldValue) {
-            newErrors.expiryYear = "Required";
+            newErrors.expiryYear = t('ferryTicketing.payment.validation.required');
             formIsValid = false;
           }
           break;
         case "cvv":
           if (!fieldValue || !/^\d{3}$/.test(fieldValue)) {
-            newErrors.cvv = "3-digit CVV required";
+            newErrors.cvv = t('ferryTicketing.payment.validation.cvvRequired');
             formIsValid = false;
           }
           break;
         case "termsAccepted":
           if (!fieldValue) {
-            newErrors.termsAccepted = "You must accept the terms";
+            newErrors.termsAccepted = t('ferryTicketing.payment.validation.acceptTerms');
             formIsValid = false;
           }
           break;
@@ -194,16 +197,16 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
     <div className="py-4 sm:py-8 w-full max-w-full">
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-4 sm:p-6">
         <div className="border-b pb-3 sm:pb-4 mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Complete Your Purchase</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">{t('ferryTicketing.payment.title')}</h1>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-sm sm:text-base text-gray-600">Transaction #38291</span>
+            <span className="text-sm sm:text-base text-gray-600">{t('ferryTicketing.payment.transactionId', { id: '38291' })}</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{t('ferryTicketing.payment.cardholderName')}</label>
               <input
                 id="name"
                 type="text"
@@ -211,7 +214,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="As shown on card"
+                placeholder={t('ferryTicketing.payment.nameOnCard')}
                 disabled={isSubmitting}
                 className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border text-sm sm:text-base ${touched.name && errors.name ? "border-red-300 bg-red-50" : touched.name && !errors.name ? "border-green-300 bg-green-50" : "border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
               />
@@ -226,7 +229,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
             </div>
 
             <div>
-              <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+              <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">{t('ferryTicketing.payment.cardNumber')}</label>
               <input
                 id="cardNumber"
                 type="text"
@@ -251,7 +254,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
 
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div className="col-span-1">
-                <label htmlFor="expiryMonth" className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                <label htmlFor="expiryMonth" className="block text-sm font-medium text-gray-700 mb-1">{t('ferryTicketing.payment.month')}</label>
                 <select
                   id="expiryMonth"
                   name="expiryMonth"
@@ -273,7 +276,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
               </div>
 
               <div className="col-span-1">
-                <label htmlFor="expiryYear" className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                <label htmlFor="expiryYear" className="block text-sm font-medium text-gray-700 mb-1">{t('ferryTicketing.payment.year')}</label>
                 <select
                   id="expiryYear"
                   name="expiryYear"
@@ -295,7 +298,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
               </div>
 
               <div className="col-span-1">
-                <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">{t('ferryTicketing.payment.cvv')}</label>
                 <input
                   id="cvv"
                   type="text"
@@ -325,7 +328,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                   className={`h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 />
                 <span className="text-xs sm:text-sm text-gray-600">
-                  I accept the <a href="#" onClick={handleTermsClick} className="text-blue-600">terms and conditions</a>
+                  {t('ferryTicketing.payment.acceptTerms')} <a href="#" onClick={handleTermsClick} className="text-blue-600">{t('ferryTicketing.payment.termsAndConditions')}</a>
                 </span>
               </label>
               {touched.termsAccepted && errors.termsAccepted && (
@@ -346,10 +349,10 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Processing...
+                  {t('ferryTicketing.payment.processing')}
                 </span>
               ) : (
-                "Confirm Payment"
+                t('ferryTicketing.payment.confirmPayment')
               )}
             </button>
           </div>
@@ -362,7 +365,7 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
           <div className="bg-white rounded-lg max-w-lg w-full max-h-96 overflow-y-auto">
             <div className="p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Terms and Conditions</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">{t('ferryTicketing.payment.termsAndConditions')}</h2>
                 <button 
                   onClick={closeTermsModal}
                   className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -373,14 +376,14 @@ By proceeding with payment on SailMate, you acknowledge that you have read, unde
                 </button>
               </div>
               <div className="text-sm sm:text-base text-gray-600">
-                {termsText || "Please provide terms text via the termsText prop."}
+                {termsText || t('ferryTicketing.payment.termsPlaceholder')}
               </div>
               <div className="mt-6 text-right">
                 <button
                   onClick={closeTermsModal}
                   className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm sm:text-base"
                 >
-                  Close
+                  {t('common.close')}
                 </button>
               </div>
             </div>

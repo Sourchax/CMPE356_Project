@@ -4,6 +4,7 @@ import {
   Navigation, Compass, Ship, ArrowRightCircle, PanelTop, 
   AlertCircle, ChevronRight, Star, Zap, DollarSign
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Import new components
 import FastFerrySeatMap, { generateFastFerrySeats } from './FastFerrySeatMap';
@@ -290,6 +291,8 @@ const FerrySeatSelection = ({
     return selectedSeats[currentPassenger]?.seat === seatWithDeck;
   };
   
+  const { t } = useTranslation();
+  
   if (!isOpen) return null;
   
   return (
@@ -300,7 +303,7 @@ const FerrySeatSelection = ({
           <div className="flex items-center gap-2">
             <Ship size={18} className="text-blue-300" />
             <h3 className="text-base font-medium">
-              {tripType === 'departure' ? 'Departure' : 'Return'} Seat Selection
+              {tripType === 'departure' ? t('ferryTicketing.departureSeatSelection') : t('ferryTicketing.returnSeatSelection')}
             </h3>
           </div>
           <button 
@@ -325,7 +328,7 @@ const FerrySeatSelection = ({
                 onClick={() => handleModeChange('auto')}
               >
                 <ArrowRightCircle size={16} className="mr-2" />
-                Automatic Selection
+                {t('ferryTicketing.automaticSelection')}
               </button>
               <button
                 className={`px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-in-out flex items-center justify-center ${
@@ -336,7 +339,7 @@ const FerrySeatSelection = ({
                 onClick={() => handleModeChange('manual')}
               >
                 <MapPin size={16} className="mr-2" />
-                Manual Selection
+                {t('ferryTicketing.manualSelection')}
               </button>
             </div>
             
@@ -344,7 +347,7 @@ const FerrySeatSelection = ({
             {passengerCount > 1 && (
               <div className="mb-4">
                 <div className="text-sm font-medium text-gray-700 mb-2">
-                  Select seat for:
+                  {t('ferryTicketing.selectSeatFor')}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {Array.from({ length: passengerCount }).map((_, index) => (
@@ -359,7 +362,7 @@ const FerrySeatSelection = ({
                       }`}
                       onClick={() => handlePassengerChange(index)}
                     >
-                      Passenger {index + 1} {selectedSeats[index]?.seat ? '✓' : ''}
+                      {t('ferryTicketing.passenger')} {index + 1} {selectedSeats[index]?.seat ? '✓' : ''}
                     </button>
                   ))}
                 </div>
@@ -385,19 +388,19 @@ const FerrySeatSelection = ({
               <div className="flex flex-wrap gap-4 items-center mb-4 pb-3 border-b border-gray-200">
                 <div className="flex items-center">
                   <div className="w-4 h-4 bg-[#F05D5E] rounded mr-2"></div>
-                  <span className="text-xs text-gray-700">Occupied</span>
+                  <span className="text-xs text-gray-700">{t('ferryTicketing.seatLegend.occupied')}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-4 h-4 bg-[#D1FFD7] rounded mr-2"></div>
-                  <span className="text-xs text-gray-700">Available</span>
+                  <span className="text-xs text-gray-700">{t('ferryTicketing.seatLegend.available')}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-4 h-4 bg-[#F0C808] rounded mr-2 ring-1 ring-[#0D3A73]"></div>
-                  <span className="text-xs text-gray-700">Selected</span>
+                  <span className="text-xs text-gray-700">{t('ferryTicketing.seatLegend.selected')}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-4 h-4 bg-gray-300 rounded mr-2"></div>
-                  <span className="text-xs text-gray-700">Restricted</span>
+                  <span className="text-xs text-gray-700">{t('ferryTicketing.seatLegend.restricted')}</span>
                 </div>
                 {ferryType === FERRY_TYPES.FAST_FERRY && (
                   <div className="flex items-center">
@@ -458,26 +461,26 @@ const FerrySeatSelection = ({
                 {passengerCount > 1 && (
                   <div className="absolute top-2 right-24 z-10">
                     <div className="bg-blue-500 text-white px-3 py-1.5 text-xs font-medium rounded-md shadow-sm">
-                      Selecting for Passenger {currentPassenger + 1}
-                          </div>
-                        </div>
-                      )}
+                      {t('ferryTicketing.selectingForPassenger', { number: currentPassenger + 1 })}
+                    </div>
+                  </div>
+                )}
                       
                 {/* Deck Label */}
                 <div className="absolute top-2 right-2 z-10">
                   <div className="bg-[#0D3A73] text-white px-3 py-1.5 text-xs font-medium rounded-md shadow-sm">
-                  {currentDeck === 'main' ? 'MAIN DECK' : 'UPPER DECK'}
-                          </div>
-                        </div>
+                    {currentDeck === 'main' ? t('ferryTicketing.deck.mainDeck') : t('ferryTicketing.deck.upperDeck')}
+                  </div>
+                </div>
                 
                 {/* Ferry Direction Labels */}
                 <div className="absolute top-1 left-1/2 transform -translate-x-1/2 text-xs text-[#0D3A73] bg-white px-2.5 py-0.5 rounded-full shadow-sm border border-[#06AED5]/20 flex items-center">
                   <Navigation size={11} className="mr-1" />
-                  <span className="text-xs font-medium">Bow</span>
-                          </div>
+                  <span className="text-xs font-medium">{t('ferryTicketing.bow')}</span>
+                </div>
                 <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs text-[#0D3A73] bg-white px-2.5 py-0.5 rounded-full shadow-sm border border-[#06AED5]/20 flex items-center">
                   <Navigation size={11} className="mr-1 transform rotate-180" />
-                  <span className="text-xs font-medium">Stern</span>
+                  <span className="text-xs font-medium">{t('ferryTicketing.stern')}</span>
                 </div>
 
                 {/* Render appropriate seat map based on ferry type */}
@@ -512,7 +515,7 @@ const FerrySeatSelection = ({
                     onClick={() => handleDeckChange('main')}
                   >
                     <Ship size={14} className="mr-1.5" />
-                    Main Deck
+                    {t('ferryTicketing.deck.main')}
                   </button>
                   <button 
                     className={`px-3.5 py-2 rounded-md text-xs font-medium transition-all duration-150 ease-out flex items-center ${
@@ -523,13 +526,13 @@ const FerrySeatSelection = ({
                     onClick={() => handleDeckChange('upper')}
                   >
                     <Ship size={14} className="mr-1.5" />
-                    Upper Deck
+                    {t('ferryTicketing.deck.upper')}
                   </button>
                 </div>
                 
                 <div className="mt-2 sm:mt-0 flex items-center text-xs text-slate-600">
                   <Info size={12} className="mr-1" />
-                  <span>Click on a seat to select it</span>
+                  <span>{t('ferryTicketing.clickToSelect')}</span>
                 </div>
               </div>
             </>
@@ -540,7 +543,7 @@ const FerrySeatSelection = ({
             <div className="bg-emerald-50 p-3 rounded-md border border-emerald-500/20 text-sm text-gray-700 mb-6">
               <div className="flex items-start">
                 <Info size={16} className="text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                <p className="text-xs">We've automatically selected seats for all passengers. To choose different seats, please switch to Manual Selection.</p>
+                <p className="text-xs">{t('ferryTicketing.autoSelectionHelp')}</p>
               </div>
             </div>
           )}
@@ -548,7 +551,7 @@ const FerrySeatSelection = ({
           {/* Selected Seats Summary */}
           {passengerCount > 1 && (
             <div className="mb-6 mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Seat Summary:</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">{t('ferryTicketing.seatSummary')}</h3>
               <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedSeats.map((selectedSeat, index) => (
@@ -560,8 +563,8 @@ const FerrySeatSelection = ({
                           : 'bg-yellow-50 border border-yellow-200'
                       }`}
                     >
-                      <div className="text-xs font-medium">Passenger {index + 1}:</div>
-                      <div className="text-sm mt-1">{selectedSeat.seat || "Not selected"}</div>
+                      <div className="text-xs font-medium">{t('ferryTicketing.passenger')} {index + 1}:</div>
+                      <div className="text-sm mt-1">{selectedSeat.seat || t('ferryTicketing.notSelected')}</div>
                     </div>
                   ))}
                 </div>
@@ -577,7 +580,7 @@ const FerrySeatSelection = ({
             onClick={toggleOpen}
           >
             <X size={14} className="mr-1.5" />
-            Cancel
+            {t('ferryTicketing.cancel')}
           </button>
           
           <button
@@ -585,7 +588,7 @@ const FerrySeatSelection = ({
             onClick={handleConfirm}
           >
             <Check size={14} className="mr-1.5" />
-            Confirm Selection
+            {t('ferryTicketing.confirmSelection')}
           </button>
         </div>
       </div>

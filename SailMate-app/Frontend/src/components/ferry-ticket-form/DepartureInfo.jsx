@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { User, GraduationCap, UserCheck, Baby } from "lucide-react"; // Import icons
+import { useTranslation } from "react-i18next";
+import i18next from 'i18next';
 
 const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tripType }) => {
+  const { t, i18n } = useTranslation();
   const isDeparture = tripType === "departure";
   const bgColor = isDeparture ? "bg-blue-800" : "bg-red-800";
   
@@ -152,6 +155,22 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
   // Determine which fields to display based on passenger type
   const fieldsToShow = isChild ? ["Name", "Surname"] : ["Name", "Surname", "Phone", "Email"];
 
+  // Format the passenger header based on current locale
+  const getPassengerHeader = () => {
+    const passengerNum = (passengerIndex % departureDetails.passengerCount) + 1;
+    const passengerTypeTr = t(`ferryTicketing.passengerType.${passengerType}`);
+    
+    // Check if language is Turkish (might be 'tr' or 'tr-TR')
+    const isTurkish = i18n.language.startsWith('tr');
+    
+    // Use different formats based on current language
+    if (isTurkish) {
+      return `${passengerNum}. Yolcu - ${passengerTypeTr}`;
+    } else {
+      return `Passenger ${passengerNum} - ${passengerTypeTr}`;
+    }
+  };
+
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg">
       <div className="flex items-center gap-3 text-gray-700">
@@ -159,7 +178,7 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
           {getPassengerIcon(passengerType)}
         </div>
         <span className="font-medium text-lg">
-          {(passengerIndex % departureDetails.passengerCount) + 1}. Passenger - {passengerType.charAt(0).toUpperCase() + passengerType.slice(1)}
+          {getPassengerHeader()}
         </span>
       </div>
 
@@ -167,11 +186,15 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
         {fieldsToShow.map((field) => (
           <div key={field} className="relative">
             <label className="block text-gray-700 font-medium mb-1">
-              {field} <span className="text-red-500">*</span>
+              {field === "Name" 
+                ? t('common.firstName') 
+                : field === "Surname" 
+                  ? t('common.lastName') 
+                  : t(`common.${field.toLowerCase()}`)} <span className="text-red-500">*</span>
             </label>
             <input
               type={field === "Email" ? "email" : "text"}
-              placeholder={`Enter your ${field}`}
+              placeholder={t(`ferryTicketing.placeholders.${field.toLowerCase()}`)}
               className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition ${
                 errors[field] ? "border-red-500" : "border-gray-300"
               }`}

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MapPin, Calendar, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = "http://localhost:8080/api";
 
 const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculated }) => {
+  const { t } = useTranslation();
   const [departureTotalPrice, setDepartureTotalPrice] = useState(0);
   const [returnTotalPrice, setReturnTotalPrice] = useState(0);
   const [currencyRates, setCurrencyRates] = useState({
@@ -92,8 +94,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
   let returnPriceValue = serviceFee * passengers;
 
   const tickets = [
-    { label: "ONE WAY", date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
-    returnDate ? { label: "RETURN", date: returnDate, dep: arrival, arr: departure, planningInfo: ticketPlanningInfo?.return } : null
+    { label: t('ferryTicketing.oneWay').toUpperCase(), date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
+    returnDate ? { label: t('common.roundTrip').toUpperCase(), date: returnDate, dep: arrival, arr: departure, planningInfo: ticketPlanningInfo?.return } : null
   ].filter(Boolean);
 
   // Define seat type colors
@@ -207,9 +209,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
         const passengerPrices = calculatePassengerPrices(selectedPrice, passengerTypes);
         
         // Update total prices for departure and return
-        if (ticket.label === "ONE WAY" && passengerPrices.total !== "N/A") {
+        if (ticket.label === t('ferryTicketing.oneWay').toUpperCase() && passengerPrices.total !== "N/A") {
           departurePriceValue = (passengerPrices.total + (serviceFee * passengers));
-        } else if (ticket.label === "RETURN" && passengerPrices.total !== "N/A") {
+        } else if (ticket.label === t('common.roundTrip').toUpperCase() && passengerPrices.total !== "N/A") {
           returnPriceValue = (passengerPrices.total + (serviceFee * passengers));
         }
 
@@ -247,13 +249,13 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
               <div className="flex items-center">
                 <Calendar className="mr-2" style={{ color: colorStyle }} />
                 <div>
-                  <div className="text-gray-600">Date</div>
+                  <div className="text-gray-600">{t('common.date')}</div>
                   <div>{ticket.date || "N/A"}</div>
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="text-right">
-                  <div className="text-gray-600">Departure - Arrival</div>
+                  <div className="text-gray-600">{t('ferryTicketing.departureArrival')}</div>
                   <div>{depTime} - {arrTime}</div>
                 </div>
               </div>
@@ -263,12 +265,12 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
             {/* Display passenger counts by type with converted prices */}
             <div className="mb-2">
-              <div className="font-medium mb-1">Passengers:</div>
+              <div className="font-medium mb-1">{t('ferryTicketing.passengers.title')}</div>
               {passengerTypes && (
                 <div className="space-y-1">
                   {passengerTypes.adult > 0 && (
                     <div className="flex justify-between items-center">
-                      <div className="text-gray-700">Adult × {passengerTypes.adult}</div>
+                      <div className="text-gray-700">{t('ferryTicketing.passengers.adult')} {passengerTypes.adult > 1 ? `× ${passengerTypes.adult}` : ''}</div>
                       {passengerPrices.breakdown.adult && (
                         <div className="font-bold" style={{ color: colorStyle }}>
                           {formatPrice(passengerPrices.breakdown.adult.total)}
@@ -307,7 +309,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                   {passengerTypes.child > 0 && (
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
-                        Child × {passengerTypes.child}
+                        {t('common.children')} × {passengerTypes.child}
                         <span className="text-green-600 ml-1">(100% off)</span>
                       </div>
                       {passengerPrices.breakdown.child && (
@@ -323,7 +325,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
             {/* Display only the selected seat type's price with currency conversion */}
             <div className="flex justify-between items-center mb-2">
-              <div className="text-gray-600">Base Price</div>
+              <div className="text-gray-600">{t('ferryTicketing.pricing.basePrice')}</div>
               <div className="font-bold" style={{ color: colorStyle }}>
                 {formatPrice(selectedPrice)}
               </div>
@@ -333,7 +335,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
             {/* Display Service Fee with currency conversion */}
             <div className="flex justify-between items-center mb-2">
-              <div className="text-gray-600">Service Fee</div>
+              <div className="text-gray-600">{t('ferryTicketing.pricing.serviceFee')}</div>
               <div className="font-bold" style={{ color: colorStyle }}>
                 {formatPrice(serviceFee * passengers)}
               </div>
@@ -341,9 +343,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
             {/* Display Total Price with currency conversion */}
             <div className="bg-green-500 text-white p-2 flex justify-between items-center" style={{ backgroundColor: colorStyle }}>
-              <div>TOTAL</div>
+              <div>{t('ferryTicketing.pricing.total')}</div>
               <div>
-                {ticket.label === "ONE WAY" 
+                {ticket.label === t('ferryTicketing.oneWay').toUpperCase() 
                   ? formatPrice(departurePriceValue)
                   : formatPrice(returnPriceValue)
                 }
@@ -355,7 +357,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
       {/* Grand Total with currency conversion */}
       <div className="bg-green-600 text-white p-4 mt-6 rounded-md shadow-md flex justify-between items-center">
-        <div className="text-lg font-bold">Grand Total</div>
+        <div className="text-lg font-bold">{t('ferryTicketing.pricing.grandTotal')}</div>
         <div className="text-xl font-bold">
           {returnDate === "" 
             ? formatPrice(departurePriceValue)

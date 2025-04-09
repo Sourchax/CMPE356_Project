@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "../../assets/styles/ferry-ticket-form/PlaPha.css";
 import PromoLogo from "../../assets/images/Promo.png";
 import EconomyLogo from "../../assets/images/Economy.png";
 import BusinessLogo from "../../assets/images/Business.png";
 import { Ship, Clock, Users, ChevronUp, ChevronDown, Calendar, ArrowRight } from "lucide-react";
 import axios from 'axios';
+import i18next from 'i18next';
 
 const API_URL = "http://localhost:8080/api";
 
 const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectReturn, prices }) => {
+  const { t } = useTranslation();
   const [departureTrips, setDepartureTrips] = useState([]);
   const [returnTrips, setReturnTrips] = useState([]);
   const [selectedOption, setSelectedOption] = useState({
@@ -263,7 +266,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         {/* Ship Type */}
         <div className="p-2 bg-blue-50 text-center text-blue-700 text-sm font-medium flex items-center justify-center">
           <Ship size={14} className="mr-1" />
-          {trip.shipType}
+          {trip.shipType === "Fast Ferry" ? t('ferryTicketing.fastFerry') : trip.shipType}
         </div>
         
         {/* Fare options */}
@@ -282,11 +285,11 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             }`}
             onClick={() => !promoDisabled && handleSelectTrip(trip, "promo", isReturn)}
           >
-            <div className="text-xs font-medium mb-1">Promo</div>
+            <div className="text-xs font-medium mb-1">{t('ferryTicketing.promo')}</div>
             <div className="text-base font-bold">{convertPrice(trip.promo)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {promoDisabled ? 'Not enough seats' : `${trip.promoSeats} seats`}
+              {promoDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.promoSeats} ${t('ferryTicketing.seatsLeft')}`}
             </div>
           </div>
           
@@ -304,11 +307,11 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             }`}
             onClick={() => !economyDisabled && handleSelectTrip(trip, "economy", isReturn)}
           >
-            <div className="text-xs font-medium mb-1">Economy</div>
+            <div className="text-xs font-medium mb-1">{t('ferryTicketing.economy')}</div>
             <div className="text-base font-bold">{convertPrice(trip.economy)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {economyDisabled ? 'Not enough seats' : `${trip.economySeats} seats`}
+              {economyDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.economySeats} ${t('ferryTicketing.seatsLeft')}`}
             </div>
           </div>
           
@@ -326,11 +329,11 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             }`}
             onClick={() => !businessDisabled && handleSelectTrip(trip, "business", isReturn)}
           >
-            <div className="text-xs font-medium mb-1">Business</div>
+            <div className="text-xs font-medium mb-1">{t('ferryTicketing.business')}</div>
             <div className="text-base font-bold">{convertPrice(trip.business)}{currencySymbols[selectedCurrency]}</div>
             <div className="mt-1 text-xs flex items-center justify-center text-gray-700">
               <Users size={10} className="mr-1" />
-              {businessDisabled ? 'Not enough seats' : `${trip.businessSeats} seats`}
+              {businessDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.businessSeats} ${t('ferryTicketing.seatsLeft')}`}
             </div>
           </div>
         </div>
@@ -347,19 +350,19 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
               <div className="flex items-center justify-center space-x-2">
                 <Clock size={16} className="text-gray-600" />
-                <span>Departure</span>
+                <span>{t('ferryTicketing.departure')}</span>
               </div>
             </th>
             <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
               <div className="flex items-center justify-center space-x-2">
                 <Clock size={16} className="text-gray-600" />
-                <span>Arrival</span>
+                <span>{t('ferryTicketing.arrival')}</span>
               </div>
             </th>
             <th className="p-4 md:p-6" style={{ textAlign: 'center', fontSize: '1rem', md: 'text-lg' }}>
               <div className="flex items-center justify-center space-x-2">
                 <Ship size={16} className="text-gray-600" />
-                <span>Ship Type</span>
+                <span>{t('ferryTicketing.shipType')}</span>
               </div>
             </th>
             <th className="p-3 md:p-6" style={{ backgroundImage: `url(${PromoLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', fontSize: '1rem', md: 'text-lg' }}>
@@ -397,7 +400,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                       <div className="text-sm font-medium text-blue-600">
                         <span className="flex items-center justify-center">
                           <Ship size={14} className="mr-1" />
-                          {trip.shipType}
+                          {trip.shipType === "Fast Ferry" ? t('ferryTicketing.fastFerry') : trip.shipType}
                         </span>
                       </div>
                     </div>
@@ -435,7 +438,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {promoDisabled ? 'Not enough seats' : `${trip.promoSeats} seats left`}
+                        {promoDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.promoSeats} ${t('ferryTicketing.seatsLeft')}`}
                       </div>
                     </div>
                   </td>
@@ -473,7 +476,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {economyDisabled ? 'Not enough seats' : `${trip.economySeats} seats left`}
+                        {economyDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.economySeats} ${t('ferryTicketing.seatsLeft')}`}
                       </div>
                     </div>
                   </td>
@@ -511,7 +514,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                     <div className="mt-1 flex justify-center">
                       <div className="text-xs flex items-center text-gray-700">
                         <Users size={10} className="mr-1" />
-                        {businessDisabled ? 'Not enough seats' : `${trip.businessSeats} seats left`}
+                        {businessDisabled ? t('ferryTicketing.notEnoughSeats') : `${trip.businessSeats} ${t('ferryTicketing.seatsLeft')}`}
                       </div>
                     </div>
                   </td>
@@ -521,7 +524,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
           ) : (
             <tr>
               <td colSpan="6" className="p-8 text-center text-gray-500">
-                No voyages available for this route and date
+                {t('ferryTicketing.noJourneysFound')}
               </td>
             </tr>
           )}
@@ -541,7 +544,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
         ))
       ) : (
         <div className="p-4 bg-white rounded-lg shadow text-center text-gray-500">
-          No voyages available for this route and date
+          {t('ferryTicketing.noJourneysFound')}
         </div>
       )}
     </div>
@@ -551,7 +554,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
   const renderDepartureSummary = () => {
     const formatDate = (dateString) => {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const locale = i18next.language; // Get current language from i18next
+      return date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
     };
     
     // If no departure selection has been made, show a prompt
@@ -562,7 +566,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <div className="flex items-center justify-between">
               <div className="flex items-center text-blue-600">
                 <Ship size={18} className="mr-2" />
-                <span className="text-lg font-medium">Please select your departure option</span>
+                <span className="text-lg font-medium">{t('ferryTicketing.selectDepartureOption')}</span>
               </div>
               <button 
                 onClick={toggleDepartureCollapse} 
@@ -588,7 +592,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                 <Calendar size={16} className="text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-500">Departure</div>
+                <div className="text-sm text-gray-500">{t('ferryTicketing.departure')}</div>
                 <div className="flex items-center">
                   <span className="font-medium">{formatDate(tripData.departureDate)}</span>
                   <span className="mx-1">•</span>
@@ -598,12 +602,15 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                 </div>
                 <div className="text-xs mt-1 flex items-center">
                   <span className={`capitalize px-2 py-0.5 rounded ${getClassForType(selectedOption.departure.type)}`}>
-                    {selectedOption.departure.type}
+                    {selectedOption.departure.type === "promo" ? t('ferryTicketing.promo') : 
+                     selectedOption.departure.type === "economy" ? t('ferryTicketing.economy') : 
+                     selectedOption.departure.type === "business" ? t('ferryTicketing.business') : 
+                     selectedOption.departure.type}
                   </span>
                   {selectedOption.departure.shipType && (
                     <span className="ml-2 text-blue-600 flex items-center">
                       <Ship size={10} className="mr-1" /> 
-                      {selectedOption.departure.shipType}
+                      {selectedOption.departure.shipType === "Fast Ferry" ? t('ferryTicketing.fastFerry') : selectedOption.departure.shipType}
                     </span>
                   )}
                 </div>
@@ -613,7 +620,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             {/* Base Price and Collapse Button */}
             <div className="flex items-center justify-between md:justify-end md:space-x-4">
               <div className="text-right">
-                <div className="text-sm text-gray-500">Base Price</div>
+                <div className="text-sm text-gray-500">{t('ferryTicketing.pricing.basePrice')}</div>
                 <div className="text-xl font-bold text-blue-600">{convertPrice(basePrice)}{currencySymbols[selectedCurrency]}</div>
               </div>
               
@@ -636,7 +643,8 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     
     const formatDate = (dateString) => {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const locale = i18next.language; // Get current language from i18next
+      return date.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
     };
     
     // If no return selection has been made, show a prompt
@@ -647,7 +655,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             <div className="flex items-center justify-between">
               <div className="flex items-center text-blue-600">
                 <Ship size={18} className="mr-2" />
-                <span className="text-lg font-medium">Please select your return option</span>
+                <span className="text-lg font-medium">{t('ferryTicketing.selectReturnOption')}</span>
               </div>
               <button 
                 onClick={toggleReturnCollapse} 
@@ -673,7 +681,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                 <Calendar size={16} className="text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-500">Return</div>
+                <div className="text-sm text-gray-500">{t('ferryTicketing.returnTrip')}</div>
                 <div className="flex items-center">
                   <span className="font-medium">{formatDate(tripData.returnDate)}</span>
                   <span className="mx-1">•</span>
@@ -683,12 +691,15 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
                 </div>
                 <div className="text-xs mt-1 flex items-center">
                   <span className={`capitalize px-2 py-0.5 rounded ${getClassForType(selectedOption.return.type)}`}>
-                    {selectedOption.return.type}
+                    {selectedOption.return.type === "promo" ? t('ferryTicketing.promo') : 
+                     selectedOption.return.type === "economy" ? t('ferryTicketing.economy') : 
+                     selectedOption.return.type === "business" ? t('ferryTicketing.business') : 
+                     selectedOption.return.type}
                   </span>
                   {selectedOption.return.shipType && (
                     <span className="ml-2 text-blue-600 flex items-center">
                       <Ship size={10} className="mr-1" /> 
-                      {selectedOption.return.shipType}
+                      {selectedOption.return.shipType === "Fast Ferry" ? t('ferryTicketing.fastFerry') : selectedOption.return.shipType}
                     </span>
                   )}
                 </div>
@@ -698,7 +709,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
             {/* Base Price and Collapse Button */}
             <div className="flex items-center justify-between md:justify-end md:space-x-4">
               <div className="text-right">
-                <div className="text-sm text-gray-500">Base Price</div>
+                <div className="text-sm text-gray-500">{t('ferryTicketing.pricing.basePrice')}</div>
                 <div className="text-xl font-bold text-blue-600">{convertPrice(basePrice)}{currencySymbols[selectedCurrency]}</div>
               </div>
               
@@ -719,11 +730,11 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
     <div className="p-4 md:p-8">
       <div className="flex items-center mb-4 md:mb-6">
         <Ship className="text-[#0D3A73] mr-2" size={24} />
-        <h2 className="text-xl md:text-3xl font-bold text-[#0D3A73]">Journey Planning</h2>
+        <h2 className="text-xl md:text-3xl font-bold text-[#0D3A73]">{t('ferryTicketing.journeyPlanning')}</h2>
       </div>
       
       {/* Departure Section */}
-      <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mb-3 md:mb-4">Departure Trip</h3>
+      <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mb-3 md:mb-4">{t('ferryTicketing.departureTrip')}</h3>
       {renderDepartureSummary()}
       
       {!collapsedDeparture && (
@@ -741,7 +752,7 @@ const PlanningPhase = ({tripData, availableVoyages, onSelectDeparture, onSelectR
       {/* Return Section */}
       {tripData.returnDate && (
         <>
-          <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mt-6 md:mt-8 mb-3 md:mb-4">Return Trip</h3>
+          <h3 className="text-lg md:text-2xl font-bold text-[#0D3A73] mt-6 md:mt-8 mb-3 md:mb-4">{t('ferryTicketing.returnTrip')}</h3>
           {renderReturnSummary()}
           
           {!collapsedReturn && (

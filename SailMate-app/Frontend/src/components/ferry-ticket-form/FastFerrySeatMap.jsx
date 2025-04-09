@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, ArrowUpDown, Wind, Toilet, Circle, Gem } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const FastFerrySeatMap = ({ 
   currentDeck, 
@@ -8,6 +9,8 @@ const FastFerrySeatMap = ({
   availableSeats,
   ticketClass 
 }) => {
+  const { t } = useTranslation();
+
   const getClassHighlight = (seatClass) => {
     if (ticketClass === seatClass) return 'border-2 border-blue-500';
     return '';
@@ -66,11 +69,11 @@ const FastFerrySeatMap = ({
   // Helper function to render restrooms
   const renderRestrooms = () => {
     return (
-      <div className="flex flex-col items-center">
-        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
-          <Toilet className="text-blue-600" size={14} />
+      <div className="text-center">
+        <div className="w-12 h-8 bg-gray-200 mx-auto mb-1 rounded-sm flex items-center justify-center text-gray-600 text-xs border border-gray-300">
+          WC
         </div>
-        <span className="text-xs text-blue-700">Restrooms</span>
+        <span className="text-xs text-gray-500">{t('ferryTicketing.facilities.restrooms')}</span>
       </div>
     );
   };
@@ -78,30 +81,34 @@ const FastFerrySeatMap = ({
   // Helper function to render information
   const renderInformation = () => {
     return (
-      <div className="flex flex-col items-center">
-        <div className="bg-blue-100 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
-          <Circle className="text-blue-600" size={14} />
+      <div className="text-center">
+        <div className="w-12 h-8 bg-blue-100 mx-auto mb-1 rounded-sm flex items-center justify-center text-blue-600 text-xs border border-blue-300">
+          i
         </div>
-        <span className="text-xs text-blue-700">Information</span>
+        <span className="text-xs text-gray-500">{t('ferryTicketing.facilities.information')}</span>
       </div>
     );
   };
 
   // Helper function to render stairs with label
-  const renderStairs = (label) => {
+  const renderStairs = () => {
     return (
-      <div className="flex flex-col items-center">
-        <div className="bg-gray-200 p-1 rounded-md flex items-center justify-center w-8 h-8 mb-1">
-          <ArrowUpDown className="text-gray-600" size={14} />
+      <div className="text-center">
+        <div className="w-12 h-8 bg-yellow-100 mx-auto mb-1 rounded-sm flex items-center justify-center text-yellow-700 text-xs border border-yellow-300">
+          ↑↓
         </div>
-        <span className="text-xs text-gray-700">{label}</span>
+        <span className="text-xs text-gray-500">
+          {currentDeck === 'upper' 
+            ? t('ferryTicketing.facilities.toLowerDeck') 
+            : t('ferryTicketing.facilities.toUpperDeck')}
+        </span>
       </div>
     );
   };
 
   const renderUpperDeck = () => (
     <div className="relative">
-      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">Upper Deck</div>
+      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">{t('ferryTicketing.deck.upper')}</div>
       <div className="relative w-full max-w-lg mx-auto bg-gray-100 p-2">
         {/* Windows on left side */}
         <div className="absolute top-0 bottom-0 left-0 flex flex-col justify-around">
@@ -115,7 +122,7 @@ const FastFerrySeatMap = ({
 
         <div className="mb-4">
           <div className="text-center font-bold text-white py-2 bg-red-600 rounded-sm">
-            Business Class
+            {t('ferryTicketing.classLabels.business')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="flex justify-center mb-1">
@@ -132,7 +139,7 @@ const FastFerrySeatMap = ({
 
         <div className="mb-4">
           <div className="text-center font-bold text-white py-2 bg-green-600 rounded-sm">
-            Economy Class
+            {t('ferryTicketing.classLabels.economy')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="grid grid-cols-2 gap-8">
@@ -161,7 +168,7 @@ const FastFerrySeatMap = ({
             </div>
             
             <div className="flex justify-center items-center space-x-8 my-4">
-              {renderStairs('To Lower Deck')}
+              {renderStairs()}
               {renderInformation()}
               {renderRestrooms()}
             </div>
@@ -170,7 +177,7 @@ const FastFerrySeatMap = ({
 
         <div>
           <div className="text-center font-bold text-white py-2 bg-yellow-500 rounded-sm">
-            Promo Class
+            {t('ferryTicketing.classLabels.promo')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="flex justify-center mb-1">
@@ -197,7 +204,7 @@ const FastFerrySeatMap = ({
         
         {/* Stern indicator */}
         <div className="absolute -bottom-8 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">Stern</span>
+          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">{t('ferryTicketing.stern')}</span>
         </div>
       </div>
     </div>
@@ -205,7 +212,7 @@ const FastFerrySeatMap = ({
 
   const renderLowerDeck = () => (
     <div className="relative">
-      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">Main Deck</div>
+      <div className="text-center font-bold text-blue-800 py-2 bg-gray-200">{t('ferryTicketing.deck.main')}</div>
       <div className="relative w-full max-w-lg mx-auto bg-gray-100 p-2">
         {/* Windows on left side */}
         <div className="absolute top-0 bottom-0 left-0 flex flex-col justify-around">
@@ -219,7 +226,7 @@ const FastFerrySeatMap = ({
 
         <div className="mb-4">
           <div className="text-center font-bold text-white py-2 bg-red-600 rounded-sm">
-            Business Class
+            {t('ferryTicketing.classLabels.business')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="flex justify-center mb-1">
@@ -236,7 +243,7 @@ const FastFerrySeatMap = ({
 
         <div className="mb-4">
           <div className="text-center font-bold text-white py-2 bg-green-600 rounded-sm">
-            Economy Class
+            {t('ferryTicketing.classLabels.economy')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="grid grid-cols-2 gap-8">
@@ -265,7 +272,7 @@ const FastFerrySeatMap = ({
             </div>
             
             <div className="flex justify-center items-center space-x-8 my-4">
-              {renderStairs('To Upper Deck')}
+              {renderStairs()}
               {renderInformation()}
               {renderRestrooms()}
             </div>
@@ -274,7 +281,7 @@ const FastFerrySeatMap = ({
 
         <div>
           <div className="text-center font-bold text-white py-2 bg-yellow-500 rounded-sm">
-            Promo Class
+            {t('ferryTicketing.classLabels.promo')}
           </div>
           <div className="bg-white p-3 rounded-sm">
             <div className="flex justify-center mb-1">
@@ -301,7 +308,7 @@ const FastFerrySeatMap = ({
         
         {/* Stern indicator */}
         <div className="absolute -bottom-8 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">Stern</span>
+          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">{t('ferryTicketing.stern')}</span>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaAnchor, FaInfoCircle, FaShip } from 'react-icons/fa';
 import FastFerrySeatMap from './FastFerrySeatMap';
 import SeaBusSeatMap from './SeabusSeatMap';
+import { useTranslation } from 'react-i18next';
 
 const SeatSelectionModal = ({ 
   isOpen, 
@@ -14,6 +15,7 @@ const SeatSelectionModal = ({
   voyageId,
   seatsInformation
 }) => {
+  const { t } = useTranslation();
   const [selectionMode, setSelectionMode] = useState('automatic');
   const [currentDeck, setCurrentDeck] = useState('main');
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -234,7 +236,7 @@ const SeatSelectionModal = ({
           <div className="flex items-center">
             <FaAnchor className="text-blue-800 mr-2" />
             <h2 className="text-xl font-semibold">
-              {isDeparture ? 'Departure' : 'Return'} Seat Selection
+              {isDeparture ? t('ferryTicketing.departureSeatSelection') : t('ferryTicketing.returnSeatSelection')}
             </h2>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -251,7 +253,7 @@ const SeatSelectionModal = ({
                 ${selectionMode === 'automatic' ? 'bg-blue-50 border-blue-500' : 'border-gray-300'}`}
             >
               <span className="mr-2">⚙️</span>
-              Automatic Selection
+              {t('ferryTicketing.automaticSelection')}
             </button>
             <button 
               onClick={handleManualSelection}
@@ -259,7 +261,7 @@ const SeatSelectionModal = ({
                 ${selectionMode === 'manual' ? 'bg-blue-50 border-blue-500' : 'border-gray-300'}`}
             >
               <span className="mr-2">📍</span>
-              Manual Selection
+              {t('ferryTicketing.manualSelection')}
             </button>
           </div>
           
@@ -268,7 +270,7 @@ const SeatSelectionModal = ({
             <div className="mt-4 p-3 bg-blue-50 rounded-md flex flex-col text-blue-800">
               <div className="flex items-center">
                 <FaAnchor className="mr-2" />
-                <span className="font-semibold">Selected seats:</span>
+                <span className="font-semibold">{t('ferryTicketing.selectedSeats')}:</span>
                 <span className="ml-2 text-sm">
                   ({selectedSeats.length}/{passengerCount})
                 </span>
@@ -285,19 +287,19 @@ const SeatSelectionModal = ({
           <div className="px-4 py-3 border-t border-b flex flex-wrap gap-4">
             <div className="flex items-center">
               <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
-              <span className="text-sm">Occupied</span>
+              <span className="text-sm">{t('ferryTicketing.seatLegend.occupied')}</span>
             </div>
             <div className="flex items-center">
               <div className="w-4 h-4 bg-green-100 border border-green-200 rounded mr-2"></div>
-              <span className="text-sm">Available</span>
+              <span className="text-sm">{t('ferryTicketing.seatLegend.available')}</span>
             </div>
             <div className="flex items-center">
               <div className="w-4 h-4 bg-yellow-400 rounded mr-2"></div>
-              <span className="text-sm">Selected</span>
+              <span className="text-sm">{t('ferryTicketing.seatLegend.selected')}</span>
             </div>
             <div className="flex items-center">
               <div className="w-4 h-4 bg-gray-300 rounded mr-2"></div>
-              <span className="text-sm">Restricted</span>
+              <span className="text-sm">{t('ferryTicketing.seatLegend.restricted')}</span>
             </div>
           </div>
         )}
@@ -307,13 +309,13 @@ const SeatSelectionModal = ({
             <div className="p-4">
                 {/* Deck type and class indicators */}
                 <div className="flex justify-between mb-4">
-                <div className="flex items-center">
+                  <div className="flex items-center">
                     <FaShip className="text-blue-700 mr-2" />
                     <span className="font-semibold">{shipType === 'Fast Ferry' ? 'Fast Ferry' : 'Sea Bus'}</span>
-                </div>
-                <div className="flex items-center">
+                  </div>
+                  <div className="flex items-center">
                     <span className="text-gray-600 mr-2">{ticketClass} Class</span>
-                </div>
+                  </div>
                 </div>
 
                 {/* FastFerrySeatMap component */}
@@ -345,20 +347,20 @@ const SeatSelectionModal = ({
                     className={`py-2 px-4 rounded-md ${currentDeck === 'main' ? 
                     'bg-blue-800 text-white' : 'bg-gray-100 text-gray-800'}`}
                 >
-                    <span>Main Deck</span>
+                    <span>{t('ferryTicketing.deck.main')}</span>
                 </button>
                 <button 
                     onClick={() => setCurrentDeck('upper')}
                     className={`py-2 px-4 rounded-md ${currentDeck === 'upper' ? 
                     'bg-blue-800 text-white' : 'bg-gray-100 text-gray-800'}`}
                 >
-                    <span>Upper Deck</span>
+                    <span>{t('ferryTicketing.deck.upper')}</span>
                 </button>
                 </div>
 
                 <div className="text-sm text-gray-500 flex items-center">
                 <FaInfoCircle className="mr-2" />
-                Click on a seat to select it. You can select seats from both decks.
+                {t('ferryTicketing.seatHelp')}
                 </div>
             </div>
             )}
@@ -370,7 +372,7 @@ const SeatSelectionModal = ({
             className="py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
           >
             <FaTimes className="mr-2" />
-            Cancel
+            {t('ferryTicketing.cancel')}
           </button>
           <button 
             onClick={handleConfirm}
@@ -379,7 +381,7 @@ const SeatSelectionModal = ({
               ${selectedSeats.length === passengerCount ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
           >
             <span className="mr-2">✓</span>
-            Confirm Selection
+            {t('ferryTicketing.confirmSelection')}
           </button>
         </div>
       </div>
