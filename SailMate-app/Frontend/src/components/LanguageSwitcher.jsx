@@ -9,7 +9,9 @@ const LanguageSwitcher = () => {
   
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    localStorage.setItem('i18nextLng', lng);
+    const url = new URL(window.location.href);
+    url.searchParams.set('lng', lng);
+    window.history.pushState({}, '', url);
     setIsOpen(false);
   };
 
@@ -29,7 +31,10 @@ const LanguageSwitcher = () => {
 
   // Get current language display text
   const getCurrentLanguage = () => {
-    return i18n.language === 'tr' || i18n.language.startsWith('tr-') ? 'TR' : 'EN';
+    const currentLang = i18n.language;
+    if (currentLang === 'tr' || currentLang.startsWith('tr-')) return 'TR';
+    if (currentLang === 'en' || currentLang.startsWith('en-')) return 'EN';
+    return 'EN'; // Default to EN if language is not recognized
   };
 
   return (

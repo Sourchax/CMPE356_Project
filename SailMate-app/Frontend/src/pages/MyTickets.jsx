@@ -5,7 +5,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import {useSessionToken} from "../utils/sessions.js";
 import { Filter, DollarSign } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -283,12 +283,14 @@ const MyTickets = () => {
 
   // Get ticket status display
   const getTicketStatus = (ticket) => {
-    return isTicketCompleted(ticket) ? "Completed" : "Active";
+    return isTicketCompleted(ticket) ? t('myTickets.completed') : t('myTickets.active');
   };
 
-  // Calculate active and completed ticket counts
-  const activeTickets = tickets.filter(ticket => !isTicketCompleted(ticket)).length;
-  const completedTickets = tickets.filter(ticket => isTicketCompleted(ticket)).length;
+  // Get count of active tickets for the filter badge
+  const activeTicketsCount = tickets.filter(ticket => !isTicketCompleted(ticket)).length;
+  
+  // Get count of completed tickets for the filter badge
+  const completedTicketsCount = tickets.filter(ticket => isTicketCompleted(ticket)).length;
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white">
@@ -316,7 +318,7 @@ const MyTickets = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">{t('myTickets.loading')}</span>
               </div>
               <p className="text-gray-600 mt-4">{t('myTickets.loading')}</p>
             </div>
@@ -351,7 +353,7 @@ const MyTickets = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center text-gray-700 font-medium">
                     <Filter size={18} className="mr-2" />
-                    <span>{t('myTickets.filterByStatus')}:</span>
+                    <span>{t('myTickets.filterByStatus')}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -372,7 +374,7 @@ const MyTickets = () => {
                           : "bg-green-100 text-green-800 hover:bg-green-200"
                       }`}
                     >
-                      {t('myTickets.active')} ({activeTickets})
+                      {t('myTickets.active')} ({activeTicketsCount})
                     </button>
                     <button
                       onClick={() => setStatusFilter("completed")}
@@ -382,7 +384,7 @@ const MyTickets = () => {
                           : "bg-blue-100 text-blue-800 hover:bg-blue-200"
                       }`}
                     >
-                      {t('myTickets.completed')} ({completedTickets})
+                      {t('myTickets.completed')} ({completedTicketsCount})
                     </button>
                   </div>
                 </div>
@@ -397,16 +399,16 @@ const MyTickets = () => {
                     onChange={(e) => setSelectedCurrency(e.target.value)}
                     className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                   >
-                    <option value="TRY">₺ TRY</option>
-                    <option value="USD">$ USD</option>
-                    <option value="EUR">€ EUR</option>
+                    <option value="TRY">Turkish Lira (₺)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
                   </select>
                 </div>
               </div>
 
               {filteredTickets.length === 0 ? (
                 <div className="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-lg">
-                  <p className="text-gray-600 mb-2">{t('myTickets.noFilteredTickets', { status: statusFilter.toLowerCase() })}</p>
+                  <p className="text-gray-600 mb-2">{t('myTickets.noFilteredTickets', { status: t(`myTickets.${statusFilter}`) })}</p>
                   <button 
                     onClick={() => setStatusFilter("all")}
                     className="text-[#0D3A73] font-medium hover:underline"
@@ -424,7 +426,7 @@ const MyTickets = () => {
                           {getLocationDisplay(ticket, 'from')} - {getLocationDisplay(ticket, 'to')}
                         </h3>
                         <span className={`${
-                          getTicketStatus(ticket) === 'Active' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          getTicketStatus(ticket) === t('myTickets.active') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         } px-3 py-1 rounded-full text-sm font-medium`}>
                           {getTicketStatus(ticket)}
                         </span>
@@ -462,7 +464,7 @@ const MyTickets = () => {
                             {t('myTickets.downloadTicket')}
                           </Button>
                           {/* Only show cancel button for active tickets */}
-                          {getTicketStatus(ticket) === 'Active' && (
+                          {getTicketStatus(ticket) === t('myTickets.active') && (
                             <Button
                               onClick={() => handleCancelTicket(ticket)}
                               variant="outline"
@@ -483,7 +485,7 @@ const MyTickets = () => {
           
           <div className="text-center mt-8">
             <p className="text-gray-600">
-              {t('myTickets.needHelp')}
+              {t('myTickets.needHelp')}{" "}
               <span 
                 onClick={navigateToContact} 
                 className="text-[#0D3A73] font-medium hover:text-[#06AED5] underline cursor-pointer transition-colors duration-300"
@@ -516,7 +518,7 @@ const MyTickets = () => {
                 <h3 className="text-lg font-medium text-gray-800 mb-1">
                   {getLocationDisplay(selectedTicket, 'from')} - {getLocationDisplay(selectedTicket, 'to')}
                 </h3>
-                <p className="text-sm text-gray-500">{t('myTickets.ferryTicket')}</p>
+                <p className="text-sm text-gray-500">{t('ticketCancel.ferryTicket')}</p>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -527,7 +529,7 @@ const MyTickets = () => {
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.status')}</p>
                   <p className={`font-medium ${
-                    getTicketStatus(selectedTicket) === 'Active' ? 'text-green-600' : 'text-blue-600'
+                    getTicketStatus(selectedTicket) === t('myTickets.active') ? 'text-green-600' : 'text-blue-600'
                   }`}>
                     {getTicketStatus(selectedTicket)}
                   </p>
@@ -570,7 +572,7 @@ const MyTickets = () => {
                   
                   {/* Currency Selector in Modal */}
                   <div className="flex items-center">
-                    <label className="text-sm text-gray-600 mr-2">{t('myTickets.viewIn')}:</label>
+                    <label className="text-sm text-gray-600 mr-2">{t('myTickets.viewIn')}</label>
                     <select
                       value={selectedCurrency}
                       onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -593,7 +595,7 @@ const MyTickets = () => {
                       <p className="font-medium">{passenger.name} {passenger.surname}</p>
                       <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                         <div>
-                          <p className="text-gray-500">{t('common.birthDate')}</p>
+                          <p className="text-gray-500">{t('myTickets.birthDate')}</p>
                           <p>{passenger.birthDate}</p>
                         </div>
                         <div>
@@ -606,13 +608,13 @@ const MyTickets = () => {
                           <>
                             {passenger.email && (
                               <div>
-                                <p className="text-gray-500">{t('common.email')}</p>
+                                <p className="text-gray-500">{t('myTickets.email')}</p>
                                 <p className="truncate">{passenger.email}</p>
                               </div>
                             )}
                             {passenger.phoneNo && (
                               <div>
-                                <p className="text-gray-500">{t('common.phone')}</p>
+                                <p className="text-gray-500">{t('myTickets.phone')}</p>
                                 <p>{passenger.phoneNo}</p>
                               </div>
                             )}
@@ -635,7 +637,7 @@ const MyTickets = () => {
                 </Button>
                 
                 {/* Add Cancel button in the modal for active tickets */}
-                {getTicketStatus(selectedTicket) === 'Active' && (
+                {getTicketStatus(selectedTicket) === t('myTickets.active') && (
                   <Button
                     onClick={() => {
                       handleCloseModal();

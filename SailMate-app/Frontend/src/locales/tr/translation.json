@@ -119,6 +119,35 @@
       }
     }
   },
+  "weather": {
+    "conditions": "Hava Durumu",
+    "atOurStations": "İstasyonlarımızdaki Hava Durumu",
+    "checkConditions": "SailMate feribot istasyonlarındaki güncel hava koşullarını kontrol edin",
+    "wind": "Rüzgar",
+    "humidity": "Nem",
+    "feelsLike": "Hissedilen",
+    "updatedHourly": "Hava durumu saatlik güncellenir. Son güncelleme",
+    "dataUnavailable": "Hava durumu verisi yok",
+    "error": "Hata",
+    "descriptions": {
+      "clearSky": "açık hava",
+      "mainlyClear": "çoğunlukla açık",
+      "partlyCloudy": "parçalı bulutlu",
+      "overcast": "kapalı",
+      "fog": "sisli",
+      "lightDrizzle": "hafif çiseleme",
+      "freezingDrizzle": "dondurucu çiseleme",
+      "rain": "yağmurlu",
+      "freezingRain": "dondurucu yağmur",
+      "snow": "karlı",
+      "snowGrains": "kar taneleri",
+      "rainShowers": "sağanak yağış",
+      "snowShowers": "kar sağanağı",
+      "thunderstorm": "fırtına",
+      "thunderstormHail": "dolu ile fırtına",
+      "unknown": "bilinmiyor"
+    }
+  },
   "aboutPage": {
     "hero": {
       "title": "Daha Rahat Bir Yolculuk İçin Yelken Açıyoruz",
@@ -221,6 +250,7 @@
     "message": "Mesaj",
     "yourMessage": "Mesajınız",
     "requiredFields": "Zorunlu alanlar",
+    "signInToMessage": "Mesaj göndermek için lütfen giriş yapın",
     "sendMessage": "Mesaj Gönder",
     "formErrors": {
       "nameRequired": "İsim gereklidir",
@@ -296,22 +326,22 @@
   },
   "ticketCancel": {
     "title": "Biletinizi İptal Edin",
-    "subtitle": "İptal etmeniz gerektiği için üzgünüz. Lütfen bilet detaylarınızı aşağıya girin.",
-    "enterTicketId": "Bilet Numaranızı Girin",
-    "ticketIdLabel": "Bilet No / Rezervasyon Numarası",
-    "ticketIdPlaceholder": "Bilet numaranızı girin",
+    "subtitle": "İptal etmek zorunda kaldığınız için üzgünüz. Lütfen bilet detaylarınızı girin.",
+    "enterTicketId": "Bilet ID'nizi Girin",
+    "ticketIdLabel": "Bilet ID / Rezervasyon Numarası",
+    "ticketIdPlaceholder": "Bilet ID'nizi girin",
     "enterReason": "İptal Nedeni (İsteğe Bağlı)",
-    "reasonPlaceholder": "Lütfen neden iptal ettiğinizi bize bildirin",
-    "continueButton": "İptal İşlemine Devam Et",
+    "reasonPlaceholder": "Lütfen neden iptal ettiğinizi belirtin",
+    "continueButton": "İptale Devam Et",
     "retrievingDetails": "Bilet Detayları Alınıyor...",
-    "cancelPolicy": "Lütfen dikkat: Bilet tipinize ve kalkış saatine ne kadar yakın olduğunuza bağlı olarak iptal ücretleri uygulanabilir.",
-    "confirmTitle": "İptali Onaylayın",
+    "cancelPolicy": "Lütfen not: Bilet türünüze ve kalkışa ne kadar yakın iptal ettiğinize bağlı olarak iptal ücretleri uygulanabilir.",
+    "confirmTitle": "İptali Onayla",
     "confirmPrompt": "Biletinizi iptal etmek istediğinizden emin misiniz?",
     "confirmWarning": "Bu işlem geri alınamaz. İade politikaları bilet koşullarınıza göre uygulanacaktır.",
     "confirmButton": "İptali Onayla",
     "goBack": "Geri Dön",
     "ticketDetails": "Bilet Detayları",
-    "id": "Bilet No",
+    "id": "Bilet ID",
     "departureDate": "Kalkış Tarihi",
     "departureTime": "Kalkış Saati",
     "passengerCount": "Yolcu Sayısı",
@@ -322,9 +352,9 @@
     "needHelp": "Yardıma mı ihtiyacınız var?",
     "contactSupport": "Destek ekibimizle iletişime geçin",
     "errorMessages": {
-      "notFound": "Bilet detayları bulunamadı. Lütfen bilet numaranızı kontrol edin ve tekrar deneyin.",
-      "alreadyDeparted": "Bu bilet iptal edilemez çünkü sefer zaten gerçekleşmiş veya tamamlanmıştır.",
-      "cancelError": "Biletinizi iptal ederken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibimizle iletişime geçin."
+      "notFound": "Bilet detayları bulunamadı. Lütfen bilet numarasını kontrol edip tekrar deneyin.",
+      "alreadyDeparted": "Bu bilet iptal edilemez çünkü sefer zaten başlamış veya tamamlanmış.",
+      "cancelError": "Biletiniz iptal edilirken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibimizle iletişime geçin."
     },
     "successMessage": "Biletiniz başarıyla iptal edildi. Kısa süre içinde e-posta gönderilecektir."
   },
@@ -380,7 +410,14 @@
     "invalidPhone": "Lütfen geçerli bir telefon numarası girin",
     "invalidPassword": "Şifre en az 8 karakter olmalıdır",
     "notFound": "Bulunamadı",
-    "serverError": "Sunucu hatası oluştu"
+    "serverError": "Sunucu hatası oluştu",
+    "sameLocations": "Kalkış ve varış noktaları aynı olamaz. Lütfen farklı noktalar seçin.",
+    "invalidPassengers": "Lütfen geçerli bir yolcu sayısı girin.",
+    "adultPassengerRequired": "Çocuklar için en az 1 yetişkin yolcu olmalıdır!",
+    "noVoyagesAvailable": "Seçtiğiniz rota ve tarih için sefer bulunamadı. Lütfen farklı seçenekler deneyin.",
+    "problemSearching": "Sefer aramasında bir sorun oluştu. Lütfen daha sonra tekrar deneyin.",
+    "couldNotLoadStations": "İstasyonlar sunucudan yüklenemedi.",
+    "failedToConnect": "Sunucuya bağlanılamadı."
   },
   "sustainabilityPage": {
     "pageTitle": "Sürdürülebilirlik Taahhüdümüz",

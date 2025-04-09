@@ -18,12 +18,14 @@ import ferry3 from "../assets/images/ferry3.png";
 import ferry4 from "../assets/images/ferry4.png";
 import Button from "../components/Button";
 import WeatherComponent from "../components/WeatherCondition.jsx"
+import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
 const Homepage = () => {
   const navigate = useNavigate();
   const {isSignedIn} = useSession();
+  const { t } = useTranslation();
 
   const [stations, setStations] = useState([]);
   const [stationsLoaded, setStationsLoaded] = useState(false);
@@ -462,11 +464,11 @@ const Homepage = () => {
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto transform -translate-y-6">
           <div className="animate-fade-in-up">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-xl tracking-tight leading-tight">
-              Sail with Comfort <span className="text-[#F0C808]">&</span> Style
+              {t('homepage.hero.title')}
             </h1>
             <div className="w-24 h-1 bg-[#F0C808] mx-auto mb-4"></div>
             <p className="text-base md:text-xl mb-2 drop-shadow-lg font-light max-w-3xl mx-auto leading-relaxed">
-              Fast, reliable ferry service across Turkey's most beautiful waters
+              {t('homepage.hero.subtitle')}
             </p>
           </div>
         </div>
@@ -478,7 +480,7 @@ const Homepage = () => {
         {/* Ferry Tickets Header */}
         <div className="bg-[#0D3A73] text-white rounded-t-xl shadow-lg">
           <div className="py-5 px-8 flex items-center justify-center font-semibold text-lg">
-          <i className="fas fa-ship mr-2"></i> Ferry Tickets
+          <i className="fas fa-ship mr-2"></i> {t('common.tickets')}
             </div>
             <div className="flex items-center">
               <select
@@ -504,7 +506,7 @@ const Homepage = () => {
                 onChange={() => setTripType("one-way")}
                 className="accent-[#06AED5] w-4 h-4"
               /> 
-              <span className="font-medium">One-Way</span>
+              <span className="font-medium">{t('common.oneWay')}</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -513,7 +515,7 @@ const Homepage = () => {
                 onChange={() => setTripType("round-trip")}
                 className="accent-[#06AED5] w-4 h-4"
               /> 
-              <span className="font-medium">Round-Trip</span>
+              <span className="font-medium">{t('common.roundTrip')}</span>
             </label>
           </div>
 
@@ -521,7 +523,7 @@ const Homepage = () => {
           <div className="flex flex-col lg:flex-row justify-between items-end gap-x-2 w-full">
             {/* From Field */}
             <div className="w-full lg:w-1/5">
-              <label className="block text-sm mb-2.5 text-gray-700 font-medium">From</label>
+              <label className="block text-sm mb-2.5 text-gray-700 font-medium">{t('common.from')}</label>
               <select 
                 name="departure"
                 value={formData.departure}
@@ -529,7 +531,7 @@ const Homepage = () => {
                 className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm h-[50px]"
                 required
               >
-                <option value="">Select Departure</option>
+                <option value="">{t('common.selectDeparture')}</option>
                 {stations.map(station => (
                   <option 
                     key={station} 
@@ -562,7 +564,7 @@ const Homepage = () => {
 
             {/* To Field */}
             <div className="w-full lg:w-1/5 mt-4 lg:mt-0">
-              <label className="block text-sm mb-2.5 text-gray-700 font-medium">To</label>
+              <label className="block text-sm mb-2.5 text-gray-700 font-medium">{t('common.to')}</label>
               <select 
                 name="arrival"
                 value={formData.arrival}
@@ -570,7 +572,7 @@ const Homepage = () => {
                 className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm h-[50px]"
                 required
               >
-                <option value="">Select Arrival</option>
+                <option value="">{t('common.selectArrival')}</option>
                 {stations.map(station => (
                   <option 
                     key={station} 
@@ -606,7 +608,7 @@ const Homepage = () => {
               {/* Departure Date */}
               <div className={`w-full ${tripType === "one-way" ? "lg:w-full" : "lg:w-1/2"}`}>
                 <label className="block text-sm mb-2.5 text-gray-700 font-medium">
-                  Departure Date
+                  {t('common.departureDate')}
                 </label>
                 <input 
                   type="date" 
@@ -622,7 +624,7 @@ const Homepage = () => {
               {/* Return Date - For desktop, shown inline when round-trip is selected */}
               {tripType === "round-trip" && (
                 <div className="lg:w-1/2 w-full">
-                  <label className="block text-sm mb-2.5 text-gray-700 font-medium">Return Date</label>
+                  <label className="block text-sm mb-2.5 text-gray-700 font-medium">{t('common.returnDate')}</label>
                   <input 
                     type="date" 
                     name="returnDate"
@@ -638,7 +640,7 @@ const Homepage = () => {
 
             {/* Passengers Field */}
             <div className="w-full lg:w-1/5 mt-4 lg:mt-0 relative">
-              <label className="block text-sm mb-2.5 text-gray-700 font-medium">Passengers</label>
+              <label className="block text-sm mb-2.5 text-gray-700 font-medium">{t('common.passengers')}</label>
               <button
                 id="passenger-dropdown-button"
                 type="button"
@@ -646,7 +648,7 @@ const Homepage = () => {
                 className="w-full p-3.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-left flex justify-between items-center focus:border-[#06AED5] focus:ring-1 focus:ring-[#06AED5] outline-none shadow-sm h-[50px] appearance-none"
                 style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23606060' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
               >
-                <span>{totalPassengers} Passenger{totalPassengers !== 1 ? 's' : ''}</span>
+                <span>{totalPassengers} {totalPassengers === 1 ? t('common.passengerSingular') : t('common.passengersPlural')}</span>
               </button>
               
               {/* Passenger Selection Modal */}
@@ -660,8 +662,8 @@ const Homepage = () => {
                 {/* Adult Passengers */}
                 <div className="flex justify-between items-center mb-5">
                   <div>
-                    <div className="font-medium text-gray-800">Adults</div>
-                    <div className="text-xs text-gray-500 mt-0.5">20+ years</div>
+                    <div className="font-medium text-gray-800">{t('common.adults')}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{t('common.adultsAge')}</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -687,8 +689,8 @@ const Homepage = () => {
                 {/* Student Passengers */}
                 <div className="flex justify-between items-center mb-5">
                   <div>
-                    <div className="font-medium text-gray-800">Students</div>
-                    <div className="text-xs text-gray-500 mt-0.5">8-25 years</div>
+                    <div className="font-medium text-gray-800">{t('common.students')}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{t('common.studentsAge')}</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -714,8 +716,8 @@ const Homepage = () => {
                 {/* Senior Passengers */}
                 <div className="flex justify-between items-center mb-5">
                   <div>
-                    <div className="font-medium text-gray-800">Seniors</div>
-                    <div className="text-xs text-gray-500 mt-0.5">65+ years</div>
+                    <div className="font-medium text-gray-800">{t('common.seniors')}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{t('common.seniorsAge')}</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -739,8 +741,8 @@ const Homepage = () => {
                 </div>          
                 <div className="flex justify-between items-center mb-5">
                   <div>
-                    <div className="font-medium text-gray-800">Child</div>
-                    <div className="text-xs text-gray-500 mt-0.5">0 - 8 years</div>
+                    <div className="font-medium text-gray-800">{t('common.children')}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{t('common.childrenAge')}</div>
                   </div>
                   <div className="flex items-center">
                     <button 
@@ -768,19 +770,19 @@ const Homepage = () => {
                   onClick={togglePassengerModal}
                   className="w-full bg-[#0D3A73] hover:bg-[#0D3A73]/90 text-white py-3 rounded-lg mt-3 transition-colors font-medium shadow-md"
                 >
-                  Apply
+                  {t('common.apply')}
                 </button>
               </div>
             </div>
 
             {/* Search Button */}
             <div className="w-full lg:w-1/5 mt-4 lg:mt-0">
-              <label className="block text-sm mb-2.5 text-gray-700 font-medium opacity-0">Search</label>
+              <label className="block text-sm mb-2.5 text-gray-700 font-medium opacity-0">{t('common.search')}</label>
               <button 
                 type="submit"
                 className="w-full bg-[#0D3A73] text-white p-3.5 rounded-lg text-base font-semibold transition-all duration-300 ease-in-out h-[50px] overflow-hidden homepage-button"
               >
-                <span className="block truncate">Search Tickets</span>
+                <span className="block truncate">{t('common.searchTickets')}</span>
               </button>
             </div>
           </div>
@@ -791,7 +793,7 @@ const Homepage = () => {
       {/* Latest Announcements */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">Latest Announcements</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#0D3A73]">{t('homepage.latestAnnouncements')}</h2>
           <Cards />
         </div>
       </section>
@@ -799,32 +801,32 @@ const Homepage = () => {
       {/* Features Section with Animated Cards */}
       <section className="py-20 bg-[#C5EFC9]/30">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Why Choose SailMate</h2>
-          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Experience the best sea travel with our premium services and customer-focused approach</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">{t('homepage.featuresSection.title')}</h2>
+          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">{t('homepage.featuresIntro')}</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={creditCard} className="w-12 h-12" alt="Secure Payment" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">Secure Payment</h3>
-              <p className="text-gray-700 leading-relaxed">Multiple secure payment options with instant confirmation and e-tickets. We ensure your transaction is safe and protected.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">{t('homepage.featuresSection.feature1.title')}</h3>
+              <p className="text-gray-700 leading-relaxed">{t('homepage.featuresSection.feature1.description')}</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={ship} className="w-12 h-12" alt="Modern Fleet" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">Modern Fleet</h3>
-              <p className="text-gray-700 leading-relaxed">Travel on our modern vessels with comfortable seating, dining options, and entertainment to make your journey enjoyable.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">{t('homepage.featuresSection.feature2.title')}</h3>
+              <p className="text-gray-700 leading-relaxed">{t('homepage.featuresSection.feature2.description')}</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="w-24 h-24 bg-[#06AED5]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                 <img src={passenger} className="w-12 h-12" alt="Customer Service" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">24/7 Support</h3>
-              <p className="text-gray-700 leading-relaxed">Our customer service team is available around the clock to assist you with bookings, changes, or any questions you may have.</p>
+              <h3 className="text-2xl font-bold mb-4 text-[#0D3A73] text-center">{t('homepage.featuresSection.feature3.title')}</h3>
+              <p className="text-gray-700 leading-relaxed">{t('homepage.featuresSection.feature3.description')}</p>
             </div>
           </div>
         </div>
@@ -833,8 +835,8 @@ const Homepage = () => {
       {/* Ferry Slider Section */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">Explore Our Ferries</h2>
-          <p className="text-gray-700 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">Check out our featured ferries and routes to find the perfect journey for you.</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#0D3A73]">{t('homepage.ferryExplorer.title')}</h2>
+          <p className="text-gray-700 mb-12 max-w-3xl mx-auto text-lg leading-relaxed">{t('homepage.ferryExplorer.subtitle')}</p>
           
           {/* Ferry Slider Component */}
           <div className="relative z-10 w-full max-w-5xl mx-auto mt-8">
@@ -842,11 +844,12 @@ const Homepage = () => {
           </div>
         </div>
       </section>
-            {/* Testimonials Section - New Addition */}
+
+      {/* Testimonials Section - New Addition */}
       <section className="py-20 bg-[#C5EFC9]/30">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">What Our Customers Say</h2>
-          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">Hear from travelers who have experienced our services</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">{t('homepage.testimonials.title')}</h2>
+          <p className="text-gray-700 text-center mb-16 max-w-3xl mx-auto text-lg leading-relaxed">{t('homepage.testimonials.subtitle')}</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Testimonial 1 */}
@@ -856,13 +859,13 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">E</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Emir Ö.</h4>
+                  <h4 className="font-semibold text-lg">{t('homepage.testimonials.testimonial1.name')}</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-700 italic leading-relaxed">"The online booking process was so easy, and the ferry was clean and comfortable. Will definitely use SailMate for my next trip!"</p>
+              <p className="text-gray-700 italic leading-relaxed">{t('homepage.testimonials.testimonial1.text')}</p>
             </div>
             
             {/* Testimonial 2 */}
@@ -872,13 +875,13 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">K</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Ozan K.</h4>
+                  <h4 className="font-semibold text-lg">{t('homepage.testimonials.testimonial2.name')}</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-700 italic leading-relaxed">"I travel weekly between Yenikapı and Bandırma, and SailMate has made my commute so much more pleasant. The staff is always friendly and helpful."</p>
+              <p className="text-gray-700 italic leading-relaxed">{t('homepage.testimonials.testimonial2.text')}</p>
             </div>
             
             {/* Testimonial 3 */}
@@ -888,13 +891,13 @@ const Homepage = () => {
                   <span className="text-[#06AED5] font-bold text-xl">E</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-lg">Ekin A.</h4>
+                  <h4 className="font-semibold text-lg">{t('homepage.testimonials.testimonial3.name')}</h4>
                   <div className="flex text-[#F0C808]">
                     <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-700 italic leading-relaxed">"The views during the journey were spectacular! The ferry was on time and the seating was comfortable. Would recommend to anyone traveling in the area."</p>
+              <p className="text-gray-700 italic leading-relaxed">{t('homepage.testimonials.testimonial3.text')}</p>
             </div>
           </div>
         </div>

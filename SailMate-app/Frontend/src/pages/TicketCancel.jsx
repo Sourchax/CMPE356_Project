@@ -4,8 +4,8 @@ import { Ticket, MessageSquare, Calendar, Clock, Users, Map, Anchor, DollarSign 
 import Button from "../components/Button";
 import axios from "axios";
 import { useSessionToken } from "../utils/sessions.js";
+import { useTranslation } from "react-i18next";
 import '../assets/styles/ticketcancel.css';
-import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
@@ -171,80 +171,104 @@ const TicketCancel = () => {
     return `${symbol}${convertPrice(price)}`;
   };
 
-  // Handle fetch ticket details
-  const handleFetchTicket = async (e) => {
-    if (e) e.preventDefault();
-    
-    // If the ticketId is empty, show an error
-    if (!ticketId.trim()) {
-      displayError(t('ticketCancel.errorMessages.notFound'));
-      return;
-    }
-    
-    setFetchingDetails(true);
-    setErrorMessage("");
-    setShowError(false);
-    
-    try {
-      // First, try to fetch ticket by ticketID
-      const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
-        headers: {
-          Authorization: `Bearer ${useSessionToken()}`
-        }
-      });
-      
-      if (response.data) {
-        const ticket = response.data;
-        
-        // Check if the voyage is expired (departure time has passed)
-        if (isVoyageExpired(ticket)) {
-          displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
-          setFetchingDetails(false);
-          return;
-        }
-        
-        setTicketDetails(ticket);
-        setShowConfirmation(true);
-      }
-    } catch (err) {
-      console.error("Error fetching ticket:", err);
-      displayError(t('ticketCancel.errorMessages.notFound'));
-    } finally {
-      setFetchingDetails(false);
-    }
-  };
-
-  // Handle cancellation confirmation
-  const handleConfirmCancel = async () => {
-    if (!ticketDetails) return;
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
     
-    try {
-      // Call API to cancel the ticket
-      await axios.post(`${API_URL}/tickets/cancel/${ticketDetails.id}`, 
-        { reason },
-        {
+    // Fetch ticket details if not already available
+    if (!ticketDetails) {
+      try {
+        setFetchingDetails(true);
+        // Use the correct endpoint from your controller - "/ticketID/{ticketID}"
+        const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
           headers: {
             Authorization: `Bearer ${useSessionToken()}`
           }
+        });
+        
+        if (response.data) {
+          // Check if the voyage is expired/completed
+          if (isVoyageExpired(response.data)) {
+            setLoading(false);
+            setFetchingDetails(false);
+            displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+            return;
+          }
+          
+          setTicketDetails(response.data);
+          setShowConfirmation(true);
+        } else {
+          throw new Error("Ticket not found");
         }
-      );
-      
-      // Show success message and redirect to homepage or user tickets
-      alert(t('ticketCancel.successMessage'));
-      
-      // Redirect back to my-tickets if coming from there
-      if (location.state && location.state.from === 'my-tickets') {
-        navigate('/my-tickets');
-      } else {
-        navigate('/');
+      } catch (error) {
+        console.error("Error fetching ticket details:", error);
+        displayError(t('ticketCancel.errorMessages.notFound'));
+      } finally {
+        setFetchingDetails(false);
+        setLoading(false);
+      }
+    } else {
+      // If we already have ticket details, check if voyage is expired
+      if (isVoyageExpired(ticketDetails)) {
+        setLoading(false);
+        displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+        return;
       }
       
-    } catch (err) {
-      console.error("Error cancelling ticket:", err);
-      displayError(t('ticketCancel.errorMessages.cancelError'));
+      // If not expired, show confirmation
       setLoading(false);
+      setShowConfirmation(true);
+    }
+  };
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    
+    try {
+      // First, double-check if the voyage is expired (in case time passed during confirmation)
+      if (isVoyageExpired(ticketDetails)) {
+        setLoading(false);
+        displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+        setShowConfirmation(false);
+        return;
+      }
+      
+      // Use the correct endpoint for deletion - with numeric ID
+      if (ticketDetails && ticketDetails.id) {
+        await axios.delete(`${API_URL}/tickets/${ticketDetails.id}`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+
+        const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-cancelled`, null, {
+          params: {
+            ticketData: ticketDetails.selectedSeats,
+            voyageId: ticketDetails.voyageId
+          },
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        setLoading(false);
+        
+        // Show success message before redirecting
+        alert(t('ticketCancel.successMessage'));
+        
+        // Reset form and return to My Tickets
+        setTicketId("");
+        setReason("");
+        setShowConfirmation(false);
+        setTicketDetails(null);
+        navigate("/my-tickets");
+      } else {
+        throw new Error("Missing ticket ID for cancellation");
+      }
+    } catch (error) {
+      console.error("Error cancelling ticket:", error);
+      setLoading(false);
+      displayError(t('ticketCancel.errorMessages.cancelError'));
     }
   };
 
@@ -326,7 +350,7 @@ const TicketCancel = () => {
 
         <div className="bg-white rounded-lg shadow-lg w-full max-w-[500px] p-6 mb-8 animate-[fadeIn_1s_ease-out]">
           {!showConfirmation ? (
-            <form onSubmit={handleFetchTicket} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label htmlFor="ticket-id" className="block text-sm font-medium text-gray-700 font-sans">
                   {t('ticketCancel.ticketIdLabel')}
@@ -337,7 +361,7 @@ const TicketCancel = () => {
                     id="ticket-id" 
                     value={ticketId}
                     onChange={(e) => setTicketId(e.target.value)}
-                    placeholder={t('ticketCancel.ticketIdPlaceholder')} 
+                    placeholder={t('ticketCancel.ticketIdPlaceholder')}
                     required 
                     className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none font-sans"
                   />
@@ -354,7 +378,7 @@ const TicketCancel = () => {
                     id="reason" 
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    placeholder={t('ticketCancel.reasonPlaceholder')} 
+                    placeholder={t('ticketCancel.reasonPlaceholder')}
                     rows="3"
                     className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none resize-none font-sans"
                   ></textarea>
@@ -367,8 +391,8 @@ const TicketCancel = () => {
                 variant="primary"
                 fullWidth
                 size="lg"
-                loading={fetchingDetails}
-                disabled={fetchingDetails}
+                loading={loading || fetchingDetails}
+                disabled={loading || fetchingDetails}
                 className="ticketcancel-button"
               >
                 {fetchingDetails ? t('ticketCancel.retrievingDetails') : t('ticketCancel.continueButton')}
@@ -414,7 +438,7 @@ const TicketCancel = () => {
                       <h3 className="font-bold text-gray-800 text-lg mb-1">
                         {getLocationDisplay(ticketDetails, 'from')} - {getLocationDisplay(ticketDetails, 'to')}
                       </h3>
-                      <p className="text-sm text-gray-500">{t('common.ferryTicket')}</p>
+                      <p className="text-sm text-gray-500">{t('ticketCancel.ferryTicket')}</p>
                     </div>
                     
                     <div className="space-y-3">
@@ -423,22 +447,6 @@ const TicketCancel = () => {
                         <div>
                           <p className="text-sm text-gray-500">{t('ticketCancel.id')}</p>
                           <p className="font-medium">{ticketDetails.ticketID}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start">
-                        <Calendar className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
-                        <div>
-                          <p className="text-sm text-gray-500">{t('common.from')}</p>
-                          <p className="font-medium">{getLocationDisplay(ticketDetails, 'from')}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start">
-                        <Clock className="mr-2 text-gray-600 mt-1 flex-shrink-0" size={16} />
-                        <div>
-                          <p className="text-sm text-gray-500">{t('common.to')}</p>
-                          <p className="font-medium">{getLocationDisplay(ticketDetails, 'to')}</p>
                         </div>
                       </div>
                       
@@ -508,7 +516,7 @@ const TicketCancel = () => {
                   {t('ticketCancel.goBack')}
                 </Button>
                 <Button 
-                  onClick={handleConfirmCancel}
+                  onClick={handleConfirm}
                   variant="primary"
                   size="lg"
                   loading={loading}

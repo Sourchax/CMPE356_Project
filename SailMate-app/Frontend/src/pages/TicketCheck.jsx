@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
 import { useSessionToken } from "../utils/sessions";
 import axios from "axios";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -123,12 +123,12 @@ const TicketCheck = () => {
           
           setShowStatus(true);
         } else {
-          setError(t('ticketCheck.errorMessage'));
+          setError("The email provided does not match our records for this ticket.");
         }
       }
     } catch (err) {
       console.error("Error fetching ticket:", err);
-      setError(t('ticketCheck.errorMessage'));
+      setError("Ticket not found or invalid information provided. Please check your ticket ID and email.");
     } finally {
       setLoading(false);
     }
@@ -307,7 +307,7 @@ const TicketCheck = () => {
                       id="ticket-id" 
                       value={ticketId}
                       onChange={(e) => setTicketId(e.target.value)}
-                      placeholder={t('ticketCheck.ticketIdPlaceholder')} 
+                      placeholder={t('ticketCheck.ticketIdPlaceholder')}
                       required 
                       className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
                     />
@@ -325,7 +325,7 @@ const TicketCheck = () => {
                       id="email" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t('ticketCheck.emailPlaceholder')} 
+                      placeholder={t('ticketCheck.emailPlaceholder')}
                       required 
                       className="w-full py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#06AED5] focus:border-[#06AED5] focus:outline-none"
                     />
@@ -335,7 +335,7 @@ const TicketCheck = () => {
                 
                 {error && (
                   <div className="bg-red-50 p-3 rounded-md">
-                    <p className="text-red-700 text-sm">{error}</p>
+                    <p className="text-red-700 text-sm">{t('ticketCheck.errorMessage')}</p>
                   </div>
                 )}
                 
@@ -359,7 +359,7 @@ const TicketCheck = () => {
                   <h2 className="text-2xl font-bold text-gray-800 font-sans">{t('ticketCheck.ticketStatus')}</h2>
                   <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>
                     <span className={`font-medium ${getStatusColor(ticketDetails.status)}`}>
-                      {t(`ticketCheck.status.${ticketDetails.status.toLowerCase()}`)}
+                      {ticketDetails.status}
                     </span>
                   </div>
                 </div>
@@ -383,7 +383,7 @@ const TicketCheck = () => {
                   <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                     <span className="text-gray-600 font-sans flex items-center">
                       <Ticket size={16} className="mr-2 text-gray-500" />
-                      {t('common.tickets')}:
+                      {t('ticketCheck.ticketIdLabel')}:
                     </span>
                     <span className="font-medium text-gray-700 font-sans">{ticketDetails.ticketID}</span>
                   </div>
@@ -441,69 +441,116 @@ const TicketCheck = () => {
                 
                 {/* Passenger Information Section */}
                 {ticketDetails.passengers && ticketDetails.passengers.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="text-lg font-bold text-gray-800 mb-3 font-sans">{t('ticketCheck.passengerInfo')}</h3>
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full border-collapse">
-                        <thead>
-                          <tr className="border-b border-gray-300">
-                            <th className="text-left py-2 pr-2 font-medium text-gray-700">{t('common.firstName')}</th>
-                            <th className="text-left py-2 pr-2 font-medium text-gray-700">{t('common.lastName')}</th>
-                            <th className="text-left py-2 pr-2 font-medium text-gray-700">{t('ticketCheck.birthDate')}</th>
-                            <th className="text-left py-2 pr-2 font-medium text-gray-700">{t('common.email')}</th>
-                            <th className="text-left py-2 pr-2 font-medium text-gray-700">{t('ticketCheck.phoneNumber')}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ticketDetails.passengers.map((passenger, index) => (
-                            <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : ""}>
-                              <td className="py-2 pr-2">{passenger.firstName || "-"}</td>
-                              <td className="py-2 pr-2">{passenger.lastName || "-"}</td>
-                              <td className="py-2 pr-2">{formatDate(passenger.birthDate) || "-"}</td>
-                              <td className="py-2 pr-2">{passenger.email || "-"}</td>
-                              <td className="py-2 pr-2">{passenger.phone || "-"}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  <div className="bg-gray-50 rounded-md p-4">
+                    <h3 className="text-gray-800 font-medium mb-3 flex items-center">
+                      <Users size={16} className="mr-2 text-gray-600" />
+                      {t('ticketCheck.passengerInfo')}
+                    </h3>
+                    
+                    <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                      {ticketDetails.passengers.map((passenger, index) => (
+                        <div key={index} className="bg-white p-3 rounded border border-gray-200">
+                          <div className="flex items-center mb-2">
+                            <User size={14} className="mr-2 text-gray-500" />
+                            <span className="font-medium">{passenger.name} {passenger.surname}</span>
+                            {passenger.passengerType && (
+                              <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
+                                {passenger.passengerType}
+                              </span>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {passenger.birthDate && (
+                              <div>
+                                <p className="text-gray-500">{t('ticketCheck.birthDate')}:</p>
+                                <p>{passenger.birthDate}</p>
+                              </div>
+                            )}
+                            {passenger.email && (
+                              <div>
+                                <p className="text-gray-500">{t('common.email')}:</p>
+                                <p className="truncate">{passenger.email}</p>
+                              </div>
+                            )}
+                            {passenger.phoneNo && (
+                              <div className="col-span-2">
+                                <p className="text-gray-500">{t('ticketCheck.phoneNumber')}:</p>
+                                <p>{passenger.phoneNo}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
                 
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                  <Button 
-                    variant="primary"
-                    size="lg"
-                    className="download-button ticketcheck-button"
-                    onClick={handleDownloadTicket}
-                  >
-                    {t('ticketCheck.downloadTicket')}
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="back-button ticketcheck-button"
-                    onClick={handleBackToSearch}
-                  >
-                    {t('ticketCheck.goBack')}
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-center mt-4 pt-4 border-t border-gray-200 text-center">
-                  <div>
-                    <p className="text-gray-600 font-sans">{t('ticketCheck.needHelp')}</p>
-                    <button 
-                      onClick={navigateToContact}
-                      className="text-[#0D3A73] hover:text-[#06AED5] text-sm font-medium transition-colors"
-                    >
-                      {t('ticketCheck.contactSupport')}
-                    </button>
+                {ticketDetails.status.toLowerCase() === "confirmed" && (
+                  <div className="bg-green-50 rounded-md p-4">
+                    <p className="text-sm text-green-700 font-sans">
+                      {t('ticketCheck.status.confirmed')}
+                    </p>
                   </div>
-                </div>
+                )}
+                
+                {ticketDetails.status.toLowerCase() === "upcoming" && (
+                  <div className="bg-blue-50 rounded-md p-4">
+                    <p className="text-sm text-blue-700 font-sans">
+                      {t('ticketCheck.status.upcoming')}
+                    </p>
+                  </div>
+                )}
+                
+                {ticketDetails.status.toLowerCase() === "completed" && (
+                  <div className="bg-gray-50 rounded-md p-4">
+                    <p className="text-sm text-gray-700 font-sans">
+                      {t('ticketCheck.status.completed')}
+                    </p>
+                  </div>
+                )}
+                
+                {ticketDetails.status.toLowerCase() === "canceled" && (
+                  <div className="bg-red-50 rounded-md p-4">
+                    <p className="text-sm text-red-700 font-sans">
+                      {t('ticketCheck.status.canceled')}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <Button 
+                  onClick={handleBackToSearch}
+                  variant="outline"
+                  size="lg"
+                  className="ticketcancel-button px-4 py-3 text-base w-full"
+                >
+                  {t('ticketCheck.goBack')}
+                </Button>
+                <Button 
+                  onClick={handleDownloadTicket}
+                  variant="primary"
+                  size="lg"
+                  disabled={ticketDetails.status.toLowerCase() === "canceled"}
+                  className="ticketcheck-button px-4 py-3 text-base w-full"
+                >
+                  {t('ticketCheck.downloadTicket')}
+                </Button>
               </div>
             </div>
           )}
+          
+          <div className="mt-6 text-center text-gray-600">
+            <p className="font-sans">
+              {t('ticketCheck.needHelp')}{" "}
+              <span 
+                onClick={navigateToContact} 
+                className="text-[#0D3A73] font-medium hover:brightness-90 underline cursor-pointer transition-all duration-300 ease-in-out font-sans"
+              >
+                {t('ticketCheck.contactSupport')}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
     </div>

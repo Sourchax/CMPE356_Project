@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 const WeatherComponent = () => {
+  const { t } = useTranslation();
   const [weatherData, setWeatherData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -165,22 +167,22 @@ const WeatherComponent = () => {
 
   // Function to get more descriptive weather text
   const getWeatherDescription = (code) => {
-    if (code === 0) return "clear sky";
-    if (code === 1) return "mainly clear";
-    if (code === 2) return "partly cloudy";
-    if (code === 3) return "overcast";
-    if (code >= 45 && code <= 48) return "fog";
-    if (code >= 51 && code <= 55) return "light drizzle";
-    if (code >= 56 && code <= 57) return "freezing drizzle";
-    if (code >= 61 && code <= 65) return "rain";
-    if (code >= 66 && code <= 67) return "freezing rain";
-    if (code >= 71 && code <= 75) return "snow";
-    if (code === 77) return "snow grains";
-    if (code >= 80 && code <= 82) return "rain showers";
-    if (code >= 85 && code <= 86) return "snow showers";
-    if (code === 95) return "thunderstorm";
-    if (code >= 96 && code <= 99) return "thunderstorm with hail";
-    return "unknown";
+    if (code === 0) return "weather.descriptions.clearSky";
+    if (code === 1) return "weather.descriptions.mainlyClear";
+    if (code === 2) return "weather.descriptions.partlyCloudy";
+    if (code === 3) return "weather.descriptions.overcast";
+    if (code >= 45 && code <= 48) return "weather.descriptions.fog";
+    if (code >= 51 && code <= 55) return "weather.descriptions.lightDrizzle";
+    if (code >= 56 && code <= 57) return "weather.descriptions.freezingDrizzle";
+    if (code >= 61 && code <= 65) return "weather.descriptions.rain";
+    if (code >= 66 && code <= 67) return "weather.descriptions.freezingRain";
+    if (code >= 71 && code <= 75) return "weather.descriptions.snow";
+    if (code === 77) return "weather.descriptions.snowGrains";
+    if (code >= 80 && code <= 82) return "weather.descriptions.rainShowers";
+    if (code >= 85 && code <= 86) return "weather.descriptions.snowShowers";
+    if (code === 95) return "weather.descriptions.thunderstorm";
+    if (code >= 96 && code <= 99) return "weather.descriptions.thunderstormHail";
+    return "weather.descriptions.unknown";
   };
 
   // Function to convert OpenMeteo weather codes to OpenWeatherMap icon codes
@@ -304,7 +306,7 @@ const WeatherComponent = () => {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0D3A73]">Weather Conditions</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0D3A73]">{t('weather.conditions')}</h2>
         <div className="flex justify-center items-center h-40">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0D3A73]"></div>
         </div>
@@ -315,9 +317,9 @@ const WeatherComponent = () => {
   if (error && weatherData.length === 0) {
     return (
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0D3A73]">Weather Conditions</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0D3A73]">{t('weather.conditions')}</h2>
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error: </strong>
+          <strong className="font-bold">{t('error')}: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
       </div>
@@ -327,9 +329,9 @@ const WeatherComponent = () => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">Weather at Our Stations</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#0D3A73]">{t('weather.atOurStations')}</h2>
         <p className="text-gray-700 text-center mb-12 max-w-3xl mx-auto text-lg leading-relaxed">
-          Check current weather conditions at SailMate's ferry stations
+          {t('weather.checkConditions')}
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">
@@ -347,7 +349,7 @@ const WeatherComponent = () => {
                   {city.weather && city.weather[0] && city.weather[0].icon ? (
                     <img 
                       src={getWeatherIcon(city.weather[0].icon)} 
-                      alt={city.weather[0].description}
+                      alt={t(city.weather[0].description)}
                       className="w-16 h-16"
                     />
                   ) : (
@@ -360,31 +362,31 @@ const WeatherComponent = () => {
                 </div>
                 
                 <div className="text-sm text-gray-600 capitalize mt-1">
-                  {city.weather?.[0]?.description || "Weather data unavailable"}
+                  {city.weather?.[0]?.description ? t(city.weather[0].description) : t('weather.dataUnavailable')}
                 </div>
                 
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <div className="text-left">
-                    <div className="text-xs text-gray-500">Wind</div>
+                    <div className="text-xs text-gray-500">{t('weather.wind')}</div>
                     <div className="font-medium">{Math.round(city.wind?.speed || 0)} km/h</div>
                   </div>
                   
                   <div className="text-left">
-                    <div className="text-xs text-gray-500">Humidity</div>
+                    <div className="text-xs text-gray-500">{t('weather.humidity')}</div>
                     <div className="font-medium">{city.main?.humidity || 0}%</div>
                   </div>
                 </div>
               </div>
               
               <div className="bg-[#0D3A73]/10 p-2 text-center text-sm text-[#0D3A73]">
-                <span className="font-medium">Feels like: {Math.round(city.main.feels_like)}°C</span>
+                <span className="font-medium">{t('weather.feelsLike')}: {Math.round(city.main.feels_like)}°C</span>
               </div>
             </div>
           ))}
         </div>
         
         <div className="text-center mt-8 text-sm text-gray-500">
-          <p>Weather data updated hourly. Last updated: {new Date().toLocaleTimeString()}</p>
+          <p>{t('weather.updatedHourly')}: {new Date().toLocaleTimeString()}</p>
         </div>
       </div>
     </section>

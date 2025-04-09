@@ -43,43 +43,43 @@ const Contact = () => {
     switch (name) {
       case 'name':
         if (!value.trim()) {
-          error = "Name is required";
+          error = t('contactPage.formErrors.nameRequired');
         } else if (value.trim().length < 2) {
-          error = "Name must be at least 2 characters";
+          error = t('contactPage.formErrors.nameMinLength');
         } else if (value.trim().length > 50) {
-          error = "Name cannot exceed 50 characters";
+          error = t('contactPage.formErrors.nameMaxLength');
         } else if (!/^[a-zA-Z\s'-]+$/.test(value)) {
-          error = "Name can only contain letters, spaces, hyphens and apostrophes";
+          error = t('contactPage.formErrors.nameInvalid');
         }
         break;
         
       case 'email':
         if (!value.trim()) {
-          error = "Email is required";
+          error = t('contactPage.formErrors.emailRequired');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          error = "Please enter a valid email address";
+          error = t('contactPage.formErrors.emailInvalid');
         } else if (value.length > 100) {
-          error = "Email cannot exceed 100 characters";
+          error = t('contactPage.formErrors.emailMaxLength');
         }
         break;
         
       case 'subject':
         if (!value.trim()) {
-          error = "Subject is required";
+          error = t('contactPage.formErrors.subjectRequired');
         } else if (value.trim().length < 3) {
-          error = "Subject must be at least 3 characters";
+          error = t('contactPage.formErrors.subjectMinLength');
         } else if (value.trim().length > 100) {
-          error = "Subject cannot exceed 100 characters";
+          error = t('contactPage.formErrors.subjectMaxLength');
         }
         break;
         
       case 'message':
         if (!value.trim()) {
-          error = "Message is required";
+          error = t('contactPage.formErrors.messageRequired');
         } else if (value.trim().length < 10) {
-          error = "Message must be at least 10 characters";
+          error = t('contactPage.formErrors.messageMinLength');
         } else if (value.trim().length > 1000) {
-          error = "Message cannot exceed 1000 characters";
+          error = t('contactPage.formErrors.messageMaxLength');
         }
         break;
         
@@ -176,7 +176,7 @@ const Contact = () => {
         }, 5000);
       } catch (error) {
         console.error("Error submitting complaint:", error);
-        setSubmitError("There was an error submitting your message. Please try again later.");
+        setSubmitError(t('contactPage.formErrors.submitError'));
       } finally {
         setLoading(false);
       }
@@ -203,8 +203,8 @@ const Contact = () => {
       
       <div className="contact-content">
         <div className="contact-info">
-          <h2>Get in Touch</h2>
-          <p>We'd love to hear from you. Fill out the form and we'll respond as soon as possible.</p>
+          <h2>{t('contactPage.getInTouch')}</h2>
+          <p>{t('contactPage.getInTouchText')}</p>
           
           <div className="contact-details">
             <div className="contact-detail-item">
@@ -212,7 +212,7 @@ const Contact = () => {
                 <MapPin size={20} />
               </div>
               <div>
-                <h3>Our Location</h3>
+                <h3>{t('contactPage.ourLocation')}</h3>
                 <p>Cibali, Kadir Has Cd., 34083 Cibali / Fatih/İstanbul</p>
               </div>
             </div>
@@ -222,7 +222,7 @@ const Contact = () => {
                 <Phone size={20} />
               </div>
               <div>
-                <h3>Phone Number</h3>
+                <h3>{t('contactPage.phoneNumber')}</h3>
                 <p>+90 546 434 20 22</p>
               </div>
             </div>
@@ -232,7 +232,7 @@ const Contact = () => {
                 <Mail size={20} />
               </div>
               <div>
-                <h3>Email Address</h3>
+                <h3>{t('contactPage.emailAddress')}</h3>
                 <p>sailmatesup@gmail.com</p>
               </div>
             </div>
@@ -242,26 +242,26 @@ const Contact = () => {
                 <Clock size={20} />
               </div>
               <div>
-                <h3>Working Hours</h3>
-                <p>Mon-Fri: 9am - 6pm</p>
+                <h3>{t('contactPage.workingHours')}</h3>
+                <p>{t('contactPage.workingHoursValue')}</p>
               </div>
             </div>
           </div>
           
           <div className="contact-social">
-            <h3>Follow Us</h3>
+            <h3>{t('contactPage.followUs')}</h3>
             <div className="social-icons">
               <a href="https://www.facebook.com/profile.php?id=61573753716618" className="social-icon facebook">
                 <FaFacebookF size={18} />
-                <span className="tooltip">Facebook</span>
+                <span className="tooltip">{t('contactPage.facebookTooltip')}</span>
               </a>
               <a href="https://x.com/sailmate221538" className="social-icon twitter">
                 <FaXTwitter size={18} />
-                <span className="tooltip">X</span>
+                <span className="tooltip">{t('contactPage.twitterTooltip')}</span>
               </a>
               <a href="https://www.instagram.com/sailmate_/" className="social-icon instagram">
                 <FaInstagram size={18} />
-                <span className="tooltip">Instagram</span>
+                <span className="tooltip">{t('contactPage.instagramTooltip')}</span>
               </a>
             </div>
           </div>
@@ -269,12 +269,12 @@ const Contact = () => {
         
         <div className="contact-form-container">
           <div className="contact-form">
-            <span className="heading">Contact Us</span>
+            <span className="heading">{t('contactPage.contactUs')}</span>
             
             {submitted && (
               <div className="success-message">
                 <i className="fas fa-check-circle"></i>
-                <p>Thank you for your message! We'll get back to you soon.</p>
+                <p>{t('contactPage.successMessage')}</p>
               </div>
             )}
             
@@ -286,7 +286,7 @@ const Contact = () => {
             
             <form onSubmit={handleSubmit} noValidate>
               <div className="form-group">
-                <label htmlFor="name">Full Name <span className="required">*</span></label>
+                <label htmlFor="name">{t('contactPage.fullName')} <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="text" 
@@ -295,7 +295,7 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Your name"
+                    placeholder={t('contactPage.yourName')}
                     className={`${errors.name ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.name ? "true" : "false"}
                     aria-describedby={errors.name ? "name-error" : undefined}
@@ -309,7 +309,7 @@ const Contact = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="email">Email Address <span className="required">*</span></label>
+                <label htmlFor="email">{t('contactPage.emailAddress')} <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="email" 
@@ -318,7 +318,7 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Your email"
+                    placeholder={t('contactPage.yourEmail')}
                     className={`${errors.email ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.email ? "true" : "false"}
                     aria-describedby={errors.email ? "email-error" : undefined}
@@ -332,7 +332,7 @@ const Contact = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="subject">Subject <span className="required">*</span></label>
+                <label htmlFor="subject">{t('contactPage.subject')} <span className="required">*</span></label>
                 <div className="input-with-icon">
                   <input 
                     type="text" 
@@ -341,7 +341,7 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Message subject"
+                    placeholder={t('contactPage.messageSubject')}
                     className={`${errors.subject ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.subject ? "true" : "false"}
                     aria-describedby={errors.subject ? "subject-error" : undefined}
@@ -355,7 +355,7 @@ const Contact = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="message">Message <span className="required">*</span></label>
+                <label htmlFor="message">{t('contactPage.message')} <span className="required">*</span></label>
                 <div className="textarea-with-icon">
                   <textarea 
                     id="message" 
@@ -363,7 +363,7 @@ const Contact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Your message"
+                    placeholder={t('contactPage.yourMessage')}
                     className={`${errors.message ? "error" : ""} ${!isSignedIn ? "bg-gray-100 opacity-70 cursor-not-allowed" : ""}`}
                     aria-invalid={errors.message ? "true" : "false"}
                     aria-describedby={errors.message ? "message-error" : undefined}
@@ -378,14 +378,14 @@ const Contact = () => {
               </div>
               
               <div className="form-note">
-                <span className="required">*</span> Required fields
+                <span className="required">*</span> {t('contactPage.requiredFields')}
               </div>
               
               {!isSignedIn ? (
                 <div className="mt-6 p-6 bg-gray-50 border border-dashed border-gray-200 rounded-lg text-center animate-pulse">
                   <div className="flex items-center justify-center gap-3 text-gray-600 mb-4">
                     <LogIn size={18} />
-                    <p className="m-0 text-base">Please sign in to send us a message</p>
+                    <p className="m-0 text-base">{t('contactPage.signInToMessage')}</p>
                   </div>
                   <Button 
                     type="button"
@@ -395,7 +395,7 @@ const Contact = () => {
                     className="font-medium transition-all duration-300 mt-4"
                     onClick={() => navigate("/sign-in")}
                   >
-                    Sign In
+                    {t('common.login')}
                   </Button>
                 </div>
               ) : (
@@ -407,7 +407,7 @@ const Contact = () => {
                   size="lg"
                   className="contact-submit-btn mt-4"
                 >
-                  Send Message
+                  {t('contactPage.sendMessage')}
                 </Button>
               )}
             </form>
