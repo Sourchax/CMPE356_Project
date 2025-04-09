@@ -215,7 +215,7 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
 
         <div className="relative">
           <label className="block text-gray-700 font-medium mb-1">
-            Birth Date <span className="text-red-500">*</span>
+            {t('common.birthDate')} <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
