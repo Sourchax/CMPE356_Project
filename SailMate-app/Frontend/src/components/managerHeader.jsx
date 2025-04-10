@@ -4,33 +4,36 @@ import { MapPin, Clock, Bell, DollarSign, Menu, X, TrendingUp, AlertTriangle, Us
 import { useClerk, useUser } from "@clerk/clerk-react";
 import SailMateLogo from '../assets/images/SailMate_Logo.png';
 import CustomUserButton from '../pages/customUserButton';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const ManagerHeader = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { signOut } = useClerk();
     const { user } = useUser();
     const location = useLocation();
+    const { t } = useTranslation();
 
     // Update document title based on current route
     useEffect(() => {
         const path = location.pathname;
-        let title = "Manager | SailMate";
+        let title = t("manager.header.titles.default");
 
         if (path === "/manager") {
-            title = "Manager Dashboard | SailMate";
+            title = t("manager.header.titles.dashboard");
         } else if (path === "/manager/Users") {
-            title = "User Management | SailMate";
+            title = t("manager.header.titles.users");
         } else if (path === "/manager/Complaints") {
-            title = "Complaints | SailMate";
+            title = t("manager.header.titles.complaints");
         } else if (path === "/manager/Finance") {
-            title = "Finance | SailMate";
+            title = t("manager.header.titles.finance");
         }
         else if (path === "/manager/Charts") {
-            title = "Charts | SailMate";
+            title = t("manager.header.titles.charts");
         }
 
         document.title = title;
-    }, [location.pathname]);
+    }, [location.pathname, t]);
 
     // Close mobile menu when screen size changes to desktop view
     useEffect(() => {
@@ -83,7 +86,7 @@ const ManagerHeader = () => {
                             width={128}
                             height={32}
                         />
-                        <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold whitespace-nowrap text-gray-800">Manager</h1>
+                        <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold whitespace-nowrap text-gray-800">{t("manager.header.title")}</h1>
                     </div>
                 </Link>
 
@@ -92,28 +95,28 @@ const ManagerHeader = () => {
                     <NavLink
                         to="/manager/Users"
                         icon={Users}
-                        text="Users"
+                        text={t("manager.header.nav.users")}
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Users')}
                     />
                     <NavLink
                         to="/manager/Complaints"
                         icon={AlertTriangle}
-                        text="Complaints"
+                        text={t("manager.header.nav.complaints")}
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Complaints')}
                     />
                     <NavLink
                         to="/manager/Finance"
                         icon={DollarSign}
-                        text="Finance"
+                        text={t("manager.header.nav.finance")}
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Finance')}
                     />
                     <NavLink
                         to="/manager/Charts"
                         icon={TrendingUp}
-                        text="Charts"
+                        text={t("manager.header.nav.charts")}
                         className="md:text-xs lg:text-sm xl:text-base"
                         isActive={isActive('/manager/Charts')}
                     />
@@ -121,6 +124,7 @@ const ManagerHeader = () => {
 
                 {/* User Profile Button and Mobile Menu Button */}
                 <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+                    <LanguageSwitcher />
                     <CustomUserButton user={user} handleSignOut={handleSignOut} />
 
                     {/* Mobile Menu Button */}
@@ -130,7 +134,7 @@ const ManagerHeader = () => {
                         onClick={() => setMenuOpen(!menuOpen)}
                         aria-expanded={menuOpen}
                         aria-controls="mobile-menu"
-                        aria-label="Toggle menu"
+                        aria-label={t("common.toggleMenu")}
                     >
                         {menuOpen ? <X size={22} /> : <Menu size={22} />}
                     </button>
@@ -147,28 +151,28 @@ const ManagerHeader = () => {
                     <NavLink
                         to="/manager/Users"
                         icon={Users}
-                        text="Users"
+                        text={t("manager.header.nav.users")}
                         mobile={true}
                         isActive={isActive('/manager/Users')}
                     />
                     <NavLink
                         to="/manager/Complaints"
                         icon={AlertTriangle}
-                        text="Complaints"
+                        text={t("manager.header.nav.complaints")}
                         mobile={true}
                         isActive={isActive('/manager/Complaints')}
                     />
                     <NavLink
                         to="/manager/Finance"
                         icon={DollarSign}
-                        text="Finance"
+                        text={t("manager.header.nav.finance")}
                         mobile={true}
                         isActive={isActive('/manager/Finance')}
                     />
                     <NavLink
                         to="/manager/Charts"
                         icon={TrendingUp}
-                        text="Charts"
+                        text={t("manager.header.nav.charts")}
                         mobile={true}
                         isActive={isActive('/manager/Charts')}
                     />

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Ship, Percent, Save, Tag, Users, User, DollarSign, ArrowRight, Check } from "lucide-react";
 import axios from "axios";
 import {useSessionToken} from "../../utils/sessions";
+import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
 const ManagerFinance = () => {
+  const { t } = useTranslation();
   // Animation state
   const [loaded, setLoaded] = useState(false);
   
@@ -67,18 +69,18 @@ const ManagerFinance = () => {
           const fee = response.data.find(price => price.className === "Fee");
           if (fee) setServiceFee(fee.value);
         } else {
-          setError("API returned empty array!");
+          setError(t('manager.finance.errors.emptyArray'));
         }
       } catch (err) {
         console.error("Error fetching prices:", err);
-        setError("Failed to load prices. Please try again later.");
+        setError(t('manager.finance.errors.fetchFailed'));
       } finally {
         setLoading(false);
       }
     };
     
     fetchPrices();
-  }, []);
+  }, [t]);
 
   const [errors, setErrors] = useState({
     ticketClasses: {},
@@ -90,7 +92,7 @@ const ManagerFinance = () => {
 
   const validatePrice = (price) => {
     if (isNaN(price) || price <= 0) {
-      return "Price must be a positive number";
+      return t('manager.finance.validation.positiveNumber');
     }
     return null;
   };
@@ -98,11 +100,11 @@ const ManagerFinance = () => {
   const validateDiscount = (percentage) => {
     // If empty, return error
     if (percentage === "" || percentage === null) {
-      return "Discount cannot be empty";
+      return t('manager.finance.validation.discountEmpty');
     }
     // Check if it's a number between 0-100
     if (isNaN(percentage) || percentage < 0 || percentage > 100) {
-      return "Discount must be between 0-100%";
+      return t('manager.finance.validation.discountRange');
     }
     return null;
   };
@@ -202,7 +204,7 @@ const ManagerFinance = () => {
         const updatedErrors = { ...errors };
         discounts.forEach(discount => {
           if (discount.percentage === "" || discount.percentage === null) {
-            updatedErrors.discounts[discount.id] = "Discount cannot be empty";
+            updatedErrors.discounts[discount.id] = t('manager.finance.validation.discountEmpty');
           }
         });
         setErrors(updatedErrors);
@@ -309,7 +311,7 @@ const ManagerFinance = () => {
       
     } catch (err) {
       console.error("Error updating prices:", err);
-      setError("Failed to save changes. Please try again later.");
+      setError(t('manager.finance.errors.saveFailed'));
     } finally {
       // Reset submitting state
       setIsSubmitting(false);
@@ -321,7 +323,7 @@ const ManagerFinance = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="text-center mt-4 text-gray-600">Loading price data...</p>
+          <p className="text-center mt-4 text-gray-600">{t('manager.finance.loading')}</p>
         </div>
       </div>
     );
@@ -332,14 +334,14 @@ const ManagerFinance = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md">
           <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
-            <p className="font-medium">Error</p>
+            <p className="font-medium">{t('common.error')}</p>
             <p>{error}</p>
           </div>
           <button 
             onClick={() => window.location.reload()}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Retry
+            {t('common.retry')}
           </button>
         </div>
       </div>
@@ -355,10 +357,10 @@ const ManagerFinance = () => {
             loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Ferry Ticket Pricing</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('manager.finance.title')}</h1>
           <div className="flex items-center text-gray-600">
             <div className="h-1 w-10 bg-blue-600 mr-3"></div>
-            <p>Manage your ferry ticket prices and passenger discounts</p>
+            <p>{t('manager.finance.subtitle')}</p>
           </div>
         </header>
 
@@ -376,8 +378,8 @@ const ManagerFinance = () => {
                   <Ship className="text-blue-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">Ferry Ticket Classes</h2>
-                  <p className="text-sm text-gray-500">Set the base price for each ticket class</p>
+                  <h2 className="text-xl font-semibold text-gray-800">{t('manager.finance.ticketClasses.title')}</h2>
+                  <p className="text-sm text-gray-500">{t('manager.finance.ticketClasses.subtitle')}</p>
                 </div>
               </div>
             </div>
@@ -387,8 +389,8 @@ const ManagerFinance = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price (₺)</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('manager.finance.ticketClasses.classColumn')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('manager.finance.ticketClasses.basePriceColumn')}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -400,7 +402,7 @@ const ManagerFinance = () => {
                               className="w-3 h-3 rounded-full mr-3" 
                               style={{ backgroundColor: ticketClass.color }}
                             ></div>
-                            <span className="text-sm font-medium text-gray-900">{ticketClass.name}</span>
+                            <span className="text-sm font-medium text-gray-900">{t(`manager.finance.ticketClasses.${ticketClass.name.toLowerCase()}`)}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -446,8 +448,8 @@ const ManagerFinance = () => {
                   <DollarSign className="text-amber-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">Service Fee</h2>
-                  <p className="text-sm text-gray-500">Additional fee applied to all tickets</p>
+                  <h2 className="text-xl font-semibold text-gray-800">{t('manager.finance.serviceFee.title')}</h2>
+                  <p className="text-sm text-gray-500">{t('manager.finance.serviceFee.subtitle')}</p>
                 </div>
               </div>
             </div>
@@ -473,7 +475,7 @@ const ManagerFinance = () => {
                   <p className="mt-1 text-sm text-red-600">{errors.serviceFee}</p>
                 )}
                 <p className="mt-2 text-sm text-gray-500">
-                  The service fee is added to all ticket prices after discounts are applied.
+                  {t('manager.finance.serviceFee.description')}
                 </p>
               </div>
             </div>
@@ -492,8 +494,8 @@ const ManagerFinance = () => {
                   <Percent className="text-green-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">Special Discounts</h2>
-                  <p className="text-sm text-gray-500">Set discounts for special passenger groups</p>
+                  <h2 className="text-xl font-semibold text-gray-800">{t('manager.finance.discounts.title')}</h2>
+                  <p className="text-sm text-gray-500">{t('manager.finance.discounts.subtitle')}</p>
                 </div>
               </div>
             </div>
@@ -503,8 +505,8 @@ const ManagerFinance = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount (%)</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('manager.finance.discounts.groupColumn')}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('manager.finance.discounts.percentageColumn')}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -519,7 +521,7 @@ const ManagerFinance = () => {
                                 <User size={16} className="text-gray-600" />
                               )}
                             </div>
-                            <span className="text-sm font-medium text-gray-900">{discount.name}</span>
+                            <span className="text-sm font-medium text-gray-900">{t(`manager.finance.discounts.${discount.name.toLowerCase()}`)}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -569,8 +571,8 @@ const ManagerFinance = () => {
                   <Tag className="text-purple-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">Price Preview</h2>
-                  <p className="text-sm text-gray-500">See how your changes affect final prices</p>
+                  <h2 className="text-xl font-semibold text-gray-800">{t('manager.finance.preview.title')}</h2>
+                  <p className="text-sm text-gray-500">{t('manager.finance.preview.subtitle')}</p>
                 </div>
               </div>
             </div>
@@ -585,12 +587,12 @@ const ManagerFinance = () => {
                     <div className="p-1" style={{ backgroundColor: ticketClass.color }}></div>
                     <div className="p-5">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-semibold text-gray-900">{ticketClass.name}</h3>
+                        <h3 className="font-semibold text-gray-900">{t(`manager.finance.ticketClasses.${ticketClass.name.toLowerCase()}`)}</h3>
                         <div className="text-2xl font-bold text-gray-900">₺{ticketClass.basePrice.toFixed(2)}</div>
                       </div>
-                      <p className="text-sm text-gray-500 mb-4">Base price before any discounts or fees</p>
+                      <p className="text-sm text-gray-500 mb-4">{t('manager.finance.preview.basePrice')}</p>
                       <div className="mt-4 pt-4 border-t border-gray-100">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">With discounts:</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">{t('manager.finance.preview.withDiscounts')}:</h4>
                         <div className="space-y-3">
                           {discounts.map((discount) => {
                             const discountedPrice = calculateDiscountedPrice(ticketClass.basePrice, discount.percentage);
@@ -600,16 +602,16 @@ const ManagerFinance = () => {
                               <div key={discount.id} className="text-sm">
                                 <div className="flex items-center mb-1">
                                   <Icon size={14} className="text-gray-500 mr-1.5" />
-                                  <span className="text-gray-600">{discount.name}</span>
+                                  <span className="text-gray-600">{t(`manager.finance.discounts.${discount.name.toLowerCase()}`)}</span>
                                 </div>
                                 <div className="flex justify-between items-center bg-gray-50 p-2 rounded">
                                   <div>
-                                    <div className="text-xs text-gray-500">Discounted:</div>
+                                    <div className="text-xs text-gray-500">{t('manager.finance.preview.discounted')}:</div>
                                     <div className="font-medium text-green-600">₺{discountedPrice}</div>
                                   </div>
                                   <ArrowRight size={14} className="text-gray-400 mx-1" />
                                   <div>
-                                    <div className="text-xs text-gray-500">With fee:</div>
+                                    <div className="text-xs text-gray-500">{t('manager.finance.preview.withFee')}:</div>
                                     <div className="font-medium text-blue-600">₺{totalPrice}</div>
                                   </div>
                                 </div>
@@ -619,7 +621,7 @@ const ManagerFinance = () => {
                         </div>
                         <div className="mt-4 pt-3 border-t border-gray-100">
                           <div className="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <span className="text-sm text-gray-600">Regular price + fee:</span>
+                            <span className="text-sm text-gray-600">{t('manager.finance.preview.regularPlusFee')}:</span>
                             <span className="font-bold text-gray-900">
                               ₺{calculateTotalPrice(ticketClass.basePrice.toFixed(2))}
                             </span>
@@ -645,7 +647,7 @@ const ManagerFinance = () => {
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300"
             >
               <Check size={18} className="mr-2" />
-              Changes Saved!
+              {t('manager.finance.saveSuccess')}
             </button>
           ) : (
             <button
@@ -679,12 +681,12 @@ const ManagerFinance = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Saving...
+                  {t('manager.finance.saving')}
                 </div>
               ) : (
                 <>
                   <Save size={18} className="mr-2" />
-                  Save Changes
+                  {t('manager.finance.saveChanges')}
                 </>
               )}
             </button>

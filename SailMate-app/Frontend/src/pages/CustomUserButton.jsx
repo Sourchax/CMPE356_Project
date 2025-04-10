@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { User, LayoutDashboard, LogOut, Megaphone, X } from "lucide-react";
 import axios from "axios";
 import { useSessionToken } from "../utils/sessions";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -211,11 +212,12 @@ const CustomUserButton = () => {
   const [windowHeight, setWindowHeight] = useState(0);
   const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
   const { signOut, openUserProfile } = useClerk();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
+  const { t } = useTranslation();
 
   // Custom hook for window dimensions
   const useWindowSize = () => {
@@ -368,7 +370,7 @@ const CustomUserButton = () => {
               }}
             >
               <User size={isMobile ? 16 : 18} className="flex-shrink-0" />
-              <span>Manage Account</span>
+              <span>{t('common.manageAccount')}</span>
             </li>
 
             {/* Broadcast Option - Only for admin, manager, and super roles */}
@@ -378,7 +380,7 @@ const CustomUserButton = () => {
                 onClick={openBroadcastModal}
               >
                 <Megaphone size={isMobile ? 16 : 18} className="flex-shrink-0" />
-                <span>Send Broadcast</span>
+                <span>{t('common.sendBroadcast')}</span>
               </li>
             )}
 
@@ -406,8 +408,8 @@ const CustomUserButton = () => {
                    location.pathname === "/admin/Voyage"   ||
                    location.pathname === "/admin/Logs"   ||
                    location.pathname === "/admin"
-                    ? "Switch to User Mode" 
-                    : "Switch to Admin Dashboard"}
+                    ? t('common.switchToUser') 
+                    : t('common.switchToAdmin')}
                 </span>
               </li>
             )}
@@ -437,8 +439,8 @@ const CustomUserButton = () => {
                    location.pathname === "/manager/Finance" ||
                    location.pathname === "/manager/Charts" ||
                    location.pathname === "/manager"
-                    ? "Switch to User Mode" 
-                    : "Switch to Manager Dashboard"}
+                    ? t('common.switchToUser')
+                    : t('common.switchToManager')}
                 </span>
               </li>
             )}
@@ -452,7 +454,7 @@ const CustomUserButton = () => {
               }}
             >
               <LogOut size={isMobile ? 16 : 18} className="flex-shrink-0" />
-              <span>Sign Out</span>
+              <span>{t('common.signOut')}</span>
             </li>
           </ul>
         </div>

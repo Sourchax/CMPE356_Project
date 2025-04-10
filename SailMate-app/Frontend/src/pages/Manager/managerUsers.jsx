@@ -3,8 +3,10 @@ import { Trash2, User, Edit, Plus, X, AlertTriangle, UserCircle } from "lucide-r
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useSessionToken } from "../../utils/sessions";
+import { useTranslation } from 'react-i18next';
 
 const ManageUsers = () => {
+    const { t } = useTranslation();
     // Helper function to capitalize first letter of string
     const capitalizeFirstLetter = (string) => {
         if (!string) return '';
@@ -395,7 +397,7 @@ const ManageUsers = () => {
                                 disabled={isDeleting}
                                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                Cancel
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
@@ -405,9 +407,9 @@ const ManageUsers = () => {
                                 {isDeleting ? (
                                     <>
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                        Deleting...
+                                        {t('manager.users.deleting')}
                                     </>
-                                ) : "Delete"}
+                                ) : t('manager.users.delete')}
                             </button>
                         </div>
                     </div>
@@ -415,7 +417,7 @@ const ManageUsers = () => {
             )}
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Manage Users</h1>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">{t('manager.users.title')}</h1>
             </div>
             
             {error && (
@@ -426,7 +428,7 @@ const ManageUsers = () => {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-yellow-700">
-                                {error}. Showing mock data for demonstration.
+                                {error}. {t('manager.users.mockDataMessage')}
                             </p>
                         </div>
                     </div>
@@ -436,19 +438,19 @@ const ManageUsers = () => {
             <div className="bg-[#F9FFF9] p-4 rounded-lg mb-6 border border-green-200 shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <p className="text-green-800">
-                        <strong>Total Users:</strong> {filteredUsers.length} / {users.length} 
+                        <strong>{t('manager.users.totalUsers')}:</strong> {filteredUsers.length} / {users.length} 
                         <span className="mx-2">•</span>
-                        <strong>Admins:</strong> {filteredUsers.filter(u => u.role === "Admin").length}
+                        <strong>{t('manager.users.admins')}:</strong> {filteredUsers.filter(u => u.role === "Admin").length}
                         <span className="mx-2">•</span>
-                        <strong>Managers:</strong> {filteredUsers.filter(u => u.role === "Manager").length}
+                        <strong>{t('manager.users.managers')}:</strong> {filteredUsers.filter(u => u.role === "Manager").length}
                         <span className="mx-2">•</span>
-                        <strong>Regular Users:</strong> {filteredUsers.filter(u => u.role === "User").length}
+                        <strong>{t('manager.users.regularUsers')}:</strong> {filteredUsers.filter(u => u.role === "User").length}
                     </p>
                     <button 
                         onClick={clearFilters}
                         className={`text-sm px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center gap-1 ${Object.values(filters).every(v => v === "") ? "hidden" : ""}`}
                     >
-                        <X size={14} /> Clear Filters
+                        <X size={14} /> {t('manager.users.clearFilters')}
                     </button>
                 </div>
             </div>
@@ -456,13 +458,13 @@ const ManageUsers = () => {
             {/* Filters section */}
             <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 mb-6">
                 <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-                    <h2 className="text-lg font-medium text-gray-700">Filters</h2>
+                    <h2 className="text-lg font-medium text-gray-700">{t('manager.users.filters')}</h2>
                 </div>
                 <div className="p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label htmlFor="name-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                                Filter by Name
+                                {t('manager.users.filterByName')}
                             </label>
                             <input
                                 id="name-filter"
@@ -470,14 +472,14 @@ const ManageUsers = () => {
                                 type="text"
                                 value={filters.name}
                                 onChange={handleFilterChange}
-                                placeholder="Search by name"
+                                placeholder={t('manager.users.searchByName')}
                                 className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                         </div>
                         
                         <div>
                             <label htmlFor="email-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                                Filter by Email
+                                {t('manager.users.filterByEmail')}
                             </label>
                             <input
                                 id="email-filter"
@@ -485,14 +487,14 @@ const ManageUsers = () => {
                                 type="text"
                                 value={filters.email}
                                 onChange={handleFilterChange}
-                                placeholder="Search by email"
+                                placeholder={t('manager.users.searchByEmail')}
                                 className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             />
                         </div>
                         
                         <div>
                             <label htmlFor="role-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                                Filter by Role
+                                {t('manager.users.filterByRole')}
                             </label>
                             <select
                                 id="role-filter"
@@ -501,7 +503,7 @@ const ManageUsers = () => {
                                 onChange={handleFilterChange}
                                 className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             >
-                                <option value="">All Roles</option>
+                                <option value="">{t('manager.users.allRoles')}</option>
                                 {roles.map((role) => (
                                     <option key={role} value={role}>{role}</option>
                                 ))}
@@ -517,10 +519,10 @@ const ManageUsers = () => {
                     <table className="w-full border-collapse">
                         <thead className="bg-gradient-to-r from-green-50 to-[#D1FFD7] text-green-800 border-b border-green-200">
                             <tr>
-                                <th className="p-3 md:p-4 text-left font-medium">Name</th>
-                                <th className="p-3 md:p-4 text-left font-medium">Email</th>
-                                <th className="p-3 md:p-4 text-left font-medium">Role</th>
-                                <th className="p-3 md:p-4 text-center font-medium">Actions</th>
+                                <th className="p-3 md:p-4 text-left font-medium">{t('manager.users.name')}</th>
+                                <th className="p-3 md:p-4 text-left font-medium">{t('manager.users.email')}</th>
+                                <th className="p-3 md:p-4 text-left font-medium">{t('manager.users.role')}</th>
+                                <th className="p-3 md:p-4 text-center font-medium">{t('manager.users.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -549,14 +551,14 @@ const ManageUsers = () => {
                                             <button 
                                                 onClick={() => handleEdit(user)} 
                                                 className="text-green-600 hover:text-green-800 transition bg-[#D1FFD7] p-2 rounded-full shadow-sm"
-                                                aria-label={`Edit ${user.name}`}
+                                                aria-label={t('manager.users.editUser', { name: user.name })}
                                             >
                                                 <Edit size={16} />
                                             </button>
                                             <button 
                                                 onClick={() => handleDeleteRequest(user.id)} 
                                                 className="text-red-600 hover:text-red-800 transition bg-red-50 p-2 rounded-full shadow-sm"
-                                                aria-label={`Delete ${user.name}`}
+                                                aria-label={t('manager.users.deleteUser', { name: user.name })}
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -567,8 +569,8 @@ const ManageUsers = () => {
                                 <tr>
                                     <td colSpan="4" className="p-4 text-center text-gray-500">
                                         {users.length > 0 
-                                            ? "No users match your current filters. Try adjusting your search criteria."
-                                            : "No users found."
+                                            ? t('manager.users.noMatchingUsers')
+                                            : t('manager.users.noUsers')
                                         }
                                     </td>
                                 </tr>
@@ -578,7 +580,7 @@ const ManageUsers = () => {
                 </div>
                 <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
-                        Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
+                        {t('manager.users.showingUsers', { count: filteredUsers.length, total: users.length !== filteredUsers.length ? users.length : "" })}
                     </div>
                 </div>
             </div>
@@ -590,14 +592,14 @@ const ManageUsers = () => {
                 ) : (
                     <div className="bg-white p-4 rounded-lg shadow border border-gray-200 text-center text-gray-500">
                         {users.length > 0 
-                            ? "No users match your current filters. Try adjusting your search criteria."
-                            : "No users found."
+                            ? t('manager.users.noMatchingUsers')
+                            : t('manager.users.noUsers')
                         }
                     </div>
                 )}
                 <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
-                        Showing {filteredUsers.length} {filteredUsers.length !== users.length ? `of ${users.length}` : ""} users
+                        {t('manager.users.showingUsers', { count: filteredUsers.length, total: users.length !== filteredUsers.length ? users.length : "" })}
                     </div>
                 </div>
             </div>
@@ -606,11 +608,11 @@ const ManageUsers = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
                     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg sm:text-xl font-semibold">Update User Role</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">{t('manager.users.updateUserRole')}</h2>
                             <button 
                                 onClick={closeModal} 
                                 className="text-gray-500 hover:text-gray-700 transition"
-                                aria-label="Close modal"
+                                aria-label={t('common.close')}
                             >
                                 <X size={24} />
                             </button>
@@ -636,7 +638,7 @@ const ManageUsers = () => {
                             
                             <div className="flex flex-col">
                                 <label htmlFor="role" className="text-sm font-medium text-gray-700 mb-1">
-                                    Role <span className="text-red-500">*</span>
+                                    {t('manager.users.role')} <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="role"
@@ -650,7 +652,7 @@ const ManageUsers = () => {
                                     aria-invalid={errors.role ? "true" : "false"}
                                     aria-describedby={errors.role ? "role-error" : undefined}
                                 >
-                                    <option value="" disabled>Select a role</option>
+                                    <option value="" disabled>{t('manager.users.selectRole')}</option>
                                     {roles.map((role) => (
                                         <option key={role} value={role}>{role}</option>
                                     ))}
@@ -671,9 +673,9 @@ const ManageUsers = () => {
                                 {isUpdatingRole ? (
                                     <>
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                        Updating...
+                                        {t('manager.users.updating')}
                                     </>
-                                ) : "Update Role"}
+                                ) : t('manager.users.updateRole')}
                             </button>
                             </div>
                         </form>

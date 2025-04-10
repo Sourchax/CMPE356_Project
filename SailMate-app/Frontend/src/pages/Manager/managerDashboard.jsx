@@ -15,9 +15,11 @@ import {
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useSessionToken } from "../../utils/sessions";
+import { useTranslation } from "react-i18next";
 
 const ManagerDashboard = () => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loaded, setLoaded] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
@@ -132,28 +134,28 @@ const ManagerDashboard = () => {
   // Get current time to display personalized greeting
   const getCurrentGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+    if (hour < 12) return t("manager.dashboard.greetings.morning");
+    if (hour < 18) return t("manager.dashboard.greetings.afternoon");
+    return t("manager.dashboard.greetings.evening");
   };
 
   // Summary stats array
   const statItems = [
     { 
-      label: "Active Users", 
+      label: t("manager.dashboard.stats.activeUsers"), 
       value: dashboardStats.activeUsers, 
       icon: Users,
       loading: userCountLoading 
     },
     { 
-      label: "Pending Complaints", 
+      label: t("manager.dashboard.stats.pendingComplaints"), 
       value: dashboardStats.pendingComplaints, 
       icon: AlertTriangle,
       loading: loading 
     },
-    { label: "Ticket Types", value: dashboardStats.ticketTypes, icon: DollarSign },
+    { label: t("manager.dashboard.stats.ticketTypes"), value: dashboardStats.ticketTypes, icon: DollarSign },
     { 
-      label: "Total Tickets Purchased", 
+      label: t("manager.dashboard.stats.totalTickets"), 
       value: dashboardStats.charts, 
       icon: TrendingUp,
       loading: ticketSoldLoading 
@@ -163,8 +165,8 @@ const ManagerDashboard = () => {
   // Card data
   const cards = [
     {
-      title: "User Management",
-      description: "Manage user accounts, roles and permissions",
+      title: t("manager.dashboard.cards.userManagement.title"),
+      description: t("manager.dashboard.cards.userManagement.description"),
       icon: Users,
       iconColor: "#8B5CF6",
       bgColor: "#F5F3FF",
@@ -174,8 +176,8 @@ const ManagerDashboard = () => {
       loading: userCountLoading
     },
     {
-      title: "Complaint Center",
-      description: "Review and respond to customer complaints",
+      title: t("manager.dashboard.cards.complaintCenter.title"),
+      description: t("manager.dashboard.cards.complaintCenter.description"),
       icon: Bell,
       iconColor: "#F59E0B",
       bgColor: "#FFF7ED",
@@ -183,11 +185,11 @@ const ManagerDashboard = () => {
       path: "/manager/Complaints",
       count: dashboardStats.pendingComplaints,
       loading: loading,
-      countLabel: "pending"
+      countLabel: t("manager.dashboard.cards.complaintCenter.pendingLabel")
     },
     {
-      title: "Ticket Pricing",
-      description: "Manage and update ticket prices and types",
+      title: t("manager.dashboard.cards.ticketPricing.title"),
+      description: t("manager.dashboard.cards.ticketPricing.description"),
       icon: DollarSign,
       iconColor: "#10B981",
       bgColor: "#ECFDF5",
@@ -196,8 +198,8 @@ const ManagerDashboard = () => {
       count: dashboardStats.ticketTypes
     },
     {
-      title: "Charts",
-      description: "View visual analytics and trends",
+      title: t("manager.dashboard.cards.charts.title"),
+      description: t("manager.dashboard.cards.charts.description"),
       icon: TrendingUp,
       iconColor: "#6366F1",
       bgColor: "#EEF2FF",
@@ -205,27 +207,27 @@ const ManagerDashboard = () => {
       path: "/manager/Charts",
       count: dashboardStats.charts,
       loading: ticketSoldLoading,
-      countLabel: "total tickets purchased"
+      countLabel: t("manager.dashboard.cards.charts.countLabel")
     }
   ];
 
   // Quick actions
   const quickActions = [
     {
-      title: "Manage Users",
-      description: "Create a new user account",
+      title: t("manager.dashboard.quickActions.manageUsers.title"),
+      description: t("manager.dashboard.quickActions.manageUsers.description"),
       path: "/manager/Users",
       state: { openAddModal: true }
     },
     {
-      title: "Process Complaint",
-      description: "Handle a pending customer complaint",
+      title: t("manager.dashboard.quickActions.processComplaint.title"),
+      description: t("manager.dashboard.quickActions.processComplaint.description"),
       path: "/manager/Complaints",
       state: { openQueue: true }
     },
     {
-      title: "Update Pricing",
-      description: "Modify ticket pricing structure",
+      title: t("manager.dashboard.quickActions.updatePricing.title"),
+      description: t("manager.dashboard.quickActions.updatePricing.description"),
       path: "/manager/Finance",
       state: { openPriceEditor: true }
     }
@@ -246,14 +248,14 @@ const ManagerDashboard = () => {
                 {getCurrentGreeting()}, {user?.firstName || "Manager"}
               </h1>
               <p className="text-gray-600 mt-2">
-                Welcome to your management dashboard. Here's an overview of your system.
+                {t("manager.dashboard.welcomeMessage")}
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
                 <Calendar className="text-green-600 mr-2" size={20} />
                 <div>
-                  <p className="text-xs text-gray-500">Current Date</p>
+                  <p className="text-xs text-gray-500">{t("manager.dashboard.currentDate")}</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleDateString(undefined, {
                       day: "2-digit",
@@ -266,7 +268,7 @@ const ManagerDashboard = () => {
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
                 <Clock className="text-green-600 mr-2" size={20} />
                 <div>
-                  <p className="text-xs text-gray-500">Current Time</p>
+                  <p className="text-xs text-gray-500">{t("manager.dashboard.currentTime")}</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleTimeString(undefined, {
                       hour: "2-digit",
@@ -281,8 +283,8 @@ const ManagerDashboard = () => {
           {/* Quick Stats */}
           <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">Quick Overview</h2>
-              <span className="text-xs text-gray-500">Last updated: Today at {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+              <h2 className="text-lg font-semibold text-gray-800">{t("manager.dashboard.quickOverview")}</h2>
+              <span className="text-xs text-gray-500">{t("manager.dashboard.lastUpdated")} {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {statItems.map((stat, index) => {
@@ -356,7 +358,7 @@ const ManagerDashboard = () => {
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">{card.title}</h2>
                   <p className="text-gray-500 mb-4">{card.description}</p>
                   <div className="flex items-center text-green-600 text-sm font-medium mt-auto">
-                    <span>Manage</span>
+                    <span>{t("manager.dashboard.manage")}</span>
                     <ArrowRight size={16} className="ml-1" />
                   </div>
                 </div>
@@ -372,7 +374,7 @@ const ManagerDashboard = () => {
           }`}
           style={{ transitionDelay: '600ms' }}
         >
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("manager.dashboard.quickActionsTitle")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
               <Link 

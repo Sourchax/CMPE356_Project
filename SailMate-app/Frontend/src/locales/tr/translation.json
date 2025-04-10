@@ -1,15 +1,15 @@
 {
   "common": {
-    "welcome": "Hoşgeldiniz",
-    "login": "Giriş Yap",
+    "welcome": "Hoş geldiniz",
+    "login": "Giriş",
     "signup": "Kayıt Ol",
-    "logout": "Çıkış Yap",
+    "logout": "Çıkış",
     "home": "Ana Sayfa",
-    "about": "Hakkımızda",
+    "about": "Hakkında",
     "contact": "İletişim",
     "search": "Ara",
-    "book": "Rezerve Et",
-    "bookNow": "Şimdi Rezerve Et",
+    "book": "Rezervasyon",
+    "bookNow": "Hemen Rezervasyon Yap",
     "findTicket": "Bilet Bul",
     "from": "Nereden",
     "to": "Nereye",
@@ -17,12 +17,12 @@
     "time": "Saat",
     "passengers": "Yolcular",
     "passengerSingular": "Yolcu",
-    "passengersPlural": "Yolcu",
+    "passengersPlural": "Yolcular",
     "price": "Fiyat",
     "currency": "Para Birimi",
     "next": "İleri",
     "back": "Geri",
-    "cancel": "İptal",
+    "cancel": "İptal Et",
     "confirm": "Onayla",
     "submit": "Gönder",
     "close": "Kapat",
@@ -81,7 +81,16 @@
     "departure": "Kalkış",
     "arrival": "Varış",
     "departureArrival": "Kalkış - Varış",
-    "passengers": "Yolcular:"
+    "passengers": "Yolcular:",
+    "manageAccount": "Hesabı Yönet",
+    "sendBroadcast": "Duyuru Gönder",
+    "switchToAdmin": "Yönetici Paneline Geç",
+    "switchToManager": "Yönetici Paneline Geç",
+    "signOut": "Çıkış Yap",
+    "switchToUser": "Kullanıcı Moduna Geç",
+    "toggleMenu": "Menüyü Aç/Kapat",
+    "retry": "Tekrar Dene",
+    "error": "Hata"
   },
   "homepage": {
     "hero": {
@@ -1187,5 +1196,186 @@
       "toLowerDeck": "Alt Güverteye"
     },
     "passengerHeader": "{number}. Yolcu - {type}"
+  },
+  "manager": {
+    "dashboard": {
+      "greetings": {
+        "morning": "Günaydın",
+        "afternoon": "Tünaydın",
+        "evening": "İyi akşamlar"
+      },
+      "welcomeMessage": "Yönetim panelinize hoş geldiniz. İşte sisteminizin genel bir görünümü.",
+      "currentDate": "Güncel Tarih",
+      "currentTime": "Güncel Saat",
+      "quickOverview": "Hızlı Genel Bakış",
+      "lastUpdated": "Son güncelleme: Bugün saat",
+      "manage": "Yönet",
+      "quickActionsTitle": "Hızlı İşlemler",
+      "stats": {
+        "activeUsers": "Aktif Kullanıcılar",
+        "pendingComplaints": "Bekleyen Şikayetler",
+        "ticketTypes": "Bilet Türleri",
+        "totalTickets": "Toplam Satılan Biletler"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "Kullanıcı Yönetimi",
+          "description": "Kullanıcı hesaplarını, rollerini ve izinlerini yönetin"
+        },
+        "complaintCenter": {
+          "title": "Şikayet Merkezi",
+          "description": "Müşteri şikayetlerini inceleyin ve yanıtlayın",
+          "pendingLabel": "bekleyen"
+        },
+        "ticketPricing": {
+          "title": "Bilet Fiyatlandırma",
+          "description": "Bilet fiyatlarını ve türlerini yönetin ve güncelleyin"
+        },
+        "charts": {
+          "title": "Grafikler",
+          "description": "Görsel analizleri ve trendleri görüntüleyin",
+          "countLabel": "toplam satın alınan bilet"
+        }
+      },
+      "quickActions": {
+        "manageUsers": {
+          "title": "Kullanıcıları Yönet",
+          "description": "Yeni bir kullanıcı hesabı oluşturun"
+        },
+        "processComplaint": {
+          "title": "Şikayet İşle",
+          "description": "Bekleyen müşteri şikayetini ele alın"
+        },
+        "updatePricing": {
+          "title": "Fiyatlandırmayı Güncelle",
+          "description": "Bilet fiyatlandırma yapısını değiştirin"
+        }
+      }
+    },
+    "header": {
+      "title": "Yönetici",
+      "titles": {
+        "default": "Yönetici | SailMate",
+        "dashboard": "Yönetici Paneli | SailMate",
+        "users": "Kullanıcı Yönetimi | SailMate",
+        "complaints": "Şikayetler | SailMate",
+        "finance": "Finans | SailMate",
+        "charts": "Grafikler | SailMate"
+      },
+      "nav": {
+        "users": "Kullanıcılar",
+        "complaints": "Şikayetler",
+        "finance": "Finans",
+        "charts": "Grafikler"
+      }
+    },
+    "charts": {
+      "title": "SailMate Bilet İstatistikleri",
+      "subtitle": "Bilet satışları ve rotaların kapsamlı analizi",
+      "noData": "Veri bulunamadı",
+      "year": "Yıl",
+      "tickets": "bilet",
+      "totalRevenue": "toplam gelir",
+      "monthlyRevenueByClass": "Bilet Sınıfına Göre Aylık Gelir",
+      "monthlyTicketsByClass": "Sınıfa Göre Aylık Satılan Biletler",
+      "ticketClassDistribution": "Bilet Sınıfı Dağılımı",
+      "classStatistics": "Sınıf İstatistikleri",
+      "popularRoutes": "En Popüler Rotalar",
+      "profitableRoute": "En Karlı Rota",
+      "routeRevenue": "{{from}} - {{to}} arası {{revenue}} gelir oluşturdu",
+      "metrics": {
+        "totalTickets": "Toplam Satılan Biletler",
+        "totalRevenue": "Toplam Gelir",
+        "totalPassengers": "Toplam Yolcular",
+        "avgTicketPrice": "Ort. Bilet Fiyatı"
+      },
+      "ticketClasses": {
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      }
+    },
+    "complaints": {
+      "title": "Müşteri Şikayetleri",
+      "loading": "Şikayetler yükleniyor...",
+      "errorTitle": "Şikayetler Yüklenirken Hata",
+      "tryAgain": "Tekrar Dene",
+      "trying": "Deneniyor...",
+      "confirmDelete": "Silmeyi Onayla",
+      "deleteWarning": "Bu şikayeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "delete": "Sil",
+      "deleting": "Siliniyor...",
+      "refresh": "Yenile",
+      "refreshing": "Yenileniyor...",
+      "yourReply": "Yanıtınız",
+      "typeResponse": "Yanıtınızı yazın...",
+      "sendReply": "Yanıt Gönder",
+      "sending": "Gönderiliyor...",
+      "noComplaints": "Şikayet Yok",
+      "noFilteredComplaints": "Gösterilecek {{status}} şikayet bulunmamaktadır.",
+      "noComplaintsAtAll": "Şu anda gösterilecek müşteri şikayeti bulunmamaktadır.",
+      "viewAll": "Tüm şikayetleri görüntüle",
+      "filters": {
+        "all": "Tümü"
+      },
+      "status": {
+        "resolved": "Çözüldü",
+        "pending": "Bekliyor"
+      }
+    },
+    "users": {
+      "title": "Kullanıcıları Yönet",
+      "totalUsers": "Toplam Kullanıcılar",
+      "admins": "Yöneticiler",
+      "managers": "Müdürler",
+      "regularUsers": "Normal Kullanıcılar",
+      "clearFilters": "Filtreleri Temizle",
+      "filters": "Filtreler",
+      "filterByName": "İsme Göre Filtrele",
+      "searchByName": "İsme göre ara",
+      "filterByEmail": "E-postaya Göre Filtrele",
+      "searchByEmail": "E-postaya göre ara",
+      "filterByRole": "Role Göre Filtrele",
+      "allRoles": "Tüm Roller",
+      "name": "İsim",
+      "email": "E-posta",
+      "role": "Rol",
+      "actions": "İşlemler",
+      "editUser": "{{name}} Kullanıcısını Düzenle",
+      "deleteUser": "{{name}} Kullanıcısını Sil",
+      "noMatchingUsers": "Mevcut filtrelerinize uygun kullanıcı bulunamadı. Arama kriterlerinizi ayarlamayı deneyin.",
+      "noUsers": "Kullanıcı bulunamadı.",
+      "showingUsers": "{{count}} kullanıcı gösteriliyor {{total, plural, ='' {} other{/ {{total}}}}}", 
+      "updateUserRole": "Kullanıcı Rolünü Güncelle",
+      "selectRole": "Bir rol seçin",
+      "updating": "Güncelleniyor...",
+      "updateRole": "Rolü Güncelle",
+      "delete": "Sil",
+      "deleting": "Siliniyor...",
+      "mockDataMessage": "Demo için örnek veriler gösteriliyor."
+    },
+    "finance": {
+      "title": "Finans",
+      "subtitle": "Finansal İstatistikler ve Analizler",
+      "noData": "Veri bulunamadı",
+      "year": "Yıl",
+      "totalRevenue": "Toplam Gelir",
+      "monthlyRevenue": "Aylık Gelir",
+      "expenses": "Giderler",
+      "profit": "Kâr",
+      "breakEvenPoint": "Kâr-Zarar Noktası",
+      "revenueGrowth": "Gelir Artışı",
+      "expensesGrowth": "Gider Artışı",
+      "profitGrowth": "Kâr Artışı",
+      "profitMargin": "Kâr Marjı",
+      "cashFlow": "Nakit Akışı",
+      "debtToEquityRatio": "Borç/Özkaynak Oranı",
+      "returnOnInvestment": "Yatırımın Getirisi",
+      "errors": {
+        "fetchFailed": "Fiyat verileri getirilemedi. Lütfen tekrar deneyin.",
+        "saveFailed": "Değişiklikler kaydedilemedi. Lütfen tekrar deneyin.",
+        "emptyArray": "API boş dizi döndürdü!"
+      }
+    }
   }
 } 

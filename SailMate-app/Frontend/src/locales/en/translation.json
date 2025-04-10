@@ -27,6 +27,9 @@
     "submit": "Submit",
     "close": "Close",
     "backToHomepage": "Back to Homepage",
+    "switchToUser": "Switch to User Mode",
+    "toggleMenu": "Toggle menu",
+    "retry": "Try Again",
     "email": "Email",
     "password": "Password",
     "firstName": "First Name",
@@ -73,7 +76,8 @@
     "apply": "Apply",
     "searchTickets": "Search Tickets",
     "viewOnMap": "View on Map",
-    "all": "All"
+    "all": "All",
+    "error": "Error"
   },
   "homepage": {
     "hero": {
@@ -1192,6 +1196,171 @@
       "emailRequired": "Email is required",
       "emailSpaces": "Email cannot contain spaces",
       "invalidEmail": "Invalid email address"
+    }
+  },
+  "manager": {
+    "dashboard": {
+      "greetings": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "welcomeMessage": "Welcome to your management dashboard. Here's an overview of your system.",
+      "currentDate": "Current Date",
+      "currentTime": "Current Time",
+      "quickOverview": "Quick Overview",
+      "lastUpdated": "Last updated: Today at",
+      "manage": "Manage",
+      "quickActionsTitle": "Quick Actions",
+      "stats": {
+        "activeUsers": "Active Users",
+        "pendingComplaints": "Pending Complaints",
+        "ticketTypes": "Ticket Types",
+        "totalTickets": "Total Tickets Purchased"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "User Management",
+          "description": "Manage user accounts, roles and permissions"
+        },
+        "complaintCenter": {
+          "title": "Complaint Center",
+          "description": "Review and respond to customer complaints",
+          "pendingLabel": "pending"
+        },
+        "ticketPricing": {
+          "title": "Ticket Pricing",
+          "description": "Manage and update ticket prices and types"
+        },
+        "charts": {
+          "title": "Charts",
+          "description": "View visual analytics and trends",
+          "countLabel": "total tickets purchased"
+        }
+      },
+      "quickActions": {
+        "manageUsers": {
+          "title": "Manage Users",
+          "description": "Create a new user account"
+        },
+        "processComplaint": {
+          "title": "Process Complaint",
+          "description": "Handle a pending customer complaint"
+        },
+        "updatePricing": {
+          "title": "Update Pricing",
+          "description": "Modify ticket pricing structure"
+        }
+      }
+    },
+    "header": {
+      "title": "Manager",
+      "titles": {
+        "default": "Manager | SailMate",
+        "dashboard": "Manager Dashboard | SailMate",
+        "users": "User Management | SailMate",
+        "complaints": "Complaints | SailMate",
+        "finance": "Finance | SailMate",
+        "charts": "Charts | SailMate"
+      },
+      "nav": {
+        "users": "Users",
+        "complaints": "Complaints",
+        "finance": "Finance",
+        "charts": "Charts"
+      }
+    },
+    "charts": {
+      "title": "SailMate Ticket Statistics",
+      "subtitle": "Comprehensive analysis of ticket sales and routes",
+      "noData": "No data available",
+      "year": "Year",
+      "tickets": "tickets",
+      "totalRevenue": "total revenue",
+      "monthlyRevenueByClass": "Monthly Revenue by Ticket Class",
+      "monthlyTicketsByClass": "Monthly Tickets Sold by Class",
+      "ticketClassDistribution": "Ticket Class Distribution",
+      "classStatistics": "Class Statistics",
+      "popularRoutes": "Most Popular Routes",
+      "profitableRoute": "Most Profitable Route",
+      "routeRevenue": "{{from}} to {{to}} generated {{revenue}} in revenue",
+      "metrics": {
+        "totalTickets": "Total Tickets Sold",
+        "totalRevenue": "Total Revenue",
+        "totalPassengers": "Total Passengers",
+        "avgTicketPrice": "Avg. Ticket Price"
+      },
+      "ticketClasses": {
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      }
+    },
+    "complaints": {
+      "title": "Customer Complaints",
+      "loading": "Loading complaints...",
+      "errorTitle": "Error Loading Complaints",
+      "tryAgain": "Try Again",
+      "trying": "Trying...",
+      "confirmDelete": "Confirm Delete",
+      "deleteWarning": "Are you sure you want to delete this complaint? This action cannot be undone.",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "yourReply": "Your Reply",
+      "typeResponse": "Type your response...",
+      "sendReply": "Send Reply",
+      "sending": "Sending...",
+      "noComplaints": "No Complaints",
+      "noFilteredComplaints": "There are no {{status}} complaints to display.",
+      "noComplaintsAtAll": "There are no customer complaints to display at this time.",
+      "viewAll": "View all complaints",
+      "filters": {
+        "all": "All"
+      },
+      "status": {
+        "resolved": "Resolved",
+        "pending": "Pending"
+      }
+    },
+    "users": {
+      "title": "Manage Users",
+      "totalUsers": "Total Users",
+      "admins": "Admins",
+      "managers": "Managers",
+      "regularUsers": "Regular Users",
+      "clearFilters": "Clear Filters",
+      "filters": "Filters",
+      "filterByName": "Filter by Name",
+      "searchByName": "Search by name",
+      "filterByEmail": "Filter by Email",
+      "searchByEmail": "Search by email",
+      "filterByRole": "Filter by Role",
+      "allRoles": "All Roles",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions",
+      "editUser": "Edit {{name}}",
+      "deleteUser": "Delete {{name}}",
+      "noMatchingUsers": "No users match your current filters. Try adjusting your search criteria.",
+      "noUsers": "No users found.",
+      "showingUsers": "Showing {{count}} {{total, plural, ='' {} other{of {{total}}}} users", 
+      "updateUserRole": "Update User Role",
+      "selectRole": "Select a role",
+      "updating": "Updating...",
+      "updateRole": "Update Role",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "mockDataMessage": "Showing mock data for demonstration."
+    },
+    "finance": {
+      "errors": {
+        "fetchFailed": "Failed to fetch prices data. Please try again.",
+        "saveFailed": "Failed to save changes. Please try again.",
+        "emptyArray": "API returned empty array!"
+      }
     }
   }
 } 

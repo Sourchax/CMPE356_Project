@@ -3,6 +3,7 @@ import axios from "axios";
 import { Ship, Users, DollarSign, TrendingUp, Layers, Navigation, Calendar, Flag, Clock, Award } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import {useSessionToken} from "../../utils/sessions.js";
+import { useTranslation } from 'react-i18next';
 
 
 const API_BASE_URL = "http://localhost:8080/api";
@@ -15,6 +16,7 @@ const formatCurrency = (value) => {
 const COLORS = ['#0D3A73', '#06AED5', '#F0C809', '#DD614A'];
 
 const ManagerCharts = () => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeYear, setActiveYear] = useState(new Date().getFullYear());
@@ -267,7 +269,7 @@ const ManagerCharts = () => {
           className="px-4 py-2 bg-blue-600 text-white rounded"
           onClick={() => window.location.reload()}
         >
-          Retry
+          {t('common.retry')}
         </button>
       </div>
     );
@@ -276,7 +278,7 @@ const ManagerCharts = () => {
   if (!dashboardData) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl text-gray-500">No data available</div>
+        <div className="text-xl text-gray-500">{t('manager.charts.noData')}</div>
       </div>
     );
   }
@@ -301,7 +303,7 @@ const ManagerCharts = () => {
         {/* Dashboard Header */}
         <header className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">SailMate Ticket Statistics</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('manager.charts.title')}</h1>
             
             <div className="flex items-center space-x-2">
               <button 
@@ -320,7 +322,7 @@ const ManagerCharts = () => {
           </div>
           <div className="flex items-center text-gray-600">
             <div className="h-1 w-10 bg-blue-600 mr-3"></div>
-            <p>Comprehensive analysis of ticket sales and routes</p>
+            <p>{t('manager.charts.subtitle')}</p>
           </div>
         </header>
         
@@ -330,7 +332,7 @@ const ManagerCharts = () => {
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Total Tickets Sold</p>
+                <p className="text-gray-500 text-sm font-medium">{t('manager.charts.metrics.totalTickets')}</p>
                 <h3 className="text-3xl font-bold mt-1">{summaryStats.totalTickets.toLocaleString()}</h3>
               </div>
               <div className="p-3 bg-blue-50 rounded-lg">
@@ -338,7 +340,7 @@ const ManagerCharts = () => {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-gray-500">Year {activeYear}</span>
+              <span className="text-gray-500">{t('manager.charts.year')} {activeYear}</span>
             </div>
           </div>
           
@@ -346,7 +348,7 @@ const ManagerCharts = () => {
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Total Revenue</p>
+                <p className="text-gray-500 text-sm font-medium">{t('manager.charts.metrics.totalRevenue')}</p>
                 <h3 className="text-3xl font-bold mt-1">{formatCurrency(summaryStats.totalRevenue)}</h3>
               </div>
               <div className="p-3 bg-green-50 rounded-lg">
@@ -354,7 +356,7 @@ const ManagerCharts = () => {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-gray-500">Year {activeYear}</span>
+              <span className="text-gray-500">{t('manager.charts.year')} {activeYear}</span>
             </div>
           </div>
           
@@ -362,7 +364,7 @@ const ManagerCharts = () => {
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Total Passengers</p>
+                <p className="text-gray-500 text-sm font-medium">{t('manager.charts.metrics.totalPassengers')}</p>
                 <h3 className="text-3xl font-bold mt-1">{summaryStats.totalPassengers.toLocaleString()}</h3>
               </div>
               <div className="p-3 bg-purple-50 rounded-lg">
@@ -370,7 +372,7 @@ const ManagerCharts = () => {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-gray-500">Year {activeYear}</span>
+              <span className="text-gray-500">{t('manager.charts.year')} {activeYear}</span>
             </div>
           </div>
           
@@ -378,7 +380,7 @@ const ManagerCharts = () => {
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Avg. Ticket Price</p>
+                <p className="text-gray-500 text-sm font-medium">{t('manager.charts.metrics.avgTicketPrice')}</p>
                 <h3 className="text-3xl font-bold mt-1">{formatCurrency(summaryStats.averageTicketPrice)}</h3>
               </div>
               <div className="p-3 bg-yellow-50 rounded-lg">
@@ -386,7 +388,7 @@ const ManagerCharts = () => {
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-gray-500">Year {activeYear}</span>
+              <span className="text-gray-500">{t('manager.charts.year')} {activeYear}</span>
             </div>
           </div>
         </div>
@@ -394,7 +396,7 @@ const ManagerCharts = () => {
         {/* Revenue Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Monthly Revenue by Ticket Class</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('manager.charts.monthlyRevenueByClass')}</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyChartData}>
@@ -403,9 +405,9 @@ const ManagerCharts = () => {
                   <YAxis tickFormatter={(value) => `₺${value}K`} />
                   <Tooltip formatter={(value) => `₺${value.toLocaleString()}K`} />
                   <Legend />
-                  <Bar dataKey="Promo Revenue" stackId="a" name="Promo" fill="#F0C809" />
-                  <Bar dataKey="Economy Revenue" stackId="a" name="Economy" fill="#06AED5" />
-                  <Bar dataKey="Business Revenue" stackId="a" name="Business" fill="#0D3A73" />
+                  <Bar dataKey="Promo Revenue" stackId="a" name={t('manager.charts.ticketClasses.promo')} fill="#F0C809" />
+                  <Bar dataKey="Economy Revenue" stackId="a" name={t('manager.charts.ticketClasses.economy')} fill="#06AED5" />
+                  <Bar dataKey="Business Revenue" stackId="a" name={t('manager.charts.ticketClasses.business')} fill="#0D3A73" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -413,7 +415,7 @@ const ManagerCharts = () => {
           
           {/* Tickets Chart */}
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Monthly Tickets Sold by Class</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('manager.charts.monthlyTicketsByClass')}</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyChartData}>
@@ -422,9 +424,9 @@ const ManagerCharts = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="Promo Tickets" name="Promo" stroke="#F0C809" strokeWidth={2} activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="Economy Tickets" name="Economy" stroke="#06AED5" strokeWidth={2} activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="Business Tickets" name="Business" stroke="#0D3A73" strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Promo Tickets" name={t('manager.charts.ticketClasses.promo')} stroke="#F0C809" strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Economy Tickets" name={t('manager.charts.ticketClasses.economy')} stroke="#06AED5" strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Business Tickets" name={t('manager.charts.ticketClasses.business')} stroke="#0D3A73" strokeWidth={2} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -435,7 +437,7 @@ const ManagerCharts = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Ticket Class Distribution */}
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Ticket Class Distribution</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('manager.charts.ticketClassDistribution')}</h2>
             <div className="flex flex-col lg:flex-row">
                 <div className="h-80 w-full lg:w-1/2 relative">
                 <div className="absolute inset-0">
@@ -467,7 +469,7 @@ const ManagerCharts = () => {
                         align="center"
                         payload={
                             ticketClassData.filter(item => item.value > 0).map((entry, index) => ({
-                            value: `${entry.name} ${((entry.value / ticketClassData.reduce((sum, item) => sum + (item.value > 0 ? item.value : 0), 0)) * 100).toFixed(0)}%`,
+                            value: `${t(`manager.charts.ticketClasses.${entry.name}`)} ${((entry.value / ticketClassData.reduce((sum, item) => sum + (item.value > 0 ? item.value : 0), 0)) * 100).toFixed(0)}%`,
                             type: 'circle',
                             color: COLORS[index % COLORS.length],
                             }))
@@ -478,13 +480,13 @@ const ManagerCharts = () => {
                 </div>
                 </div>
                 <div className="w-full lg:w-1/2 mt-4 lg:mt-0">
-                <h3 className="text-lg font-medium mb-3">Class Statistics</h3>
+                <h3 className="text-lg font-medium mb-3">{t('manager.charts.classStatistics')}</h3>
                 <div className="space-y-4">
                     {classPerformance.map((cls, index) => (
                     <div key={cls.class}>
                         <div className="flex justify-between mb-1">
-                        <span className="font-medium">{cls.class}</span>
-                        <span>{cls.totalSold.toLocaleString()} tickets</span>
+                        <span className="font-medium">{t(`manager.charts.ticketClasses.${cls.class}`)}</span>
+                        <span>{cls.totalSold.toLocaleString()} {t('manager.charts.tickets')}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -496,7 +498,7 @@ const ManagerCharts = () => {
                         ></div>
                         </div>
                         <div className="text-sm text-gray-500 mt-1">
-                        {formatCurrency(cls.totalRevenue)} total revenue
+                        {formatCurrency(cls.totalRevenue)} {t('manager.charts.totalRevenue')}
                         </div>
                     </div>
                     ))}
@@ -507,7 +509,7 @@ const ManagerCharts = () => {
           
           {/* Popular Routes */}
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Most Popular Routes</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('manager.charts.popularRoutes')}</h2>
             <div className="space-y-4 mb-4">
               {popularRoutes.slice(0, 3).map((route, index) => (
                 <div key={index} className="flex items-center p-3 rounded-lg hover:bg-gray-50">
@@ -540,9 +542,13 @@ const ManagerCharts = () => {
                     <Award className="h-5 w-5 text-blue-600" />
                   </div>
                   <div className="ml-3">
-                    <h4 className="font-medium">Most Profitable Route</h4>
+                    <h4 className="font-medium">{t('manager.charts.profitableRoute')}</h4>
                     <p className="text-sm text-gray-600 mt-1">
-                      {`${summaryStats.mostPopularRoute.fromCity} to ${summaryStats.mostPopularRoute.toCity} generated ${formatCurrency(summaryStats.mostPopularRoute.revenue)} in revenue`}
+                      {t('manager.charts.routeRevenue', {
+                        from: summaryStats.mostPopularRoute.fromCity,
+                        to: summaryStats.mostPopularRoute.toCity,
+                        revenue: formatCurrency(summaryStats.mostPopularRoute.revenue)
+                      })}
                     </p>
                   </div>
                 </div>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Trash2, User, MessageSquare, Send, CheckCircle, Clock, AlertCircle, X, RefreshCw } from "lucide-react";
 import axios from "axios";
 import {useSessionToken} from "../../utils/sessions";
+import { useTranslation } from 'react-i18next';
 
 const ManageComplaints = () => {
+    const { t } = useTranslation();
     const [complaints, setComplaints] = useState([]);
     const [filteredComplaints, setFilteredComplaints] = useState([]);
     const [activeFilter, setActiveFilter] = useState("all");
@@ -143,14 +145,14 @@ const ManageComplaints = () => {
                 return (
                     <span className="flex items-center gap-1 text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
                         <CheckCircle size={14} />
-                        Resolved
+                        {t('manager.complaints.status.resolved')}
                     </span>
                 );
             case "pending":
                 return (
                     <span className="flex items-center gap-1 text-sm font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
                         <Clock size={14} />
-                        Pending
+                        {t('manager.complaints.status.pending')}
                     </span>
                 );
             default:
@@ -173,7 +175,7 @@ const ManageComplaints = () => {
             <div className="p-8 max-w-6xl mx-auto">
                 <div className="flex flex-col items-center justify-center h-64 bg-white rounded-xl shadow-sm border border-gray-100">
                     <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-4"></div>
-                    <p className="text-gray-600 font-medium">Loading complaints...</p>
+                    <p className="text-gray-600 font-medium">{t('manager.complaints.loading')}</p>
                 </div>
             </div>
         );
@@ -186,7 +188,7 @@ const ManageComplaints = () => {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                     <div className="bg-red-50 rounded-lg p-6 text-center max-w-md mx-auto">
                         <AlertCircle size={40} className="text-red-500 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Complaints</h3>
+                        <h3 className="text-lg font-medium text-red-800 mb-2">{t('manager.complaints.errorTitle')}</h3>
                         <p className="text-red-700 mb-4">{error}</p>
                         <button 
                             onClick={fetchComplaints}
@@ -196,9 +198,9 @@ const ManageComplaints = () => {
                             {refreshing ? (
                                 <span className="flex items-center gap-2">
                                     <RefreshCw size={16} className="animate-spin" />
-                                    Trying...
+                                    {t('manager.complaints.trying')}
                                 </span>
-                            ) : "Try Again"}
+                            ) : t('manager.complaints.tryAgain')}
                         </button>
                     </div>
                 </div>
@@ -217,7 +219,7 @@ const ManageComplaints = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
                     <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full border border-gray-100 transform transition-all opacity-100 scale-100">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">{t('manager.complaints.confirmDelete')}</h3>
                             <button 
                                 onClick={handleDeleteCancel}
                                 disabled={deleteLoading}
@@ -227,7 +229,7 @@ const ManageComplaints = () => {
                             </button>
                         </div>
                         <div className="mb-6">
-                            <p className="text-gray-700">Are you sure you want to delete this complaint? This action cannot be undone.</p>
+                            <p className="text-gray-700">{t('manager.complaints.deleteWarning')}</p>
                         </div>
                         <div className="flex justify-end gap-3">
                             <button
@@ -235,7 +237,7 @@ const ManageComplaints = () => {
                                 disabled={deleteLoading}
                                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Cancel
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
@@ -245,9 +247,9 @@ const ManageComplaints = () => {
                                 {deleteLoading ? (
                                     <span className="flex items-center gap-2">
                                         <RefreshCw size={16} className="animate-spin" />
-                                        Deleting...
+                                        {t('manager.complaints.deleting')}
                                     </span>
-                                ) : "Delete"}
+                                ) : t('manager.complaints.delete')}
                             </button>
                         </div>
                     </div>
@@ -257,7 +259,7 @@ const ManageComplaints = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                        <h1 className="text-2xl font-bold text-gray-800">Customer Complaints</h1>
+                        <h1 className="text-2xl font-bold text-gray-800">{t('manager.complaints.title')}</h1>
                         <div className="flex flex-wrap items-center gap-3">
                             {/* Status Filter */}
                             <div className="flex flex-wrap bg-gray-50 rounded-lg p-1 shadow-sm border border-gray-200">
@@ -269,7 +271,7 @@ const ManageComplaints = () => {
                                             : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                                 >
-                                    All ({complaints.length})
+                                    {t('manager.complaints.filters.all')} ({complaints.length})
                                 </button>
                                 <button 
                                     onClick={() => applyFilter('pending')}
@@ -280,7 +282,7 @@ const ManageComplaints = () => {
                                     }`}
                                 >
                                     <Clock size={14} />
-                                    Pending ({pendingCount})
+                                    {t('manager.complaints.status.pending')} ({pendingCount})
                                 </button>
                                 <button 
                                     onClick={() => applyFilter('resolved')}
@@ -291,7 +293,7 @@ const ManageComplaints = () => {
                                     }`}
                                 >
                                     <CheckCircle size={14} />
-                                    Resolved ({resolvedCount})
+                                    {t('manager.complaints.status.resolved')} ({resolvedCount})
                                 </button>
                             </div>
                             
@@ -301,7 +303,7 @@ const ManageComplaints = () => {
                                 className="flex items-center gap-2 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 transition px-4 py-2 rounded-lg font-medium text-sm border border-blue-200 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 <RefreshCw size={16} className={`${refreshing ? 'animate-spin' : ''}`} />
-                                {refreshing ? 'Refreshing...' : 'Refresh'}
+                                {refreshing ? t('manager.complaints.refreshing') : t('manager.complaints.refresh')}
                             </button>
                         </div>
                     </div>
@@ -355,7 +357,7 @@ const ManageComplaints = () => {
                                         <div className="flex items-start gap-3">
                                             <Send size={16} className="text-blue-500 mt-1 flex-shrink-0" />
                                             <div className="text-gray-700">
-                                                <div className="text-xs text-blue-600 font-semibold mb-1">Your Reply:</div>
+                                                <div className="text-xs text-blue-600 font-semibold mb-1">{t('manager.complaints.yourReply')}:</div>
                                                 {complaint.reply}
                                             </div>
                                         </div>
@@ -366,7 +368,7 @@ const ManageComplaints = () => {
                                             <div className="border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition">
                                                 <textarea
                                                     rows="3"
-                                                    placeholder="Type your response..."
+                                                    placeholder={t('manager.complaints.typeResponse')}
                                                     className="w-full p-3 outline-none resize-none text-gray-700"
                                                     value={replyData.id === complaint.id ? replyData.message : ""}
                                                     onChange={(e) => setReplyData({ id: complaint.id, message: e.target.value })}
@@ -385,12 +387,12 @@ const ManageComplaints = () => {
                                                         {replyLoading === complaint.id ? (
                                                             <span className="flex items-center gap-2">
                                                                 <RefreshCw size={15} className="animate-spin" />
-                                                                Sending...
+                                                                {t('manager.complaints.sending')}
                                                             </span>
                                                         ) : (
                                                             <>
                                                                 <Send size={15} />
-                                                                Send Reply
+                                                                {t('manager.complaints.sendReply')}
                                                             </>
                                                         )}
                                                     </button>
@@ -408,18 +410,18 @@ const ManageComplaints = () => {
                             <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                 <MessageSquare size={32} className="text-gray-400" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Complaints</h3>
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('manager.complaints.noComplaints')}</h3>
                             <p className="text-gray-500 max-w-md mx-auto">
                                 {activeFilter !== "all" 
-                                    ? `There are no ${activeFilter} complaints to display.` 
-                                    : "There are no customer complaints to display at this time."}
+                                    ? t('manager.complaints.noFilteredComplaints', { status: t(`manager.complaints.status.${activeFilter}`) }) 
+                                    : t('manager.complaints.noComplaintsAtAll')}
                             </p>
                             {activeFilter !== "all" && complaints.length > 0 && (
                                 <button
                                     onClick={() => applyFilter("all")}
                                     className="mt-4 px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition font-medium border border-blue-200"
                                 >
-                                    View all complaints
+                                    {t('manager.complaints.viewAll')}
                                 </button>
                             )}
                         </div>
