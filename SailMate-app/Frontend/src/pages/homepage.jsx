@@ -39,8 +39,8 @@ const Homepage = () => {
     if (!showError) return null;
     
     return (
-      <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease-out]">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-md">
+      <div className="fixed inset-10 flex items-start justify-center z-50 animate-[fadeIn_0.3s_ease-out]">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-full w-auto">
           <div className="flex items-start">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
