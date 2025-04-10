@@ -10,7 +10,7 @@ public class seatsOperations {
     public static HashMap<String, Object> decode(Object seatsSold){
         HashMap<String, Object> response = new HashMap<>();
         Map<String, Object> seatsSoldMap = (Map<String, Object>) seatsSold;
-
+       
         boolean isFastFerry = seatsSoldMap.get("shipType").equals("Fast Ferry");
 
         int maxUpperPromo = (isFastFerry ? 40 : 20 ) ;
@@ -117,6 +117,7 @@ public class seatsOperations {
         response.put("economyAvailable", maxLowerEconomy + maxUpperEconomy - totalEconomyTaken);
         response.put("businessAvailable", maxLowerBusiness + maxUpperBusiness - totalBusinessTaken);
 
+        System.out.println("Answer in decode: " + response);
         return response;
     }
 }
