@@ -163,72 +163,7 @@ VALUES
     ('İzmir', 'Foça Station', 'Fatma Aydın', '+90 232 555 7890', 'Aşıklar Cd., 35680 Foça/İzmir, Turkey'),
     ('İstanbul', 'Kadıköy Station', 'Hasan Koç', '+90 212 888 1122', 'Caferağa, 34710 Kadıköy/İstanbul, Turkey');
 
--- Insert example voyages directly
--- İzmir to İstanbul routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (1, 2, CURDATE(), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200),
-    (1, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200),
-    (1, 2, DATE_ADD(CURDATE(), INTERVAL 4 DAY), '08:00:00', '12:30:00', 'Sea Bus', false, 50, 20, 200);
-
--- İstanbul to İzmir routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200),
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 3 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200),
-    (2, 1, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '09:00:00', '13:30:00', 'Sea Bus', false, 50, 20, 200);
-
--- İzmir to Bursa routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (1, 3, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '07:00:00', '10:30:00', 'Fast Ferry', true, 30, 10, 100),
-    (1, 3, DATE_ADD(CURDATE(), INTERVAL 5 DAY), '07:00:00', '10:30:00', 'Fast Ferry', true, 30, 10, 100);
-
--- Bursa to İzmir routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (3, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '16:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100),
-    (3, 1, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '16:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100);
-
--- İstanbul to Foça routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (2, 4, DATE_ADD(CURDATE(), INTERVAL 1 DAY), '07:30:00', '13:00:00', 'Fast Ferry', true, 30, 10, 100),
-    (2, 4, DATE_ADD(CURDATE(), INTERVAL 5 DAY), '07:30:00', '13:00:00', 'Fast Ferry', true, 30, 10, 100);
-
--- Foça to İstanbul routes
-INSERT INTO voyages (from_station, to_station, departure_date, departure_time, arrival_time, ship_type, fuel_type, business_seats, promo_seats, economy_seats)
-VALUES
-    (4, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), '14:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100),
-    (4, 2, DATE_ADD(CURDATE(), INTERVAL 6 DAY), '14:00:00', '19:30:00', 'Fast Ferry', true, 30, 10, 100);
-
--- Initialize seats_sold records for voyages
-INSERT INTO seats_sold (voyage_id, ship_type, upper_deck_promo, upper_deck_economy, upper_deck_business, lower_deck_promo, lower_deck_economy, lower_deck_business, total_tickets_sold)
-SELECT id, ship_type, 0, 0, 0, 0, 0, 0, 0 FROM voyages;
-
 -- Insert some ticket data
-INSERT INTO tickets (ticket_id, voyage_id, passenger_count, total_price, ticket_class, selected_seats, user_id, ticket_data)
-VALUES
-    ('TKT-12345678', 1, 2, 1000, 'Economy', 'E12,E13', 'user123', '{"passengers":[{"name":"John","surname":"Doe","birthDate":"1985-06-15","email":"john.doe@example.com","phoneNo":"+90 555 123 4567"},{"name":"Jane","surname":"Doe","birthDate":"1988-08-22","email":"jane.doe@example.com","phoneNo":"+90 555 765 4321"}]}'),
-    ('TKT-23456789', 1, 1, 800, 'Business', 'B5', 'user456', '{"passengers":[{"name":"Ali","surname":"Yilmaz","birthDate":"1975-03-10","email":"ali.yilmaz@example.com","phoneNo":"+90 532 111 2222"}]}'),
-    ('TKT-34567890', 4, 3, 1500, 'Economy', 'E22,E23,E24', 'user789', '{"passengers":[{"name":"Mehmet","surname":"Kaya","birthDate":"1982-11-28","email":"mehmet.kaya@example.com","phoneNo":"+90 533 333 4444"},{"name":"Ayşe","surname":"Kaya","birthDate":"1984-07-12","email":"ayse.kaya@example.com","phoneNo":"+90 533 555 6666"},{"name":"Zeynep","surname":"Kaya","birthDate":"2012-02-05","email":"","phoneNo":""}]}');
-
--- Update the seats_sold counts based on tickets sold
-UPDATE seats_sold SET 
-    lower_deck_economy = 2, 
-    total_tickets_sold = 2 
-WHERE voyage_id = 1;
-
-UPDATE seats_sold SET 
-    upper_deck_business = 1, 
-    total_tickets_sold = 1 
-WHERE voyage_id = 1;
-
-UPDATE seats_sold SET 
-    lower_deck_economy = 3, 
-    total_tickets_sold = 3 
-WHERE voyage_id = 4;
-
 INSERT INTO prices (class, value)
 VALUES
     ('Promo', 400),
@@ -237,17 +172,3 @@ VALUES
     ('Fee', 10),
     ('Senior', 15),
     ('Student', 20);
-
--- Insert some complaints
-INSERT INTO complaint (user_id, sender, email, subject, message)
-VALUES
-    ('user123', 'Ali Yilmaz', 'ali.yilmaz@example.com', 'Delay on Monday Ferry', 'The ferry on Monday was delayed by 30 minutes without any announcement. I almost missed my connection.'),
-    ('user456', 'Fatma Demir', 'fatma.demir@example.com', 'Cleanliness Issue', 'The restrooms on the ferry were not in good condition during my journey on Tuesday.');
-
--- Insert notifications
-INSERT INTO notification (user_id, type, title, message, entity_id, is_read)
-VALUES
-    ('user123', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-12345678 has been confirmed. Thank you for choosing SailMate!', 'TKT-12345678', false),
-    ('user456', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-23456789 has been confirmed. Thank you for choosing SailMate!', 'TKT-23456789', true),
-    ('user789', 'TICKET_CREATED', 'Ticket Confirmation', 'Your ticket TKT-34567890 has been confirmed. Thank you for choosing SailMate!', 'TKT-34567890', false),
-    ('user123', 'VOYAGE_DELAYED', 'Voyage Delay Notice', 'Your voyage from İzmir Marina to Yenikapı Terminal on today has been delayed by 30 minutes.', 'TKT-12345678', false);
