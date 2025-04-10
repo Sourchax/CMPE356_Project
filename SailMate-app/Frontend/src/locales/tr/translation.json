@@ -1228,7 +1228,13 @@
       "basePrice": "Taban Fiyat",
       "serviceFee": "Hizmet Bedeli",
       "total": "TOPLAM",
-      "grandTotal": "Genel Toplam"
+      "grandTotal": "Genel Toplam",
+      "discount": "İndirim",
+      "discountAmount": "İndirim Tutarı",
+      "discountPercentage": "{{percent}}% indirim",
+      "studentDiscount": "Öğrenci indirimi", 
+      "seniorDiscount": "Yaşlı indirimi", 
+      "childDiscount": "Çocuk indirimi"
     },
     "backToHomepage": "Ana Sayfaya Dön",
     "noJourneysFound": "Bu tarih için sefer bulunamadı",

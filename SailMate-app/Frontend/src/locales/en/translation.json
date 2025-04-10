@@ -1236,7 +1236,13 @@
       "basePrice": "Base Price",
       "serviceFee": "Service Fee",
       "total": "TOTAL",
-      "grandTotal": "Grand Total"
+      "grandTotal": "Grand Total",
+      "discount": "Discount",
+      "discountAmount": "Discount Amount",
+      "discountPercentage": "{{percent}}% off",
+      "studentDiscount": "Student discount", 
+      "seniorDiscount": "Senior discount", 
+      "childDiscount": "Child discount"
     },
     "backToHomepage": "Back to Homepage",
     "noJourneysFound": "No journeys found for this date",

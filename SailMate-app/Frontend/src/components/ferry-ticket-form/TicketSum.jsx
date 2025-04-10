@@ -282,8 +282,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                   {passengerTypes.student > 0 && (
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
-                        Student × {passengerTypes.student} 
-                        <span className="text-green-600 ml-1">({studentDiscount * 100}% off)</span>
+                        {t('ferryTicketing.passengerType.student')} × {passengerTypes.student} 
+                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: studentDiscount * 100})})</span>
                       </div>
                       {passengerPrices.breakdown.student && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -296,8 +296,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                   {passengerTypes.senior > 0 && (
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
-                        Senior × {passengerTypes.senior}
-                        <span className="text-green-600 ml-1">({seniorDiscount * 100}% off)</span>
+                        {t('ferryTicketing.passengerType.senior')} × {passengerTypes.senior}
+                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: seniorDiscount * 100})})</span>
                       </div>
                       {passengerPrices.breakdown.senior && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -309,8 +309,8 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                   {passengerTypes.child > 0 && (
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
-                        {t('common.children')} × {passengerTypes.child}
-                        <span className="text-green-600 ml-1">(100% off)</span>
+                        {t('ferryTicketing.passengerType.child')} × {passengerTypes.child}
+                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: 100})})</span>
                       </div>
                       {passengerPrices.breakdown.child && (
                         <div className="font-bold" style={{ color: colorStyle }}>
