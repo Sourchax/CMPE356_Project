@@ -121,10 +121,10 @@ const BroadcastModal = ({ isOpen, onClose }) => {
           </h3>
           <button 
             onClick={onClose}
-            className="text-white hover:text-gray-200 transition-colors"
+            className="text-white hover:text-gray-200 transition-colors bg-red-600 hover:bg-red-700 rounded-md w-8 h-8 flex items-center justify-center"
             aria-label="Close"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
         
