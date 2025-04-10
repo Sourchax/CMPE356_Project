@@ -30,7 +30,7 @@ const ManagerFinance = () => {
 
   const [discounts, setDiscounts] = useState([
     { id: 1, name: "Student", percentage: 0, icon: Users },
-    { id: 2, name: "Senior (65+)", percentage: 0, icon: User }
+    { id: 2, name: "Senior", percentage: 0, icon: User }
   ]);
 
   const [serviceFee, setServiceFee] = useState(0);
