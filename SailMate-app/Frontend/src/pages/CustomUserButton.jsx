@@ -304,9 +304,26 @@ const CustomUserButton = () => {
     handleMenuClose();
   };
 
+  // Updated truncateName function to show shorter names
   const truncateName = (name) => {
     if (!name) return "User";
-    return name;
+    
+    // Split the name to get first and last parts
+    const nameParts = name.trim().split(' ');
+    
+    if (nameParts.length === 1) {
+      // If just one name, truncate if it's too long
+      return nameParts[0].length > 8 ? nameParts[0].substring(0, 7) + '...' : nameParts[0];
+    } else {
+      // For full names (first + last), show first name and last initial
+      const firstName = nameParts[0];
+      const lastInitial = nameParts[nameParts.length - 1][0];
+      
+      // If first name is long, truncate it
+      const displayFirstName = firstName.length > 6 ? firstName.substring(0, 5) + '.' : firstName;
+      
+      return `${displayFirstName} ${lastInitial}.`;
+    }
   };
 
   // Calculate if the menu needs to be scrollable
@@ -345,7 +362,7 @@ const CustomUserButton = () => {
           className={`${isMaxZoom ? 'w-6 h-6' : 'w-5 h-5 sm:w-6 sm:h-6'} rounded-full border border-white flex-shrink-0`}
         />
         {!isMaxZoom && (
-          <span className="max-w-[80px] sm:max-w-none overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="max-w-[60px] sm:max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
             {truncateName(user?.fullName)}
           </span>
         )}
