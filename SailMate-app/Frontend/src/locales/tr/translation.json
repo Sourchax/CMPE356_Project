@@ -1350,6 +1350,7 @@
     "passengerHeader": "{number}. Yolcu - {type}"
   },
   "manager": {
+    "title": "Yönetici",
     "dashboard": {
       "greetings": {
         "morning": "Günaydın",
@@ -1405,10 +1406,10 @@
       }
     },
     "header": {
-      "title": "Admin",
+      "title": "Yönetici",
       "titles": {
-        "default": "Admin | SailMate",
-        "dashboard": "Admin Paneli | SailMate",
+        "default": "Yönetici | SailMate",
+        "dashboard": "Yönetici Paneli | SailMate",
         "users": "Kullanıcı Yönetimi | SailMate",
         "complaints": "Şikayetler | SailMate",
         "finance": "Finans | SailMate",
@@ -1497,7 +1498,7 @@
       "deleteUser": "{{name}} Kullanıcısını Sil",
       "noMatchingUsers": "Mevcut filtrelerinize uygun kullanıcı bulunamadı. Arama kriterlerinizi ayarlamayı deneyin.",
       "noUsers": "Kullanıcı bulunamadı.",
-      "showingUsers": "{{count}} kullanıcı gösteriliyor {{total, plural, ='' {} other{/ {{total}}}}}", 
+      "showingUsers": "{{count}} kullanıcı gösteriliyor", 
       "updateUserRole": "Kullanıcı Rolünü Güncelle",
       "selectRole": "Bir rol seçin",
       "updating": "Güncelleniyor...",
@@ -1615,6 +1616,31 @@
     "sustainability": "SailMate - Sürdürülebilirlik",
     "unauthorized": "SailMate - Yetkisiz Erişim",
     "notFound": "SailMate - Sayfa Bulunamadı"
+  },
+  "notFoundPage": {
+    "errorCode": "HATA KODU: 404",
+    "navigationError": "NAVİGASYON HATASI",
+    "destinationNotFound": "Hedef bulunamadı",
+    "systemLog": "// SİSTEM KAYDI",
+    "coords": "koordinatlar:",
+    "coordsUndefined": "tanımlanmamış",
+    "status": "durum:",
+    "vesselNotFound": "gemi_bulunamadı",
+    "location": "konum:",
+    "unchartedWaters": "bilinmeyen_sular",
+    "captainsLog": "Kaptan Günlüğü:",
+    "logMessage1": "Görünüşe göre navigasyon haritalarımızın kenarından çıktık. Buradaki sular bilinmiyor ve istenen konum deniz haritalarımızda mevcut değil.",
+    "logMessage2": "Taşınmış, silinmiş veya hiç var olmamış bir sayfayı ziyaret etmeye çalışıyor gibisiniz. Lütfen koordinatlarınızı kontrol edin ve tekrar deneyin.",
+    "lastKnownCoordinates": "Son Bilinen Koordinatlar",
+    "requestedURL": "İstenen URL:",
+    "returnToHome": "Ana Limana Dön",
+    "returnToPrevious": "Önceki Rotaya Dön",
+    "footer": "SailMate Navigasyon Sistemi • Koordinatlar Deniz Kontrol tarafından izlenmektedir"
+  },
+  "unauthorizedPage": {
+    "title": "Yetkisiz Sular",
+    "message": "Denizin bu kısmı iş gemisi olmayan denizcilere kapalıdır. Bu sularda yalnızca yetkili gemilerin seyrine izin verilir.",
+    "button": "Güvenli Kıyılara Yelken Aç"
   },
   "broadcastModal": {
     "title": "Toplu Duyuru Gönder",

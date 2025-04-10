@@ -117,21 +117,21 @@ const NotFoundPage = () => {
             <div className="mt-6 w-full">
               <div className="flex items-center mb-1">
                 <div className="w-3 h-3 rounded-full bg-[#ff2d55] mr-2"></div>
-                <p className="text-[#ff2d55] text-sm font-medium">ERROR CODE: 404</p>
+                <p className="text-[#ff2d55] text-sm font-medium">{t('notFoundPage.errorCode')}</p>
               </div>
               <div className="text-white font-mono text-xs bg-[#001020] p-3 rounded border border-[#00b4ff]/30">
-                <p className="mb-1">// SYSTEM LOG</p>
+                <p className="mb-1">{t('notFoundPage.systemLog')}</p>
                 <p>
-                  <span className="text-[#00b4ff]">coords:</span> 
-                  <span className="text-[#ff2d55]">undefined</span>
+                  <span className="text-[#00b4ff]">{t('notFoundPage.coords')}</span> 
+                  <span className="text-[#ff2d55]">{t('notFoundPage.coordsUndefined')}</span>
                 </p>
                 <p>
-                  <span className="text-[#00b4ff]">status:</span> 
-                  <span className="text-[#ff2d55]">vessel_not_found</span>
+                  <span className="text-[#00b4ff]">{t('notFoundPage.status')}</span> 
+                  <span className="text-[#ff2d55]">{t('notFoundPage.vesselNotFound')}</span>
                 </p>
                 <p>
-                  <span className="text-[#00b4ff]">location:</span> 
-                  <span className="text-white opacity-70">uncharted_waters</span>
+                  <span className="text-[#00b4ff]">{t('notFoundPage.location')}</span> 
+                  <span className="text-white opacity-70">{t('notFoundPage.unchartedWaters')}</span>
                 </p>
               </div>
             </div>
@@ -142,28 +142,28 @@ const NotFoundPage = () => {
             <div className="mb-2 flex items-center">
               <Compass className="text-[#00b4ff] mr-3 animate-pulse" size={36} />
               <div>
-                <h2 className="text-3xl font-bold text-white">NAVIGATION ERROR</h2>
-                <p className="text-[#00b4ff]">Destination not found</p>
+                <h2 className="text-3xl font-bold text-white">{t('notFoundPage.navigationError')}</h2>
+                <p className="text-[#00b4ff]">{t('notFoundPage.destinationNotFound')}</p>
               </div>
             </div>
             
             <div className="mt-6 mb-8">
-              <h3 className="text-xl font-semibold text-white mb-3">Captain's Log:</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">{t('notFoundPage.captainsLog')}</h3>
               <p className="text-white/80 mb-3">
-                We seem to have sailed off the edge of our navigation charts. The waters here are uncharted and the requested location does not exist in our maritime maps.
+                {t('notFoundPage.logMessage1')}
               </p>
               <p className="text-white/80">
-                It appears you're trying to visit a page that has been moved, deleted, or never existed. Please check your coordinates and try again.
+                {t('notFoundPage.logMessage2')}
               </p>
             </div>
             
             <div className="bg-[#001325] p-4 rounded-lg border border-[#00b4ff]/30 mb-8">
               <div className="flex items-center mb-2">
                 <MapPin className="text-[#00b4ff] mr-2" size={18} />
-                <h3 className="text-white font-medium">Last Known Coordinates</h3>
+                <h3 className="text-white font-medium">{t('notFoundPage.lastKnownCoordinates')}</h3>
               </div>
               <div className="flex items-center text-white/70 text-sm font-mono">
-                <span>Requested URL:</span>
+                <span>{t('notFoundPage.requestedURL')}</span>
                 <span className="ml-2 bg-[#001020] py-1 px-2 rounded text-[#ff2d55]">
                   {window.location.pathname}
                 </span>
@@ -176,14 +176,14 @@ const NotFoundPage = () => {
                 className="flex-1 flex items-center justify-center bg-[#00b4ff] hover:bg-[#0096ff] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
               >
                 <Home className="mr-2" size={18} />
-                Return to Home Port
+                {t('notFoundPage.returnToHome')}
               </button>
               <button 
                 onClick={() => window.history.back()}
                 className="flex-1 flex items-center justify-center bg-[#1d3b53] hover:bg-[#2a4d69] text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 border border-[#00b4ff]/30"
               >
                 <Ship className="mr-2" size={18} />
-                Return to Previous Route
+                {t('notFoundPage.returnToPrevious')}
               </button>
             </div>
           </div>
@@ -191,7 +191,7 @@ const NotFoundPage = () => {
         
         {/* Footer */}
         <div className="mt-6 text-center text-white/50 text-sm">
-          <p>SailMate Navigation System • Coordinates monitored by Maritime Control</p>
+          <p>{t('notFoundPage.footer')}</p>
         </div>
       </div>
     </div>

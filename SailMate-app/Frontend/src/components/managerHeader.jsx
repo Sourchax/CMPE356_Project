@@ -86,7 +86,7 @@ const ManagerHeader = () => {
                             width={128}
                             height={32}
                         />
-                        <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold whitespace-nowrap text-gray-800">{t("manager.header.title")}</h1>
+                        <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold whitespace-nowrap text-gray-800">{t("manager.title")}</h1>
                     </div>
                 </Link>
 

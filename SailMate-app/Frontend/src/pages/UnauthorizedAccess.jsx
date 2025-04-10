@@ -22,13 +22,12 @@ const UnauthorizedAccess = () => {
             <span className="cross-icon">✖</span>
           </div>
         </div>
-        <h1 className="unauthorized-title">Unauthorized Waters</h1>
+        <h1 className="unauthorized-title">{t('unauthorizedPage.title')}</h1>
         <p className="unauthorized-text">
-          This part of the sea is off-limits to non-business sailors. Only
-          authorized ships are allowed to sail these waters.
+          {t('unauthorizedPage.message')}
         </p>
         <Link to="/" className="upgrade-button">
-          Set Sail for Safe Shores
+          {t('unauthorizedPage.button')}
         </Link>
       </div>
     </div>

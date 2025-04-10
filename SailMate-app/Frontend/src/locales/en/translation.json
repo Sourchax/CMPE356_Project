@@ -1357,6 +1357,7 @@
     }
   },
   "manager": {
+    "title": "Manager",
     "dashboard": {
       "greetings": {
         "morning": "Good morning",
@@ -1504,7 +1505,7 @@
       "deleteUser": "Delete {{name}}",
       "noMatchingUsers": "No users match your current filters. Try adjusting your search criteria.",
       "noUsers": "No users found.",
-      "showingUsers": "Showing {{count}} {{total, plural, ='' {} other{of {{total}}}} users", 
+      "showingUsers": "Showing {{count}} users", 
       "updateUserRole": "Update User Role",
       "selectRole": "Select a role",
       "updating": "Updating...",
@@ -1588,18 +1589,18 @@
     "home": "SailMate - Home",
     "stations": "SailMate - Stations",
     "voyageTimes": "SailMate - Voyage Times",
-    "ticketCancel": "SailMate - Cancel Ticket",
-    "ticketCheck": "SailMate - Check Ticket",
+    "ticketCancel": "SailMate - Ticket Cancellation",
+    "ticketCheck": "SailMate - Ticket Check",
     "myTickets": "SailMate - My Tickets",
     "about": "SailMate - About Us",
     "contact": "SailMate - Contact",
     "login": "SailMate - Login",
-    "signup": "SailMate - Sign Up",
+    "signup": "SailMate - Signup",
     "profile": "SailMate - Profile",
     "ticketPurchase": "SailMate - Purchase Ticket",
     "ticketDetails": "SailMate - Ticket Details",
-    "admin": "SailMate - Admin Panel",
-    "manager": "SailMate - Manager Panel",
+    "admin": "SailMate - Admin Dashboard",
+    "manager": "SailMate - Manager Dashboard",
     "faq": "SailMate - FAQ",
     "privacyPolicy": "SailMate - Privacy Policy",
     "termsOfService": "SailMate - Terms of Service",
@@ -1608,6 +1609,31 @@
     "sustainability": "SailMate - Sustainability",
     "unauthorized": "SailMate - Unauthorized Access",
     "notFound": "SailMate - Page Not Found"
+  },
+  "notFoundPage": {
+    "errorCode": "ERROR CODE: 404",
+    "navigationError": "NAVIGATION ERROR",
+    "destinationNotFound": "Destination not found",
+    "systemLog": "// SYSTEM LOG",
+    "coords": "coords:",
+    "coordsUndefined": "undefined",
+    "status": "status:",
+    "vesselNotFound": "vessel_not_found",
+    "location": "location:",
+    "unchartedWaters": "uncharted_waters",
+    "captainsLog": "Captain's Log:",
+    "logMessage1": "We seem to have sailed off the edge of our navigation charts. The waters here are uncharted and the requested location does not exist in our maritime maps.",
+    "logMessage2": "It appears you're trying to visit a page that has been moved, deleted, or never existed. Please check your coordinates and try again.",
+    "lastKnownCoordinates": "Last Known Coordinates",
+    "requestedURL": "Requested URL:",
+    "returnToHome": "Return to Home Port",
+    "returnToPrevious": "Return to Previous Route",
+    "footer": "SailMate Navigation System • Coordinates monitored by Maritime Control"
+  },
+  "unauthorizedPage": {
+    "title": "Unauthorized Waters",
+    "message": "This part of the sea is off-limits to non-business sailors. Only authorized ships are allowed to sail these waters.",
+    "button": "Set Sail for Safe Shores"
   },
   "broadcastModal": {
     "title": "Send Broadcast Notification",

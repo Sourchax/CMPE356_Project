@@ -580,7 +580,8 @@ const ManageUsers = () => {
                 </div>
                 <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
-                        {t('manager.users.showingUsers', { count: filteredUsers.length, total: users.length !== filteredUsers.length ? users.length : "" })}
+                        {t('manager.users.showingUsers', { count: filteredUsers.length })}
+                        {users.length !== filteredUsers.length && ` / ${users.length}`}
                     </div>
                 </div>
             </div>
@@ -599,7 +600,8 @@ const ManageUsers = () => {
                 )}
                 <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 flex justify-between items-center">
                     <div className="text-sm text-gray-600">
-                        {t('manager.users.showingUsers', { count: filteredUsers.length, total: users.length !== filteredUsers.length ? users.length : "" })}
+                        {t('manager.users.showingUsers', { count: filteredUsers.length })}
+                        {users.length !== filteredUsers.length && ` / ${users.length}`}
                     </div>
                 </div>
             </div>
