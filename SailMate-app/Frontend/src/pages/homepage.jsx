@@ -39,8 +39,8 @@ const Homepage = () => {
     if (!showError) return null;
     
     return (
-      <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease-out]">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-md">
+      <div className="fixed inset-10 flex items-start justify-center z-50 animate-[fadeIn_0.3s_ease-out]">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-full w-auto">
           <div className="flex items-start">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -288,6 +288,7 @@ const Homepage = () => {
       };
   
       if (formData.returnDate !== "") {
+        // Outbound trip search
         const response1 = await axios.get(`${API_URL}/voyages/search`, {
           params: {
             fromStationId: stationsArray.find(station => station.title === formData.departure).id,
@@ -296,6 +297,7 @@ const Homepage = () => {
           }
         });
   
+        // Return trip search
         const response2 = await axios.get(`${API_URL}/voyages/search`, {
           params: {
             fromStationId: stationsArray.find(station => station.title === formData.arrival).id,
@@ -310,21 +312,40 @@ const Homepage = () => {
         }
   
         const allVoyages = [...response1.data, ...response2.data];
-        const seatSoldPromises = allVoyages.map(voyage =>
-          axios.get(`${API_URL}/seats-sold/voyage/${voyage.id}`)
+        
+        // Combined API call to get seat information
+        const seatsResponse = await axios.post(`${API_URL}/seats-sold/calculate-seats-with-voyage`, {
+          voyages: allVoyages
+        });
+  
+        voyageData.voyages = [[...response1.data], [...response2.data]];
+        voyageData.seatInformation = seatsResponse.data;
+        const seatInfos = seatsResponse.data;
+        const passengerTotal = passengerDetails.adult + passengerDetails.child + passengerDetails.senior;
+  
+        // Split into departure and return seat info arrays
+        const departureSeats = seatInfos.slice(0, response1.data.length);
+        const returnSeats = seatInfos.slice(response1.data.length);
+  
+        // Check if ALL voyages in that direction are full (no class has enough seats)
+        const isDepartureFull = departureSeats.every(seatInfo =>
+          seatInfo.businessAvailable < passengerTotal &&
+          seatInfo.economyAvailable < passengerTotal &&
+          seatInfo.promoAvailable < passengerTotal
         );
   
-        const seatsSoldResponses = await Promise.all(seatSoldPromises);
-        const seatsSoldDataArray = seatsSoldResponses.map(res => res.data);
-  
-        const calculatedSeatsResponse = await axios.post(
-          `${API_URL}/seats-sold/calculate-seats`,
-          seatsSoldDataArray
+        const isReturnFull = returnSeats.every(seatInfo =>
+          seatInfo.businessAvailable < passengerTotal &&
+          seatInfo.economyAvailable < passengerTotal &&
+          seatInfo.promoAvailable < passengerTotal
         );
   
-        voyageData.voyages = [[...response1.data],[ ...response2.data]];
-        voyageData.seatInformation = calculatedSeatsResponse.data;
+        if (isDepartureFull || isReturnFull) {
+          displayError("Not enough seats available in any single class for all passengers on both departure and return trips.");
+          return;
+        }
       } else {
+        // One-way trip search
         const response = await axios.get(`${API_URL}/voyages/search`, {
           params: {
             fromStationId: stationsArray.find(station => station.title === formData.departure).id,
@@ -338,20 +359,27 @@ const Homepage = () => {
           return;
         }
   
-        const seatSoldPromises = response.data.map(voyage =>
-          axios.get(`${API_URL}/seats-sold/voyage/${voyage.id}`)
+        // Combined API call to get seat information
+        const seatsResponse = await axios.post(`${API_URL}/seats-sold/calculate-seats-with-voyage`, {
+          voyages: response.data
+        });
+  
+        const seatInfos = seatsResponse.data;
+        const passengerTotal = passengerDetails.adult + passengerDetails.child + passengerDetails.senior;
+  
+        const isFull = seatInfos.every(seatInfo => 
+          seatInfo.businessAvailable < passengerTotal &&
+          seatInfo.economyAvailable < passengerTotal &&
+          seatInfo.promoAvailable < passengerTotal
         );
   
-        const seatsSoldResponses = await Promise.all(seatSoldPromises);
-        const seatsSoldDataArray = seatsSoldResponses.map(res => res.data);
-  
-        const calculatedSeatsResponse = await axios.post(
-          `${API_URL}/seats-sold/calculate-seats`,
-          seatsSoldDataArray
-        );
+        if (isFull) {
+          displayError("Not enough seats available in any single class for all passengers.");
+          return;
+        }
   
         voyageData.voyages = [response.data];
-        voyageData.seatInformation = calculatedSeatsResponse.data;
+        voyageData.seatInformation = seatsResponse.data;
       }
   
       console.log(voyageData);

@@ -1,6 +1,7 @@
 package group12.Backend.controller;
 
 import group12.Backend.dto.SeatsSoldDTO;
+import group12.Backend.dto.VoyageDTO;
 import group12.Backend.service.SeatsSoldService;
 import group12.Backend.util.Authentication;
 import io.jsonwebtoken.Claims;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/seats-sold")
@@ -48,7 +50,55 @@ public class SeatsSoldController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    @PostMapping("/calculate-seats-with-voyage")
+    public ResponseEntity<List<Map<String, Object>>> calculateSeatsWithVoyage(@RequestBody Map<String, List<VoyageDTO>> requestBody) {
+        List<VoyageDTO> voyages = requestBody.get("voyages");
+        
+        if (voyages == null || voyages.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+    
+        List<Map<String, Object>> seatInformationList = new ArrayList<>();
+        
+        for (VoyageDTO voyage : voyages) {
+            // Fetch seats sold for each voyage
+            Optional<SeatsSoldDTO> seatsSoldOptional = seatsSoldService.getSeatsSoldByVoyageId(voyage.getId());
+            
+            if (seatsSoldOptional.isPresent()) {
+                // Convert SeatsSoldDTO to Map and decode
+                Map<String, Object> seatsSoldMap = convertSeatsSoldToMap(seatsSoldOptional.get());
+                Map<String, Object> decodedSeatsInfo = seatsOperations.decode(seatsSoldMap);
+                seatInformationList.add(decodedSeatsInfo);
+            }
+        }
+    
+        return ResponseEntity.ok(seatInformationList);
+    }
+    
+    // Helper method to convert SeatsSoldDTO to Map
+    private Map<String, Object> convertSeatsSoldToMap(SeatsSoldDTO seatsSold) {
+        Map<String, Object> seatsSoldMap = new HashMap<>();
+        seatsSoldMap.put("id", seatsSold.getId());
+        seatsSoldMap.put("voyageId", seatsSold.getVoyageId());
+        seatsSoldMap.put("shipType", seatsSold.getShipType());
+        seatsSoldMap.put("upperDeckPromo", seatsSold.getUpperDeckPromo());
+        seatsSoldMap.put("upperDeckEconomy", seatsSold.getUpperDeckEconomy());
+        seatsSoldMap.put("upperDeckBusiness", seatsSold.getUpperDeckBusiness());
+        seatsSoldMap.put("lowerDeckPromo", seatsSold.getLowerDeckPromo());
+        seatsSoldMap.put("lowerDeckEconomy", seatsSold.getLowerDeckEconomy());
+        seatsSoldMap.put("lowerDeckBusiness", seatsSold.getLowerDeckBusiness());
+        
+        return seatsSoldMap;
+    }
+    
+    // Helper method to create an empty seat list
+    private List<Boolean> createEmptySeatList(int size) {
+        List<Boolean> emptySeats = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            emptySeats.add(false);
+        }
+        return emptySeats;
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteSeatsSold(
             @PathVariable Integer id,
@@ -138,6 +188,7 @@ public class SeatsSoldController {
 
     @PostMapping("/calculate-seats")
     public ResponseEntity<List<Map<String, Object>>> calculateSeats(@RequestBody List<Object> seatsSoldList){
+        System.out.println("Initial in controller: " + seatsSoldList);
         List<Map<String, Object>> decodedSeatsList = new ArrayList<>();
         for (Object seatsSold : seatsSoldList) {
             decodedSeatsList.add(seatsOperations.decode(seatsSold));
