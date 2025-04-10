@@ -67,13 +67,23 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
     
     // Check for spaces or tabs as standalone input
     if (/^\s+$/.test(value)) {
-      error = t("ferryTicketing.validation.onlySpaces", { field: t(`common.${field.toLowerCase()}`) });
+      if (field === "Name") {
+        error = t("ferryTicketing.validation.nameOnlySpaces");
+      } else if (field === "Surname") {
+        error = t("ferryTicketing.validation.surnameOnlySpaces");
+      } else {
+        error = t("ferryTicketing.validation.onlySpaces", { field: t(`common.${field.toLowerCase()}`) });
+      }
     } else {
       switch (field) {
         case "Name":
         case "Surname":
           if (!value.trim()) {
-            error = t("ferryTicketing.validation.required", { field: t(`common.${field === "Name" ? "name" : "surname"}`) });
+            if (field === "Name") {
+              error = t("ferryTicketing.validation.nameMissing");
+            } else {
+              error = t("ferryTicketing.validation.surnameMissing");
+            }
           } else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value.trim())) {
             if (field === "Name") {
               error = t("ferryTicketing.validation.nameInvalidEntry");

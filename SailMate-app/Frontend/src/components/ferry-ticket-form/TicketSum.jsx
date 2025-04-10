@@ -95,7 +95,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
 
   const tickets = [
     { label: t('ferryTicketing.oneWay').toUpperCase(), date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
-    returnDate ? { label: t('common.roundTrip').toUpperCase(), date: returnDate, dep: arrival, arr: departure, planningInfo: ticketPlanningInfo?.return } : null
+    returnDate ? { label: t('ferryTicketing.return').toUpperCase(), date: returnDate, dep: arrival, arr: departure, planningInfo: ticketPlanningInfo?.return } : null
   ].filter(Boolean);
 
   // Define seat type colors
@@ -211,7 +211,7 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
         // Update total prices for departure and return
         if (ticket.label === t('ferryTicketing.oneWay').toUpperCase() && passengerPrices.total !== "N/A") {
           departurePriceValue = (passengerPrices.total + (serviceFee * passengers));
-        } else if (ticket.label === t('common.roundTrip').toUpperCase() && passengerPrices.total !== "N/A") {
+        } else if (ticket.label === t('ferryTicketing.return').toUpperCase() && passengerPrices.total !== "N/A") {
           returnPriceValue = (passengerPrices.total + (serviceFee * passengers));
         }
 

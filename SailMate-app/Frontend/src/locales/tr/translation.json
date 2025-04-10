@@ -1212,6 +1212,7 @@
     "seabus": "Seabus",
     "next": "İleri",
     "oneWay": "Tek Yön",
+    "return": "Dönüş",
     "date": "Tarih",
     "placeholders": {
       "name": "Adınızı Girin",
@@ -1303,6 +1304,10 @@
       "invalidName": "{{field}} geçersiz giriş",
       "nameInvalidEntry": "Geçersiz isim",
       "surnameInvalidEntry": "Geçersiz soyisim",
+      "nameMissing": "İsim gereklidir",
+      "surnameMissing": "Soyad gereklidir",
+      "nameOnlySpaces": "Ad boş olamaz veya sadece boşluk içeremez",
+      "surnameOnlySpaces": "Soyad boş olamaz veya sadece boşluk içeremez",
       "invalidPhone": "Geçersiz telefon numarası",
       "invalidDate": "Geçersiz tarih formatı. YYYY-AA-GG kullanın",
       "futureBirthDate": "Doğum tarihi gelecekte olamaz",

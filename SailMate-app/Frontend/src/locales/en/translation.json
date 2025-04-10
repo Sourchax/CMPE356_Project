@@ -1220,6 +1220,7 @@
     "seabus": "Seabus",
     "next": "Next",
     "oneWay": "One Way",
+    "return": "Return",
     "date": "Date",
     "placeholders": {
       "name": "Enter your Name",
@@ -1344,6 +1345,10 @@
       "invalidName": "{{field}} invalid entry",
       "nameInvalidEntry": "Name invalid entry",
       "surnameInvalidEntry": "Surname invalid entry",
+      "nameMissing": "Name is required",
+      "surnameMissing": "Surname is required",
+      "nameOnlySpaces": "Name cannot be empty or contain only spaces",
+      "surnameOnlySpaces": "Surname cannot be empty or contain only spaces",
       "invalidPhone": "Invalid phone number",
       "invalidDate": "Invalid date format. Use YYYY-MM-DD",
       "futureBirthDate": "Birth date cannot be in the future",
