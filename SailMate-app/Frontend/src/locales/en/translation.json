@@ -1342,6 +1342,8 @@
       "required": "{{field}} is required",
       "onlySpaces": "{{field}} cannot be empty or contain only spaces/tabs",
       "invalidName": "{{field}} invalid entry",
+      "nameInvalidEntry": "Name invalid entry",
+      "surnameInvalidEntry": "Surname invalid entry",
       "invalidPhone": "Invalid phone number",
       "invalidDate": "Invalid date format. Use YYYY-MM-DD",
       "futureBirthDate": "Birth date cannot be in the future",

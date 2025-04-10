@@ -1301,6 +1301,8 @@
       "required": "{{field}} gereklidir",
       "onlySpaces": "{{field}} boş olamaz veya sadece boşluk içeremez",
       "invalidName": "{{field}} geçersiz giriş",
+      "nameInvalidEntry": "Geçersiz isim",
+      "surnameInvalidEntry": "Geçersiz soyisim",
       "invalidPhone": "Geçersiz telefon numarası",
       "invalidDate": "Geçersiz tarih formatı. YYYY-AA-GG kullanın",
       "futureBirthDate": "Doğum tarihi gelecekte olamaz",
