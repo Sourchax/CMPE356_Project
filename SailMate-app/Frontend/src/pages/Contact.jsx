@@ -39,7 +39,7 @@ const Contact = () => {
 
   const validateField = (name, value) => {
     let error = null;
-    
+  
     switch (name) {
       case 'name':
         if (!value.trim()) {
@@ -48,11 +48,11 @@ const Contact = () => {
           error = t('contactPage.formErrors.nameMinLength');
         } else if (value.trim().length > 50) {
           error = t('contactPage.formErrors.nameMaxLength');
-        } else if (!/^[a-zA-Z\s'-]+$/.test(value)) {
+        } else if (!/^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/.test(value)) {
           error = t('contactPage.formErrors.nameInvalid');
         }
         break;
-        
+  
       case 'email':
         if (!value.trim()) {
           error = t('contactPage.formErrors.emailRequired');
@@ -62,7 +62,7 @@ const Contact = () => {
           error = t('contactPage.formErrors.emailMaxLength');
         }
         break;
-        
+  
       case 'subject':
         if (!value.trim()) {
           error = t('contactPage.formErrors.subjectRequired');
@@ -72,7 +72,7 @@ const Contact = () => {
           error = t('contactPage.formErrors.subjectMaxLength');
         }
         break;
-        
+  
       case 'message':
         if (!value.trim()) {
           error = t('contactPage.formErrors.messageRequired');
@@ -82,11 +82,11 @@ const Contact = () => {
           error = t('contactPage.formErrors.messageMaxLength');
         }
         break;
-        
+  
       default:
         break;
     }
-    
+  
     return error;
   };
   

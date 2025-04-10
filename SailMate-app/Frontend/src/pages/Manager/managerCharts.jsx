@@ -524,7 +524,7 @@ const ManagerCharts = () => {
                     </div>
                     <div className="flex mt-1">
                       <div className="text-xs text-gray-500">
-                        <span className="mr-2">{route.from}</span> to <span className="ml-2">{route.to}</span>
+                        <span className="mr-2">{route.from}</span> - <span className="ml-2">{route.to}</span>
                       </div>
                     </div>
                   </div>
