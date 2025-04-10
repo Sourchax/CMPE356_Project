@@ -22,22 +22,24 @@ const AdminHeader = () => {
   // Update document title based on current route
   useEffect(() => {
     const path = location.pathname;
-    let title = "Admin | SailMate";
+    let title;
     
     if (path === "/admin") {
-      title = "Admin Dashboard | SailMate";
+      title = t('pageTitle.adminDashboard', "Admin Dashboard | SailMate");
     } else if (path === "/admin/Stations") {
-      title = "Stations | SailMate";
+      title = t('pageTitle.adminStations', "Stations | SailMate");
     } else if (path === "/admin/Voyage") {
-      title = "Voyage Times | SailMate";
+      title = t('pageTitle.adminVoyage', "Voyage Times | SailMate");
     } else if (path === "/admin/Announce") {
-      title = "Announcements | SailMate";
+      title = t('pageTitle.adminAnnounce', "Announcements | SailMate");
     } else if (path === "/admin/Logs") {
-      title = "Activity Logs | SailMate";
+      title = t('pageTitle.adminLogs', "Activity Logs | SailMate");
+    } else {
+      title = t('pageTitle.admin', "Admin | SailMate");
     }
     
     document.title = title;
-  }, [location.pathname]);
+  }, [location.pathname, t]);
 
   // Close mobile menu when screen size changes to desktop view
   useEffect(() => {
