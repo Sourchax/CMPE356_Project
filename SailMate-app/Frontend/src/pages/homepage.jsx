@@ -35,12 +35,18 @@ const Homepage = () => {
   const [showError, setShowError] = useState(false);
 
   // Error notification component
+  const errorNotificationRef = React.useRef(null);
+  
+  // Modified error notification component
   const ErrorNotification = () => {
     if (!showError) return null;
     
     return (
-      <div className="fixed inset-10 flex items-start justify-center z-50 animate-[fadeIn_0.3s_ease-out]">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-full w-auto">
+      <div 
+        ref={errorNotificationRef}
+        className="fixed top-5 left-0 right-0 flex justify-center z-50 animate-[fadeIn_0.3s_ease-out] pointer-events-none"
+      >
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-xl pointer-events-auto">
           <div className="flex items-start">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -69,12 +75,31 @@ const Homepage = () => {
     );
   };
 
-  // Helper function to display error
+  // Add event listeners to close error notification on user interaction
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (showError) {
+        setShowError(false);
+      }
+    };
+    
+    // Capture user interactions that should dismiss the notification
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('keydown', handleInteraction);
+    
+    return () => {
+      // Clean up event listeners
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+  }, [showError]);
+  
+  // Existing displayError function with delayed auto-hide (as a backup)
   const displayError = (message) => {
     setErrorMessage(message);
     setShowError(true);
     
-    // Auto-hide after 6 seconds
+    // Auto-hide after 6 seconds as a fallback
     setTimeout(() => {
       setShowError(false);
     }, 6000);
@@ -549,7 +574,13 @@ const Homepage = () => {
               <input
                 type="radio"
                 checked={tripType === "one-way"}
-                onChange={() => setTripType("one-way")}
+                onChange={() => {
+                  setTripType("one-way");
+                  setFormData(prev => ({
+                    ...prev,
+                    returnDate: ""
+                  }));
+                }}
                 className="accent-[#06AED5] w-4 h-4"
               /> 
               <span className="font-medium">{t('common.oneWay')}</span>
