@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 
-const LanguageSwitcher = () => {
+const LanguageSwitcher = ({ darkMode = false }) => {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState(darkMode ? 'top' : 'bottom');
   const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
   
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -14,6 +16,31 @@ const LanguageSwitcher = () => {
     window.history.pushState({}, '', url);
     setIsOpen(false);
   };
+
+  const handleLanguageClick = (lng, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    changeLanguage(lng);
+  };
+  
+  // Calculate optimal dropdown position based on available space
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const dropdownHeight = 70; // Approximate height of dropdown
+      
+      if (darkMode) {
+        // Default to top for footer
+        setDropdownPosition('top');
+      } else if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+        setDropdownPosition('top');
+      } else {
+        setDropdownPosition('bottom');
+      }
+    }
+  }, [isOpen, darkMode]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,20 +67,29 @@ const LanguageSwitcher = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium text-gray-700 hover:bg-gray-100 transition-all duration-150"
+        className={`flex items-center gap-1 min-w-[32px] min-h-[22px] ${
+          darkMode 
+            ? 'bg-white/20 text-white hover:bg-white/30 px-2 py-1 text-xs' 
+            : 'text-gray-700 hover:bg-gray-100 px-1.5 py-0.5 text-xs'
+        } rounded font-medium transition-all duration-150`}
         aria-label="Change language"
       >
         <span>{getCurrentLanguage()}</span>
-        <ChevronDown size={10} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={darkMode ? 12 : 10} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-1 w-24 rounded shadow-sm bg-white border border-gray-200 overflow-hidden">
+        <div 
+          className={`absolute ${
+            dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
+          } right-0 z-[100] w-24 rounded shadow-lg bg-white border border-gray-200 overflow-hidden`}
+        >
           <div role="menu" aria-orientation="vertical">
             <button
-              onClick={() => changeLanguage('en')}
-              className={`flex items-center w-full text-left px-2.5 py-1 text-xs ${
+              onClick={(e) => handleLanguageClick('en', e)}
+              className={`flex items-center w-full text-left px-3 py-2 text-xs ${
                 i18n.language === 'en' || i18n.language.startsWith('en-')
                   ? 'font-medium text-blue-700 bg-blue-50'
                   : 'text-gray-700 hover:bg-gray-50'
@@ -63,8 +99,8 @@ const LanguageSwitcher = () => {
               English
             </button>
             <button
-              onClick={() => changeLanguage('tr')}
-              className={`flex items-center w-full text-left px-2.5 py-1 text-xs ${
+              onClick={(e) => handleLanguageClick('tr', e)}
+              className={`flex items-center w-full text-left px-3 py-2 text-xs ${
                 i18n.language === 'tr' || i18n.language.startsWith('tr-')
                   ? 'font-medium text-blue-700 bg-blue-50'
                   : 'text-gray-700 hover:bg-gray-50'

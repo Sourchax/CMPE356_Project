@@ -4,6 +4,7 @@ import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6"; // New X logo
 import "../assets/styles/footer.css";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -65,8 +66,14 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-white/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm opacity-70">© 2025 SailMate. {t('common.allRightsReserved')}</div>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="text-sm opacity-70 flex flex-col md:flex-row items-center gap-4 mb-4 md:mb-0">
+            <span>© 2025 SailMate. {t('common.allRightsReserved')}</span>
+            <div className="flex items-center justify-center mt-2 md:mt-0">
+              <span className="hidden sm:inline mr-1 text-white text-xs">{t('common.language')}:</span>
+              <LanguageSwitcher darkMode={true} />
+            </div>
+          </div>
+          <div className="flex space-x-6 mt-2 md:mt-0">
             <Link to="/terms-of-service" className="text-white opacity-70 hover:opacity-100">{t('common.terms')}</Link>
             <Link to="/privacy-policy" className="text-white opacity-70 hover:opacity-100">{t('common.privacy')}</Link>
           </div>

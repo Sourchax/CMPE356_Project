@@ -7,7 +7,6 @@ import { LogIn, Anchor, Menu, X, ChevronDown, User, Bell } from "lucide-react";
 import CustomUserButton from "../pages/customUserButton";
 import axios from "axios";
 import NotificationModal from "./NotificationsModal";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -398,9 +397,6 @@ const Header = () => {
 
           {/* Sign In / User Button / Notification Bell - Now with max zoom handling */}
           <div className="flex items-center space-x-2">
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-            
             {/* Notification Bell - Only show when signed in */}
             <SignedIn>
               {isLoaded && user && (
@@ -442,14 +438,6 @@ const Header = () => {
           <div className="fixed inset-x-0 top-auto mt-2 bg-white border-t shadow-lg max-h-screen overflow-y-auto z-40">
             <div className="px-4 py-2 max-w-7xl mx-auto">
               <nav className="flex flex-col space-y-1">
-                {/* Language Switcher for mobile */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#0D3A73]">{t('common.language')}</span>
-                    <LanguageSwitcher />
-                  </div>
-                </div>
-                
                 <MobileNavLink to="/stations" onClick={handleLinkClick}>
                   {t('common.stations')}
                 </MobileNavLink>
