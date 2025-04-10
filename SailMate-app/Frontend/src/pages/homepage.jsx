@@ -526,20 +526,20 @@ const Homepage = () => {
         {/* Ferry Tickets Header */}
         <div className="bg-[#0D3A73] text-white rounded-t-xl shadow-lg">
           <div className="py-5 px-8 flex items-center justify-center font-semibold text-lg">
-          <i className="fas fa-ship mr-2"></i> {t('common.tickets')}
-            </div>
-            <div className="flex items-center">
-              <select
-                value={currency}
-                onChange={handleCurrencyChange}
-                className="bg-[#0D3A73] text-white border border-[#1E4D8C] rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#06AED5]"
-              >
-                <option value="TRY">TRY (₺)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="USD">USD ($)</option>
-              </select>
-            </div>
+            <i className="fas fa-ship mr-2"></i> {t('homepage.bookingSection')}
           </div>
+          <div className="flex items-center">
+            <select
+              value={currency}
+              onChange={handleCurrencyChange}
+              className="bg-[#0D3A73] text-white border border-[#1E4D8C] rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-[#06AED5]"
+            >
+              <option value="TRY">TRY (₺)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="USD">USD ($)</option>
+            </select>
+          </div>
+        </div>
         
         {/* Booking Form */}
         <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-b-xl p-8">

@@ -26,10 +26,23 @@
     "confirm": "Confirm",
     "submit": "Submit",
     "close": "Close",
+    "actions": "Actions",
+    "trying": "Trying...",
+    "tryAgain": "Try Again",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
     "backToHomepage": "Back to Homepage",
     "switchToUser": "Switch to User Mode",
     "toggleMenu": "Toggle menu",
-    "retry": "Try Again",
+    "manageAccount": "Manage Account",
+    "sendBroadcast": "Send Broadcast",
+    "switchToAdmin": "Switch to Admin",
+    "switchToManager": "Switch to Manager",
+    "signOut": "Sign Out",
+    "name": "Name",
+    "surname": "Surname",
     "email": "Email",
     "password": "Password",
     "firstName": "First Name",
@@ -88,6 +101,7 @@
       "title": "Find Your Ferry",
       "subtitle": "Search and book your next journey"
     },
+    "bookingSection": "Book Your Sailing",
     "latestAnnouncements": "Latest Announcements",
     "featuresIntro": "Experience the best sea travel with our premium services and customer-focused approach",
     "featuresSection": {
@@ -1022,14 +1036,16 @@
       "save": "Save",
       "cancel": "Cancel",
       "delete": "Delete",
+      "deleteAnyway": "Delete Anyway",
       "edit": "Edit",
       "deleteConfirmation": "Delete Station",
-      "deleteWarning": "Are you sure you want to delete this station?",
+      "deleteWarning": "Are you sure you want to delete this station? This action cannot be undone.",
       "activeVoyagesWarning": "This station has active voyages and cannot be deleted.",
       "loading": "Loading stations...",
       "error": "Failed to load stations. Please try again.",
       "saveError": "Failed to save station. Please check your input and try again.",
       "deleteError": "Failed to delete station. Please try again.",
+      "checkingVoyages": "Checking for active voyages...",
       "validation": {
         "stationNameRequired": "Station name is required",
         "stationNameMinLength": "Station name must be at least 3 characters",
@@ -1041,6 +1057,148 @@
         "cityInvalid": "City can only contain letters, spaces, hyphens, and apostrophes",
         "addressRequired": "Address is required",
         "addressMinLength": "Address must be at least 5 characters"
+      }
+    },
+    "announcements": {
+      "title": "Manage Announcements",
+      "addButton": "Add Announcement",
+      "loading": "Loading announcements...",
+      "announcementImageAlt": "Announcement",
+      "editButtonAriaLabel": "Edit announcement",
+      "deleteButtonAriaLabel": "Delete announcement",
+      "noAnnouncements": "No announcements found",
+      "createNewHint": "Create a new announcement to get started",
+      "editTitle": "Edit Announcement",
+      "addTitle": "Add Announcement",
+      "errors": {
+        "loadFailed": "Failed to load announcements. Please try again later.",
+        "updateFailed": "Failed to update announcement. Please try again.",
+        "deleteFailed": "Failed to delete announcement. Please try again.",
+        "addFailed": "Failed to add announcement. Please try again.",
+        "invalidFormat": "Error: Invalid response format",
+        "contactAdmin": "Please contact the administrator"
+      },
+      "validation": {
+        "titleRequired": "Title is required",
+        "titleTooShort": "Title must be at least 3 characters",
+        "titleTooLong": "Title must be less than 50 characters",
+        "descriptionRequired": "Description is required",
+        "descriptionTooShort": "Description must be at least 10 characters",
+        "descriptionTooLong": "Description must be less than 200 characters",
+        "detailsTooLong": "Details must be less than 1000 characters",
+        "imageRequired": "Image is required",
+        "invalidImageType": "Please select a valid image file (JPEG, PNG, GIF, WEBP)",
+        "imageTooLarge": "Image size should be less than 2MB"
+      },
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "Enter announcement title",
+        "image": "Image",
+        "previewAlt": "Preview",
+        "noImageSelected": "No image selected",
+        "supportedFormats": "Supported formats: JPEG, PNG, GIF, WEBP (max 2MB)",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter a brief description",
+        "details": "Details",
+        "detailsPlaceholder": "Enter detailed information (optional)",
+        "charactersRemaining": "characters remaining",
+        "saving": "Saving...",
+        "adding": "Adding...",
+        "saveChanges": "Save Changes",
+        "addAnnouncement": "Add Announcement"
+      },
+      "delete": {
+        "confirmTitle": "Confirm Delete",
+        "confirmMessage": "Are you sure you want to delete the announcement \"{title}\"? This action cannot be undone.",
+        "deleting": "Deleting...",
+        "confirmButton": "Delete"
+      }
+    },
+    "logs": {
+      "title": "Activity Logs",
+      "loading": "Loading activity logs...",
+      "error": "Failed to load activity logs. Please try again later.",
+      "tryAgain": "Try Again",
+      "pageTitle": "Activity Logs",
+      "searchPlaceholder": "Search logs...",
+      "filters": "Filters",
+      "filterOptions": "Filter Options",
+      "userRoles": "User Roles",
+      "entityTypes": "Entity Types",
+      "actionTypes": "Action Types",
+      "noLogsFound": "No logs found matching your criteria.",
+      "user": "User",
+      "role": "Role",
+      "action": "Action",
+      "entity": "Entity",
+      "details": "Details",
+      "timestamp": "Timestamp",
+      "delete": "Delete",
+      "showDetails": "Show Details",
+      "logDetails": "Log Details",
+      "fullDescription": "Full Description",
+      "close": "Close",
+      "confirmDelete": "Confirm Delete",
+      "deleteWarning": "Are you sure you want to delete this log? This action cannot be undone.",
+      "cancel": "Cancel",
+      "unknown": "UNKNOWN",
+      "unknownUser": "Unknown User"
+    },
+    "dashboard": {
+      "greetings": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "manager": "Admin",
+      "welcomeMessage": "Welcome to your administration portal. Here's an overview of your system.",
+      "currentDate": "Current Date",
+      "currentTime": "Current Time",
+      "quickOverview": "Quick Overview",
+      "lastUpdated": "Last updated: Today at",
+      "manage": "Manage",
+      "quickActionsTitle": "Quick Actions",
+      "cards": {
+        "stations": {
+          "title": "Manage Stations",
+          "description": "Add, edit or remove stations and their contact information"
+        },
+        "voyage": {
+          "title": "Voyage Times",
+          "description": "Schedule and manage voyage routes, times and status"
+        },
+        "announcements": {
+          "title": "Announcements",
+          "description": "Create and publish important announcements for users"
+        },
+        "logs": {
+          "title": "Activity Logs",
+          "description": "Track user activity and system events"
+        }
+      },
+      "stats": {
+        "totalStations": "Total Stations",
+        "activeVoyages": "Active Voyages",
+        "currentAnnouncements": "Current Announcements",
+        "systemLogs": "System Logs"
+      },
+      "quickActions": {
+        "addStation": {
+          "title": "Add New Station",
+          "description": "Create a new station for voyages"
+        },
+        "scheduleVoyage": {
+          "title": "Schedule Voyage",
+          "description": "Create a new voyage schedule"
+        },
+        "createAnnouncement": {
+          "title": "Create Announcement",
+          "description": "Publish a new announcement"
+        },
+        "viewLogs": {
+          "title": "View Recent Logs",
+          "description": "Check recent system activity"
+        }
       }
     }
   },
@@ -1362,5 +1520,66 @@
         "emptyArray": "API returned empty array!"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "actions": {
+      "markAllRead": "Mark all as read",
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread",
+      "delete": "Delete"
+    },
+    "viewAll": "View all notifications",
+    "empty": "No notifications to display.",
+    "error": {
+      "load": "Failed to load notifications. Please try again later.",
+      "update": "Failed to update notification. Please try again later.",
+      "delete": "Failed to delete notification. Please try again later."
+    }
+  },
+  "pageTitle": {
+    "home": "SailMate - Home",
+    "stations": "SailMate - Stations",
+    "voyageTimes": "SailMate - Voyage Times",
+    "ticketCancel": "SailMate - Cancel Ticket",
+    "ticketCheck": "SailMate - Check Ticket",
+    "myTickets": "SailMate - My Tickets",
+    "about": "SailMate - About Us",
+    "contact": "SailMate - Contact",
+    "login": "SailMate - Login",
+    "signup": "SailMate - Sign Up",
+    "profile": "SailMate - Profile",
+    "ticketPurchase": "SailMate - Purchase Ticket",
+    "ticketDetails": "SailMate - Ticket Details",
+    "admin": "SailMate - Admin Panel",
+    "manager": "SailMate - Manager Panel",
+    "faq": "SailMate - FAQ",
+    "privacyPolicy": "SailMate - Privacy Policy",
+    "termsOfService": "SailMate - Terms of Service",
+    "travellingRules": "SailMate - Travelling Rules",
+    "accessibility": "SailMate - Accessibility",
+    "sustainability": "SailMate - Sustainability",
+    "unauthorized": "SailMate - Unauthorized Access",
+    "notFound": "SailMate - Page Not Found"
+  },
+  "broadcastModal": {
+    "title": "Send Broadcast Notification",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter notification title",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Enter notification message",
+    "charactersMax": "characters max",
+    "cancel": "Cancel",
+    "send": "Send Broadcast",
+    "sending": "Sending...",
+    "success": "Broadcast notification sent successfully!",
+    "error": "Failed to send broadcast. Please try again later.",
+    "titleRequired": "Please enter a title",
+    "messageRequired": "Please enter a message"
   }
 } 

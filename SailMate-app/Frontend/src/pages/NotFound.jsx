@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Ship, Compass, MapPin, AlertTriangle, Home } from 'lucide-react';
 import SailMateLogo from '../assets/images/SailMate_logo.png';
-
-
+import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
   const [loaded, setLoaded] = useState(false);
   const [radarAngle, setRadarAngle] = useState(0);
+  const { t } = useTranslation();
   
   useEffect(() => {
     setLoaded(true);
@@ -17,10 +17,10 @@ const NotFoundPage = () => {
     }, 50);
     
     // Set page title
-    document.title = "Page Not Found | SailMate";
+    document.title = t('pageTitle.notFound');
     
     return () => clearInterval(radarInterval);
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen bg-[#002850] flex flex-col items-center justify-center relative overflow-hidden">

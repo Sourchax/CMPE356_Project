@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, Bell, ArrowRight, Plus, Calendar, Compass, Activity } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const [loaded, setLoaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const { user } = useUser();
@@ -109,39 +111,39 @@ const AdminDashboard = () => {
 
   const getCurrentGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+    if (hour < 12) return t('admin.dashboard.greetings.morning');
+    if (hour < 18) return t('admin.dashboard.greetings.afternoon');
+    return t('admin.dashboard.greetings.evening');
   };
 
   const cards = [
     {
-      title: "Manage Stations",
-      description: "Add, edit or remove stations and their contact information",
+      title: t('admin.dashboard.cards.stations.title'),
+      description: t('admin.dashboard.cards.stations.description'),
       icon: MapPin,
       path: "/admin/Stations",
       count: stationCount || 0,
       color: "#06AED5"
     },
     {
-      title: "Voyage Times",
-      description: "Schedule and manage voyage routes, times and status",
+      title: t('admin.dashboard.cards.voyage.title'),
+      description: t('admin.dashboard.cards.voyage.description'),
       icon: Clock,
       path: "/admin/Voyage",
       count: voyageCount || 0,
       color: "#06AED5"
     },
     {
-      title: "Announcements",
-      description: "Create and publish important announcements for users",
+      title: t('admin.dashboard.cards.announcements.title'),
+      description: t('admin.dashboard.cards.announcements.description'),
       icon: Bell,
       path: "/admin/Announce",
       count: announcementCount || 0,
       color: "#06AED5"
     },
     {
-      title: "Activity Logs",
-      description: "Track user activity and system events",
+      title: t('admin.dashboard.cards.logs.title'),
+      description: t('admin.dashboard.cards.logs.description'),
       icon: Activity,
       path: "/admin/Logs",
       count: logCount || 0,
@@ -151,10 +153,10 @@ const AdminDashboard = () => {
 
   // Summary statistics - using API data with fallbacks
   const stats = [
-    { label: "Total Stations", value: stationCount || 0 },
-    { label: "Active Voyages", value: voyageCount || 0 },
-    { label: "Current Announcements", value: announcementCount || 0 },
-    { label: "System Logs", value: logCount || 0 }
+    { label: t('admin.dashboard.stats.totalStations'), value: stationCount || 0 },
+    { label: t('admin.dashboard.stats.activeVoyages'), value: voyageCount || 0 },
+    { label: t('admin.dashboard.stats.currentAnnouncements'), value: announcementCount || 0 },
+    { label: t('admin.dashboard.stats.systemLogs'), value: logCount || 0 }
   ];
 
   return (
@@ -169,17 +171,17 @@ const AdminDashboard = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
-              {getCurrentGreeting()}, {user?.firstName || "Manager"}
+              {getCurrentGreeting()}, {user?.firstName || t('admin.dashboard.manager')}
             </h1>
               <p className="text-gray-600 mt-2">
-                Welcome to your administration portal. Here's an overview of your system.
+                {t('admin.dashboard.welcomeMessage')}
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
                 <Compass className="text-[#06AED5] mr-2" size={20} />
                 <div>
-                  <p className="text-xs text-gray-500">Current Date</p>
+                  <p className="text-xs text-gray-500">{t('admin.dashboard.currentDate')}</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleDateString(undefined, {
                       day: "2-digit",
@@ -192,7 +194,7 @@ const AdminDashboard = () => {
               <div className="bg-gray-50 p-3 rounded-lg shadow-sm flex items-center">
                 <Clock className="text-[#06AED5] mr-2" size={20} />
                 <div>
-                  <p className="text-xs text-gray-500">Current Time</p>
+                  <p className="text-xs text-gray-500">{t('admin.dashboard.currentTime')}</p>
                   <p className="font-medium text-sm">
                     {currentTime.toLocaleTimeString(undefined, {
                       hour: "2-digit",
@@ -207,8 +209,8 @@ const AdminDashboard = () => {
           {/* Quick Stats */}
           <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">Quick Overview</h2>
-              <span className="text-xs text-gray-500">Last updated: Today at {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+              <h2 className="text-lg font-semibold text-gray-800">{t('admin.dashboard.quickOverview')}</h2>
+              <span className="text-xs text-gray-500">{t('admin.dashboard.lastUpdated')} {currentTime.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {stats.map((stat, index) => (
@@ -269,7 +271,7 @@ const AdminDashboard = () => {
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">{card.title}</h2>
                   <p className="text-gray-500 mb-4">{card.description}</p>
                   <div className="flex items-center text-[#06AED5] text-sm font-medium mt-auto">
-                    <span>Manage</span>
+                    <span>{t('admin.dashboard.manage')}</span>
                     <ArrowRight size={16} className="ml-1" />
                   </div>
                 </div>
@@ -285,28 +287,28 @@ const AdminDashboard = () => {
           }`}
           style={{ transitionDelay: '600ms' }}
         >
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('admin.dashboard.quickActionsTitle')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { 
                 to: "/admin/Stations", 
-                title: "Add New Station", 
-                description: "Create a new station for voyages" 
+                title: t('admin.dashboard.quickActions.addStation.title'), 
+                description: t('admin.dashboard.quickActions.addStation.description')
               },
               { 
                 to: "/admin/Voyage", 
-                title: "Schedule Voyage", 
-                description: "Create a new voyage schedule" 
+                title: t('admin.dashboard.quickActions.scheduleVoyage.title'), 
+                description: t('admin.dashboard.quickActions.scheduleVoyage.description')
               },
               { 
                 to: "/admin/Announce", 
-                title: "Create Announcement", 
-                description: "Publish a new announcement" 
+                title: t('admin.dashboard.quickActions.createAnnouncement.title'), 
+                description: t('admin.dashboard.quickActions.createAnnouncement.description')
               },
               { 
                 to: "/admin/Logs", 
-                title: "View Recent Logs", 
-                description: "Check recent system activity" 
+                title: t('admin.dashboard.quickActions.viewLogs.title'), 
+                description: t('admin.dashboard.quickActions.viewLogs.description')
               }
             ].map((action, index) => (
               <Link 

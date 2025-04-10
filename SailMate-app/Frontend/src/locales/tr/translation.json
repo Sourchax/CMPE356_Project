@@ -26,6 +26,13 @@
     "confirm": "Onayla",
     "submit": "Gönder",
     "close": "Kapat",
+    "actions": "İşlemler",
+    "trying": "Deneniyor...",
+    "tryAgain": "Tekrar Dene",
+    "refresh": "Yenile",
+    "refreshing": "Yenileniyor...",
+    "saving": "Kaydediliyor...",
+    "deleting": "Siliniyor...",
     "email": "E-posta",
     "password": "Şifre",
     "firstName": "Ad",
@@ -84,7 +91,7 @@
     "passengers": "Yolcular:",
     "manageAccount": "Hesabı Yönet",
     "sendBroadcast": "Duyuru Gönder",
-    "switchToAdmin": "Yönetici Paneline Geç",
+    "switchToAdmin": "Admin Paneline Geç",
     "switchToManager": "Yönetici Paneline Geç",
     "signOut": "Çıkış Yap",
     "switchToUser": "Kullanıcı Moduna Geç",
@@ -101,6 +108,7 @@
       "title": "Feribotunuzu Bulun",
       "subtitle": "Bir sonraki yolculuğunuzu arayın ve rezerve edin"
     },
+    "bookingSection": "Seferini Rezerve Et",
     "latestAnnouncements": "Son Duyurular",
     "featuresIntro": "Premium hizmetlerimiz ve müşteri odaklı yaklaşımımızla en iyi deniz seyahatini deneyimleyin",
     "featuresSection": {
@@ -999,7 +1007,7 @@
   },
   "admin": {
     "menu": {
-      "dashboard": "Yönetici Paneli",
+      "dashboard": "Admin Paneli",
       "stations": "İstasyonlar",
       "voyages": "Seferler",
       "announcements": "Duyurular",
@@ -1020,14 +1028,16 @@
       "save": "Kaydet",
       "cancel": "İptal",
       "delete": "Sil",
+      "deleteAnyway": "Yine de Sil",
       "edit": "Düzenle",
       "deleteConfirmation": "İstasyonu Sil",
-      "deleteWarning": "Bu istasyonu silmek istediğinizden emin misiniz?",
+      "deleteWarning": "Bu istasyonu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
       "activeVoyagesWarning": "Bu istasyona ait aktif seferler bulunmaktadır ve silinemez.",
       "loading": "İstasyonlar yükleniyor...",
       "error": "İstasyonlar yüklenemedi. Lütfen tekrar deneyin.",
       "saveError": "İstasyon kaydedilemedi. Lütfen girdilerinizi kontrol edip tekrar deneyin.",
       "deleteError": "İstasyon silinemedi. Lütfen tekrar deneyin.",
+      "checkingVoyages": "Aktif seferler kontrol ediliyor...",
       "validation": {
         "stationNameRequired": "İstasyon adı zorunludur",
         "stationNameMinLength": "İstasyon adı en az 3 karakter olmalıdır",
@@ -1039,6 +1049,148 @@
         "cityInvalid": "Şehir sadece harf, boşluk, tire ve kesme işareti içerebilir",
         "addressRequired": "Adres zorunludur",
         "addressMinLength": "Adres en az 5 karakter olmalıdır"
+      }
+    },
+    "announcements": {
+      "title": "Duyuruları Yönet",
+      "addButton": "Duyuru Ekle",
+      "loading": "Duyurular yükleniyor...",
+      "announcementImageAlt": "Duyuru",
+      "editButtonAriaLabel": "Duyuruyu düzenle",
+      "deleteButtonAriaLabel": "Duyuruyu sil",
+      "noAnnouncements": "Duyuru bulunamadı",
+      "createNewHint": "Başlamak için yeni bir duyuru oluşturun",
+      "editTitle": "Duyuruyu Düzenle",
+      "addTitle": "Duyuru Ekle",
+      "errors": {
+        "loadFailed": "Duyurular yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+        "updateFailed": "Duyuru güncellenemedi. Lütfen tekrar deneyin.",
+        "deleteFailed": "Duyuru silinemedi. Lütfen tekrar deneyin.",
+        "addFailed": "Duyuru eklenemedi. Lütfen tekrar deneyin.",
+        "invalidFormat": "Hata: Geçersiz yanıt formatı",
+        "contactAdmin": "Lütfen admin ile iletişime geçin"
+      },
+      "validation": {
+        "titleRequired": "Başlık gereklidir",
+        "titleTooShort": "Başlık en az 3 karakter olmalıdır",
+        "titleTooLong": "Başlık 50 karakterden az olmalıdır",
+        "descriptionRequired": "Açıklama gereklidir",
+        "descriptionTooShort": "Açıklama en az 10 karakter olmalıdır",
+        "descriptionTooLong": "Açıklama 200 karakterden az olmalıdır",
+        "detailsTooLong": "Detaylar 1000 karakterden az olmalıdır",
+        "imageRequired": "Resim gereklidir",
+        "invalidImageType": "Lütfen geçerli bir resim dosyası seçin (JPEG, PNG, GIF, WEBP)",
+        "imageTooLarge": "Resim boyutu 2MB'den küçük olmalıdır"
+      },
+      "form": {
+        "title": "Başlık",
+        "titlePlaceholder": "Duyuru başlığını girin",
+        "image": "Resim",
+        "previewAlt": "Önizleme",
+        "noImageSelected": "Seçili resim yok",
+        "supportedFormats": "Desteklenen formatlar: JPEG, PNG, GIF, WEBP (maksimum 2MB)",
+        "description": "Açıklama",
+        "descriptionPlaceholder": "Kısa bir açıklama girin",
+        "details": "Detaylar",
+        "detailsPlaceholder": "Detaylı bilgi girin (isteğe bağlı)",
+        "charactersRemaining": "karakter kaldı",
+        "saving": "Kaydediliyor...",
+        "adding": "Ekleniyor...",
+        "saveChanges": "Değişiklikleri Kaydet",
+        "addAnnouncement": "Duyuru Ekle"
+      },
+      "delete": {
+        "confirmTitle": "Silmeyi Onayla",
+        "confirmMessage": "\"{title}\" duyurusunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+        "deleting": "Siliniyor...",
+        "confirmButton": "Sil"
+      }
+    },
+    "logs": {
+      "title": "Etkinlik Kayıtları",
+      "loading": "Etkinlik kayıtları yükleniyor...",
+      "error": "Etkinlik kayıtları yüklenirken hata oluştu. Lütfen daha sonra tekrar deneyin.",
+      "tryAgain": "Tekrar Dene",
+      "pageTitle": "Etkinlik Kayıtları",
+      "searchPlaceholder": "Kayıtları ara...",
+      "filters": "Filtreler",
+      "filterOptions": "Filtre Seçenekleri",
+      "userRoles": "Kullanıcı Rolleri",
+      "entityTypes": "Varlık Türleri",
+      "actionTypes": "İşlem Türleri",
+      "noLogsFound": "Kriterlerinize uygun kayıt bulunamadı.",
+      "user": "Kullanıcı",
+      "role": "Rol",
+      "action": "İşlem",
+      "entity": "Varlık",
+      "details": "Detaylar",
+      "timestamp": "Zaman",
+      "delete": "Sil",
+      "showDetails": "Detayları Göster",
+      "logDetails": "Kayıt Detayları",
+      "fullDescription": "Tam Açıklama",
+      "close": "Kapat",
+      "confirmDelete": "Silmeyi Onayla",
+      "deleteWarning": "Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "unknown": "Bilinmiyor",
+      "unknownUser": "Bilinmeyen Kullanıcı"
+    },
+    "dashboard": {
+      "greetings": {
+        "morning": "Günaydın",
+        "afternoon": "Tünaydın",
+        "evening": "İyi akşamlar"
+      },
+      "manager": "Yönetici",
+      "welcomeMessage": "Yönetim portalınıza hoş geldiniz. İşte sisteminize genel bir bakış.",
+      "currentDate": "Mevcut Tarih",
+      "currentTime": "Mevcut Saat",
+      "quickOverview": "Hızlı Genel Bakış",
+      "lastUpdated": "Son güncelleme: Bugün saat",
+      "manage": "Yönet",
+      "quickActionsTitle": "Hızlı İşlemler",
+      "cards": {
+        "stations": {
+          "title": "İstasyonları Yönet",
+          "description": "İstasyonları ve iletişim bilgilerini ekle, düzenle veya kaldır"
+        },
+        "voyage": {
+          "title": "Sefer Zamanları",
+          "description": "Sefer rotalarını, zamanlarını ve durumlarını yönet"
+        },
+        "announcements": {
+          "title": "Duyurular",
+          "description": "Kullanıcılar için önemli duyurular oluştur ve yayınla"
+        },
+        "logs": {
+          "title": "Etkinlik Kayıtları",
+          "description": "Kullanıcı etkinliğini ve sistem olaylarını takip et"
+        }
+      },
+      "stats": {
+        "totalStations": "Toplam İstasyon",
+        "activeVoyages": "Aktif Seferler",
+        "currentAnnouncements": "Mevcut Duyurular",
+        "systemLogs": "Sistem Kayıtları"
+      },
+      "quickActions": {
+        "addStation": {
+          "title": "Yeni İstasyon Ekle",
+          "description": "Seferler için yeni bir istasyon oluştur"
+        },
+        "scheduleVoyage": {
+          "title": "Sefer Planla",
+          "description": "Yeni bir sefer programı oluştur"
+        },
+        "createAnnouncement": {
+          "title": "Duyuru Oluştur",
+          "description": "Yeni bir duyuru yayınla"
+        },
+        "viewLogs": {
+          "title": "Son Kayıtları Görüntüle",
+          "description": "Son sistem etkinliğini kontrol et"
+        }
       }
     }
   },
@@ -1253,10 +1405,10 @@
       }
     },
     "header": {
-      "title": "Yönetici",
+      "title": "Admin",
       "titles": {
-        "default": "Yönetici | SailMate",
-        "dashboard": "Yönetici Paneli | SailMate",
+        "default": "Admin | SailMate",
+        "dashboard": "Admin Paneli | SailMate",
         "users": "Kullanıcı Yönetimi | SailMate",
         "complaints": "Şikayetler | SailMate",
         "finance": "Finans | SailMate",
@@ -1326,7 +1478,7 @@
     "users": {
       "title": "Kullanıcıları Yönet",
       "totalUsers": "Toplam Kullanıcılar",
-      "admins": "Yöneticiler",
+      "admins": "Adminler",
       "managers": "Müdürler",
       "regularUsers": "Normal Kullanıcılar",
       "clearFilters": "Filtreleri Temizle",
@@ -1377,5 +1529,66 @@
         "emptyArray": "API boş dizi döndürdü!"
       }
     }
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "tabs": {
+      "all": "Tümü",
+      "unread": "Okunmamış",
+      "read": "Okunmuş"
+    },
+    "actions": {
+      "markAllRead": "Tümünü okundu olarak işaretle",
+      "markAsRead": "Okundu olarak işaretle",
+      "markAsUnread": "Okunmadı olarak işaretle",
+      "delete": "Sil"
+    },
+    "viewAll": "Tüm bildirimleri görüntüle",
+    "empty": "Görüntülenecek bildirim yok.",
+    "error": {
+      "load": "Bildirimler yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+      "update": "Bildirim güncellenemedi. Lütfen daha sonra tekrar deneyin.",
+      "delete": "Bildirim silinemedi. Lütfen daha sonra tekrar deneyin."
+    }
+  },
+  "pageTitle": {
+    "home": "SailMate - Ana Sayfa",
+    "stations": "SailMate - İstasyonlar",
+    "voyageTimes": "SailMate - Sefer Saatleri",
+    "ticketCancel": "SailMate - Bilet İptali",
+    "ticketCheck": "SailMate - Bilet Kontrolü",
+    "myTickets": "SailMate - Biletlerim",
+    "about": "SailMate - Hakkımızda",
+    "contact": "SailMate - İletişim",
+    "login": "SailMate - Giriş",
+    "signup": "SailMate - Kayıt Ol",
+    "profile": "SailMate - Profil",
+    "ticketPurchase": "SailMate - Bilet Satın Al",
+    "ticketDetails": "SailMate - Bilet Detayları",
+    "admin": "SailMate - Yönetici Paneli",
+    "manager": "SailMate - Müdür Paneli",
+    "faq": "SailMate - SSS",
+    "privacyPolicy": "SailMate - Gizlilik Politikası",
+    "termsOfService": "SailMate - Kullanım Şartları",
+    "travellingRules": "SailMate - Seyahat Kuralları",
+    "accessibility": "SailMate - Erişilebilirlik",
+    "sustainability": "SailMate - Sürdürülebilirlik",
+    "unauthorized": "SailMate - Yetkisiz Erişim",
+    "notFound": "SailMate - Sayfa Bulunamadı"
+  },
+  "broadcastModal": {
+    "title": "Toplu Duyuru Gönder",
+    "titleLabel": "Başlık",
+    "titlePlaceholder": "Bildirim başlığını girin",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "Bildirim mesajını girin",
+    "charactersMax": "karakter maksimum",
+    "cancel": "İptal",
+    "send": "Duyuru Gönder",
+    "sending": "Gönderiliyor...",
+    "success": "Toplu bildirim başarıyla gönderildi!",
+    "error": "Duyuru gönderilemedi. Lütfen daha sonra tekrar deneyin.",
+    "titleRequired": "Lütfen bir başlık girin",
+    "messageRequired": "Lütfen bir mesaj girin"
   }
 } 

@@ -3,10 +3,12 @@ import { Plus, Trash2, Edit, Phone, MapPin, User, Building, Home, AlertCircle, A
 import {useSessionToken} from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 const API_URL = "http://localhost:8080/api";
 
 const AdminStations = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ const AdminStations = () => {
       setError(null);
     } catch (err) {
       console.error("Error fetching stations:", err);
-      setError("Failed to load stations. Please try again.");
+      setError(t('admin.stations.error'));
     } finally {
       setLoading(false);
       setRefreshing(false); // Reset refreshing state
@@ -74,37 +76,37 @@ const AdminStations = () => {
     
     // Station title validation
     if (!formData.title.trim()) {
-      newErrors.title = "Station name is required";
+      newErrors.title = t('admin.stations.validation.stationNameRequired');
     } else if (formData.title.trim().length < 3) {
-      newErrors.title = "Station name must be at least 3 characters";
+      newErrors.title = t('admin.stations.validation.stationNameMinLength');
     }
     
     // Contact person validation - allow letters, spaces, hyphens, and apostrophes
     if (!formData.personnel.trim()) {
-      newErrors.personnel = "Contact person is required";
+      newErrors.personnel = t('admin.stations.validation.contactPersonRequired');
     } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.personnel.trim())){
-      newErrors.personnel = "Contact person can only contain letters, spaces, hyphens, and apostrophes";
+      newErrors.personnel = t('admin.stations.validation.contactPersonInvalid');
     }
     
     // Phone validation - more flexible to allow different formats
     if (!formData.phoneno.trim()) {
-      newErrors.phoneno = "Phone number is required";
+      newErrors.phoneno = t('admin.stations.validation.phoneRequired');
     } else if (!/^(\+?\d{1,3}[- ]?)?\d{3,}[- \d]*$/.test(formData.phoneno.trim()) || formData.phoneno.replace(/[^\d]/g, '').length < 10) {
-      newErrors.phoneno = "Please enter a valid phone number with at least 10 digits";
+      newErrors.phoneno = t('admin.stations.validation.phoneInvalid');
     }
     
     // City validation - allow only letters, spaces, hyphens, and apostrophes, including Turkish characters
     if (!formData.city.trim()) {
-      newErrors.city = "City is required";
+      newErrors.city = t('admin.stations.validation.cityRequired');
     } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.city.trim())) {
-      newErrors.city = "City can only contain letters, spaces, hyphens, and apostrophes";
+      newErrors.city = t('admin.stations.validation.cityInvalid');
     }
     
     // Address validation - more comprehensive
     if (!formData.address.trim()) {
-      newErrors.address = "Address is required";
+      newErrors.address = t('admin.stations.validation.addressRequired');
     } else if (formData.address.trim().length < 5) {
-      newErrors.address = "Address must be at least 5 characters";
+      newErrors.address = t('admin.stations.validation.addressMinLength');
     }
     
     setErrors(newErrors);
@@ -129,7 +131,7 @@ const AdminStations = () => {
       if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]*$/.test(value)) {
         setErrors({ 
           ...errors, 
-          [name]: "City can only contain letters, spaces, hyphens, and apostrophes" 
+          [name]: t('admin.stations.validation.cityInvalid')
         });
       }
     }
@@ -187,7 +189,7 @@ const AdminStations = () => {
         setHasActiveVoyages(false);
       } catch (err) {
         console.error("Error deleting station:", err);
-        setError("Failed to delete station. Please try again.");
+        setError(t('admin.stations.deleteError'));
       } finally {
         setIsDeleting(false);
       }
@@ -243,7 +245,7 @@ const AdminStations = () => {
       setErrors({});
     } catch (err) {
       console.error("Error saving station:", err);
-      setError("Failed to save station. Please check your input and try again.");
+      setError(t('admin.stations.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -304,7 +306,7 @@ const AdminStations = () => {
     return (
         <div className="text-center py-8">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading Stations...</p>
+          <p className="mt-2 text-gray-600">{t('admin.stations.loading')}</p>
         </div>
     );
   }
@@ -323,9 +325,9 @@ const AdminStations = () => {
             {refreshing ? (
               <span className="flex items-center gap-2">
                 <RefreshCw size={16} className="animate-spin" />
-                Trying...
+                {t('common.trying')}
               </span>
-            ) : "Try Again"}
+            ) : t('common.tryAgain')}
           </button>
         </div>
       </div>
@@ -335,7 +337,7 @@ const AdminStations = () => {
   return (
     <div className="p-2 sm:p-4 md:p-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 sm:gap-0">
-        <h1 className="text-xl sm:text-3xl font-semibold text-gray-800">Manage Stations</h1>
+        <h1 className="text-xl sm:text-3xl font-semibold text-gray-800">{t('admin.stations.title')}</h1>
         <div className="flex gap-3 w-full sm:w-auto">
           <button 
             onClick={fetchStations}
@@ -343,14 +345,14 @@ const AdminStations = () => {
             className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-md hover:bg-gray-200 transition w-1/2 sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed border border-gray-300"
           >
             <RefreshCw size={16} className={`${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh'}
+            {refreshing ? t('common.refreshing') : t('common.refresh')}
           </button>
           <button 
             onClick={openAddModal} 
             disabled={isSaving}
             className="flex items-center justify-center gap-2 bg-[#06AED5] text-white px-4 py-2.5 rounded-md hover:bg-[#058aaa] transition w-1/2 sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <Plus size={20} /> Add Station
+            <Plus size={20} /> {t('admin.stations.addStation')}
           </button>
         </div>
       </div>
@@ -366,12 +368,12 @@ const AdminStations = () => {
           <table className="w-full border-collapse">
             <thead className="bg-[#06AED5] text-white">
               <tr>
-                <th className="p-4 text-left font-semibold text-base">Title</th>
-                <th className="p-4 text-left font-semibold text-base">Contact Person</th>
-                <th className="p-4 text-left font-semibold text-base">Phone No.</th>
-                <th className="p-4 text-left font-semibold text-base">City</th>
-                <th className="p-4 text-left font-semibold text-base">Address</th>
-                <th className="p-4 text-center font-semibold text-base">Actions</th>
+                <th className="p-4 text-left font-semibold text-base">{t('admin.stations.stationName')}</th>
+                <th className="p-4 text-left font-semibold text-base">{t('admin.stations.contactPerson')}</th>
+                <th className="p-4 text-left font-semibold text-base">{t('admin.stations.phoneNumber')}</th>
+                <th className="p-4 text-left font-semibold text-base">{t('admin.stations.city')}</th>
+                <th className="p-4 text-left font-semibold text-base">{t('admin.stations.address')}</th>
+                <th className="p-4 text-center font-semibold text-base">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -416,11 +418,11 @@ const AdminStations = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">{editingStation ? "Edit Station" : "Add Station"}</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">{editingStation ? t('admin.stations.editStation') : t('admin.stations.addStation')}</h2>
             <form onSubmit={handleSave} className="space-y-4">
               {/* Station Title */}
               <div className="flex flex-col">
-                <label htmlFor="title" className="text-sm text-gray-600 mb-1 ml-1">Station Name</label>
+                <label htmlFor="title" className="text-sm text-gray-600 mb-1 ml-1">{t('admin.stations.stationName')}</label>
                 <div className={`flex items-center border rounded-md overflow-hidden ${errors.title ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
                   <span className="bg-gray-50 p-2 border-r border-gray-200">
                     <MapPin size={20} className="text-gray-500" />
@@ -431,7 +433,7 @@ const AdminStations = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    placeholder="Enter station name"
+                    placeholder={t('admin.stations.stationName')}
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
                     disabled={isSaving}
                   />
@@ -441,7 +443,7 @@ const AdminStations = () => {
 
               {/* Contact Person */}
               <div className="flex flex-col">
-                <label htmlFor="personnel" className="text-sm text-gray-600 mb-1 ml-1">Contact Person</label>
+                <label htmlFor="personnel" className="text-sm text-gray-600 mb-1 ml-1">{t('admin.stations.contactPerson')}</label>
                 <div className={`flex items-center border rounded-md overflow-hidden ${errors.personnel ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
                   <span className="bg-gray-50 p-2 border-r border-gray-200">
                     <User size={20} className="text-gray-500" />
@@ -452,7 +454,7 @@ const AdminStations = () => {
                     name="personnel"
                     value={formData.personnel}
                     onChange={handleInputChange}
-                    placeholder="Enter contact person"
+                    placeholder={t('admin.stations.contactPerson')}
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
                     disabled={isSaving}
                   />
@@ -462,7 +464,7 @@ const AdminStations = () => {
 
               {/* Phone Number */}
               <div className="flex flex-col">
-                <label htmlFor="phoneno" className="text-sm text-gray-600 mb-1 ml-1">Phone Number</label>
+                <label htmlFor="phoneno" className="text-sm text-gray-600 mb-1 ml-1">{t('admin.stations.phoneNumber')}</label>
                 <div className={`flex items-center border rounded-md overflow-hidden ${errors.phoneno ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
                   <span className="bg-gray-50 p-2 border-r border-gray-200">
                     <Phone size={20} className="text-gray-500" />
@@ -473,7 +475,7 @@ const AdminStations = () => {
                     name="phoneno"
                     value={formData.phoneno}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
+                    placeholder={t('admin.stations.phoneNumber')}
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
                     disabled={isSaving}
                   />
@@ -483,7 +485,7 @@ const AdminStations = () => {
 
               {/* City */}
               <div className="flex flex-col">
-                <label htmlFor="city" className="text-sm text-gray-600 mb-1 ml-1">City</label>
+                <label htmlFor="city" className="text-sm text-gray-600 mb-1 ml-1">{t('admin.stations.city')}</label>
                 <div className={`flex items-center border rounded-md overflow-hidden ${errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
                   <span className="bg-gray-50 p-2 border-r border-gray-200">
                     <Building size={20} className="text-gray-500" />
@@ -494,7 +496,7 @@ const AdminStations = () => {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="Enter city name"
+                    placeholder={t('admin.stations.city')}
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
                     disabled={isSaving}
                   />
@@ -504,7 +506,7 @@ const AdminStations = () => {
 
               {/* Address */}
               <div className="flex flex-col">
-                <label htmlFor="address" className="text-sm text-gray-600 mb-1 ml-1">Address</label>
+                <label htmlFor="address" className="text-sm text-gray-600 mb-1 ml-1">{t('admin.stations.address')}</label>
                 <div className={`flex items-center border rounded-md overflow-hidden ${errors.address ? 'border-red-500 bg-red-50' : 'border-gray-300 focus-within:border-[#06AED5] focus-within:ring-1 focus-within:ring-[#06AED5]'} transition-all`}>
                   <span className="bg-gray-50 p-2 border-r border-gray-200">
                     <Home size={20} className="text-gray-500" />
@@ -515,7 +517,7 @@ const AdminStations = () => {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Enter address"
+                    placeholder={t('admin.stations.address')}
                     className="w-full p-2.5 outline-none bg-transparent text-sm sm:text-base"
                     disabled={isSaving}
                   />
@@ -530,7 +532,7 @@ const AdminStations = () => {
                   className="bg-gray-300 px-3 sm:px-4 py-2.5 rounded-md hover:bg-gray-400 transition text-sm sm:text-base flex-1 disabled:opacity-70 disabled:cursor-not-allowed"
                   disabled={isSaving}
                 >
-                  Cancel
+                  {t('admin.stations.cancel')}
                 </button>
                 <button 
                   type="submit" 
@@ -540,10 +542,10 @@ const AdminStations = () => {
                   {isSaving ? (
                     <>
                       <Loader size={18} className="animate-spin mr-2" />
-                      Saving...
+                      {t('common.saving')}
                     </>
                   ) : (
-                    'Save'
+                    t('admin.stations.save')
                   )}
                 </button>
               </div>
@@ -559,7 +561,7 @@ const AdminStations = () => {
             {checkingVoyages ? (
               <div className="text-center py-4">
                 <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-                <p className="mt-2 text-gray-600">Checking for active voyages...</p>
+                <p className="mt-2 text-gray-600">{t('admin.stations.checkingVoyages')}</p>
               </div>
             ) : (
               <>
@@ -569,18 +571,17 @@ const AdminStations = () => {
                   ) : (
                     <AlertCircle size={24} className="text-red-600" />
                   )}
-                  <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold">{t('admin.stations.deleteConfirmation')}</h2>
                 </div>
                 
-                <p className="mb-4">Are you sure you want to delete the station <span className="font-semibold">{stationToDelete.title}</span>? This action cannot be undone.</p>
+                <p className="mb-4">{t('admin.stations.deleteWarning')}</p>
                 
                 {hasActiveVoyages && (
                   <div className="p-3 mb-4 bg-orange-50 border-l-4 border-orange-500 text-orange-700 rounded">
                     <div className="flex items-start">
                       <AlertTriangle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="font-medium">Warning: Active Voyages Detected</p>
-                        <p className="text-sm mt-1">This station has active voyages assigned to it. Deleting it may cause issues with scheduled trips.</p>
+                        <p className="font-medium">{t('admin.stations.activeVoyagesWarning')}</p>
                       </div>
                     </div>
                   </div>
@@ -596,7 +597,7 @@ const AdminStations = () => {
                     className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition disabled:opacity-70 disabled:cursor-not-allowed"
                     disabled={isDeleting}
                   >
-                    Cancel
+                    {t('admin.stations.cancel')}
                   </button>
                   <button 
                     onClick={handleDelete} 
@@ -606,10 +607,10 @@ const AdminStations = () => {
                     {isDeleting ? (
                       <>
                         <Loader size={16} className="animate-spin" />
-                        Deleting...
+                        {t('common.deleting')}
                       </>
                     ) : (
-                      hasActiveVoyages ? "Delete Anyway" : "Delete"
+                      hasActiveVoyages ? t('admin.stations.deleteAnyway') : t('admin.stations.delete')
                     )}
                   </button>
                 </div>

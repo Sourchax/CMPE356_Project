@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -12,6 +13,7 @@ const pageVariants = {
 
 const CustomerLayout = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   // Scroll to top on route change
   useEffect(() => {
@@ -26,25 +28,25 @@ const CustomerLayout = () => {
     const path = location.pathname;
     let title = "SailMate";
     
-    // Map routes to page titles
+    // Map routes to page titles using i18n translations
     const routeTitles = {
-      "/": "Homepage | SailMate",
-      "/about": "About Us | SailMate",
-      "/contact": "Contact | SailMate",
-      "/voyage-times": "Voyage Times | SailMate",
-      "/ticket-cancel": "Cancel Ticket | SailMate",
-      "/ticket-check": "Check Ticket | SailMate",
-      "/my-tickets": "My Tickets | SailMate",
-      "/stations": "Stations | SailMate",
-      "/faq": "FAQ | SailMate",
-      "/ferry-ticket-form": "Book Tickets | SailMate",
-      "/privacy-policy": "Privacy Policy | SailMate",
-      "/terms-of-service": "Terms of Service | SailMate",
-      "/travelling-rules": "Travelling Rules | SailMate",
-      "/accessibility": "Accessibility | SailMate",
-      "/sustainability": "Sustainability | SailMate",
-      "/sign-in": "Sign In | SailMate",
-      "/sign-up": "Sign Up | SailMate",
+      "/": t('pageTitle.home'),
+      "/about": t('pageTitle.about'),
+      "/contact": t('pageTitle.contact'),
+      "/voyage-times": t('pageTitle.voyageTimes'),
+      "/ticket-cancel": t('pageTitle.ticketCancel'),
+      "/ticket-check": t('pageTitle.ticketCheck'),
+      "/my-tickets": t('pageTitle.myTickets'),
+      "/stations": t('pageTitle.stations'),
+      "/faq": t('pageTitle.faq', 'FAQ | SailMate'),
+      "/ferry-ticket-form": t('pageTitle.ticketPurchase'),
+      "/privacy-policy": t('pageTitle.privacyPolicy', 'Privacy Policy | SailMate'),
+      "/terms-of-service": t('pageTitle.termsOfService', 'Terms of Service | SailMate'),
+      "/travelling-rules": t('pageTitle.travellingRules', 'Travelling Rules | SailMate'),
+      "/accessibility": t('pageTitle.accessibility', 'Accessibility | SailMate'),
+      "/sustainability": t('pageTitle.sustainability', 'Sustainability | SailMate'),
+      "/sign-in": t('pageTitle.login'),
+      "/sign-up": t('pageTitle.signup'),
     };
     
     // Set the title based on current path
@@ -53,7 +55,7 @@ const CustomerLayout = () => {
     }
     
     document.title = title;
-  }, [location.pathname]);
+  }, [location.pathname, t]);
 
   return (
     <>

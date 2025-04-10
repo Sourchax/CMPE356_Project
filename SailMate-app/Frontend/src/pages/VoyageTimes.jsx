@@ -10,7 +10,7 @@ const VoyageTimes = () => {
   const { t } = useTranslation();
   
   useEffect(() => {
-    document.title = `${t('common.voyageTimes')} | SailMate`;
+    document.title = t('pageTitle.voyageTimes');
     
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (viewportMeta) {

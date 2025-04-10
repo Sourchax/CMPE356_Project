@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../assets/styles/UnauthorizedAccess.css";
+import { useTranslation } from 'react-i18next';
 
 const UnauthorizedAccess = () => {
+  const { t } = useTranslation();
+  
   // Set document title
   useEffect(() => {
-    document.title = "Unauthorized Access | SailMate";
-  }, []);
+    document.title = t('pageTitle.unauthorized', "Unauthorized Access | SailMate");
+  }, [t]);
 
   return (
     <div className="unauthorized-container">

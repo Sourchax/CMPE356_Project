@@ -68,6 +68,7 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
@@ -224,7 +225,7 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
         <button 
           className="text-[#0D3A73] hover:text-[#06AED5] focus:outline-none transition-colors" 
           onClick={toggleDropdown}
-          aria-label="Notifications"
+          aria-label={t('notifications.title')}
         >
           <Bell size={isMaxZoom ? 20 : 24} />
           {unreadCount > 0 && (
@@ -238,22 +239,22 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50">
             <div className="py-2 px-4 bg-gray-50 border-b flex justify-between items-center">
-              <span className="text-sm font-medium">Notifications</span>
+              <span className="text-sm font-medium">{t('notifications.title')}</span>
               {unreadCount > 0 && (
                 <button 
                   className="text-xs text-blue-600 hover:text-blue-800"
                   onClick={markAllAsRead}
                 >
-                  Mark all as read
+                  {t('notifications.actions.markAllRead')}
                 </button>
               )}
             </div>
             
             <div className="max-h-96 overflow-y-auto">
               {isLoading ? (
-                <div className="py-4 px-4 text-center text-gray-500">Loading notifications...</div>
+                <div className="py-4 px-4 text-center text-gray-500">{t('common.refreshing')}</div>
               ) : notifications.length === 0 ? (
-                <div className="py-4 px-4 text-center text-gray-500">No notifications</div>
+                <div className="py-4 px-4 text-center text-gray-500">{t('notifications.empty')}</div>
               ) : (
                 notifications.map(notification => (
                   <div 
@@ -283,21 +284,15 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
                 className="text-xs text-blue-600 hover:text-blue-800"
                 onClick={openModal}
               >
-                View all notifications
+                {t('notifications.viewAll', 'View all notifications')}
               </button>
             </div>
           </div>
         )}
       </div>
-
+      
       {/* Notification Modal */}
-      {isModalOpen && (
-        <NotificationModal 
-          isOpen={isModalOpen} 
-          onClose={closeModal} 
-          userId={userId} 
-        />
-      )}
+      <NotificationModal isOpen={isModalOpen} onClose={closeModal} userId={userId} />
     </>
   );
 };

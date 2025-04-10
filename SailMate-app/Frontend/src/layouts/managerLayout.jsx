@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
 import ManagerHeader from "../components/managerHeader";
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -11,6 +12,7 @@ const pageVariants = {
 
 const ManagerLayout = () => {
     const location = useLocation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         window.scrollTo({
@@ -26,9 +28,9 @@ const ManagerLayout = () => {
         // Set default title if not set by the specific page component
         // This will be overridden by the more specific titles in ManagerHeader
         if (!document.title.includes('SailMate')) {
-            document.title = "Manager | SailMate";
+            document.title = t('pageTitle.manager', "Manager | SailMate");
         }
-    }, [location.pathname]);
+    }, [location.pathname, t]);
 
     return (
         <>

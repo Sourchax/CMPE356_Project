@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
 import AdminHeader from "../components/adminHeader";
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -11,6 +12,7 @@ const pageVariants = {
 
 const AdminLayout = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     window.scrollTo({
@@ -26,9 +28,9 @@ const AdminLayout = () => {
     // Set default title if not set by the specific page component
     // This will be overridden by the more specific titles in AdminHeader
     if (!document.title.includes('SailMate')) {
-      document.title = "Admin | SailMate";
+      document.title = t('pageTitle.admin');
     }
-  }, [location.pathname]);
+  }, [location.pathname, t]);
 
   return (
     <>

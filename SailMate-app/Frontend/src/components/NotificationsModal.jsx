@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useSessionToken } from '../utils/sessions';
 import { X, Bell, Check, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -12,6 +13,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'unread', or 'read'
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Fetch notifications when modal opens
   useEffect(() => {
@@ -43,7 +45,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       setNotifications(response.data);
     } catch (err) {
       console.error('Error fetching notifications:', err);
-      setError('Failed to load notifications. Please try again later.');
+      setError(t('notifications.error.load'));
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +67,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
         ));
       } catch (err) {
         console.error('Error marking notification as read:', err);
-        setError('Failed to update notification. Please try again later.');
+        setError(t('notifications.error.update'));
       }
     }
   
@@ -97,7 +99,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       ));
     } catch (err) {
       console.error('Error marking notification as read:', err);
-      setError('Failed to update notification. Please try again later.');
+      setError(t('notifications.error.update'));
     }
   };
 
@@ -119,7 +121,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       ));
     } catch (err) {
       console.error('Error marking notification as unread:', err);
-      setError('Failed to update notification. Please try again later.');
+      setError(t('notifications.error.update'));
     }
   };
 
@@ -138,7 +140,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
     } catch (err) {
       console.error('Error marking all as read:', err);
-      setError('Failed to update notifications. Please try again later.');
+      setError(t('notifications.error.update'));
     }
   };
 
@@ -157,7 +159,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       setNotifications(notifications.filter(notif => notif.id !== id));
     } catch (err) {
       console.error('Error deleting notification:', err);
-      setError('Failed to delete notification. Please try again later.');
+      setError(t('notifications.error.delete'));
     }
   };
 
@@ -208,7 +210,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       <div className="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full sm:max-w-xl md:max-w-2xl mx-4" onClick={e => e.stopPropagation()}>
         <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-[#0D3A73]">Notifications</h3>
+            <h3 className="text-lg font-medium text-[#0D3A73]">{t('notifications.title')}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -227,7 +229,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
               }`}
               onClick={() => setActiveTab('all')}
             >
-              All
+              {t('notifications.tabs.all')}
             </button>
             <button
               className={`px-4 py-2 font-medium ${
@@ -237,7 +239,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
               }`}
               onClick={() => setActiveTab('unread')}
             >
-              Unread
+              {t('notifications.tabs.unread')}
             </button>
             <button
               className={`px-4 py-2 font-medium ${
@@ -247,7 +249,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
               }`}
               onClick={() => setActiveTab('read')}
             >
-              Read
+              {t('notifications.tabs.read')}
             </button>
           </div>
 
@@ -258,7 +260,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
               className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors mr-2"
               disabled={!notifications.some(n => !n.isRead)}
             >
-              Mark all as read
+              {t('notifications.actions.markAllRead')}
             </button>
           </div>
 
@@ -282,7 +284,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                 {filteredNotifications.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-lg">
                     <Bell size={48} className="mx-auto text-gray-400 mb-2" />
-                    <p className="text-gray-500">No notifications to display.</p>
+                    <p className="text-gray-500">{t('notifications.empty')}</p>
                   </div>
                 ) : (
                   /* Notification list */
@@ -314,7 +316,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                                 <button
                                   onClick={(e) => markAsUnread(notification.id, e)}
                                   className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                  title="Mark as unread"
+                                  title={t('notifications.actions.markAsUnread')}
                                 >
                                   <Check size={16} />
                                 </button>
@@ -322,7 +324,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                                 <button
                                   onClick={(e) => markAsRead(notification.id, e)}
                                   className="p-1 text-gray-600 hover:bg-gray-100 rounded"
-                                  title="Mark as read"
+                                  title={t('notifications.actions.markAsRead')}
                                 >
                                   <Check size={16} />
                                 </button>
@@ -330,7 +332,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                               <button
                                 onClick={(e) => deleteNotification(notification.id, e)}
                                 className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title="Delete"
+                                title={t('notifications.actions.delete')}
                               >
                                 <Trash2 size={16} />
                               </button>

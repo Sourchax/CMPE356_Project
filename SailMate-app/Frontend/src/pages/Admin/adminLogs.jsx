@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Trash2, Clock, User, Calendar, X, Search, Filter, ChevronDown, Tag, Activity } from "lucide-react";
 import { useSessionToken } from "../../utils/sessions";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const AdminLogs = () => {
+    const { t } = useTranslation();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,14 +46,14 @@ const AdminLogs = () => {
                 setError(null);
             } catch (err) {
                 console.error("Error fetching activity logs:", err);
-                setError("Failed to fetch activity logs. Please try again later.");
+                setError(t("admin.logs.error"));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchLogs();
-    }, []);
+    }, [t]);
 
     // Handle sorting
     const requestSort = (key) => {
@@ -250,7 +252,7 @@ const AdminLogs = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-t-4 border-[#06AED5] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading activity logs...</p>
+                    <p className="mt-4 text-gray-600">{t("admin.logs.loading")}</p>
                 </div>
             </div>
         );
@@ -263,13 +265,13 @@ const AdminLogs = () => {
                     <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
                         <X size={32} className="text-red-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Error</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{t("common.error")}</h2>
                     <p className="text-gray-600 mb-6">{error}</p>
                     <button 
                         onClick={() => window.location.reload()}
                         className="px-5 py-2.5 bg-[#06AED5] hover:bg-[#0599c2] text-white rounded-lg transition-colors"
                     >
-                        Try Again
+                        {t("admin.logs.tryAgain")}
                     </button>
                 </div>
             </div>
@@ -283,7 +285,7 @@ const AdminLogs = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full mx-4">
                         <div className="flex justify-between items-center mb-5">
-                            <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">{t("admin.logs.confirmDelete")}</h3>
                             <button 
                                 onClick={handleDeleteCancel}
                                 className="text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full p-1 transition"
@@ -292,20 +294,20 @@ const AdminLogs = () => {
                             </button>
                         </div>
                         <div className="mb-6">
-                            <p className="text-gray-700">Are you sure you want to delete this log? This action cannot be undone.</p>
+                            <p className="text-gray-700">{t("admin.logs.deleteWarning")}</p>
                         </div>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleDeleteCancel}
                                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium border border-gray-200"
                             >
-                                Cancel
+                                {t("admin.logs.cancel")}
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
                                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition shadow-sm font-medium border border-red-700"
                             >
-                                Delete
+                                {t("admin.logs.delete")}
                             </button>
                         </div>
                     </div>
@@ -314,14 +316,14 @@ const AdminLogs = () => {
 
             <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#06AED5] mb-4 md:mb-0">Activity Logs</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#06AED5] mb-4 md:mb-0">{t("admin.logs.pageTitle")}</h1>
                     
                     <div className="flex flex-col sm:flex-row gap-3">
                         {/* Search Input */}
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search logs..."
+                                placeholder={t("admin.logs.searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-[#06AED5] focus:border-[#06AED5] transition-colors"
@@ -336,7 +338,7 @@ const AdminLogs = () => {
                                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
                             >
                                 <Filter size={18} className="text-[#06AED5]" />
-                                <span>Filters</span>
+                                <span>{t("admin.logs.filters")}</span>
                                 <ChevronDown size={16} className={`transition-transform text-gray-500 ${filterOpen ? 'rotate-180' : ''}`} />
                             </button>
                             
@@ -344,12 +346,12 @@ const AdminLogs = () => {
                             {filterOpen && (
                                 <div className="absolute right-0 mt-2 w-72 sm:w-64 md:w-72 bg-white border border-gray-200 rounded-lg shadow-xl z-10">
                                     <div className="p-3 border-b border-gray-200 bg-[#E6F7FB]">
-                                        <h3 className="font-semibold text-[#06AED5]">Filter Options</h3>
+                                        <h3 className="font-semibold text-[#06AED5]">{t("admin.logs.filterOptions")}</h3>
                                     </div>
                                     
                                     {/* Role Filters */}
                                     <div className="p-3 border-b border-gray-200">
-                                        <h4 className="font-medium text-gray-700 mb-2">User Roles</h4>
+                                        <h4 className="font-medium text-gray-700 mb-2">{t("admin.logs.userRoles")}</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {roles.map(role => (
                                                 <label 
@@ -368,7 +370,7 @@ const AdminLogs = () => {
                                     </div>
                                     {/* Entity Type Filters */}
                                     <div className="p-3 border-t border-gray-200">
-                                        <h4 className="font-medium text-gray-700 mb-2">Entity Types</h4>
+                                        <h4 className="font-medium text-gray-700 mb-2">{t("admin.logs.entityTypes")}</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {entityTypes.map(type => (
                                                 <label 
@@ -388,7 +390,7 @@ const AdminLogs = () => {
                                     
                                     {/* Action Type Filters */}
                                     <div className="p-3">
-                                        <h4 className="font-medium text-gray-700 mb-2">Action Types</h4>
+                                        <h4 className="font-medium text-gray-700 mb-2">{t("admin.logs.actionTypes")}</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {actionTypes.map(type => (
                                                 <label 
@@ -417,13 +419,13 @@ const AdminLogs = () => {
                         <table className="w-full border-collapse">
                             <thead className="bg-gradient-to-r from-[#E6F7FB] to-[#F5FBFD] text-[#06AED5] border-b border-gray-200">
                                 <tr>
-                                    <th className="px-4 py-3 text-left font-medium">User</th>
-                                    <th className="px-4 py-3 text-left font-medium">Role</th>
-                                    <th className="px-4 py-3 text-left font-medium">Action</th>
-                                    <th className="px-4 py-3 text-left font-medium">Entity</th>
-                                    <th className="px-4 py-3 text-left font-medium">Details</th>
-                                    <th className="px-4 py-3 text-left font-medium">Timestamp</th>
-                                    <th className="px-4 py-3 text-center font-medium w-16">Delete</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.user")}</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.role")}</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.action")}</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.entity")}</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.details")}</th>
+                                    <th className="px-4 py-3 text-left font-medium">{t("admin.logs.timestamp")}</th>
+                                    <th className="px-4 py-3 text-center font-medium w-16">{t("admin.logs.delete")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -435,7 +437,7 @@ const AdminLogs = () => {
                                                     <div className="w-9 h-9 rounded-full bg-[#06AED5] text-white flex items-center justify-center mr-3 shadow-sm">
                                                         {log.fullName ? log.fullName.charAt(0) : 'U'}
                                                     </div>
-                                                    <span className="font-medium">{log.fullName || 'Unknown User'}</span>
+                                                    <span className="font-medium">{log.fullName || t("admin.logs.unknownUser")}</span>
                                                 </div>
                                             </td>
                                             <td className="p-4">
@@ -445,12 +447,12 @@ const AdminLogs = () => {
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
-                                                    {log.actionType || 'UNKNOWN'}
+                                                    {log.actionType || t("admin.logs.unknown")}
                                                 </span>
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
-                                                    {log.entityType || 'UNKNOWN'}
+                                                    {log.entityType || t("admin.logs.unknown")}
                                                 </span>
                                             </td>
                                             <td className="p-4">
@@ -458,7 +460,7 @@ const AdminLogs = () => {
                                                     onClick={() => setSelectedLogDetails(log)}
                                                     className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors"
                                                 >
-                                                    Show Details
+                                                    {t("admin.logs.showDetails")}
                                                 </button>
                                             </td>
 
@@ -472,7 +474,7 @@ const AdminLogs = () => {
                                                 <button 
                                                     onClick={() => handleDeleteRequest(log.id)} 
                                                     className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                                                    aria-label="Delete log"
+                                                    aria-label={t("admin.logs.delete")}
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
@@ -482,7 +484,7 @@ const AdminLogs = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="7" className="p-8 text-center text-gray-500">
-                                            No logs found matching your criteria.
+                                            {t("admin.logs.noLogsFound")}
                                         </td>
                                     </tr>
                                 )}
@@ -502,7 +504,7 @@ const AdminLogs = () => {
                                             {log.fullName ? log.fullName.charAt(0) : 'U'}
                                         </div>
                                         <div>
-                                            <span className="font-semibold text-gray-800 text-sm">{log.fullName || 'Unknown User'}</span>
+                                            <span className="font-semibold text-gray-800 text-sm">{log.fullName || t("admin.logs.unknownUser")}</span>
                                             <div className="mt-1">
                                                 <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeStyle(log.userRole)}`}>
                                                     {log.userRole || 'user'}
@@ -513,7 +515,7 @@ const AdminLogs = () => {
                                     <button 
                                         onClick={() => handleDeleteRequest(log.id)} 
                                         className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0 ml-2"
-                                        aria-label="Delete log"
+                                        aria-label={t("admin.logs.delete")}
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -521,11 +523,11 @@ const AdminLogs = () => {
                                 
                                 <div className="flex flex-wrap gap-2 my-2">
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
-                                        {log.actionType || 'UNKNOWN'}
+                                        {log.actionType || t("admin.logs.unknown")}
                                     </span>
                                     
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
-                                        {log.entityType || 'UNKNOWN'}
+                                        {log.entityType || t("admin.logs.unknown")}
                                     </span>
                                 </div>
                                 
@@ -533,7 +535,7 @@ const AdminLogs = () => {
                                     onClick={() => setSelectedLogDetails(log)}
                                     className="text-[#06AED5] hover:text-[#0599c2] font-medium transition-colors text-sm"
                                 >
-                                    Show Details
+                                    {t("admin.logs.showDetails")}
                                 </button>
                                 
                                 <div className="flex items-center justify-end text-xs text-gray-500 mt-3 pt-2 border-t border-gray-100">
@@ -544,7 +546,7 @@ const AdminLogs = () => {
                         ))
                     ) : (
                         <div className="bg-white p-6 rounded-xl shadow-lg text-center text-gray-500">
-                            No logs found matching your criteria.
+                            {t("admin.logs.noLogsFound")}
                         </div>
                     )}
                 </div>
@@ -555,7 +557,7 @@ const AdminLogs = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-xl shadow-2xl p-5 max-w-md w-full mx-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-semibold text-gray-900">Log Details</h3>
+                            <h3 className="text-xl font-semibold text-gray-900">{t("admin.logs.logDetails")}</h3>
                             <button 
                                 onClick={() => setSelectedLogDetails(null)}
                                 className="text-gray-400 hover:text-gray-500 transition-colors"
@@ -566,7 +568,7 @@ const AdminLogs = () => {
                         
                         <div className="space-y-3 max-h-[70vh] overflow-y-auto">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Full Description</p>
+                                <p className="text-sm font-medium text-gray-600">{t("admin.logs.fullDescription")}</p>
                                 <p className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm">
                                     {selectedLogDetails.description}
                                 </p>
@@ -574,33 +576,33 @@ const AdminLogs = () => {
                             
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">User</p>
+                                    <p className="text-sm font-medium text-gray-600">{t("admin.logs.user")}</p>
                                     <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 text-sm truncate">
-                                        {selectedLogDetails.fullName || 'Unknown'}
+                                        {selectedLogDetails.fullName || t("admin.logs.unknownUser")}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Role</p>
+                                    <p className="text-sm font-medium text-gray-600">{t("admin.logs.role")}</p>
                                     <p className={`${getRoleBadgeStyle(selectedLogDetails.userRole)} p-2 rounded-lg text-center text-sm`}>
                                         {selectedLogDetails.userRole || 'user'}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Action</p>
+                                    <p className="text-sm font-medium text-gray-600">{t("admin.logs.action")}</p>
                                     <p className={`${getActionTypeBadgeStyle(selectedLogDetails.actionType)} p-2 rounded-lg text-center text-sm`}>
-                                        {selectedLogDetails.actionType || 'UNKNOWN'}
+                                        {selectedLogDetails.actionType || t("admin.logs.unknown")}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Entity</p>
+                                    <p className="text-sm font-medium text-gray-600">{t("admin.logs.entity")}</p>
                                     <p className={`${getEntityTypeBadgeStyle(selectedLogDetails.entityType)} p-2 rounded-lg text-center text-sm`}>
-                                        {selectedLogDetails.entityType || 'UNKNOWN'}
+                                        {selectedLogDetails.entityType || t("admin.logs.unknown")}
                                     </p>
                                 </div>
                             </div>
                             
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Timestamp</p>
+                                <p className="text-sm font-medium text-gray-600">{t("admin.logs.timestamp")}</p>
                                 <p className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-center text-sm">
                                     <Clock size={16} className="mr-2 text-[#06AED5]" />
                                     {formatDateTime(selectedLogDetails.createdAt)}
@@ -613,7 +615,7 @@ const AdminLogs = () => {
                                 onClick={() => setSelectedLogDetails(null)}
                                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium"
                             >
-                                Close
+                                {t("admin.logs.close")}
                             </button>
                         </div>
                     </div>

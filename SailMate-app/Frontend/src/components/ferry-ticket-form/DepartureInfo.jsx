@@ -73,9 +73,9 @@ const DepartureInfo = ({ departureDetails, passengerIndex, onPassengerChange, tr
         case "Name":
         case "Surname":
           if (!value.trim()) {
-            error = t("ferryTicketing.validation.required", { field: t(`common.${field.toLowerCase()}`) });
+            error = t("ferryTicketing.validation.required", { field: t(`common.${field === "Name" ? "name" : "surname"}`) });
           } else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value.trim())) {
-            error = t("ferryTicketing.validation.invalidName", { field: t(`common.${field.toLowerCase()}`) });
+            error = t("ferryTicketing.validation.invalidName", { field: t(`common.${field === "Name" ? "name" : "surname"}`) });
           }
           break;
         case "Phone":

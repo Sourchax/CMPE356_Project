@@ -16,6 +16,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const modalRef = useRef(null);
+  const { t } = useTranslation();
 
   // Handle outside click to close modal
   useEffect(() => {
@@ -65,12 +66,12 @@ const BroadcastModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     
     if (!title.trim()) {
-      setError("Please enter a title");
+      setError(t("broadcastModal.titleRequired"));
       return;
     }
     
     if (!message.trim()) {
-      setError("Please enter a message");
+      setError(t("broadcastModal.messageRequired"));
       return;
     }
     
@@ -88,7 +89,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
         }
       });
       
-      setSuccess("Broadcast notification sent successfully!");
+      setSuccess(t("broadcastModal.success"));
       setTitle("");
       setMessage("");
       
@@ -98,7 +99,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
       }, 2000);
     } catch (err) {
       console.error("Error sending broadcast:", err);
-      setError("Failed to send broadcast. Please try again later.");
+      setError(t("broadcastModal.error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -116,7 +117,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
         <div className="flex justify-between items-center bg-[#0D3A73] text-white px-6 py-4 sticky top-0 z-10">
           <h3 className="text-lg font-medium flex items-center">
             <Megaphone size={20} className="mr-2" />
-            Send Broadcast Notification
+            {t("broadcastModal.title")}
           </h3>
           <button 
             onClick={onClose}
@@ -146,13 +147,13 @@ const BroadcastModal = ({ isOpen, onClose }) => {
                 htmlFor="broadcast-title" 
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Title
+                {t("broadcastModal.titleLabel")}
               </label>
               <input
                 id="broadcast-title"
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0D3A73] focus:border-[#0D3A73]"
-                placeholder="Enter notification title"
+                placeholder={t("broadcastModal.titlePlaceholder")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
@@ -165,12 +166,12 @@ const BroadcastModal = ({ isOpen, onClose }) => {
                 htmlFor="broadcast-message" 
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Message
+                {t("broadcastModal.messageLabel")}
               </label>
               <textarea
                 id="broadcast-message"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0D3A73] focus:border-[#0D3A73]"
-                placeholder="Enter notification message"
+                placeholder={t("broadcastModal.messagePlaceholder")}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 required
@@ -178,7 +179,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
                 style={{ maxHeight: "150px" }}
               />
               <div className="text-xs text-gray-500 mt-1 text-right">
-                {message.length}/500 characters max
+                {message.length}/500 {t("broadcastModal.charactersMax")}
               </div>
             </div>
           </form>
@@ -191,14 +192,14 @@ const BroadcastModal = ({ isOpen, onClose }) => {
             className="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition"
             disabled={isSubmitting}
           >
-            Cancel
+            {t("broadcastModal.cancel")}
           </button>
           <button
             onClick={handleSubmit}
             className="px-4 py-2 text-sm font-medium text-white bg-[#0D3A73] hover:bg-blue-800 rounded-md transition"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Sending..." : "Send Broadcast"}
+            {isSubmitting ? t("broadcastModal.sending") : t("broadcastModal.send")}
           </button>
         </div>
       </div>

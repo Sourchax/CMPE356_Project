@@ -4,11 +4,13 @@ import placeholder from "../../assets/images/placeholder.jpg";
 import { useSessionToken } from "../../utils/sessions";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 // API base URL
 const API_BASE_URL = "http://localhost:8080/api/announcements";
 
 export default function AdminAnnounce() {
+  const { t } = useTranslation();
   const location = useLocation();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ export default function AdminAnnounce() {
       setError(null);
     } catch (err) {
       console.error("Error fetching announcements:", err);
-      setError("Failed to load announcements. Please try again later.");
+      setError(t('admin.announcements.errors.loadFailed'));
       // Initialize with empty array on error
       setAnnouncements([]);
     } finally {
@@ -105,13 +107,13 @@ export default function AdminAnnounce() {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        setErrors({ ...errors, image: "Please select a valid image file (JPEG, PNG, GIF, WEBP)" });
+        setErrors({ ...errors, image: t('admin.announcements.validation.invalidImageType') });
         return;
       }
       
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        setErrors({ ...errors, image: "Image size should be less than 2MB" });
+        setErrors({ ...errors, image: t('admin.announcements.validation.imageTooLarge') });
         return;
       }
       
@@ -139,27 +141,27 @@ export default function AdminAnnounce() {
     switch (name) {
       case "title":
         if (!value.trim()) {
-          error = "Title is required";
+          error = t('admin.announcements.validation.titleRequired');
         } else if (value.trim().length < 3) {
-          error = "Title must be at least 3 characters";
+          error = t('admin.announcements.validation.titleTooShort');
         } else if (value.trim().length > 50) {
-          error = "Title must be less than 50 characters";
+          error = t('admin.announcements.validation.titleTooLong');
         }
         break;
         
       case "description":
         if (!value.trim()) {
-          error = "Description is required";
+          error = t('admin.announcements.validation.descriptionRequired');
         } else if (value.trim().length < 10) {
-          error = "Description must be at least 10 characters";
+          error = t('admin.announcements.validation.descriptionTooShort');
         } else if (value.trim().length > 200) {
-          error = "Description must be less than 200 characters";
+          error = t('admin.announcements.validation.descriptionTooLong');
         }
         break;
         
       case "details":
         if (value && value.trim().length > 1000) {
-          error = "Details must be less than 1000 characters";
+          error = t('admin.announcements.validation.detailsTooLong');
         }
         break;
         
@@ -180,7 +182,7 @@ export default function AdminAnnounce() {
     
     // Image validation - only require for new announcements
     if (!form.id && !form.imageBase64) {
-      formErrors.image = "Image is required";
+      formErrors.image = t('admin.announcements.validation.imageRequired');
     }
     
     // Remove empty error messages
@@ -240,7 +242,7 @@ export default function AdminAnnounce() {
       setTouched({});
     } catch (err) {
       console.error("Error updating announcement:", err);
-      setErrors({ submit: "Failed to update announcement. Please try again." });
+      setErrors({ submit: t('admin.announcements.errors.updateFailed') });
     } finally {
       setSubmitting(false);
     }
@@ -270,7 +272,7 @@ export default function AdminAnnounce() {
         setAnnouncementToDelete(null);
       } catch (err) {
         console.error("Error deleting announcement:", err);
-        setErrors({ submit: "Failed to delete announcement. Please try again." });
+        setErrors({ submit: t('admin.announcements.errors.deleteFailed') });
       } finally {
         setSubmitting(false);
       }
@@ -314,7 +316,7 @@ export default function AdminAnnounce() {
       setTouched({});
     } catch (err) {
       console.error("Error adding announcement:", err);
-      setErrors({ submit: "Failed to add announcement. Please try again." });
+      setErrors({ submit: t('admin.announcements.errors.addFailed') });
     } finally {
       setSubmitting(false);
     }
@@ -342,13 +344,13 @@ export default function AdminAnnounce() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Manage Announcements</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('admin.announcements.title')}</h1>
       <button
         onClick={() => openEdit({ id: null, title: "", imageBase64: "", description: "", details: "" })}
         className="px-6 py-3 bg-[#06AED5] text-white rounded-lg transition duration-300 mb-8 text-lg"
         disabled={submitting}
       >
-        Add Announcement
+        {t('admin.announcements.addButton')}
       </button>
       
       {/* Error message */}
@@ -363,19 +365,19 @@ export default function AdminAnnounce() {
       {loading ? (
         <div className="text-center py-8">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#06AED5] border-r-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading announcements...</p>
+          <p className="mt-2 text-gray-600">{t('admin.announcements.loading')}</p>
         </div>
       ) : (
         <div className="space-y-8">
           {!Array.isArray(announcements) ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500 text-lg">Error: Invalid response format</p>
-              <p className="text-gray-400">Please contact the administrator</p>
+              <p className="text-gray-500 text-lg">{t('admin.announcements.errors.invalidFormat')}</p>
+              <p className="text-gray-400">{t('admin.announcements.errors.contactAdmin')}</p>
             </div>
           ) : announcements.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500 text-lg">No announcements found</p>
-              <p className="text-gray-400">Create a new announcement to get started</p>
+              <p className="text-gray-500 text-lg">{t('admin.announcements.noAnnouncements')}</p>
+              <p className="text-gray-400">{t('admin.announcements.createNewHint')}</p>
             </div>
           ) : (
             announcements.map((announcement) => (
@@ -385,7 +387,7 @@ export default function AdminAnnounce() {
                   <div className="flex gap-6 items-start overflow-hidden">
                     <img
                       src={announcement.imageBase64 ? `data:image/jpeg;base64,${announcement.imageBase64}` : placeholder}
-                      alt="Announcement"
+                      alt={t('admin.announcements.announcementImageAlt')}
                       className="w-28 h-28 object-cover rounded-lg flex-shrink-0"
                       onError={(e) => {
                         console.log("Image failed to load, using placeholder");
@@ -404,6 +406,7 @@ export default function AdminAnnounce() {
                       onClick={() => openEdit(announcement)} 
                       className="text-[#06AED5] transition duration-300"
                       disabled={submitting}
+                      aria-label={t('admin.announcements.editButtonAriaLabel')}
                     >
                       <Edit size={24} />
                     </button>
@@ -411,6 +414,7 @@ export default function AdminAnnounce() {
                       onClick={() => openDeleteConfirmation(announcement)} 
                       className="text-red-600 transition duration-300"
                       disabled={submitting}
+                      aria-label={t('admin.announcements.deleteButtonAriaLabel')}
                     >
                       <Trash2 size={24} />
                     </button>
@@ -426,7 +430,9 @@ export default function AdminAnnounce() {
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
           <div className="bg-white p-8 rounded-lg w-full max-w-lg shadow-xl">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">{form.id ? "Edit Announcement" : "Add Announcement"}</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+              {form.id ? t('admin.announcements.editTitle') : t('admin.announcements.addTitle')}
+            </h2>
             
             {/* General error message */}
             {errors.submit && (
@@ -437,7 +443,7 @@ export default function AdminAnnounce() {
             
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Title <span className="text-red-500">*</span>
+                {t('admin.announcements.form.title')} <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -445,7 +451,7 @@ export default function AdminAnnounce() {
                 value={form.title}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Enter announcement title"
+                placeholder={t('admin.announcements.form.titlePlaceholder')}
                 className={getFieldClassName("title")}
                 maxLength={50}
                 disabled={submitting}
@@ -454,14 +460,14 @@ export default function AdminAnnounce() {
                 <p className="text-red-600 text-sm">{errors.title}</p>
               ) : (
                 <p className="text-gray-500 text-xs text-right">
-                  {remainingChars("title", 50)} characters remaining
+                  {remainingChars("title", 50)} {t('admin.announcements.form.charactersRemaining')}
                 </p>
               )}
             </div>
 
             <div className="mb-4">
               <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                Image {!form.id && <span className="text-red-500">*</span>}
+                {t('admin.announcements.form.image')} {!form.id && <span className="text-red-500">*</span>}
               </label>
               <input
                 id="image"
@@ -476,7 +482,7 @@ export default function AdminAnnounce() {
                 <div className="mb-2">
                   <img 
                     src={form.imagePreview || `data:image/jpeg;base64,${form.imageBase64}`} 
-                    alt="Preview" 
+                    alt={t('admin.announcements.form.previewAlt')} 
                     className="w-24 h-24 object-cover rounded-lg" 
                     onError={(e) => {
                       console.log("Preview image failed to load");
@@ -485,15 +491,15 @@ export default function AdminAnnounce() {
                   />
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 mb-2">No image selected</p>
+                <p className="text-sm text-gray-500 mb-2">{t('admin.announcements.form.noImageSelected')}</p>
               )}
               {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
-              <p className="text-gray-500 text-xs">Supported formats: JPEG, PNG, GIF, WEBP (max 2MB)</p>
+              <p className="text-gray-500 text-xs">{t('admin.announcements.form.supportedFormats')}</p>
             </div>
 
             <div className="mb-4">
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description <span className="text-red-500">*</span>
+                {t('admin.announcements.form.description')} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="description"
@@ -501,7 +507,7 @@ export default function AdminAnnounce() {
                 value={form.description}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Enter a brief description"
+                placeholder={t('admin.announcements.form.descriptionPlaceholder')}
                 className={getFieldClassName("description")}
                 rows={3}
                 maxLength={200}
@@ -511,14 +517,14 @@ export default function AdminAnnounce() {
                 <p className="text-red-600 text-sm">{errors.description}</p>
               ) : (
                 <p className="text-gray-500 text-xs text-right">
-                  {remainingChars("description", 200)} characters remaining
+                  {remainingChars("description", 200)} {t('admin.announcements.form.charactersRemaining')}
                 </p>
               )}
             </div>
 
             <div className="mb-6">
               <label htmlFor="details" className="block text-sm font-medium text-gray-700 mb-1">
-                Details
+                {t('admin.announcements.form.details')}
               </label>
               <textarea
                 id="details"
@@ -526,7 +532,7 @@ export default function AdminAnnounce() {
                 value={form.details || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Enter detailed information (optional)"
+                placeholder={t('admin.announcements.form.detailsPlaceholder')}
                 className={getFieldClassName("details")}
                 rows={5}
                 maxLength={1000}
@@ -536,7 +542,7 @@ export default function AdminAnnounce() {
                 <p className="text-red-600 text-sm">{errors.details}</p>
               ) : (
                 <p className="text-gray-500 text-xs text-right">
-                  {remainingChars("details", 1000)} characters remaining
+                  {remainingChars("details", 1000)} {t('admin.announcements.form.charactersRemaining')}
                 </p>
               )}
             </div>
@@ -547,7 +553,7 @@ export default function AdminAnnounce() {
                 className="px-6 py-2 bg-gray-300 rounded-lg transition duration-300"
                 disabled={submitting}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 onClick={form.id ? saveAnnouncement : addAnnouncement} 
@@ -557,10 +563,10 @@ export default function AdminAnnounce() {
                 {submitting ? (
                   <span className="flex items-center">
                     <Loader2 size={18} className="animate-spin mr-2" />
-                    {form.id ? "Saving..." : "Adding..."}
+                    {form.id ? t('admin.announcements.form.saving') : t('admin.announcements.form.adding')}
                   </span>
                 ) : (
-                  form.id ? "Save Changes" : "Add Announcement"
+                  form.id ? t('admin.announcements.form.saveChanges') : t('admin.announcements.form.addAnnouncement')
                 )}
               </button>
             </div>
@@ -574,11 +580,11 @@ export default function AdminAnnounce() {
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle size={24} className="text-red-600" />
-              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">{t('admin.announcements.delete.confirmTitle')}</h2>
             </div>
             
             <p className="mb-4">
-              Are you sure you want to delete the announcement <span className="font-semibold">"{announcementToDelete.title}"</span>? This action cannot be undone.
+              {t('admin.announcements.delete.confirmMessage', { title: announcementToDelete.title })}
             </p>
             
             <div className="flex justify-end gap-3 mt-5">
@@ -590,7 +596,7 @@ export default function AdminAnnounce() {
                 className="px-4 py-2 border border-gray-300 rounded-md transition"
                 disabled={submitting}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 onClick={deleteAnnouncement} 
@@ -600,10 +606,10 @@ export default function AdminAnnounce() {
                 {submitting ? (
                   <span className="flex items-center">
                     <Loader2 size={18} className="animate-spin mr-2" />
-                    Deleting...
+                    {t('admin.announcements.delete.deleting')}
                   </span>
                 ) : (
-                  "Delete"
+                  t('admin.announcements.delete.confirmButton')
                 )}
               </button>
             </div>
