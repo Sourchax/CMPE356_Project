@@ -534,16 +534,23 @@ const Homepage = () => {
         {/* Enhanced Hero Content with Improved Typography */}
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto transform -translate-y-6">
           <div className="animate-fade-in-up">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-xl tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight leading-tight hero-text-shadow">
               {t('homepage.hero.title')}
             </h1>
             <div className="w-24 h-1 bg-[#F0C808] mx-auto mb-4"></div>
-            <p className="text-base md:text-xl mb-2 drop-shadow-lg font-light max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-xl mb-2 font-medium max-w-3xl mx-auto leading-relaxed hero-text-shadow">
               {t('homepage.hero.subtitle')}
             </p>
           </div>
         </div>
       </section>
+
+      {/* Custom text shadow for hero text */}
+      <style jsx>{`
+        .hero-text-shadow {
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+      `}</style>
 
       {/* Booking Section - updated positioning to work with new hero height */}
       <section id="booking" className="relative -mt-40 md:-mt-48 mb-40 px-4 z-20">
