@@ -118,9 +118,11 @@ const ManagerFinance = () => {
     // Parse the input value as a number
     let numValue = parseFloat(newPrice);
     
-    // Ensure the value is positive
+    // Ensure the value is positive and not greater than 10,000
     if (isNaN(numValue) || numValue <= 0) {
       numValue = 0.01; // Set to smallest positive value
+    } else if (numValue > 10000) {
+      numValue = 10000; // Cap at maximum allowed value
     }
     
     // Update the ticket class with the validated value
@@ -173,9 +175,11 @@ const ManagerFinance = () => {
     // Parse the input value as a number
     let numValue = parseFloat(newFee);
     
-    // Ensure the value is non-negative
+    // Ensure the value is non-negative and not greater than 10,000
     if (isNaN(numValue) || numValue < 0) {
       numValue = 0;
+    } else if (numValue > 10000) {
+      numValue = 10000; // Cap at maximum allowed value
     }
     
     // Update the service fee with the validated value
@@ -414,6 +418,7 @@ const ManagerFinance = () => {
                               <input
                                 type="number"
                                 min="0"
+                                max="10000"
                                 step="0.01"
                                 value={ticketClass.basePrice}
                                 onChange={(e) => handlePriceChange(ticketClass.id, e.target.value)}
@@ -463,6 +468,7 @@ const ManagerFinance = () => {
                   <input
                     type="number"
                     min="0"
+                    max="10000"
                     step="0.01"
                     value={serviceFee}
                     onChange={(e) => handleServiceFeeChange(e.target.value)}

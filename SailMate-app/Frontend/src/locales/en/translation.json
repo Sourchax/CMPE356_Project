@@ -1514,11 +1514,53 @@
       "mockDataMessage": "Showing mock data for demonstration."
     },
     "finance": {
+      "title": "Finance",
+      "subtitle": "Financial Statistics and Analysis",
+      "loading": "Loading data...",
+      "validation": {
+        "positiveNumber": "Please enter a positive number",
+        "discountEmpty": "Discount percentage cannot be empty",
+        "discountRange": "Discount must be between 0 and 100%"
+      },
       "errors": {
-        "fetchFailed": "Failed to fetch prices data. Please try again.",
+        "fetchFailed": "Failed to fetch price data. Please try again.",
         "saveFailed": "Failed to save changes. Please try again.",
-        "emptyArray": "API returned empty array!"
-      }
+        "emptyArray": "API returned an empty array!"
+      },
+      "ticketClasses": {
+        "title": "Ticket Pricing",
+        "subtitle": "Set base prices for each ticket class",
+        "classColumn": "Class",
+        "basePriceColumn": "Base Price",
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      },
+      "serviceFee": {
+        "title": "Service Fee",
+        "subtitle": "Set the service fee applied to all tickets",
+        "description": "This fee is added to all ticket prices regardless of class or discount."
+      },
+      "discounts": {
+        "title": "Passenger Discounts",
+        "subtitle": "Set discount percentages for special passenger groups",
+        "groupColumn": "Passenger Group",
+        "percentageColumn": "Discount Percentage",
+        "student": "Student",
+        "senior": "Senior (65+)"
+      },
+      "preview": {
+        "title": "Price Preview",
+        "subtitle": "See how your pricing configuration affects final ticket prices",
+        "basePrice": "Base ticket price without any discounts or fees",
+        "withDiscounts": "With discounts applied",
+        "discounted": "Discounted",
+        "withFee": "With fee",
+        "regularPlusFee": "Regular + Service Fee"
+      },
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "saveSuccess": "Changes Saved Successfully"
     }
   },
   "notifications": {

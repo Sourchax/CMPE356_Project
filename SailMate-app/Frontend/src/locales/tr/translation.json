@@ -1523,11 +1523,51 @@
       "cashFlow": "Nakit Akışı",
       "debtToEquityRatio": "Borç/Özkaynak Oranı",
       "returnOnInvestment": "Yatırımın Getirisi",
+      "loading": "Veriler yükleniyor...",
+      "validation": {
+        "positiveNumber": "Lütfen pozitif bir sayı girin",
+        "discountEmpty": "İndirim yüzdesi boş olamaz",
+        "discountRange": "İndirim %0 ile %100 arasında olmalıdır"
+      },
       "errors": {
         "fetchFailed": "Fiyat verileri getirilemedi. Lütfen tekrar deneyin.",
         "saveFailed": "Değişiklikler kaydedilemedi. Lütfen tekrar deneyin.",
         "emptyArray": "API boş dizi döndürdü!"
-      }
+      },
+      "ticketClasses": {
+        "title": "Bilet Fiyatlandırma",
+        "subtitle": "Her bilet sınıfı için taban fiyatları belirleyin",
+        "classColumn": "Sınıf",
+        "basePriceColumn": "Taban Fiyat",
+        "promo": "Promo",
+        "economy": "Economy",
+        "business": "Business"
+      },
+      "serviceFee": {
+        "title": "Hizmet Bedeli",
+        "subtitle": "Tüm biletlere uygulanan hizmet bedelini belirleyin",
+        "description": "Bu ücret, sınıf veya indirim fark etmeksizin tüm bilet fiyatlarına eklenir."
+      },
+      "discounts": {
+        "title": "Yolcu İndirimleri",
+        "subtitle": "Özel yolcu grupları için indirim yüzdelerini belirleyin",
+        "groupColumn": "Yolcu Grubu",
+        "percentageColumn": "İndirim Yüzdesi",
+        "student": "Öğrenci",
+        "senior": "Yaşlı (65+)"
+      },
+      "preview": {
+        "title": "Fiyat Önizleme",
+        "subtitle": "Fiyatlandırma yapılandırmanızın nihai bilet fiyatlarını nasıl etkilediğini görün",
+        "basePrice": "İndirim veya ücret olmadan temel bilet fiyatı",
+        "withDiscounts": "İndirimler uygulandığında",
+        "discounted": "İndirimli",
+        "withFee": "Ücretle",
+        "regularPlusFee": "Normal + Hizmet Bedeli"
+      },
+      "saving": "Kaydediliyor...",
+      "saveChanges": "Değişiklikleri Kaydet",
+      "saveSuccess": "Değişiklikler Başarıyla Kaydedildi"
     }
   },
   "notifications": {
