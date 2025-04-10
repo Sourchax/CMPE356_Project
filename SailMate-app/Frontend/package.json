@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.23.0",
+    "@clerk/localizations": "^3.13.9",
     "axios": "^1.8.3",
     "framer-motion": "^12.4.7",
     "i18next": "^24.2.3",

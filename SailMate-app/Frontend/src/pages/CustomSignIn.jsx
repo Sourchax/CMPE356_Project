@@ -2,11 +2,13 @@ import { SignIn, useClerk } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../assets/styles/CustomSignIn.css";
+import { useTranslation } from "react-i18next";
 
 const CustomSignIn = () => {
   const clerk = useClerk();
   const [loaded, setLoaded] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.log("Clerk Loaded:", clerk.loaded); // Debugging
@@ -20,7 +22,7 @@ const CustomSignIn = () => {
       <div className={`signin-box ${fadeIn ? 'fade-in' : ''}`}>
         {loaded && (
           <Link to="/" className={`back-link ${loaded ? "visible" : ""}`}>
-            &larr; Back to Home
+            &larr; {t('auth.backToHome')}
           </Link>
         )}
 
@@ -54,7 +56,7 @@ const CustomSignIn = () => {
         ) : (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p className="loading-text">Loading authentication...</p>
+            <p className="loading-text">{t('auth.loadingAuthentication')}</p>
           </div>
         )}
       </div>

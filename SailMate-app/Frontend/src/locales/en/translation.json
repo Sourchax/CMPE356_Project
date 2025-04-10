@@ -1664,5 +1664,9 @@
     "error": "Failed to send broadcast. Please try again later.",
     "titleRequired": "Please enter a title",
     "messageRequired": "Please enter a message"
+  },
+  "auth": {
+    "backToHome": "Back to Home",
+    "loadingAuthentication": "Loading authentication..."
   }
 } 

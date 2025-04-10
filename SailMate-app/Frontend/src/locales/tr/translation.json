@@ -1671,5 +1671,9 @@
     "error": "Duyuru gönderilemedi. Lütfen daha sonra tekrar deneyin.",
     "titleRequired": "Lütfen bir başlık girin",
     "messageRequired": "Lütfen bir mesaj girin"
+  },
+  "auth": {
+    "backToHome": "Ana Sayfaya Dön",
+    "loadingAuthentication": "Kimlik doğrulama yükleniyor..."
   }
 } 
