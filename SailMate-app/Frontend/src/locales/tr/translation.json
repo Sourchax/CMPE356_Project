@@ -441,11 +441,13 @@
     "serverError": "Sunucu hatası oluştu",
     "sameLocations": "Kalkış ve varış noktaları aynı olamaz. Lütfen farklı noktalar seçin.",
     "invalidPassengers": "Lütfen geçerli bir yolcu sayısı girin.",
-    "adultPassengerRequired": "Çocuklar için en az 1 yetişkin yolcu olmalıdır!",
+    "childWithoutAdult": "Çocuklar için en az 1 yetişkin yolcu olmalıdır!",
     "noVoyagesAvailable": "Seçtiğiniz rota ve tarih için sefer bulunamadı. Lütfen farklı seçenekler deneyin.",
-    "problemSearching": "Sefer aramasında bir sorun oluştu. Lütfen daha sonra tekrar deneyin.",
-    "couldNotLoadStations": "İstasyonlar sunucudan yüklenemedi.",
-    "failedToConnect": "Sunucuya bağlanılamadı."
+    "searchProblem": "Sefer aramasında bir sorun oluştu. Lütfen daha sonra tekrar deneyin.",
+    "stationsNotLoaded": "İstasyonlar sunucudan yüklenemedi.",
+    "connectionFailed": "Sunucuya bağlanılamadı.",
+    "notEnoughSeats": "Tüm yolcular için herhangi bir sınıfta yeterli koltuk bulunmamaktadır.",
+    "notEnoughSeatsRoundTrip": "Hem gidiş hem de dönüş seferlerinde tüm yolcular için herhangi bir sınıfta yeterli koltuk bulunmamaktadır."
   },
   "sustainabilityPage": {
     "pageTitle": "Sürdürülebilirlik Taahhüdümüz",

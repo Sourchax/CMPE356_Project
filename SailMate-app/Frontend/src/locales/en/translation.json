@@ -465,11 +465,13 @@
     "serverError": "Server error occurred",
     "sameLocations": "Departure and arrival locations cannot be the same. Please select different locations.",
     "invalidPassengers": "Please enter a valid number of passengers.",
-    "adultPassengerRequired": "There should be at least 1 adult passenger for children!",
+    "childWithoutAdult": "There should be at least 1 adult passenger for children!",
     "noVoyagesAvailable": "No voyages available for your selected route and date. Please try different options.",
-    "problemSearching": "There was a problem searching for voyages. Please try again later.",
-    "couldNotLoadStations": "Could not load stations from server.",
-    "failedToConnect": "Failed to connect to server."
+    "searchProblem": "There was a problem searching for voyages. Please try again later.",
+    "stationsNotLoaded": "Could not load stations from server.",
+    "connectionFailed": "Failed to connect to server.",
+    "notEnoughSeats": "Not enough seats available in any single class for all passengers.",
+    "notEnoughSeatsRoundTrip": "Not enough seats available in any single class for all passengers on both departure and return trips."
   },
   "sustainabilityPage": {
     "pageTitle": "Our Commitment to Sustainability",

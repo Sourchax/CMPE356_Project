@@ -124,13 +124,13 @@ const Homepage = () => {
         } else {
           // Fallback to hardcoded values if API returns empty array
           setStations([]);
-          displayError("Could not load stations from server.");
+          displayError(t('errors.stationsNotLoaded'));
         }
       } catch (err) {
         console.error("Error fetching stations:", err);
         // Fallback to hardcoded stations if API fails
         setStations([]);
-        displayError("Failed to connect to server.");
+        displayError(t('errors.connectionFailed'));
       } finally {
         setStationsLoaded(true);
       }
@@ -260,17 +260,17 @@ const Homepage = () => {
     }
   
     if (formData.departure === formData.arrival) {
-      displayError("Departure and arrival locations cannot be the same. Please select different locations.");
+      displayError(t('errors.sameLocations'));
       return;
     }
   
     if (formData.passengers === 0) {
-      displayError("Please enter a valid number of passengers.");
+      displayError(t('errors.invalidPassengers'));
       return;
     }
   
     if (passengerDetails.child !== 0 && passengerDetails.adult === 0 && passengerDetails.senior === 0) {
-      displayError("There should be at least 1 adult passenger for children!");
+      displayError(t('errors.childWithoutAdult'));
       return;
     }
   
@@ -307,7 +307,7 @@ const Homepage = () => {
         });
   
         if (response1.data.length === 0 || response2.data.length === 0) {
-          displayError("No voyages available for your selected route and date. Please try different options.");
+          displayError(t('errors.noVoyagesAvailable'));
           return;
         }
   
@@ -341,7 +341,7 @@ const Homepage = () => {
         );
   
         if (isDepartureFull || isReturnFull) {
-          displayError("Not enough seats available in any single class for all passengers on both departure and return trips.");
+          displayError(t('errors.notEnoughSeatsRoundTrip'));
           return;
         }
       } else {
@@ -355,7 +355,7 @@ const Homepage = () => {
         });
   
         if (response.data.length === 0) {
-          displayError("No voyages available for your selected route and date. Please try different options.");
+          displayError(t('errors.noVoyagesAvailable'));
           return;
         }
   
@@ -374,7 +374,7 @@ const Homepage = () => {
         );
   
         if (isFull) {
-          displayError("Not enough seats available in any single class for all passengers.");
+          displayError(t('errors.notEnoughSeats'));
           return;
         }
   
@@ -396,7 +396,7 @@ const Homepage = () => {
       console.log(tripData);
     } catch (error) {
       console.error("Error searching for voyages:", error);
-      displayError("There was a problem searching for voyages. Please try again later.");
+      displayError(t('errors.searchProblem'));
     }
   };
   
