@@ -8,8 +8,11 @@ import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// Broadcast Modal Component
+// Broadcast Modal Component remains unchanged
 const BroadcastModal = ({ isOpen, onClose }) => {
+  // Existing code for BroadcastModal...
+  // (keeping this component unchanged)
+  
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -304,9 +307,14 @@ const CustomUserButton = () => {
     handleMenuClose();
   };
 
-  // Updated truncateName function to show shorter names
+  // Updated truncateName function - only for mobile view
   const truncateName = (name) => {
     if (!name) return "User";
+    
+    // Only truncate on mobile
+    if (!isMobile) {
+      return name;
+    }
     
     // Split the name to get first and last parts
     const nameParts = name.trim().split(' ');

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Ticket, Mail, Info, Clock, Calendar, Ship, MapPin, Users, FileCheck, AlertCircle, User, DollarSign } from 'lucide-react';
 import Button from "../components/Button";
 import '../assets/styles/ticketcheck.css';
 import { useSessionToken } from "../utils/sessions";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@clerk/clerk-react";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -17,6 +18,7 @@ const TicketCheck = () => {
   const [showStatus, setShowStatus] = useState(false);
   const [error, setError] = useState(null);
   const [selectedCurrency, setSelectedCurrency] = useState("TRY");
+  const location = useLocation();
   const [currencyRates, setCurrencyRates] = useState({
     TRY: 1,
     USD: 0.031,
@@ -78,6 +80,20 @@ const TicketCheck = () => {
     fetchCurrencyRates();
   }, []);
 
+  const { isSignedIn } = useAuth();
+
+  const checkAuthAndProceed = (callback) => {
+    if (!isSignedIn) {
+      // Redirect to sign-in page if not authenticated
+      navigate("/sign-in", { 
+        state: { returnUrl: location.pathname } 
+      });
+      return false;
+    }
+    // User is authenticated, proceed with the callback
+    return callback();
+  };
+
   // Convert price from TRY to selected currency
   const convertPrice = (priceTRY) => {
     if (!priceTRY && priceTRY !== 0) return "";
@@ -94,44 +110,48 @@ const TicketCheck = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
     
-    try {
-      // First, try to fetch ticket by ticketID
-      const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
-        headers: {
-          Authorization: `Bearer ${useSessionToken()}`
-        }
-      });
+    // Check authentication before proceeding
+    checkAuthAndProceed(async () => {
+      setLoading(true);
+      setError(null);
       
-      if (response.data) {
-        // Check if the provided email matches any passenger's email
-        const ticket = response.data;
-        const passengerEmails = ticket.passengers ? ticket.passengers.map(p => p.email.toLowerCase()) : [];
+      try {
+        // First, try to fetch ticket by ticketID
+        const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
         
-        if (passengerEmails.includes(email.toLowerCase()) || 
-            (ticket.bookerEmail && ticket.bookerEmail.toLowerCase() === email.toLowerCase())) {
+        if (response.data) {
+          // Check if the provided email matches any passenger's email
+          const ticket = response.data;
+          const passengerEmails = ticket.passengers ? ticket.passengers.map(p => p.email.toLowerCase()) : [];
           
-          // Determine ticket status based on departure date/time
-          const status = calculateTicketStatus(ticket);
-          
-          setTicketDetails({
-            ...ticket,
-            status: status
-          });
-          
-          setShowStatus(true);
-        } else {
-          setError("The email provided does not match our records for this ticket.");
+          if (passengerEmails.includes(email.toLowerCase()) || 
+              (ticket.bookerEmail && ticket.bookerEmail.toLowerCase() === email.toLowerCase())) {
+            
+            // Determine ticket status based on departure date/time
+            const status = calculateTicketStatus(ticket);
+            
+            setTicketDetails({
+              ...ticket,
+              status: status
+            });
+            
+            setShowStatus(true);
+          } else {
+            setError("The email provided does not match our records for this ticket.");
+          }
         }
+      } catch (err) {
+        console.error("Error fetching ticket:", err);
+        setError("Ticket not found or invalid information provided. Please check your ticket ID and email.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching ticket:", err);
-      setError("Ticket not found or invalid information provided. Please check your ticket ID and email.");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   // Function to calculate ticket status based on departure date/time
@@ -173,47 +193,50 @@ const TicketCheck = () => {
   };
 
   const handleDownloadTicket = async () => {
-    try {
-      // Show loading indicator if needed
-      setLoading(true);
-      
-      // We need to use the string ticketID based on the controller endpoint
-      const ticketID = ticketDetails.ticketID;
-      
-      console.log(`Downloading ticket with ID: ${ticketID}`);
-      
-      // Call the API endpoint to download the ticket
-      const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
-        responseType: 'blob',  // Important: expect binary data
-        headers: {
-          Authorization: `Bearer ${useSessionToken()}`
-        }
-      });
-      
-      // Create a blob from the PDF bytes
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      
-      // Create a URL for the blob
-      const url = window.URL.createObjectURL(blob);
-      
-      // Create a temporary link element
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `ticket-${ticketID}.pdf`);
-      
-      // Append to body, click the link, and clean up
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Release the blob URL
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Error downloading ticket:", err);
-      alert("Failed to download ticket. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    // Check authentication before proceeding
+    checkAuthAndProceed(async () => {
+      try {
+        // Show loading indicator if needed
+        setLoading(true);
+        
+        // We need to use the string ticketID based on the controller endpoint
+        const ticketID = ticketDetails.ticketID;
+        
+        console.log(`Downloading ticket with ID: ${ticketID}`);
+        
+        // Call the API endpoint to download the ticket
+        const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
+          responseType: 'blob',  // Important: expect binary data
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        });
+        
+        // Create a blob from the PDF bytes
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `ticket-${ticketID}.pdf`);
+        
+        // Append to body, click the link, and clean up
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Release the blob URL
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Error downloading ticket:", err);
+        alert("Failed to download ticket. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    });
   };
 
   /* You can also add this if you want a more dramatic effect */

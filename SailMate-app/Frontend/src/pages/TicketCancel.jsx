@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import axios from "axios";
 import { useSessionToken } from "../utils/sessions.js";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@clerk/clerk-react"; // Import Clerk's useAuth hook
 import '../assets/styles/ticketcancel.css';
 
 const API_URL = "http://localhost:8080/api";
@@ -27,6 +28,7 @@ const TicketCancel = () => {
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isSignedIn } = useAuth(); // Add Clerk authentication state
 
   // Currency symbols for display
   const currencySymbols = {
@@ -171,105 +173,125 @@ const TicketCancel = () => {
     return `${symbol}${convertPrice(price)}`;
   };
 
+  // Check authentication before proceeding
+  const checkAuthAndProceed = (callback) => {
+    if (!isSignedIn) {
+      // Redirect to sign-in page if not authenticated
+      navigate("/sign-in", { 
+        state: { returnUrl: location.pathname + location.search } 
+      });
+      return false;
+    }
+    // User is authenticated, proceed with the callback
+    return callback();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     
-    // Fetch ticket details if not already available
-    if (!ticketDetails) {
-      try {
-        setFetchingDetails(true);
-        // Use the correct endpoint from your controller - "/ticketID/{ticketID}"
-        const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
-          headers: {
-            Authorization: `Bearer ${useSessionToken()}`
-          }
-        });
-        
-        if (response.data) {
-          // Check if the voyage is expired/completed
-          if (isVoyageExpired(response.data)) {
-            setLoading(false);
-            setFetchingDetails(false);
-            displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
-            return;
-          }
-          
-          setTicketDetails(response.data);
-          setShowConfirmation(true);
-        } else {
-          throw new Error("Ticket not found");
-        }
-      } catch (error) {
-        console.error("Error fetching ticket details:", error);
-        displayError(t('ticketCancel.errorMessages.notFound'));
-      } finally {
-        setFetchingDetails(false);
-        setLoading(false);
-      }
-    } else {
-      // If we already have ticket details, check if voyage is expired
-      if (isVoyageExpired(ticketDetails)) {
-        setLoading(false);
-        displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
-        return;
-      }
+    // Check authentication before proceeding
+    checkAuthAndProceed(async () => {
+      setLoading(true);
       
-      // If not expired, show confirmation
-      setLoading(false);
-      setShowConfirmation(true);
-    }
+      // Fetch ticket details if not already available
+      if (!ticketDetails) {
+        try {
+          setFetchingDetails(true);
+          // Use the correct endpoint from your controller - "/ticketID/{ticketID}"
+          const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          
+          if (response.data) {
+            // Check if the voyage is expired/completed
+            if (isVoyageExpired(response.data)) {
+              setLoading(false);
+              setFetchingDetails(false);
+              displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+              return;
+            }
+            
+            setTicketDetails(response.data);
+            setShowConfirmation(true);
+          } else {
+            throw new Error("Ticket not found");
+          }
+        } catch (error) {
+          console.error("Error fetching ticket details:", error);
+          displayError(t('ticketCancel.errorMessages.notFound'));
+        } finally {
+          setFetchingDetails(false);
+          setLoading(false);
+        }
+      } else {
+        // If we already have ticket details, check if voyage is expired
+        if (isVoyageExpired(ticketDetails)) {
+          setLoading(false);
+          displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+          return;
+        }
+        
+        // If not expired, show confirmation
+        setLoading(false);
+        setShowConfirmation(true);
+      }
+    });
   };
 
   const handleConfirm = async () => {
-    setLoading(true);
-    
-    try {
-      // First, double-check if the voyage is expired (in case time passed during confirmation)
-      if (isVoyageExpired(ticketDetails)) {
-        setLoading(false);
-        displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
-        setShowConfirmation(false);
-        return;
-      }
+    // Check authentication before proceeding
+    checkAuthAndProceed(async () => {
+      setLoading(true);
       
-      // Use the correct endpoint for deletion - with numeric ID
-      if (ticketDetails && ticketDetails.id) {
-        await axios.delete(`${API_URL}/tickets/${ticketDetails.id}`, {
-          headers: {
-            Authorization: `Bearer ${useSessionToken()}`
-          }
-        });
+      try {
+        // First, double-check if the voyage is expired (in case time passed during confirmation)
+        if (isVoyageExpired(ticketDetails)) {
+          setLoading(false);
+          displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
+          setShowConfirmation(false);
+          return;
+        }
+        
+        // Use the correct endpoint for deletion - with numeric ID
+        if (ticketDetails && ticketDetails.id) {
+          await axios.delete(`${API_URL}/tickets/${ticketDetails.id}`, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
 
-        const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-cancelled`, null, {
-          params: {
-            ticketData: ticketDetails.selectedSeats,
-            voyageId: ticketDetails.voyageId
-          },
-          headers: {
-            Authorization: `Bearer ${useSessionToken()}`
-          }
-        });
-        
+          const seatSoldResponse2 = await axios.post(`${API_URL}/seats-sold/ticket-cancelled`, null, {
+            params: {
+              ticketData: ticketDetails.selectedSeats,
+              voyageId: ticketDetails.voyageId
+            },
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          
+          setLoading(false);
+          
+          // Show success message before redirecting
+          alert(t('ticketCancel.successMessage'));
+          
+          // Reset form and return to My Tickets
+          setTicketId("");
+          setReason("");
+          setShowConfirmation(false);
+          setTicketDetails(null);
+          navigate("/my-tickets");
+        } else {
+          throw new Error("Missing ticket ID for cancellation");
+        }
+      } catch (error) {
+        console.error("Error cancelling ticket:", error);
         setLoading(false);
-        
-        // Show success message before redirecting
-        alert(t('ticketCancel.successMessage'));
-        
-        // Reset form and return to My Tickets
-        setTicketId("");
-        setReason("");
-        setShowConfirmation(false);
-        setTicketDetails(null);
-        navigate("/my-tickets");
-      } else {
-        throw new Error("Missing ticket ID for cancellation");
+        displayError(t('ticketCancel.errorMessages.cancelError'));
       }
-    } catch (error) {
-      console.error("Error cancelling ticket:", error);
-      setLoading(false);
-      displayError(t('ticketCancel.errorMessages.cancelError'));
-    }
+    });
   };
 
   const navigateToContact = () => {

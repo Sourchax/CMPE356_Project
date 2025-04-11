@@ -391,26 +391,41 @@ const ManageUsers = () => {
             {deleteConfirm.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={handleDeleteCancel}
-                                disabled={isDeleting}
-                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {t('common.cancel')}
-                            </button>
-                            <button
-                                onClick={handleDeleteConfirm}
-                                disabled={isDeleting}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {isDeleting ? (
-                                    <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                        {t('manager.users.deleting')}
-                                    </>
-                                ) : t('manager.users.delete')}
-                            </button>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center text-red-600 gap-2 mb-2">
+                                <AlertTriangle size={24} />
+                                <h3 className="text-lg font-semibold">{t('manager.users.deleteConfirmation')}</h3>
+                            </div>
+                            
+                            <p className="text-gray-700">
+                                {t('manager.users.deleteConfirmationMessage')} <strong>{users.find(u => u.id === deleteConfirm.id)?.name}</strong>?
+                            </p>
+                            
+                            <p className="text-sm text-gray-500">
+                                {t('manager.users.deleteWarning')}
+                            </p>
+                            
+                            <div className="flex justify-end gap-3 mt-2">
+                                <button
+                                    onClick={handleDeleteCancel}
+                                    disabled={isDeleting}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {t('common.cancel')}
+                                </button>
+                                <button
+                                    onClick={handleDeleteConfirm}
+                                    disabled={isDeleting}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                            {t('manager.users.deleting')}
+                                        </>
+                                    ) : t('manager.users.delete')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

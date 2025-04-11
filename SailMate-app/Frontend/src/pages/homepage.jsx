@@ -546,7 +546,7 @@ const Homepage = () => {
       </section>
 
       {/* Custom text shadow for hero text */}
-      <style jsx>{`
+      <style>{`
         .hero-text-shadow {
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
         }
