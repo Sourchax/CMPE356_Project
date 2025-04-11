@@ -1144,7 +1144,25 @@
       "deleteWarning": "Are you sure you want to delete this log? This action cannot be undone.",
       "cancel": "Cancel",
       "unknown": "UNKNOWN",
-      "unknownUser": "Unknown User"
+      "unknownUser": "Unknown User",
+      "entities": {
+        "VOYAGE": "Voyage",
+        "TICKET": "Ticket",
+        "STATION": "Station",
+        "PRICE": "Price",
+        "ANNOUNCEMENT": "Announcement",
+        "COMPLAINT": "Complaint",
+        "NOTIFICATION": "Notification"
+      },
+      "actions": {
+        "CREATE": "Create",
+        "UPDATE": "Update",
+        "DELETE": "Delete",
+        "CANCEL": "Cancel",
+        "BROADCAST": "Broadcast",
+        "BULK_CREATE": "Bulk Create",
+        "READ": "Read"
+      }
     },
     "dashboard": {
       "greetings": {
