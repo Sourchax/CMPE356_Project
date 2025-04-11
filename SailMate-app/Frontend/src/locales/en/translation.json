@@ -1042,7 +1042,7 @@
       "edit": "Edit",
       "deleteConfirmation": "Delete Station",
       "deleteWarning": "Are you sure you want to delete this station? This action cannot be undone.",
-      "activeVoyagesWarning": "This station has active voyages and cannot be deleted.",
+      "activeVoyagesWarning": "This station has active voyages associated, removal of this station will affect all the voyages of it.",
       "loading": "Loading stations...",
       "error": "Failed to load stations. Please try again.",
       "saveError": "Failed to save station. Please check your input and try again.",
@@ -1695,7 +1695,12 @@
     },
     "buttons": {
       "addWeeklySchedule": "Add Weekly Schedule",
-      "addNewVoyage": "Add New Voyage"
+      "addNewVoyage": "Add New Voyage",
+      "cancelVoyage": "Cancel Voyage",
+      "editVoyage": "Edit Voyage",
+      "deleteVoyage": "Delete Voyage",
+      "cannotEditCompleted": "Completed voyages cannot be edited",
+      "cannotDeleteCompleted": "Completed voyages cannot be deleted"
     },
     "table": {
       "route": "Route",
@@ -1711,7 +1716,8 @@
       "to": "to",
       "of": "of",
       "results": "results",
-      "perPage": "per page"
+      "perPage": "per page",
+      "unknownStation": "Unknown Station"
     },
     "addModal": {
       "addTitle": "Add New Voyage",
@@ -1748,6 +1754,13 @@
       "fri": "Fri",
       "sat": "Sat",
       "sun": "Sun",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
       "shipType": "Ship Type",
       "lpgAvailable": "LPG Available",
       "cancel": "Cancel",
@@ -1809,6 +1822,10 @@
       "startDateRequired": "Start date is required",
       "daysRequired": "At least one day of week must be selected",
       "weeksRequired": "Number of weeks must be at least 1"
+    },
+    "shipTypes": {
+      "fastFerry": "Fast Ferry",
+      "seaBus": "Sea Bus"
     }
   }
 } 

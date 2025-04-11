@@ -1034,7 +1034,7 @@
       "edit": "Düzenle",
       "deleteConfirmation": "İstasyonu Sil",
       "deleteWarning": "Bu istasyonu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-      "activeVoyagesWarning": "Bu istasyona ait aktif seferler bulunmaktadır, bu istasyonun silinmesi tüm seferleri etkileyecektir.",
+      "activeVoyagesWarning": "Bu istasyona ait aktif seferler bulunmaktadır ve silinemez.",
       "loading": "İstasyonlar yükleniyor...",
       "error": "İstasyonlar yüklenemedi. Lütfen tekrar deneyin.",
       "saveError": "İstasyon kaydedilemedi. Lütfen girdilerinizi kontrol edip tekrar deneyin.",
@@ -1136,25 +1136,7 @@
       "deleteWarning": "Bu kaydı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
       "cancel": "İptal",
       "unknown": "Bilinmiyor",
-      "unknownUser": "Bilinmeyen Kullanıcı",
-      "entities": {
-        "VOYAGE": "Sefer",
-        "TICKET": "Bilet",
-        "STATION": "İstasyon",
-        "PRICE": "Fiyat",
-        "ANNOUNCEMENT": "Duyuru",
-        "COMPLAINT": "Şikayet",
-        "NOTIFICATION": "Bildirim"
-      },
-      "actions": {
-        "CREATE": "Oluştur",
-        "UPDATE": "Güncelle",
-        "DELETE": "Sil",
-        "CANCEL": "İptal Et",
-        "BROADCAST": "Yayınla",
-        "BULK_CREATE": "Toplu Oluştur",
-        "READ": "Oku"
-      }
+      "unknownUser": "Bilinmeyen Kullanıcı"
     },
     "dashboard": {
       "greetings": {
@@ -1212,6 +1194,35 @@
           "description": "Son sistem etkinliğini kontrol et"
         }
       }
+    },
+    "logs": {
+      "pageTitle": "Aktivite Logları",
+      "loading": "Aktivite logları yükleniyor...",
+      "error": "Aktivite logları yüklenirken hata oluştu",
+      "tryAgain": "Tekrar Dene",
+      "confirmDelete": "Silmeyi Onayla",
+      "deleteWarning": "Bu aktivite logunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "delete": "Sil",
+      "filters": "Filtreler",
+      "filterOptions": "Filtre Seçenekleri",
+      "userRoles": "Kullanıcı Rolleri",
+      "entityTypes": "Varlık Tipleri",
+      "actionTypes": "İşlem Tipleri",
+      "user": "Kullanıcı",
+      "role": "Rol",
+      "action": "İşlem",
+      "entity": "Varlık",
+      "details": "Detaylar",
+      "timestamp": "Zaman Damgası",
+      "unknownUser": "Bilinmeyen Kullanıcı",
+      "unknown": "Bilinmeyen",
+      "showDetails": "Detayları Görüntüle",
+      "noLogsFound": "Kriterlerinize uygun log bulunamadı",
+      "logDetails": "Log Detayları",
+      "fullDescription": "Açıklama",
+      "close": "Kapat",
+      "searchPlaceholder": "Loglarda ara..."
     }
   },
   "ferryTicketing": {
@@ -1851,53 +1862,35 @@
     "shipTypes": {
       "fastFerry": "Fast Ferry",
       "seaBus": "Sea Bus"
-    }
-  },
-  "logs": {
-    "pageTitle": "Aktivite Logları",
-    "loading": "Aktivite logları yükleniyor...",
-    "error": "Aktivite logları yüklenirken hata oluştu",
-    "tryAgain": "Tekrar Dene",
-    "confirmDelete": "Silmeyi Onayla",
-    "deleteWarning": "Bu aktivite logunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-    "cancel": "İptal",
-    "delete": "Sil",
-    "filters": "Filtreler",
-    "filterOptions": "Filtre Seçenekleri",
-    "userRoles": "Kullanıcı Rolleri",
-    "entityTypes": "Varlık Tipleri",
-    "actionTypes": "İşlem Tipleri",
-    "user": "Kullanıcı",
-    "role": "Rol",
-    "action": "İşlem",
-    "entity": "Varlık",
-    "details": "Detaylar",
-    "timestamp": "Zaman Damgası",
-    "unknownUser": "Bilinmeyen Kullanıcı",
-    "unknown": "Bilinmeyen",
-    "showDetails": "Detayları Görüntüle",
-    "noLogsFound": "Kriterlerinize uygun log bulunamadı",
-    "logDetails": "Log Detayları",
-    "fullDescription": "Açıklama",
-    "close": "Kapat",
-    "searchPlaceholder": "Loglarda ara...",
-    "entities": {
-      "VOYAGE": "Sefer",
-      "TICKET": "Bilet",
-      "STATION": "İstasyon",
-      "PRICE": "Fiyat",
-      "ANNOUNCEMENT": "Duyuru",
-      "COMPLAINT": "Şikayet",
-      "NOTIFICATION": "Bildirim"
     },
-    "actions": {
-      "CREATE": "Oluştur",
-      "UPDATE": "Güncelle",
-      "DELETE": "Sil",
-      "CANCEL": "İptal Et",
-      "BROADCAST": "Yayınla",
-      "BULK_CREATE": "Toplu Oluştur",
-      "READ": "Oku"
+    "logs": {
+      "pageTitle": "Aktivite Logları",
+      "loading": "Aktivite logları yükleniyor...",
+      "error": "Aktivite logları yüklenirken hata oluştu",
+      "tryAgain": "Tekrar Dene",
+      "confirmDelete": "Silmeyi Onayla",
+      "deleteWarning": "Bu aktivite logunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "delete": "Sil",
+      "filters": "Filtreler",
+      "filterOptions": "Filtre Seçenekleri",
+      "userRoles": "Kullanıcı Rolleri",
+      "entityTypes": "Varlık Tipleri",
+      "actionTypes": "İşlem Tipleri",
+      "user": "Kullanıcı",
+      "role": "Rol",
+      "action": "İşlem",
+      "entity": "Varlık",
+      "details": "Detaylar",
+      "timestamp": "Zaman Damgası",
+      "unknownUser": "Bilinmeyen Kullanıcı",
+      "unknown": "Bilinmeyen",
+      "showDetails": "Detayları Görüntüle",
+      "noLogsFound": "Kriterlerinize uygun log bulunamadı",
+      "logDetails": "Log Detayları",
+      "fullDescription": "Açıklama",
+      "close": "Kapat",
+      "searchPlaceholder": "Loglarda ara..."
     }
   }
 } 

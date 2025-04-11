@@ -5,7 +5,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 const AdminLogs = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -178,14 +178,15 @@ const AdminLogs = () => {
 
     const formatDateTime = (dateTimeStr) => {
         const date = new Date(dateTimeStr);
-        return date.toLocaleString('en-GB', {
+        const locale = i18n.language === 'tr' ? 'tr-TR' : 'en-GB';
+        return date.toLocaleString(locale, {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: true
+            hour12: locale === 'en-GB'
         });
     };
 
@@ -382,7 +383,7 @@ const AdminLogs = () => {
                                                     }`}
                                                     onClick={() => handleEntityTypeFilter(type)}
                                                 >
-                                                    {type}
+                                                    {t(`admin.logs.entities.${type}`, { defaultValue: type })}
                                                 </label>
                                             ))}
                                         </div>
@@ -402,7 +403,7 @@ const AdminLogs = () => {
                                                     }`}
                                                     onClick={() => handleActionTypeFilter(type)}
                                                 >
-                                                    {type}
+                                                    {t(`admin.logs.actions.${type}`, { defaultValue: type })}
                                                 </label>
                                             ))}
                                         </div>
@@ -447,12 +448,12 @@ const AdminLogs = () => {
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
-                                                    {log.actionType || t("admin.logs.unknown")}
+                                                    {log.actionType ? t(`admin.logs.actions.${log.actionType}`, { defaultValue: log.actionType }) : t("admin.logs.unknown")}
                                                 </span>
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
-                                                    {log.entityType || t("admin.logs.unknown")}
+                                                    {log.entityType ? t(`admin.logs.entities.${log.entityType}`, { defaultValue: log.entityType }) : t("admin.logs.unknown")}
                                                 </span>
                                             </td>
                                             <td className="p-4">
@@ -523,11 +524,11 @@ const AdminLogs = () => {
                                 
                                 <div className="flex flex-wrap gap-2 my-2">
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getActionTypeBadgeStyle(log.actionType)}`}>
-                                        {log.actionType || t("admin.logs.unknown")}
+                                        {log.actionType ? t(`admin.logs.actions.${log.actionType}`, { defaultValue: log.actionType }) : t("admin.logs.unknown")}
                                     </span>
                                     
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getEntityTypeBadgeStyle(log.entityType)}`}>
-                                        {log.entityType || t("admin.logs.unknown")}
+                                        {log.entityType ? t(`admin.logs.entities.${log.entityType}`, { defaultValue: log.entityType }) : t("admin.logs.unknown")}
                                     </span>
                                 </div>
                                 
@@ -590,13 +591,13 @@ const AdminLogs = () => {
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">{t("admin.logs.action")}</p>
                                     <p className={`${getActionTypeBadgeStyle(selectedLogDetails.actionType)} p-2 rounded-lg text-center text-sm`}>
-                                        {selectedLogDetails.actionType || t("admin.logs.unknown")}
+                                        {selectedLogDetails.actionType ? t(`admin.logs.actions.${selectedLogDetails.actionType}`, { defaultValue: selectedLogDetails.actionType }) : t("admin.logs.unknown")}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">{t("admin.logs.entity")}</p>
                                     <p className={`${getEntityTypeBadgeStyle(selectedLogDetails.entityType)} p-2 rounded-lg text-center text-sm`}>
-                                        {selectedLogDetails.entityType || t("admin.logs.unknown")}
+                                        {selectedLogDetails.entityType ? t(`admin.logs.entities.${selectedLogDetails.entityType}`, { defaultValue: selectedLogDetails.entityType }) : t("admin.logs.unknown")}
                                     </p>
                                 </div>
                             </div>

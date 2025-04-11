@@ -4,9 +4,17 @@ import { useSessionToken } from "../../utils/sessions";
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 
 // API Service for interacting with the backend
 const API_BASE_URL = 'http://localhost:8080/api';
+
+// Constants for voyage statuses
+const VOYAGE_STATUS = {
+  ACTIVE: 'active',
+  CANCEL: 'cancel',
+  COMPLETED: 'completed'
+};
 
 const voyageService = {
   // Get all voyages with optional filters
@@ -182,8 +190,8 @@ const AdminVoyage = () => {
     departureTime: '',
     arrivalTime: '',
     departureDate: '',
-    status: 'active',
-    shipType: 'Fast Ferry',
+    status: VOYAGE_STATUS.ACTIVE,
+    shipType: t('adminVoyage.shipTypes.fastFerry'),
     fuelType: false,
   });
   
@@ -196,7 +204,7 @@ const AdminVoyage = () => {
     daysOfWeek: [],
     numberOfWeeks: 4,
     startDate: new Date().toISOString().substr(0, 10),
-    shipType: 'Fast Ferry',
+    shipType: t('adminVoyage.shipTypes.fastFerry'),
     fuelType: false,
   });
   
@@ -272,13 +280,13 @@ const AdminVoyage = () => {
       
       // Check if voyage is completed
       if (isVoyageCompleted(voyage)) {
-        processedVoyage.status = "completed";
+        processedVoyage.status = VOYAGE_STATUS.COMPLETED;
         processedVoyage.canEdit = false;
         processedVoyage.canDelete = false;
-      } else if (voyage.status === "active") {
+      } else if (voyage.status === VOYAGE_STATUS.ACTIVE) {
         processedVoyage.canEdit = true;
         processedVoyage.canDelete = false; // Active voyages can't be deleted directly
-      } else if (voyage.status === "cancel") {
+      } else if (voyage.status === VOYAGE_STATUS.CANCEL) {
         processedVoyage.canEdit = true;
         processedVoyage.canDelete = true; // Only cancelled voyages can be deleted
       }
@@ -350,13 +358,13 @@ const applyFilters = () => {
     let apiStatus;
     switch(filters.status) {
       case 'normal':
-        apiStatus = 'active';
+        apiStatus = VOYAGE_STATUS.ACTIVE;
         break;
       case 'cancelled':
-        apiStatus = 'cancel';
+        apiStatus = VOYAGE_STATUS.CANCEL;
         break;
       case 'completed':
-        apiStatus = 'completed';
+        apiStatus = VOYAGE_STATUS.COMPLETED;
         break;
       default:
         apiStatus = filters.status;
@@ -442,8 +450,8 @@ const applyFilters = () => {
       departureTime: '',
       arrivalTime: '',
       departureDate: new Date().toISOString().substr(0, 10),
-      status: 'active',
-      shipType: 'Fast Ferry',
+      status: VOYAGE_STATUS.ACTIVE,
+      shipType: t('adminVoyage.shipTypes.fastFerry'),
       fuelType: false,
     });
     setIsModalOpen(true);
@@ -453,7 +461,7 @@ const applyFilters = () => {
   // Open modal for editing voyage
   const openEditModal = (voyage) => {
     // Don't allow editing of completed voyages
-    if (voyage.status === 'completed') {
+    if (voyage.status === VOYAGE_STATUS.COMPLETED) {
       showAlert('error', t('adminVoyage.alerts.cannotEditCompleted'));
       return;
     }
@@ -465,7 +473,7 @@ const applyFilters = () => {
       ...voyage,
       departureDate: voyage.departureDate,
       // Convert API status to UI status
-      status: voyage.status === 'active' ? 'active' : 'cancel'
+      status: voyage.status === VOYAGE_STATUS.ACTIVE ? VOYAGE_STATUS.ACTIVE : VOYAGE_STATUS.CANCEL
     };
     
     setCurrentVoyage(formattedVoyage);
@@ -483,7 +491,7 @@ const applyFilters = () => {
       daysOfWeek: [],
       numberOfWeeks: 4,
       startDate: new Date().toISOString().substr(0, 10),
-      shipType: 'Fast Ferry',
+      shipType: t('adminVoyage.shipTypes.fastFerry'),
       fuelType: false,
     });
     setIsWeeklyScheduleModalOpen(true);
@@ -594,6 +602,7 @@ const applyFilters = () => {
 
   // Format voyage data for API
   const formatVoyageForAPI = (voyage) => {
+    const isFastFerry = voyage.shipType === t('adminVoyage.shipTypes.fastFerry');
     return {
       id: voyage.id,
       fromStationId: parseInt(voyage.fromStationId),
@@ -604,9 +613,9 @@ const applyFilters = () => {
       status: voyage.status,
       shipType: voyage.shipType,
       fuelType: voyage.fuelType,
-      businessSeats: voyage.shipType === "Fast Ferry" ? 50 : 30,
-      promoSeats: voyage.shipType === "Fast Ferry" ?  100: 60,
-      economySeats: voyage.shipType === "Fast Ferry" ?  100: 60,
+      businessSeats: isFastFerry ? 50 : 30,
+      promoSeats: isFastFerry ? 100 : 60,
+      economySeats: isFastFerry ? 100 : 60,
     };
   };
   
@@ -799,7 +808,7 @@ const applyFilters = () => {
       todayStart.setHours(0, 0, 0, 0);
       
       if (scheduleDate < todayStart) {
-        errors.startDate = 'Start date cannot be in the past';
+        errors.startDate = t('adminVoyage.validation.pastDate');
       }
       
       // If the schedule starts today, validate that the time is not in the past
@@ -944,6 +953,8 @@ const applyFilters = () => {
       
       // Loop through each day between start and end date
       let currentDate = new Date(startDate);
+      const isFastFerry = weeklySchedule.shipType === t('adminVoyage.shipTypes.fastFerry');
+      
       while (currentDate < endDate) {
         // Check if this day of week is selected
         const dayOfWeek = currentDate.getDay().toString();
@@ -955,12 +966,12 @@ const applyFilters = () => {
             departureDate: currentDate.toISOString().split('T')[0],
             departureTime: weeklySchedule.departureTime,
             arrivalTime: weeklySchedule.arrivalTime,
-            status: 'active',
+            status: VOYAGE_STATUS.ACTIVE,
             shipType: weeklySchedule.shipType,
             fuelType: weeklySchedule.fuelType,
-            businessSeats: weeklySchedule.shipType === "Fast Ferry" ? 50 : 30,
-            promoSeats: weeklySchedule.shipType === "Fast Ferry" ?  100: 60,
-            economySeats: weeklySchedule.shipType === "Fast Ferry" ?  100: 60,
+            businessSeats: isFastFerry ? 50 : 30,
+            promoSeats: isFastFerry ? 100 : 60,
+            economySeats: isFastFerry ? 100 : 60,
           });
         }
         
@@ -1011,10 +1022,10 @@ const applyFilters = () => {
   // Open delete confirmation
   const openDeleteConfirmation = (voyage) => {
     // Only allow deletion of cancelled voyages, not completed ones
-    if (voyage.status === 'cancel') {
+    if (voyage.status === VOYAGE_STATUS.CANCEL) {
       setVoyageToDelete(voyage);
       setDeleteModalOpen(true);
-    } else if (voyage.status === 'completed') {
+    } else if (voyage.status === VOYAGE_STATUS.COMPLETED) {
       showAlert('error', t('adminVoyage.alerts.cannotDeleteCompleted'));
     }
   };
@@ -1043,7 +1054,7 @@ const applyFilters = () => {
     if (station) {
       return `${station.city} - ${station.title}`;
     }
-    return 'Unknown Station';
+    return t('adminVoyage.table.unknownStation');
   };
   
   // Format date for display
@@ -1051,17 +1062,17 @@ const applyFilters = () => {
     if (!dateString) return '';
     
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    return new Date(dateString).toLocaleDateString(i18next.language || 'en', options);
   };
   
   // Map status from API to UI display
   const mapStatusToUI = (status) => {
     switch(status) {
-      case 'active':
+      case VOYAGE_STATUS.ACTIVE:
         return t('adminVoyage.filters.normal');
-      case 'cancel':
+      case VOYAGE_STATUS.CANCEL:
         return t('adminVoyage.filters.cancelled');
-      case 'completed':
+      case VOYAGE_STATUS.COMPLETED:
         return t('adminVoyage.filters.completed');
       default:
         return status;
@@ -1070,17 +1081,17 @@ const applyFilters = () => {
   
   // Generate days of week options for weekly schedule
   const daysOfWeek = [
-    { value: '1', label: 'Monday' },
-    { value: '2', label: 'Tuesday' },
-    { value: '3', label: 'Wednesday' },
-    { value: '4', label: 'Thursday' },
-    { value: '5', label: 'Friday' },
-    { value: '6', label: 'Saturday' },
-    { value: '0', label: 'Sunday' }
+    { value: '1', label: t('adminVoyage.weeklyModal.monday') },
+    { value: '2', label: t('adminVoyage.weeklyModal.tuesday') },
+    { value: '3', label: t('adminVoyage.weeklyModal.wednesday') },
+    { value: '4', label: t('adminVoyage.weeklyModal.thursday') },
+    { value: '5', label: t('adminVoyage.weeklyModal.friday') },
+    { value: '6', label: t('adminVoyage.weeklyModal.saturday') },
+    { value: '0', label: t('adminVoyage.weeklyModal.sunday') }
   ];
   
   // Ship types
-  const shipTypes = ['Fast Ferry', 'Sea Bus'];
+  const shipTypes = [t('adminVoyage.shipTypes.fastFerry'), t('adminVoyage.shipTypes.seaBus')];
   return (
      <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
@@ -1248,9 +1259,9 @@ const applyFilters = () => {
                   {currentVoyages.length > 0 ? (
                     currentVoyages.map((voyage) => (
                       <tr key={voyage.id} className={
-                        voyage.status === 'cancel' 
+                        voyage.status === VOYAGE_STATUS.CANCEL 
                           ? 'bg-red-50' 
-                          : voyage.status === 'completed'
+                          : voyage.status === VOYAGE_STATUS.COMPLETED
                             ? 'bg-gray-50'
                             : ''
                       }>
@@ -1267,9 +1278,9 @@ const applyFilters = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${voyage.status === 'active' 
+                            ${voyage.status === VOYAGE_STATUS.ACTIVE 
                               ? 'bg-green-100 text-green-800' 
-                              : voyage.status === 'cancel'
+                              : voyage.status === VOYAGE_STATUS.CANCEL
                                 ? 'bg-red-100 text-red-800'
                                 : 'bg-gray-100 text-gray-800'}`}>
                             {mapStatusToUI(voyage.status)}
@@ -1289,40 +1300,40 @@ const applyFilters = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
-                            {voyage.status === 'active' && (
+                            {voyage.status === VOYAGE_STATUS.ACTIVE && (
                               <button 
                                 onClick={() => openCancelConfirmation(voyage)}
                                 className="text-yellow-600 hover:text-yellow-900"
-                                title="Cancel Voyage"
+                                title={t('adminVoyage.buttons.cancelVoyage')}
                               >
                                 <X size={18} />
                               </button>
                             )}
-                            {(voyage.status === 'active' || voyage.status === 'cancel') && (
+                            {(voyage.status === VOYAGE_STATUS.ACTIVE || voyage.status === VOYAGE_STATUS.CANCEL) && (
                               <button 
                                 onClick={() => openEditModal(voyage)}
                                 className="text-[#06AED5] hover:text-[#058aaa]"
-                                title="Edit Voyage"
-                                disabled={voyage.status === 'completed'}
+                                title={t('adminVoyage.buttons.editVoyage')}
+                                disabled={voyage.status === VOYAGE_STATUS.COMPLETED}
                               >
                                 <Edit size={18} />
                               </button>
                             )}
-                            {voyage.status === 'cancel' && (
+                            {voyage.status === VOYAGE_STATUS.CANCEL && (
                               <button 
                                 onClick={() => openDeleteConfirmation(voyage)}
                                 className="text-red-600 hover:text-red-900"
-                                title="Delete Voyage"
+                                title={t('adminVoyage.buttons.deleteVoyage')}
                               >
                                 <Trash2 size={18} />
                               </button>
                             )}
-                            {voyage.status === 'completed' && (
+                            {voyage.status === VOYAGE_STATUS.COMPLETED && (
                               <>
-                                <span className="text-gray-400" title="Completed voyages cannot be edited">
+                                <span className="text-gray-400" title={t('adminVoyage.buttons.cannotEditCompleted')}>
                                   <Edit size={18} />
                                 </span>
-                                <span className="text-gray-400" title="Completed voyages cannot be deleted">
+                                <span className="text-gray-400" title={t('adminVoyage.buttons.cannotDeleteCompleted')}>
                                   <Trash2 size={18} />
                                 </span>
                               </>
