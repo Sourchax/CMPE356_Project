@@ -1081,13 +1081,13 @@ const applyFilters = () => {
   
   // Generate days of week options for weekly schedule
   const daysOfWeek = [
-    { value: '1', label: t('adminVoyage.weeklyModal.monday') },
-    { value: '2', label: t('adminVoyage.weeklyModal.tuesday') },
-    { value: '3', label: t('adminVoyage.weeklyModal.wednesday') },
-    { value: '4', label: t('adminVoyage.weeklyModal.thursday') },
-    { value: '5', label: t('adminVoyage.weeklyModal.friday') },
-    { value: '6', label: t('adminVoyage.weeklyModal.saturday') },
-    { value: '0', label: t('adminVoyage.weeklyModal.sunday') }
+    { value: '1', label: 'monday', shortLabel: 'mon' },
+    { value: '2', label: 'tuesday', shortLabel: 'tue' },
+    { value: '3', label: 'wednesday', shortLabel: 'wed' },
+    { value: '4', label: 'thursday', shortLabel: 'thu' },
+    { value: '5', label: 'friday', shortLabel: 'fri' },
+    { value: '6', label: 'saturday', shortLabel: 'sat' },
+    { value: '0', label: 'sunday', shortLabel: 'sun' }
   ];
   
   // Ship types
@@ -1851,7 +1851,7 @@ const applyFilters = () => {
                           className="h-4 w-4 text-[#06AED5] border-gray-300 rounded focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                         />
                         <label htmlFor={`day-${day.value}`} className="ml-2 text-sm text-gray-700">
-                          {t(`adminVoyage.weeklyModal.${day.label.substr(0, 3).toLowerCase()}`)}
+                          {t(`adminVoyage.weeklyModal.${day.shortLabel}`)}
                         </label>
                       </div>
                     ))}
