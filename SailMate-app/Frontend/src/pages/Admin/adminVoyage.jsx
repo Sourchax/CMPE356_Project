@@ -3,6 +3,7 @@ import { Trash2, Edit, Plus, Search, X, Check, RefreshCcw, AlertCircle, Calendar
 import { useSessionToken } from "../../utils/sessions";
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 // API Service for interacting with the backend
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -136,6 +137,7 @@ const voyageService = {
 };
 
 const AdminVoyage = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   // State management
   const [voyages, setVoyages] = useState([]);
@@ -256,9 +258,9 @@ const AdminVoyage = () => {
       
       setIsLoading(false);
     } catch (err) {
-      setError('Failed to fetch voyages');
+      setError(t('adminVoyage.alerts.failedToLoad'));
       setIsLoading(false);
-      showAlert('error', 'Failed to load voyages. Please try again.');
+      showAlert('error', t('adminVoyage.alerts.failedToLoad'));
     }
   };
   
@@ -291,7 +293,7 @@ const AdminVoyage = () => {
       const data = await voyageService.getStations();
       setStations(data);
     } catch (err) {
-      showAlert('error', 'Failed to load stations. Please try again.');
+      showAlert('error', t('adminVoyage.alerts.failedToLoadStations'));
     }
   };
   const isVoyageCompleted = (voyage) => {
@@ -452,7 +454,7 @@ const applyFilters = () => {
   const openEditModal = (voyage) => {
     // Don't allow editing of completed voyages
     if (voyage.status === 'completed') {
-      showAlert('error', 'Completed voyages cannot be edited');
+      showAlert('error', t('adminVoyage.alerts.cannotEditCompleted'));
       return;
     }
     
@@ -614,28 +616,28 @@ const applyFilters = () => {
     
     // Required fields validation
     if (!voyage.fromStationId) {
-      errors.fromStationId = 'Departure station is required';
+      errors.fromStationId = t('adminVoyage.validation.departureRequired');
     }
     
     if (!voyage.toStationId) {
-      errors.toStationId = 'Arrival station is required';
+      errors.toStationId = t('adminVoyage.validation.arrivalRequired');
     }
     
     if (!voyage.departureTime) {
-      errors.departureTime = 'Departure time is required';
+      errors.departureTime = t('adminVoyage.validation.departureTimeRequired');
     }
     
     if (!voyage.arrivalTime) {
-      errors.arrivalTime = 'Arrival time is required';
+      errors.arrivalTime = t('adminVoyage.validation.arrivalTimeRequired');
     }
     
     if (!voyage.departureDate) {
-      errors.departureDate = 'Date is required';
+      errors.departureDate = t('adminVoyage.validation.dateRequired');
     }
     
     // Logical validations
     if (voyage.fromStationId && voyage.toStationId && voyage.fromStationId === voyage.toStationId) {
-      errors.toStationId = 'Departure and arrival stations cannot be the same';
+      errors.toStationId = t('adminVoyage.validation.stationsSame');
     }
     
     if (voyage.departureTime && voyage.arrivalTime) {
@@ -654,7 +656,7 @@ const applyFilters = () => {
       }
       
       if (timeDiffMinutes < 40) {
-        errors.arrivalTime = 'Voyage must be at least 40 minutes long';
+        errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
       }
     }
     
@@ -666,7 +668,7 @@ const applyFilters = () => {
       todayStart.setHours(0, 0, 0, 0);
       
       if (voyageDate < todayStart) {
-        errors.departureDate = 'Voyage date cannot be in the past';
+        errors.departureDate = t('adminVoyage.validation.pastDate');
       }
 
       if (voyage.departureDate) {
@@ -680,9 +682,9 @@ const applyFilters = () => {
         oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
         
         if (voyageDate < todayStart) {
-          errors.departureDate = 'Voyage date cannot be in the past';
+          errors.departureDate = t('adminVoyage.validation.pastDate');
         } else if (voyageDate > oneYearFromNow) {
-          errors.departureDate = 'Voyage date cannot be more than one year in the future';
+          errors.departureDate = t('adminVoyage.validation.futureTooFar');
         }
       }
 
@@ -697,7 +699,7 @@ const applyFilters = () => {
           const currentMinute = today.getMinutes();
           
           if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
-            errors.departureTime = 'Departure time must be in the future for today\'s voyages';
+            errors.departureTime = t('adminVoyage.validation.pastDepartureToday');
           }
         }
         
@@ -707,7 +709,7 @@ const applyFilters = () => {
           const currentMinute = today.getMinutes();
           
           if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
-            errors.arrivalTime = 'Arrival time must be in the future for today\'s voyages';
+            errors.arrivalTime = t('adminVoyage.validation.pastArrivalToday');
           }
         }
       }
@@ -722,36 +724,36 @@ const applyFilters = () => {
     
     // Required fields validation
     if (!schedule.fromStationId) {
-      errors.fromStationId = 'Departure station is required';
+      errors.fromStationId = t('adminVoyage.validation.departureRequired');
     }
     
     if (!schedule.toStationId) {
-      errors.toStationId = 'Arrival station is required';
+      errors.toStationId = t('adminVoyage.validation.arrivalRequired');
     }
     
     if (!schedule.departureTime) {
-      errors.departureTime = 'Departure time is required';
+      errors.departureTime = t('adminVoyage.validation.departureTimeRequired');
     }
     
     if (!schedule.arrivalTime) {
-      errors.arrivalTime = 'Arrival time is required';
+      errors.arrivalTime = t('adminVoyage.validation.arrivalTimeRequired');
     }
     
     if (!schedule.startDate) {
-      errors.startDate = 'Start date is required';
+      errors.startDate = t('adminVoyage.validation.startDateRequired');
     }
     
     if (schedule.daysOfWeek.length === 0) {
-      errors.daysOfWeek = 'At least one day of week must be selected';
+      errors.daysOfWeek = t('adminVoyage.validation.daysRequired');
     }
     
     if (!schedule.numberOfWeeks || schedule.numberOfWeeks < 1) {
-      errors.numberOfWeeks = 'Number of weeks must be at least 1';
+      errors.numberOfWeeks = t('adminVoyage.validation.weeksRequired');
     }
     
     // Logical validations
     if (schedule.fromStationId && schedule.toStationId && schedule.fromStationId === schedule.toStationId) {
-      errors.toStationId = 'Departure and arrival stations cannot be the same';
+      errors.toStationId = t('adminVoyage.validation.stationsSame');
     }
     
     if (schedule.departureTime && schedule.arrivalTime) {
@@ -770,7 +772,7 @@ const applyFilters = () => {
       }
       
       if (timeDiffMinutes < 40) {
-        errors.arrivalTime = 'Voyage must be at least 40 minutes long';
+        errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
       }
     }
     if (schedule.startDate) {
@@ -784,9 +786,9 @@ const applyFilters = () => {
       oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
       
       if (scheduleDate < todayStart) {
-        errors.startDate = 'Start date cannot be in the past';
+        errors.startDate = t('adminVoyage.validation.pastDate');
       } else if (scheduleDate > oneYearFromNow) {
-        errors.startDate = 'Start date cannot be more than one year in the future';
+        errors.startDate = t('adminVoyage.validation.futureTooFar');
       }
     }
     // Date validation - ensure start date is not in the past
@@ -811,7 +813,7 @@ const applyFilters = () => {
           const currentMinute = today.getMinutes();
           
           if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
-            errors.departureTime = 'Departure time must be in the future for today\'s voyages';
+            errors.departureTime = t('adminVoyage.validation.pastDepartureToday');
           }
         }
         
@@ -821,7 +823,7 @@ const applyFilters = () => {
           const currentMinute = today.getMinutes();
           
           if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
-            errors.arrivalTime = 'Arrival time must be in the future for today\'s voyages';
+            errors.arrivalTime = t('adminVoyage.validation.pastArrivalToday');
           }
         }
       }
@@ -839,7 +841,7 @@ const applyFilters = () => {
         const serverVoyage = response.find(v => v.id === currentVoyage.id);
         
         if (serverVoyage && isVoyageCompleted(serverVoyage)) {
-          showAlert('error', 'This voyage has been completed and cannot be modified.');
+          showAlert('error', t('adminVoyage.alerts.cannotEditCompleted'));
           closeModal();
           await fetchVoyages(); // Refresh the list to show updated status
           return;
@@ -867,7 +869,7 @@ const applyFilters = () => {
         if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
           setValidationErrors(prev => ({
             ...prev,
-            departureTime: "You cannot select a past time for today's voyage"
+            departureTime: t('adminVoyage.validation.pastTimeToday')
           }));
           return;
         }
@@ -882,7 +884,7 @@ const applyFilters = () => {
         if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
           setValidationErrors(prev => ({
             ...prev,
-            arrivalTime: "You cannot select a past time for today's voyage"
+            arrivalTime: t('adminVoyage.validation.pastTimeToday')
           }));
           return;
         }
@@ -904,11 +906,11 @@ const applyFilters = () => {
       if (isEditing) {
         // Update existing voyage
         await voyageService.updateVoyage(currentVoyage.id, formattedVoyage);
-        showAlert('success', 'Voyage updated successfully');
+        showAlert('success', t('adminVoyage.alerts.voyageUpdated'));
       } else {
         // Add new voyage
         await voyageService.createVoyage(formattedVoyage);
-        showAlert('success', 'Voyage created successfully');
+        showAlert('success', t('adminVoyage.alerts.voyageCreated'));
       }
       
       // Refresh voyages list
@@ -916,7 +918,7 @@ const applyFilters = () => {
       setValidationErrors({});
       closeModal();
     } catch (error) {
-      showAlert('error', `Failed to ${isEditing ? 'update' : 'create'} voyage. Please try again.`);
+      showAlert('error', t(isEditing ? 'adminVoyage.alerts.failedToUpdate' : 'adminVoyage.alerts.failedToCreate'));
     } finally {
       setIsLoading(false);
     }
@@ -968,14 +970,14 @@ const applyFilters = () => {
       
       // Send bulk create request
       const result = await voyageService.createWeeklySchedule(voyagesToCreate);
-      showAlert('success', `Created ${result.createdCount} voyages successfully`);
+      showAlert('success', t('adminVoyage.alerts.weeklyCreated', { count: result.createdCount }));
       
       // Refresh voyages list
       await fetchVoyages();
       setValidationErrors({});
       closeModal();
     } catch (error) {
-      showAlert('error', 'Failed to create weekly schedule. Please try again.');
+      showAlert('error', t('adminVoyage.alerts.failedToCreateWeekly'));
     } finally {
       setIsLoading(false);
     }
@@ -995,12 +997,12 @@ const applyFilters = () => {
       setIsLoading(true);
       try {
         await voyageService.cancelVoyage(voyageToCancel.id);
-        showAlert('success', 'Voyage cancelled successfully');
+        showAlert('success', t('adminVoyage.alerts.voyageCancelled'));
         await fetchVoyages();
         setCancelModalOpen(false);
         setVoyageToCancel(null);
       } catch (error) {
-        showAlert('error', 'Failed to cancel voyage. Please try again.');
+        showAlert('error', t('adminVoyage.alerts.failedToCancel'));
       } finally {
         setIsLoading(false);
       }
@@ -1013,7 +1015,7 @@ const applyFilters = () => {
       setVoyageToDelete(voyage);
       setDeleteModalOpen(true);
     } else if (voyage.status === 'completed') {
-      showAlert('error', 'Completed voyages cannot be deleted');
+      showAlert('error', t('adminVoyage.alerts.cannotDeleteCompleted'));
     }
   };
 
@@ -1023,12 +1025,12 @@ const applyFilters = () => {
       setIsLoading(true);
       try {
         await voyageService.deleteVoyage(voyageToDelete.id);
-        showAlert('success', 'Voyage deleted successfully');
+        showAlert('success', t('adminVoyage.alerts.voyageDeleted'));
         await fetchVoyages();
         setDeleteModalOpen(false);
         setVoyageToDelete(null);
       } catch (error) {
-        showAlert('error', 'Failed to delete voyage. Please try again.');
+        showAlert('error', t('adminVoyage.alerts.failedToDelete'));
       } finally {
         setIsLoading(false);
       }
@@ -1056,11 +1058,11 @@ const applyFilters = () => {
   const mapStatusToUI = (status) => {
     switch(status) {
       case 'active':
-        return 'normal';
+        return t('adminVoyage.filters.normal');
       case 'cancel':
-        return 'cancelled';
+        return t('adminVoyage.filters.cancelled');
       case 'completed':
-        return 'completed';
+        return t('adminVoyage.filters.completed');
       default:
         return status;
     }
@@ -1082,7 +1084,7 @@ const applyFilters = () => {
   return (
      <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Voyage Management</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">{t('adminVoyage.title')}</h1>
         
         {/* Alert notification */}
         {alert.show && (
@@ -1096,21 +1098,21 @@ const applyFilters = () => {
         {/* Filter and add section */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between mb-4">
-            <h2 className="text-xl font-semibold mb-4 lg:mb-0">Filters</h2>
+            <h2 className="text-xl font-semibold mb-4 lg:mb-0">{t('adminVoyage.filters.title')}</h2>
             <div className="flex space-x-2">
               <button 
                 onClick={openWeeklyScheduleModal}
                 className="bg-[#06AED5] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-[#058aaa] transition"
               >
                 <Calendar size={18} className="mr-2" />
-                Add Weekly Schedule
+                {t('adminVoyage.buttons.addWeeklySchedule')}
               </button>
               <button 
                 onClick={openAddModal}
                 className="bg-[#06AED5] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-[#058aaa] transition"
               >
                 <Plus size={18} className="mr-2" />
-                Add New Voyage
+                {t('adminVoyage.buttons.addNewVoyage')}
               </button>
             </div>
           </div>
@@ -1123,7 +1125,7 @@ const applyFilters = () => {
                 onChange={handleStationFilterChange}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
-                <option value="">All Departure Stations</option>
+                <option value="">{t('adminVoyage.filters.allDepartureStations')}</option>
                 {stations.map(station => (
                   <option key={`from-${station.id}`} value={station.id}>
                     {station.title}
@@ -1139,7 +1141,7 @@ const applyFilters = () => {
                 onChange={handleStationFilterChange}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
-                <option value="">All Arrival Stations</option>
+                <option value="">{t('adminVoyage.filters.allArrivalStations')}</option>
                 {stations.map(station => (
                   <option key={`to-${station.id}`} value={station.id}>
                     {station.title}
@@ -1165,10 +1167,10 @@ const applyFilters = () => {
                 onChange={handleFilterChange}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
-                <option value="">All Statuses</option>
-                <option value="normal">Normal</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="completed">Completed</option>
+                <option value="">{t('adminVoyage.filters.allStatuses')}</option>
+                <option value="normal">{t('adminVoyage.filters.normal')}</option>
+                <option value="cancelled">{t('adminVoyage.filters.cancelled')}</option>
+                <option value="completed">{t('adminVoyage.filters.completed')}</option>
               </select>
             </div>
             
@@ -1179,7 +1181,7 @@ const applyFilters = () => {
                 onChange={handleFilterChange}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
-                <option value="">All Ship Types</option>
+                <option value="">{t('adminVoyage.filters.allShipTypes')}</option>
                 {shipTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -1195,9 +1197,9 @@ const applyFilters = () => {
                 onChange={handleFilterChange}
                 className="rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
               >
-                <option value="">All Fuel Types</option>
-                <option value="true">LPG Available</option>
-                <option value="false">No LPG</option>
+                <option value="">{t('adminVoyage.filters.allFuelTypes')}</option>
+                <option value="true">{t('adminVoyage.filters.lpgAvailable')}</option>
+                <option value="false">{t('adminVoyage.filters.noLPG')}</option>
               </select>
             </div>
             
@@ -1206,7 +1208,7 @@ const applyFilters = () => {
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
               <RefreshCcw size={16} className="mr-1" />
-              Reset Filters
+              {t('adminVoyage.filters.resetFilters')}
             </button>
           </div>
         </div>
@@ -1232,14 +1234,14 @@ const applyFilters = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-[#06AED5]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Route</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Time</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tickets Sold</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Ship Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">LPG</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.route')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.time')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.date')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.status')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.ticketsSold')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.shipType')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.lpg')}</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">{t('adminVoyage.table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -1332,7 +1334,7 @@ const applyFilters = () => {
                   ) : (
                     <tr>
                       <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                        No voyages found matching your filters
+                        {t('adminVoyage.table.noVoyagesFound')}
                       </td>
                     </tr>
                   )}
@@ -1343,11 +1345,11 @@ const applyFilters = () => {
                   <div className="flex-1 flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-700">
-                        Showing <span className="font-medium">{indexOfFirstVoyage + 1}</span> to{" "}
+                        {t('adminVoyage.table.showing')} <span className="font-medium">{indexOfFirstVoyage + 1}</span> {t('adminVoyage.table.to')}{" "}
                         <span className="font-medium">
                           {Math.min(indexOfLastVoyage, filteredVoyages.length)}
                         </span>{" "}
-                        of <span className="font-medium">{filteredVoyages.length}</span> results
+                        {t('adminVoyage.table.of')} <span className="font-medium">{filteredVoyages.length}</span> {t('adminVoyage.table.results')}
                       </p>
                     </div>
                     <div className="flex items-center">
@@ -1357,9 +1359,9 @@ const applyFilters = () => {
                           value={rowsPerPage}
                           onChange={handleRowsPerPageChange}
                         >
-                          <option value={10}>10 per page</option>
-                          <option value={25}>25 per page</option>
-                          <option value={50}>50 per page</option>
+                          <option value={10}>10 {t('adminVoyage.table.perPage')}</option>
+                          <option value={25}>25 {t('adminVoyage.table.perPage')}</option>
+                          <option value={50}>50 {t('adminVoyage.table.perPage')}</option>
                         </select>
                       </div>
                       <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
@@ -1460,13 +1462,13 @@ const applyFilters = () => {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-4">
-                {isEditing ? 'Edit Voyage' : 'Add New Voyage'}
+                {isEditing ? t('adminVoyage.addModal.editTitle') : t('adminVoyage.addModal.addTitle')}
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Departure Station
+                    {t('adminVoyage.addModal.departureStation')}
                   </label>
                   <select
                     name="fromStationId"
@@ -1479,7 +1481,7 @@ const applyFilters = () => {
                     }`}
                     required
                   >
-                    <option value="">Select a station</option>
+                    <option value="">{t('adminVoyage.addModal.selectStation')}</option>
                     {stations.map(station => (
                       <option key={`modal-from-${station.id}`} value={station.id}>
                         {station.title}
@@ -1493,7 +1495,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Arrival Station
+                    {t('adminVoyage.addModal.arrivalStation')}
                   </label>
                   <select
                     name="toStationId"
@@ -1506,7 +1508,7 @@ const applyFilters = () => {
                     }`}
                     required
                   >
-                    <option value="">Select a station</option>
+                    <option value="">{t('adminVoyage.addModal.selectStation')}</option>
                     {stations.map(station => (
                       <option key={`modal-to-${station.id}`} value={station.id}>
                         {station.title}
@@ -1520,7 +1522,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Departure Time
+                    {t('adminVoyage.addModal.departureTime')}
                   </label>
                   <input
                     type="time"
@@ -1541,7 +1543,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Arrival Time
+                    {t('adminVoyage.addModal.arrivalTime')}
                   </label>
                   <input
                     type="time"
@@ -1562,7 +1564,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date
+                    {t('adminVoyage.addModal.date')}
                   </label>
                   <input
                     type="date"
@@ -1583,7 +1585,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
+                    {t('adminVoyage.addModal.status')}
                   </label>
                   <select
                     name="status"
@@ -1591,21 +1593,21 @@ const applyFilters = () => {
                     onChange={handleInputChange}
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                   >
-                    <option value="active">Normal</option>
-                    <option value="cancel">Cancelled</option>
+                    <option value="active">{t('adminVoyage.filters.normal')}</option>
+                    <option value="cancel">{t('adminVoyage.filters.cancelled')}</option>
                   </select>
                 </div>
                 
                 <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ship Type {isEditing && <span className="text-xs text-gray-500">(cannot be changed)</span>}
+                  {t('adminVoyage.addModal.shipType')} {isEditing && <span className="text-xs text-gray-500">({t('adminVoyage.addModal.cannotBeChanged')})</span>}
                 </label>
                   <select
                     name="shipType"
                     value={currentVoyage.shipType}
                     onChange={handleInputChange}
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-                    disabled={isEditing} // Add this line to disable when editing
+                    disabled={isEditing}
                   >
                     {shipTypes.map(type => (
                       <option key={`ship-type-${type}`} value={type}>{type}</option>
@@ -1615,7 +1617,7 @@ const applyFilters = () => {
                 
                 <div className="flex items-center">
                   <label className="block text-sm font-medium text-gray-700 mb-1 mr-2">
-                    LPG Available
+                    {t('adminVoyage.addModal.lpgAvailable')}
                   </label>
                   <input
                     type="checkbox"
@@ -1632,7 +1634,7 @@ const applyFilters = () => {
                   onClick={closeModal}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('adminVoyage.addModal.cancel')}
                 </button>
                 <button
                   onClick={saveVoyage}
@@ -1645,10 +1647,10 @@ const applyFilters = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Processing...
+                      {t('adminVoyage.addModal.processing')}
                     </span>
                   ) : (
-                    `${isEditing ? 'Update' : 'Add'} Voyage`
+                    `${isEditing ? t('adminVoyage.addModal.updateVoyage') : t('adminVoyage.addModal.addVoyage')}`
                   )}
                 </button>
               </div>
@@ -1656,7 +1658,7 @@ const applyFilters = () => {
               {/* Summary of all validation errors */}
               {Object.keys(validationErrors).length > 0 && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-md">
-                  <p className="text-sm font-medium text-red-800 mb-1">Please fix the following errors:</p>
+                  <p className="text-sm font-medium text-red-800 mb-1">{t('adminVoyage.addModal.fixErrors')}</p>
                   <ul className="list-disc ml-5 text-xs text-red-700">
                     {Object.values(validationErrors)
                       .filter(error => error !== null)
@@ -1677,13 +1679,13 @@ const applyFilters = () => {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-4">
-                Create Weekly Schedule
+                {t('adminVoyage.weeklyModal.title')}
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Departure Station
+                    {t('adminVoyage.weeklyModal.departureStation')}
                   </label>
                   <select
                     name="fromStationId"
@@ -1696,7 +1698,7 @@ const applyFilters = () => {
                     }`}
                     required
                   >
-                    <option value="">Select a station</option>
+                    <option value="">{t('adminVoyage.addModal.selectStation')}</option>
                     {stations.map(station => (
                       <option key={`weekly-from-${station.id}`} value={station.id}>
                         {station.title}
@@ -1710,7 +1712,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Arrival Station
+                    {t('adminVoyage.weeklyModal.arrivalStation')}
                   </label>
                   <select
                     name="toStationId"
@@ -1723,7 +1725,7 @@ const applyFilters = () => {
                     }`}
                     required
                   >
-                    <option value="">Select a station</option>
+                    <option value="">{t('adminVoyage.addModal.selectStation')}</option>
                     {stations.map(station => (
                       <option key={`weekly-to-${station.id}`} value={station.id}>
                         {station.title}
@@ -1737,7 +1739,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Departure Time
+                    {t('adminVoyage.weeklyModal.departureTime')}
                   </label>
                   <input
                     type="time"
@@ -1758,7 +1760,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Arrival Time
+                    {t('adminVoyage.weeklyModal.arrivalTime')}
                   </label>
                   <input
                     type="time"
@@ -1779,7 +1781,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date
+                    {t('adminVoyage.weeklyModal.startDate')}
                   </label>
                   <input
                     type="date"
@@ -1800,7 +1802,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Weeks
+                    {t('adminVoyage.weeklyModal.numberOfWeeks')}
                   </label>
                   <input
                     type="number"
@@ -1823,7 +1825,7 @@ const applyFilters = () => {
                 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Days of Week
+                    {t('adminVoyage.weeklyModal.daysOfWeek')}
                   </label>
                   <div className="grid grid-cols-7 gap-2">
                     {daysOfWeek.map(day => (
@@ -1838,7 +1840,7 @@ const applyFilters = () => {
                           className="h-4 w-4 text-[#06AED5] border-gray-300 rounded focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
                         />
                         <label htmlFor={`day-${day.value}`} className="ml-2 text-sm text-gray-700">
-                          {day.label.substr(0, 3)}
+                          {t(`adminVoyage.weeklyModal.${day.label.substr(0, 3).toLowerCase()}`)}
                         </label>
                       </div>
                     ))}
@@ -1850,7 +1852,7 @@ const applyFilters = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ship Type
+                    {t('adminVoyage.weeklyModal.shipType')}
                   </label>
                   <select
                     name="shipType"
@@ -1866,7 +1868,7 @@ const applyFilters = () => {
                 
                 <div className="flex items-center">
                   <label className="block text-sm font-medium text-gray-700 mb-1 mr-2">
-                    LPG Available
+                    {t('adminVoyage.weeklyModal.lpgAvailable')}
                   </label>
                   <input
                     type="checkbox"
@@ -1883,7 +1885,7 @@ const applyFilters = () => {
                   onClick={closeModal}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('adminVoyage.weeklyModal.cancel')}
                 </button>
                 <button
                   onClick={saveWeeklySchedule}
@@ -1896,16 +1898,16 @@ const applyFilters = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Processing...
+                      {t('adminVoyage.weeklyModal.processing')}
                     </span>
-                  ) : 'Create Weekly Schedule'}
+                  ) : t('adminVoyage.weeklyModal.createWeeklySchedule')}
                 </button>
               </div>
               
               {/* Summary of all validation errors */}
               {Object.keys(validationErrors).length > 0 && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-md">
-                  <p className="text-sm font-medium text-red-800 mb-1">Please fix the following errors:</p>
+                  <p className="text-sm font-medium text-red-800 mb-1">{t('adminVoyage.weeklyModal.fixErrors')}</p>
                   <ul className="list-disc ml-5 text-xs text-red-700">
                     {Object.values(validationErrors)
                       .filter(error => error !== null)
@@ -1925,21 +1927,21 @@ const applyFilters = () => {
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle size={24} className="text-red-600" />
-              <h2 className="text-lg sm:text-xl font-semibold">Confirm Delete</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">{t('adminVoyage.deleteModal.title')}</h2>
             </div>
             
             <p className="mb-4">
-              Are you sure you want to delete the voyage from <span className="font-semibold">({voyageToDelete.fromStationTitle})</span> to <span className="font-semibold">({voyageToDelete.toStationTitle})</span> on <span className="font-semibold">{formatDate(voyageToDelete.departureDate)}</span>?
+              {t('adminVoyage.deleteModal.confirmMessage')} <span className="font-semibold">({voyageToDelete.fromStationTitle})</span> {t('adminVoyage.deleteModal.to')} <span className="font-semibold">({voyageToDelete.toStationTitle})</span> {t('adminVoyage.deleteModal.on')} <span className="font-semibold">{formatDate(voyageToDelete.departureDate)}</span>?
             </p>
             
             {seatsSoldData[voyageToDelete.id]?.totalTicketsSold > 0 && (
               <p className="mb-4 text-orange-600 font-medium">
-                This voyage has {seatsSoldData[voyageToDelete.id].totalTicketsSold} tickets sold. Deleting it will remove all ticket records.
+                {t('adminVoyage.deleteModal.ticketsWarning', { count: seatsSoldData[voyageToDelete.id].totalTicketsSold })}
               </p>
             )}
             
             <p className="mb-4 text-red-600 font-medium">
-              This action cannot be undone.
+              {t('adminVoyage.deleteModal.cannotUndo')}
             </p>
             
             <div className="flex justify-end gap-3 mt-5">
@@ -1951,7 +1953,7 @@ const applyFilters = () => {
                 className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                 disabled={isLoading}
               >
-                Cancel
+                {t('adminVoyage.deleteModal.cancel')}
               </button>
               <button 
                 onClick={deleteVoyage} 
@@ -1964,34 +1966,36 @@ const applyFilters = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Deleting...
+                    {t('adminVoyage.deleteModal.deleting')}
                   </span>
-                ) : 'Delete'}
+                ) : t('adminVoyage.deleteModal.delete')}
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Cancel Confirmation Modal */}
       {cancelModalOpen && voyageToCancel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle size={24} className="text-yellow-600" />
-              <h2 className="text-lg sm:text-xl font-semibold">Confirm Voyage Cancellation</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">{t('adminVoyage.cancelModal.title')}</h2>
             </div>
             
             <p className="mb-4">
-              Are you sure you want to cancel the voyage from <span className="font-semibold">{voyageToCancel.fromStationTitle}</span> to <span className="font-semibold">{voyageToCancel.toStationTitle}</span> on <span className="font-semibold">{formatDate(voyageToCancel.departureDate)}</span>?
+              {t('adminVoyage.cancelModal.confirmMessage')} <span className="font-semibold">{voyageToCancel.fromStationTitle}</span> {t('adminVoyage.cancelModal.to')} <span className="font-semibold">{voyageToCancel.toStationTitle}</span> {t('adminVoyage.cancelModal.on')} <span className="font-semibold">{formatDate(voyageToCancel.departureDate)}</span>?
             </p>
             
             {seatsSoldData[voyageToCancel.id]?.totalTicketsSold > 0 && (
               <p className="mb-4 text-orange-600 font-medium">
-                This voyage has {seatsSoldData[voyageToCancel.id].totalTicketsSold} tickets sold. Canceling it will impact customers who have purchased tickets.
+                {t('adminVoyage.cancelModal.ticketsWarning', { count: seatsSoldData[voyageToCancel.id].totalTicketsSold })}
               </p>
             )}
             
             <p className="mb-4 text-yellow-600 font-medium">
-              Canceling a voyage will notify all customers who have purchased tickets. This may result in customer service inquiries.
+              {t('adminVoyage.cancelModal.serviceWarning')}
             </p>
             
             <div className="flex justify-end gap-3 mt-5">
@@ -2003,7 +2007,7 @@ const applyFilters = () => {
                 className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                 disabled={isLoading}
               >
-                Back
+                {t('adminVoyage.cancelModal.back')}
               </button>
               <button 
                 onClick={cancelVoyage} 
@@ -2016,9 +2020,9 @@ const applyFilters = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Canceling...
+                    {t('adminVoyage.cancelModal.canceling')}
                   </span>
-                ) : 'Cancel Voyage'}
+                ) : t('adminVoyage.cancelModal.cancelVoyage')}
               </button>
             </div>
           </div>
