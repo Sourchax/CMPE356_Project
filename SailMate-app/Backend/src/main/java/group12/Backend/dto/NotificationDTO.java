@@ -9,6 +9,8 @@ public class NotificationDTO {
     private NotificationType type;
     private String title;
     private String message;
+    private String titleTr;
+    private String messageTr;
     private String entityId;
     private Boolean isRead;
     private LocalDateTime createdAt;
@@ -58,6 +60,22 @@ public class NotificationDTO {
         this.message = message;
     }
     
+    public String getTitleTr() {
+        return titleTr;
+    }
+    
+    public void setTitleTr(String titleTr) {
+        this.titleTr = titleTr;
+    }
+    
+    public String getMessageTr() {
+        return messageTr;
+    }
+    
+    public void setMessageTr(String messageTr) {
+        this.messageTr = messageTr;
+    }
+    
     public String getEntityId() {
         return entityId;
     }
@@ -88,6 +106,8 @@ public class NotificationDTO {
         private NotificationType type;
         private String title;
         private String message;
+        private String titleTr;
+        private String messageTr;
         private String entityId;
         
         // Getters and Setters
@@ -121,6 +141,22 @@ public class NotificationDTO {
         
         public void setMessage(String message) {
             this.message = message;
+        }
+        
+        public String getTitleTr() {
+            return titleTr;
+        }
+        
+        public void setTitleTr(String titleTr) {
+            this.titleTr = titleTr;
+        }
+        
+        public String getMessageTr() {
+            return messageTr;
+        }
+        
+        public void setMessageTr(String messageTr) {
+            this.messageTr = messageTr;
         }
         
         public String getEntityId() {

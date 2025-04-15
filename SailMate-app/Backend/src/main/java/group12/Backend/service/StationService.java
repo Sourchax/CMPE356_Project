@@ -103,36 +103,43 @@ public class StationService {
         
         // List to track what changed
         List<String> changedFields = new ArrayList<>();
+        List<String> changedFieldsTr = new ArrayList<>();
         
         // Update station attributes
         if (!originalTitle.equals(stationDetails.getTitle())) {
             station.setTitle(stationDetails.getTitle());
             changedFields.add("title");
+            changedFieldsTr.add("başlık");
         }
         
         if (!originalCity.equals(stationDetails.getCity())) {
             station.setCity(stationDetails.getCity());
             changedFields.add("city");
+            changedFieldsTr.add("şehir");
         }
         
         if (!originalPersonnel.equals(stationDetails.getPersonnel())) {
             station.setPersonnel(stationDetails.getPersonnel());
             changedFields.add("personnel");
+            changedFieldsTr.add("personel");
         }
         
         if (!originalPhoneno.equals(stationDetails.getPhoneno())) {
             station.setPhoneno(stationDetails.getPhoneno());
             changedFields.add("phone number");
+            changedFieldsTr.add("telefon numarası");
         }
         
         if (!originalAddress.equals(stationDetails.getAddress())) {
             station.setAddress(stationDetails.getAddress());
             changedFields.add("address");
+            changedFieldsTr.add("adres");
         }
         
         if (originalStatus != stationDetails.getStatus()) {
             station.setStatus(stationDetails.getStatus());
             changedFields.add("status");
+            changedFieldsTr.add("durum");
             
             // Special handling if station is deactivated
             if (stationDetails.getStatus() == Station.Status.inactive || 
@@ -146,7 +153,7 @@ public class StationService {
         
         // If important fields changed (title or city), notify affected users
         if (changedFields.contains("title") || changedFields.contains("city")) {
-            notifyStationChange(savedStation, originalTitle, originalCity, changedFields);
+            notifyStationChange(savedStation, originalTitle, originalCity, changedFields, changedFieldsTr);
         }
         
         return savedStation;
@@ -198,7 +205,8 @@ public class StationService {
     /**
      * Notify users about station changes that affect their voyages/tickets
      */
-    private void notifyStationChange(Station station, String originalTitle, String originalCity, List<String> changedFields) {
+    private void notifyStationChange(Station station, String originalTitle, String originalCity, 
+                                List<String> changedFields, List<String> changedFieldsTr) {
         // Find voyages involving this station
         List<Voyage> departureVoyages = voyageRepository.findByFromStation_Id(station.getId());
         List<Voyage> arrivalVoyages = voyageRepository.findByToStation_Id(station.getId());
@@ -215,30 +223,29 @@ public class StationService {
         
         // Format which fields were changed
         String changedFieldsStr = String.join(", ", changedFields);
+        String changedFieldsStrTr = String.join(", ", changedFieldsTr);
         
         // For each voyage, find tickets and notify their owners
-        Set<String> alreadyNotifiedUserIds = new HashSet<>(); // To avoid duplicate notifications
+        // We're removing the alreadyNotifiedUserIds set to ensure notifications for all tickets
         
         for (Voyage voyage : affectedVoyages) {
             List<Ticket> affectedTickets = ticketRepository.findByVoyageId(voyage.getId());
             
             for (Ticket ticket : affectedTickets) {
-                // Skip if we already notified this user
-                if (alreadyNotifiedUserIds.contains(ticket.getUserId())) {
-                    continue;
-                }
-                
                 String stationType;
+                String stationTypeTr;
                 String oldLocation;
                 String newLocation;
                 
                 // Check if station is departure or arrival point
                 if (departureVoyages.contains(voyage)) {
                     stationType = "Departure";
+                    stationTypeTr = "Kalkış";
                     oldLocation = originalTitle + " (" + originalCity + ")";
                     newLocation = station.getTitle() + " (" + station.getCity() + ")";
                 } else {
                     stationType = "Arrival";
+                    stationTypeTr = "Varış";
                     oldLocation = originalTitle + " (" + originalCity + ")";
                     newLocation = station.getTitle() + " (" + station.getCity() + ")";
                 }
@@ -247,8 +254,9 @@ public class StationService {
                 notificationRequest.setUserId(ticket.getUserId());
                 notificationRequest.setType(Notification.NotificationType.VOYAGE_DELAYED);
                 notificationRequest.setTitle("Station Updated");
+                notificationRequest.setTitleTr("İstasyon Güncellendi");
                 
-                // Create a shorter message
+                // Create a shorter message in English
                 String message = String.format(
                     "%s station updated. %s changed: %s to %s. Ticket %s affected.",
                     stationType,
@@ -257,14 +265,22 @@ public class StationService {
                     newLocation,
                     ticket.getTicketID()
                 );
+
+                // Create Turkish message
+                String messageTr = String.format(
+                    "%s istasyonu güncellendi. %s değişti: %s'den %s'ye. Bilet %s etkilendi.",
+                    stationTypeTr,
+                    changedFieldsStrTr,
+                    oldLocation,
+                    newLocation,
+                    ticket.getTicketID()
+                );
                 
                 notificationRequest.setMessage(message);
+                notificationRequest.setMessageTr(messageTr);
                 notificationRequest.setEntityId(ticket.getTicketID());
                 
                 notificationService.createNotification(notificationRequest);
-                
-                // Mark this user as notified
-                alreadyNotifiedUserIds.add(ticket.getUserId());
             }
         }
     }
@@ -307,15 +323,18 @@ public class StationService {
                 }
                 
                 String stationType = departureVoyages.contains(voyage) ? "departure" : "arrival";
+                String stationTypeTr = departureVoyages.contains(voyage) ? "kalkış" : "varış";
                 
                 NotificationDTO.NotificationCreateRequest notificationRequest = new NotificationDTO.NotificationCreateRequest();
                 notificationRequest.setUserId(ticket.getUserId());
                 notificationRequest.setType(Notification.NotificationType.VOYAGE_DELAYED);
                 notificationRequest.setTitle("Station Status Changed");
+                notificationRequest.setTitleTr("İstasyon Durumu Değişti");
                 
                 String statusString = newStatus == Station.Status.inactive ? "inactive" : "under maintenance";
+                String statusStringTr = newStatus == Station.Status.inactive ? "devre dışı" : "bakımda";
                 
-                // Create a shorter message
+                // Create a shorter message in English
                 String message = String.format(
                     "%s station %s is now %s. May affect voyage on %s. Ticket %s. Contact support.",
                     stationType,
@@ -325,7 +344,18 @@ public class StationService {
                     ticket.getTicketID()
                 );
                 
+                // Create Turkish message
+                String messageTr = String.format(
+                    "%s istasyonu %s artık %s. %s tarihli yolculuğu etkileyebilir. Bilet %s. Destek ile iletişime geçin.",
+                    stationTypeTr,
+                    station.getTitle(),
+                    statusStringTr,
+                    voyage.getDepartureDate(),
+                    ticket.getTicketID()
+                );
+                
                 notificationRequest.setMessage(message);
+                notificationRequest.setMessageTr(messageTr);
                 notificationRequest.setEntityId(ticket.getTicketID());
                 
                 notificationService.createNotification(notificationRequest);
@@ -367,13 +397,15 @@ public class StationService {
                 }
                 
                 String stationType = departureVoyages.contains(voyage) ? "departure" : "arrival";
+                String stationTypeTr = departureVoyages.contains(voyage) ? "kalkış" : "varış";
                 
                 NotificationDTO.NotificationCreateRequest notificationRequest = new NotificationDTO.NotificationCreateRequest();
                 notificationRequest.setUserId(ticket.getUserId());
                 notificationRequest.setType(Notification.NotificationType.VOYAGE_CANCELLED);
                 notificationRequest.setTitle("Station Removed");
+                notificationRequest.setTitleTr("İstasyon Kaldırıldı");
                 
-                // Create a shorter message
+                // Create a shorter message in English
                 String message = String.format(
                     "Station %s removed. Voyage on %s cancelled. Ticket %s invalid. Contact support.",
                     station.getTitle(),
@@ -381,7 +413,16 @@ public class StationService {
                     ticket.getTicketID()
                 );
                 
+                // Create Turkish message
+                String messageTr = String.format(
+                    "İstasyon %s kaldırıldı. %s tarihli sefer iptal edildi. Bilet %s geçersiz. Destek ile iletişime geçin.",
+                    station.getTitle(),
+                    voyage.getDepartureDate(),
+                    ticket.getTicketID()
+                );
+                
                 notificationRequest.setMessage(message);
+                notificationRequest.setMessageTr(messageTr);
                 notificationRequest.setEntityId(ticket.getTicketID());
                 
                 notificationService.createNotification(notificationRequest);

@@ -28,6 +28,13 @@ public class Notification {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
     
+    // New Turkish versions of title and message
+    @Column(name = "title_tr")
+    private String titleTr;
+    
+    @Column(name = "message_tr", columnDefinition = "TEXT")
+    private String messageTr;
+    
     @Column(name = "entity_id")
     private String entityId;
     
@@ -46,15 +53,17 @@ public class Notification {
     public Notification() {
     }
     
-    public Notification(String userId, NotificationType type, String title, String message, String entityId) {
+    public Notification(String userId, NotificationType type, String title, String message, String titleTr, String messageTr, String entityId) {
         this.userId = userId;
         this.type = type;
         this.title = title;
         this.message = message;
+        this.titleTr = titleTr;
+        this.messageTr = messageTr;
         this.entityId = entityId;
     }
     
-    // Getters and Setters
+    // Getter and setter methods
     public Integer getId() {
         return id;
     }
@@ -93,6 +102,22 @@ public class Notification {
     
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public String getTitleTr() {
+        return titleTr;
+    }
+    
+    public void setTitleTr(String titleTr) {
+        this.titleTr = titleTr;
+    }
+    
+    public String getMessageTr() {
+        return messageTr;
+    }
+    
+    public void setMessageTr(String messageTr) {
+        this.messageTr = messageTr;
     }
     
     public String getEntityId() {

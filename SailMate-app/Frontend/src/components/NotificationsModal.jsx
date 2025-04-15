@@ -13,14 +13,30 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'unread', or 'read'
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  const isTurkish = currentLanguage === 'tr';
+  
+  // Helper function to get localized notification content
+  const getLocalizedNotificationContent = (notification) => {
+    if (isTurkish && notification.titleTr && notification.messageTr) {
+      return {
+        title: notification.titleTr,
+        message: notification.messageTr
+      };
+    }
+    return {
+      title: notification.title,
+      message: notification.message
+    };
+  };
 
-  // Fetch notifications when modal opens
+  // Fetch notifications when modal opens or language changes
   useEffect(() => {
     if (isOpen && userId) {
       fetchNotifications();
     }
-  }, [isOpen, userId, activeTab]);
+  }, [isOpen, userId, activeTab, currentLanguage]);
 
   // Fetch notifications based on active tab
   const fetchNotifications = async () => {
@@ -289,58 +305,65 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
                 ) : (
                   /* Notification list */
                   <div className="space-y-4">
-                    {filteredNotifications.map(notification => (
-                      <div 
-                        key={notification.id}
-                        className={`border rounded-lg overflow-hidden ${
-                          notification.isRead ? 'bg-white' : 'bg-blue-50'
-                        } cursor-pointer`}
-                      >
+                    {filteredNotifications.map(notification => {
+                      // Get localized content based on current language
+                      const { title, message } = getLocalizedNotificationContent(notification);
+                      
+                      return (
                         <div 
-                          className="p-4"
-                          onClick={() => handleNotificationClick(notification)}
+                          key={notification.id}
+                          className={`border rounded-lg overflow-hidden ${
+                            notification.isRead ? 'bg-white' : 'bg-blue-50'
+                          } cursor-pointer`}
                         >
-                          <div className="flex items-start">
-                            <div className={`mr-4 ${getNotificationColor(notification.type)}`}>
-                              <Bell size={20} />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-medium">{notification.title}</h3>
-                              <p className="text-gray-600 text-sm mt-1">{notification.message}</p>
-                              <p className="text-xs text-gray-400 mt-2">
-                                {new Date(notification.createdAt).toLocaleString()}
-                              </p>
-                            </div>
-                            <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
-                              {notification.isRead ? (
+                          <div 
+                            className="p-4"
+                            onClick={() => handleNotificationClick(notification)}
+                          >
+                            <div className="flex items-start">
+                              <div className={`mr-4 ${getNotificationColor(notification.type)}`}>
+                                <Bell size={20} />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-medium">{title}</h3>
+                                <p className="text-gray-600 text-sm mt-1">{message}</p>
+                                <p className="text-xs text-gray-400 mt-2">
+                                  {new Date(notification.createdAt).toLocaleString(
+                                    isTurkish ? 'tr-TR' : undefined
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
+                                {notification.isRead ? (
+                                  <button
+                                    onClick={(e) => markAsUnread(notification.id, e)}
+                                    className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                                    title={t('notifications.actions.markAsUnread')}
+                                  >
+                                    <Check size={16} />
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={(e) => markAsRead(notification.id, e)}
+                                    className="p-1 text-gray-600 hover:bg-gray-100 rounded"
+                                    title={t('notifications.actions.markAsRead')}
+                                  >
+                                    <Check size={16} />
+                                  </button>
+                                )}
                                 <button
-                                  onClick={(e) => markAsUnread(notification.id, e)}
-                                  className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                  title={t('notifications.actions.markAsUnread')}
+                                  onClick={(e) => deleteNotification(notification.id, e)}
+                                  className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                  title={t('notifications.actions.delete')}
                                 >
-                                  <Check size={16} />
+                                  <Trash2 size={16} />
                                 </button>
-                              ) : (
-                                <button
-                                  onClick={(e) => markAsRead(notification.id, e)}
-                                  className="p-1 text-gray-600 hover:bg-gray-100 rounded"
-                                  title={t('notifications.actions.markAsRead')}
-                                >
-                                  <Check size={16} />
-                                </button>
-                              )}
-                              <button
-                                onClick={(e) => deleteNotification(notification.id, e)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title={t('notifications.actions.delete')}
-                              >
-                                <Trash2 size={16} />
-                              </button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </>

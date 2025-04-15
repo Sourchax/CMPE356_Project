@@ -141,26 +141,31 @@ public class TicketService {
             
             // Track which fields have changed
             List<String> changedFields = new ArrayList<>();
+            List<String> changedFieldsTr = new ArrayList<>();
             
             // Update fields if provided in the request
             if (updateRequest.getPassengerCount() != null && !originalPassengerCount.equals(updateRequest.getPassengerCount())) {
                 ticket.setPassengerCount(updateRequest.getPassengerCount());
                 changedFields.add("passenger count");
+                changedFieldsTr.add("yolcu sayısı");
             }
             
             if (updateRequest.getTotalPrice() != null && !originalTotalPrice.equals(updateRequest.getTotalPrice())) {
                 ticket.setTotalPrice(updateRequest.getTotalPrice());
                 changedFields.add("total price");
+                changedFieldsTr.add("toplam fiyat");
             }
             
             if (updateRequest.getTicketClass() != null && !originalTicketClass.equals(updateRequest.getTicketClass())) {
                 ticket.setTicketClass(updateRequest.getTicketClass());
                 changedFields.add("ticket class");
+                changedFieldsTr.add("bilet sınıfı");
             }
             
             if (updateRequest.getSelectedSeats() != null && !originalSelectedSeats.equals(updateRequest.getSelectedSeats())) {
                 ticket.setSelectedSeats(updateRequest.getSelectedSeats());
                 changedFields.add("seat selection");
+                changedFieldsTr.add("koltuk seçimi");
             }
             
             if (updateRequest.getPassengers() != null) {
@@ -168,6 +173,7 @@ public class TicketService {
                 if (!originalTicketData.equals(newTicketData)) {
                     ticket.setTicketData(newTicketData);
                     changedFields.add("passenger information");
+                    changedFieldsTr.add("yolcu bilgileri");
                 }
             }
             
@@ -176,7 +182,7 @@ public class TicketService {
             
             // Create notification for ticket update if there were changes
             if (!changedFields.isEmpty()) {
-                createTicketUpdateNotification(updatedTicket, changedFields);
+                createTicketUpdateNotification(updatedTicket, changedFields, changedFieldsTr);
             }
             
             return Optional.of(convertToDto(updatedTicket));
@@ -305,13 +311,17 @@ public class TicketService {
         notificationRequest.setUserId(ticket.getUserId());
         notificationRequest.setType(Notification.NotificationType.TICKET_CREATED);
         notificationRequest.setTitle("Ticket Purchased");
+        notificationRequest.setTitleTr("Bilet Satın Alındı");
         
         // Get voyage details for a more informative message
         StringBuilder messageBuilder = new StringBuilder("Your ticket " + ticket.getTicketID() + " has been successfully purchased. ");
+        StringBuilder messageTrBuilder = new StringBuilder(ticket.getTicketID() + " numaralı biletiniz başarıyla satın alındı. ");
         
         Optional<Voyage> voyageOpt = voyageRepository.findById(ticket.getVoyageId());
         if (voyageOpt.isPresent()) {
             Voyage voyage = voyageOpt.get();
+            
+            // English message
             messageBuilder.append("Voyage details: ")
                          .append(voyage.getFromStation().getTitle())
                          .append(" (")
@@ -330,9 +340,30 @@ public class TicketService {
                          .append(ticket.getPassengerCount())
                          .append(" passenger(s), seats: ")
                          .append(ticket.getSelectedSeats());
+                         
+            // Turkish message
+            messageTrBuilder.append("Yolculuk detayları: ")
+                         .append(voyage.getFromStation().getTitle())
+                         .append(" (")
+                         .append(voyage.getFromStation().getCity())
+                         .append(")'dan ")
+                         .append(voyage.getToStation().getTitle())
+                         .append(" (")
+                         .append(voyage.getToStation().getCity())
+                         .append(")'a, ")
+                         .append(voyage.getDepartureDate())
+                         .append(" tarihinde ")
+                         .append(voyage.getDepartureTime())
+                         .append(" saatinde, ")
+                         .append(ticket.getTicketClass())
+                         .append(" sınıfı, ")
+                         .append(ticket.getPassengerCount())
+                         .append(" yolcu, koltuklar: ")
+                         .append(ticket.getSelectedSeats());
         }
         
         notificationRequest.setMessage(messageBuilder.toString());
+        notificationRequest.setMessageTr(messageTrBuilder.toString());
         notificationRequest.setEntityId(ticket.getTicketID());
         
         notificationService.createNotification(notificationRequest);
@@ -342,22 +373,28 @@ public class TicketService {
      * Create notification for ticket update
      * @param ticket the updated ticket
      * @param changedFields list of fields that were changed
+     * @param changedFieldsTr list of fields that were changed in Turkish
      */
-    private void createTicketUpdateNotification(Ticket ticket, List<String> changedFields) {
+    private void createTicketUpdateNotification(Ticket ticket, List<String> changedFields, List<String> changedFieldsTr) {
         NotificationDTO.NotificationCreateRequest notificationRequest = new NotificationDTO.NotificationCreateRequest();
         notificationRequest.setUserId(ticket.getUserId());
         notificationRequest.setType(Notification.NotificationType.TICKET_UPDATED);
         notificationRequest.setTitle("Ticket Updated");
+        notificationRequest.setTitleTr("Bilet Güncellendi");
         
         // Format the list of changed fields
         String changedFieldsStr = String.join(", ", changedFields);
+        String changedFieldsStrTr = String.join(", ", changedFieldsTr);
         
         // Get voyage details for a more informative message
         StringBuilder messageBuilder = new StringBuilder("Your ticket " + ticket.getTicketID() + " has been updated. ");
+        StringBuilder messageTrBuilder = new StringBuilder(ticket.getTicketID() + " numaralı biletiniz güncellendi. ");
         
         Optional<Voyage> voyageOpt = voyageRepository.findById(ticket.getVoyageId());
         if (voyageOpt.isPresent()) {
             Voyage voyage = voyageOpt.get();
+            
+            // English message
             messageBuilder.append("Current ticket details: ")
                          .append(voyage.getFromStation().getTitle())
                          .append(" to ")
@@ -370,9 +407,28 @@ public class TicketService {
                          .append(ticket.getPassengerCount())
                          .append(" passenger(s), seats: ")
                          .append(ticket.getSelectedSeats());
+                         
+            // Turkish message
+            messageTrBuilder.append("Güncel bilet detayları: ")
+                         .append(voyage.getFromStation().getTitle())
+                         .append("'dan ")
+                         .append(voyage.getToStation().getTitle())
+                         .append("'a, ")
+                         .append(voyage.getDepartureDate())
+                         .append(" tarihinde, ")
+                         .append(ticket.getTicketClass())
+                         .append(" sınıfı, ")
+                         .append(ticket.getPassengerCount())
+                         .append(" yolcu, koltuklar: ")
+                         .append(ticket.getSelectedSeats());
         }
         
+        // Add changed fields information
+        messageBuilder.append(". Changed fields: ").append(changedFieldsStr);
+        messageTrBuilder.append(". Değiştirilen alanlar: ").append(changedFieldsStrTr);
+        
         notificationRequest.setMessage(messageBuilder.toString());
+        notificationRequest.setMessageTr(messageTrBuilder.toString());
         notificationRequest.setEntityId(ticket.getTicketID());
         
         notificationService.createNotification(notificationRequest);
@@ -388,10 +444,16 @@ public class TicketService {
         notificationRequest.setUserId(ticket.getUserId());
         notificationRequest.setType(Notification.NotificationType.TICKET_UPDATED);
         notificationRequest.setTitle("Ticket Cancelled");
+        notificationRequest.setTitleTr("Bilet İptal Edildi");
         
+        // English message
         StringBuilder messageBuilder = new StringBuilder("Your ticket " + ticket.getTicketID() + " has been cancelled and is no longer valid. ");
         
+        // Turkish message
+        StringBuilder messageTrBuilder = new StringBuilder(ticket.getTicketID() + " numaralı biletiniz iptal edildi ve artık geçerli değil. ");
+        
         if (voyage != null) {
+            // English details
             messageBuilder.append("This ticket was for the voyage from ")
                          .append(voyage.getFromStation().getTitle())
                          .append(" (")
@@ -405,9 +467,25 @@ public class TicketService {
                          .append(" at ")
                          .append(voyage.getDepartureTime())
                          .append(".");
+                         
+            // Turkish details
+            messageTrBuilder.append("Bu bilet, ")
+                         .append(voyage.getDepartureDate())
+                         .append(" tarihinde saat ")
+                         .append(voyage.getDepartureTime())
+                         .append("'de ")
+                         .append(voyage.getFromStation().getTitle())
+                         .append(" (")
+                         .append(voyage.getFromStation().getCity())
+                         .append(")'dan ")
+                         .append(voyage.getToStation().getTitle())
+                         .append(" (")
+                         .append(voyage.getToStation().getCity())
+                         .append(")'a olan yolculuk içindi.");
         }
         
         notificationRequest.setMessage(messageBuilder.toString());
+        notificationRequest.setMessageTr(messageTrBuilder.toString());
         notificationRequest.setEntityId(ticket.getTicketID());
         
         notificationService.createNotification(notificationRequest);
@@ -427,13 +505,19 @@ public class TicketService {
         notificationRequest.setUserId(ticket.getUserId());
         notificationRequest.setType(Notification.NotificationType.TICKET_UPDATED);
         notificationRequest.setTitle("Voyage Changed");
+        notificationRequest.setTitleTr("Sefer Değişti");
         
+        // English message
         StringBuilder messageBuilder = new StringBuilder("Your ticket " + ticket.getTicketID() + " has been assigned to a different voyage. ");
+        
+        // Turkish message
+        StringBuilder messageTrBuilder = new StringBuilder(ticket.getTicketID() + " numaralı biletiniz farklı bir sefere atandı. ");
         
         if (originalVoyageOpt.isPresent() && newVoyageOpt.isPresent()) {
             Voyage originalVoyage = originalVoyageOpt.get();
             Voyage newVoyage = newVoyageOpt.get();
             
+            // English details
             messageBuilder.append("Original voyage: ")
                           .append(originalVoyage.getFromStation().getTitle())
                           .append(" (")
@@ -459,23 +543,52 @@ public class TicketService {
                           .append(" at ")
                           .append(newVoyage.getDepartureTime())
                           .append(".");
+                          
+            // Turkish details
+            messageTrBuilder.append("Orijinal sefer: ")
+                          .append(originalVoyage.getFromStation().getTitle())
+                          .append(" (")
+                          .append(originalVoyage.getFromStation().getCity())
+                          .append(")'dan ")
+                          .append(originalVoyage.getToStation().getTitle())
+                          .append(" (")
+                          .append(originalVoyage.getToStation().getCity())
+                          .append(")'a ")
+                          .append(originalVoyage.getDepartureDate())
+                          .append(" tarihinde saat ")
+                          .append(originalVoyage.getDepartureTime())
+                          .append("'de. Yeni sefer: ")
+                          .append(newVoyage.getFromStation().getTitle())
+                          .append(" (")
+                          .append(newVoyage.getFromStation().getCity())
+                          .append(")'dan ")
+                          .append(newVoyage.getToStation().getTitle())
+                          .append(" (")
+                          .append(newVoyage.getToStation().getCity())
+                          .append(")'a ")
+                          .append(newVoyage.getDepartureDate())
+                          .append(" tarihinde saat ")
+                          .append(newVoyage.getDepartureTime())
+                          .append("'de.");
             
             // Add a warning if the dates are different
             if (!originalVoyage.getDepartureDate().equals(newVoyage.getDepartureDate())) {
                 messageBuilder.append(" Please note the change in date!");
+                messageTrBuilder.append(" Lütfen tarih değişikliğine dikkat edin!");
             }
         }
         
         notificationRequest.setMessage(messageBuilder.toString());
+        notificationRequest.setMessageTr(messageTrBuilder.toString());
         notificationRequest.setEntityId(ticket.getTicketID());
         
         notificationService.createNotification(notificationRequest);
     }
+    
     public long getTicketCount() {
         return ticketRepository.count();
     }
     
-
     public byte[] generateTicketPdfBytes(String ticketId) throws Exception {
         try {
             Optional<Ticket> ticketOpt = ticketRepository.findByTicketID(ticketId);
@@ -510,9 +623,7 @@ public class TicketService {
                 ticketData.passengerName = (passenger.getName() + " " + passenger.getSurname()).toUpperCase();
                 ticketData.from = fromStation;
                 ticketData.to = toStation;
-                // ticketData.date = ticket.getCreatedAt().toLocalDate().toString();
                 ticketData.date = departureDate;
-                // ticketData.time = ticket.getCreatedAt().toLocalTime().toString();
                 ticketData.time = departureTime;
                 ticketData.seat = ticket.getSelectedSeats();
                 ticketData.gate = "1";

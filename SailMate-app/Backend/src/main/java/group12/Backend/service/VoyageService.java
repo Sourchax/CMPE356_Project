@@ -42,21 +42,18 @@ public class VoyageService {
     @Autowired
     private SeatsSoldService seatsSoldService;
     
-    // Get all voyages
     public List<VoyageDTO> getAllVoyages() {
         return voyageRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
-    // Get all future voyages
     public List<VoyageDTO> getAllFutureVoyages() {
         return voyageRepository.findAllFutureVoyages().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
-    // Get voyage by ID
     public VoyageDTO getVoyageById(Integer id) {
         Optional<Voyage> voyage = voyageRepository.findById(id);
         return voyage.map(this::convertToDTO).orElse(null);
@@ -64,12 +61,10 @@ public class VoyageService {
 
     private void initializeSeatsForVoyage(Voyage voyage) {
         try {
-            // Create a SeatsSoldDTO for the new voyage
             SeatsSoldDTO seatsSoldDTO = new SeatsSoldDTO();
             seatsSoldDTO.setVoyageId(voyage.getId());
             seatsSoldDTO.setShipType(voyage.getShipType());
             
-            // Initialize with zero seats sold
             seatsSoldDTO.setUpperDeckPromo(0L);
             seatsSoldDTO.setUpperDeckEconomy(0L);
             seatsSoldDTO.setUpperDeckBusiness(0L);
@@ -78,15 +73,12 @@ public class VoyageService {
             seatsSoldDTO.setLowerDeckBusiness(0L);
             seatsSoldDTO.setTotalTicketsSold(0L);
             
-            // Create the seats sold record
             seatsSoldService.createSeatsSold(seatsSoldDTO);
         } catch (Exception e) {
-            // Log the error but don't prevent voyage creation
             System.err.println("Error initializing seats sold record for voyage " + voyage.getId() + ": " + e.getMessage());
         }
     }
     
-    // Find voyages by from station, to station and departure date
     public List<VoyageDTO> findVoyages(Integer fromStationId, Integer toStationId, LocalDate departureDate) {
         return voyageRepository.findByFromStation_IdAndToStation_IdAndDepartureDate(
                 fromStationId, toStationId, departureDate).stream()
@@ -95,7 +87,6 @@ public class VoyageService {
                 .collect(Collectors.toList());
     }
     
-    // Create a new voyage
     @Transactional
     public VoyageDTO createVoyage(VoyageDTO voyageDTO) {
         Voyage voyage = convertToEntity(voyageDTO);
@@ -108,7 +99,6 @@ public class VoyageService {
         return voyageRepository.findById(id);
     }
     
-    // Create multiple voyages at once
     @Transactional
     public int createBulkVoyages(List<VoyageDTO> voyageDTOs) {
         List<Voyage> voyages = voyageDTOs.stream()
@@ -119,7 +109,6 @@ public class VoyageService {
         return savedVoyages.size();
     }
     
-    // Update a voyage
     @Transactional
     public VoyageDTO updateVoyage(Integer id, VoyageDTO voyageDTO) {
         Optional<Voyage> existingVoyage = voyageRepository.findById(id);
@@ -127,7 +116,6 @@ public class VoyageService {
         if (existingVoyage.isPresent()) {
             Voyage voyage = existingVoyage.get();
             
-            // Store original values for change tracking
             LocalDate originalDepartureDate = voyage.getDepartureDate();
             LocalTime originalDepartureTime = voyage.getDepartureTime();
             LocalTime originalArrivalTime = voyage.getArrivalTime();
@@ -139,20 +127,21 @@ public class VoyageService {
             String originalShipType = voyage.getShipType();
             Boolean originalFuelType = voyage.getFuelType();
             
-            // Track which fields have changed
             List<String> changedFields = new ArrayList<>();
+            List<String> changedFieldsTr = new ArrayList<>();
             
-            // Update fields from DTO
             if (voyageDTO.getFromStationId() != null) {
                 Station fromStation = stationRepository.findById(voyageDTO.getFromStationId())
                         .orElseThrow(() -> new IllegalArgumentException("From station not found"));
                 
                 if (!originalFromStationTitle.equals(fromStation.getTitle())) {
                     changedFields.add("departure station title");
+                    changedFieldsTr.add("kalkış istasyonu adı");
                 }
                 
                 if (!originalFromStationCity.equals(fromStation.getCity())) {
                     changedFields.add("departure city");
+                    changedFieldsTr.add("kalkış şehri");
                 }
                 
                 voyage.setFromStation(fromStation);
@@ -164,10 +153,12 @@ public class VoyageService {
                 
                 if (!originalToStationTitle.equals(toStation.getTitle())) {
                     changedFields.add("arrival station title");
+                    changedFieldsTr.add("varış istasyonu adı");
                 }
                 
                 if (!originalToStationCity.equals(toStation.getCity())) {
                     changedFields.add("arrival city");
+                    changedFieldsTr.add("varış şehri");
                 }
                 
                 voyage.setToStation(toStation);
@@ -176,26 +167,28 @@ public class VoyageService {
             if (voyageDTO.getDepartureDate() != null && !originalDepartureDate.equals(voyageDTO.getDepartureDate())) {
                 voyage.setDepartureDate(voyageDTO.getDepartureDate());
                 changedFields.add("departure date");
+                changedFieldsTr.add("kalkış tarihi");
             }
             
             if (voyageDTO.getDepartureTime() != null && !originalDepartureTime.equals(voyageDTO.getDepartureTime())) {
                 voyage.setDepartureTime(voyageDTO.getDepartureTime());
                 changedFields.add("departure time");
+                changedFieldsTr.add("kalkış saati");
             }
             
             if (voyageDTO.getArrivalTime() != null && !originalArrivalTime.equals(voyageDTO.getArrivalTime())) {
                 voyage.setArrivalTime(voyageDTO.getArrivalTime());
                 changedFields.add("arrival time");
+                changedFieldsTr.add("varış saati");
             }
             
             if (voyageDTO.getStatus() != null && originalStatus != voyageDTO.getStatus()) {
                 voyage.setStatus(voyageDTO.getStatus());
                 changedFields.add("status");
+                changedFieldsTr.add("durum");
                 
-                // Special handling for cancellation
                 if (voyageDTO.getStatus() == Voyage.VoyageStatus.cancel) {
                     notifyVoyageCancellation(voyage);
-                    // Return early since we've already sent cancellation notifications
                     return convertToDTO(voyageRepository.save(voyage));
                 }
             }
@@ -203,11 +196,13 @@ public class VoyageService {
             if (voyageDTO.getShipType() != null && !originalShipType.equals(voyageDTO.getShipType())) {
                 voyage.setShipType(voyageDTO.getShipType());
                 changedFields.add("ship type");
+                changedFieldsTr.add("gemi tipi");
             }
             
             if (voyageDTO.getFuelType() != null && !originalFuelType.equals(voyageDTO.getFuelType())) {
                 voyage.setFuelType(voyageDTO.getFuelType());
                 changedFields.add("fuel type");
+                changedFieldsTr.add("yakıt tipi");
             }
             
             if (voyageDTO.getBusinessSeats() != null) {
@@ -222,12 +217,10 @@ public class VoyageService {
                 voyage.setEconomySeats(voyageDTO.getEconomySeats());
             }
             
-            // Save the updated voyage
             Voyage updatedVoyage = voyageRepository.save(voyage);
             
-            // Notify affected users if there are changes
             if (!changedFields.isEmpty()) {
-                notifyVoyageChanges(updatedVoyage, changedFields);
+                notifyVoyageChanges(updatedVoyage, changedFields, changedFieldsTr);
             }
             
             return convertToDTO(updatedVoyage);
@@ -236,7 +229,6 @@ public class VoyageService {
         return null;
     }
     
-    // Cancel a voyage
     @Transactional
     public boolean cancelVoyage(Integer id) {
         Optional<Voyage> voyage = voyageRepository.findById(id);
@@ -246,7 +238,6 @@ public class VoyageService {
             v.setStatus(Voyage.VoyageStatus.cancel);
             voyageRepository.save(v);
             
-            // Notify users with tickets for this voyage
             notifyVoyageCancellation(v);
             
             return true;
@@ -255,7 +246,6 @@ public class VoyageService {
         return false;
     }
     
-    // Cancel voyages by route and date range
     @Transactional
     public int cancelVoyagesByRoute(Integer fromStationId, Integer toStationId, LocalDate startDate, LocalDate endDate) {
         List<Voyage> voyagesToCancel = voyageRepository.findByFromStation_IdAndToStation_Id(fromStationId, toStationId)
@@ -267,7 +257,6 @@ public class VoyageService {
         for (Voyage voyage : voyagesToCancel) {
             voyage.setStatus(Voyage.VoyageStatus.cancel);
             
-            // Notify users with tickets for this voyage
             notifyVoyageCancellation(voyage);
         }
         
@@ -275,7 +264,6 @@ public class VoyageService {
         return voyagesToCancel.size();
     }
     
-    // Delete a voyage
     @Transactional
     public boolean deleteVoyage(Integer id) {
         Optional<Voyage> voyage = voyageRepository.findById(id);
@@ -283,7 +271,6 @@ public class VoyageService {
         if (voyage.isPresent()) {
             Voyage v = voyage.get();
             
-            // Notify users with tickets for this voyage
             notifyVoyageCancellation(v);
             
             voyageRepository.delete(v);
@@ -293,7 +280,6 @@ public class VoyageService {
         return false;
     }
     
-    // Get voyages by date range
     public List<VoyageDTO> getVoyagesByDateRange(LocalDate startDate, LocalDate endDate) {
         return voyageRepository.findByDepartureDateBetween(startDate, endDate)
                 .stream()
@@ -301,7 +287,6 @@ public class VoyageService {
                 .collect(Collectors.toList());
     }
     
-    // Get voyages by departure station
     public List<VoyageDTO> getVoyagesByDepartureStation(Integer stationId) {
         return voyageRepository.findByFromStation_Id(stationId)
                 .stream()
@@ -309,7 +294,6 @@ public class VoyageService {
                 .collect(Collectors.toList());
     }
     
-    // Get voyages by arrival station
     public List<VoyageDTO> getVoyagesByArrivalStation(Integer stationId) {
         return voyageRepository.findByToStation_Id(stationId)
                 .stream()
@@ -317,7 +301,6 @@ public class VoyageService {
                 .collect(Collectors.toList());
     }
     
-    // Get voyages by station (either departure or arrival)
     public List<VoyageDTO> getVoyagesByStation(Integer stationId) {
         return voyageRepository.findByStationId(stationId)
                 .stream()
@@ -329,7 +312,6 @@ public class VoyageService {
         return voyageRepository.countByStatus(Voyage.VoyageStatus.active);
     }
     
-    // Convert Voyage entity to VoyageDTO
     private VoyageDTO convertToDTO(Voyage voyage) {
         VoyageDTO dto = new VoyageDTO();
         
@@ -358,7 +340,6 @@ public class VoyageService {
         return dto;
     }
     
-    // Convert VoyageDTO to Voyage entity
     private Voyage convertToEntity(VoyageDTO dto) {
         Voyage voyage = new Voyage();
         
@@ -395,7 +376,6 @@ public class VoyageService {
         return voyage;
     }
     
-    // Notify users about voyage cancellation
     private void notifyVoyageCancellation(Voyage voyage) {
         List<Ticket> affectedTickets = ticketRepository.findByVoyageId(voyage.getId());
         
@@ -404,6 +384,7 @@ public class VoyageService {
             notificationRequest.setUserId(ticket.getUserId());
             notificationRequest.setType(Notification.NotificationType.VOYAGE_CANCELLED);
             notificationRequest.setTitle("Voyage Cancelled");
+            notificationRequest.setTitleTr("Sefer İptal Edildi");
             
             String message = String.format(
                 "Your voyage from %s (%s) to %s (%s) on %s has been cancelled. Your ticket %s is affected. Please contact customer support for assistance.",
@@ -415,29 +396,40 @@ public class VoyageService {
                 ticket.getTicketID()
             );
             
+            String messageTr = String.format(
+                "%s (%s)'dan %s (%s)'a %s tarihli seferiniz iptal edildi. %s numaralı biletiniz etkilendi. Lütfen yardım için müşteri hizmetleriyle iletişime geçin.",
+                voyage.getFromStation().getTitle(),
+                voyage.getFromStation().getCity(),
+                voyage.getToStation().getTitle(),
+                voyage.getToStation().getCity(),
+                voyage.getDepartureDate(),
+                ticket.getTicketID()
+            );
+            
             notificationRequest.setMessage(message);
+            notificationRequest.setMessageTr(messageTr);
             notificationRequest.setEntityId(ticket.getTicketID());
             
             notificationService.createNotification(notificationRequest);
         }
     }
     
-    // Notify users about voyage changes
-    private void notifyVoyageChanges(Voyage voyage, List<String> changedFields) {
+    private void notifyVoyageChanges(Voyage voyage, List<String> changedFields, List<String> changedFieldsTr) {
         List<Ticket> affectedTickets = ticketRepository.findByVoyageId(voyage.getId());
         
         if (affectedTickets.isEmpty()) {
-            return;  // No tickets affected, so no notifications needed
+            return;
         }
         
-        // Format changed fields for notification message
         String changedFieldsStr = String.join(", ", changedFields);
+        String changedFieldsStrTr = String.join(", ", changedFieldsTr);
         
         for (Ticket ticket : affectedTickets) {
             NotificationDTO.NotificationCreateRequest notificationRequest = new NotificationDTO.NotificationCreateRequest();
             notificationRequest.setUserId(ticket.getUserId());
             notificationRequest.setType(Notification.NotificationType.VOYAGE_DELAYED);
             notificationRequest.setTitle("Voyage Update");
+            notificationRequest.setTitleTr("Sefer Güncellendi");
             
             String message = String.format(
                 "Your voyage from %s (%s) to %s (%s) on %s at %s has been updated. Changes were made to: %s. Your ticket %s is affected.",
@@ -451,7 +443,20 @@ public class VoyageService {
                 ticket.getTicketID()
             );
             
+            String messageTr = String.format(
+                "%s (%s)'dan %s (%s)'a %s tarihinde saat %s'deki seferiniz güncellendi. %s için değişiklikler yapıldı. %s numaralı biletiniz etkilendi.",
+                voyage.getFromStation().getTitle(),
+                voyage.getFromStation().getCity(),
+                voyage.getToStation().getTitle(),
+                voyage.getToStation().getCity(),
+                voyage.getDepartureDate(),
+                voyage.getDepartureTime(),
+                changedFieldsStrTr,
+                ticket.getTicketID()
+            );
+            
             notificationRequest.setMessage(message);
+            notificationRequest.setMessageTr(messageTr);
             notificationRequest.setEntityId(ticket.getTicketID());
             
             notificationService.createNotification(notificationRequest);

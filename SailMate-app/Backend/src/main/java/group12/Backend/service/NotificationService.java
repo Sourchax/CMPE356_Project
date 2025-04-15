@@ -35,6 +35,8 @@ public class NotificationService {
         dto.setTitle(notification.getTitle());
         dto.setMessage(notification.getMessage());
         dto.setEntityId(notification.getEntityId());
+        dto.setMessageTr(notification.getMessageTr());
+        dto.setTitleTr(notification.getTitleTr());
         dto.setIsRead(notification.getIsRead());
         dto.setCreatedAt(notification.getCreatedAt());
         return dto;
@@ -75,7 +77,9 @@ public class NotificationService {
                 request.getType(),
                 request.getTitle(),
                 request.getMessage(),
-                request.getEntityId()
+                request.getTitleTr(),
+                request.getMessageTr(), 
+                request.getEntityId()   
         );
         
         notification = notificationRepository.save(notification);
@@ -126,23 +130,31 @@ public class NotificationService {
     public NotificationDTO createTicketNotification(String userId, String ticketId, String action) {
         String title;
         String message;
+        String titleTr;
+        String messageTr;
         Notification.NotificationType type;
         
         if ("created".equals(action)) {
             title = "Ticket Purchased";
             message = "Your ticket " + ticketId + " has been successfully purchased.";
+            titleTr = "Bilet Alındı";
+            messageTr = "Bilet " + ticketId + " başarıyla satın alındı.";
             type = Notification.NotificationType.TICKET_CREATED;
         } else if ("updated".equals(action)) {
             title = "Ticket Updated";
             message = "Your ticket " + ticketId + " has been updated.";
+            titleTr = "Bilet Güncellendi";
+            messageTr = "Bilet " + ticketId + " güncellendi.";
             type = Notification.NotificationType.TICKET_UPDATED;
         } else {
             title = "Ticket Notification";
             message = "There's an update regarding your ticket " + ticketId + ".";
+            titleTr = "Bilet Bildirimi";
+            messageTr = "Bilet " + ticketId + " için bir güncelleme var.";
             type = Notification.NotificationType.SYSTEM;
         }
         
-        Notification notification = new Notification(userId, type, title, message, ticketId);
+        Notification notification = new Notification(userId, type, title, message, titleTr, messageTr, ticketId);
         notification = notificationRepository.save(notification);
         return convertToDTO(notification);
     }
@@ -159,11 +171,13 @@ public class NotificationService {
             // For each user, create an individual notification
             for (String userId : allUsers.keySet()) {
                 Notification notification = new Notification(
-                        userId,  // Use actual user ID instead of "broadcast"
+                        userId,
                         Notification.NotificationType.BROADCAST,
                         title,
                         message,
-                        null  // No entity ID for broadcast messages
+                        title,
+                        message,
+                        "broadcast"
                 );
                 
                 Notification savedNotification = notificationRepository.save(notification);
@@ -183,34 +197,7 @@ public class NotificationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-    
-    // Create voyage notification
-    @Transactional
-    public List<NotificationDTO> createVoyageNotification(Integer voyageId, List<String> affectedUserIds, String action) {
-        String title;
-        String message;
-        Notification.NotificationType type;
-        
-        if ("cancelled".equals(action)) {
-            title = "Voyage Cancelled";
-            message = "Your voyage #" + voyageId + " has been cancelled. Please check your email for further details.";
-            type = Notification.NotificationType.VOYAGE_CANCELLED;
-        } else if ("delayed".equals(action)) {
-            title = "Voyage Delayed";
-            message = "Your voyage #" + voyageId + " has been delayed. Please check the updated schedule.";
-            type = Notification.NotificationType.VOYAGE_DELAYED;
-        } else {
-            title = "Voyage Update";
-            message = "There's an update regarding your voyage #" + voyageId + ".";
-            type = Notification.NotificationType.SYSTEM;
-        }
-        
-        return affectedUserIds.stream().map(userId -> {
-            Notification notification = new Notification(userId, type, title, message, voyageId.toString());
-            notification = notificationRepository.save(notification);
-            return convertToDTO(notification);
-        }).collect(Collectors.toList());
-    }
+
     
     // Clean up old notifications (could be scheduled with @Scheduled)
     @Transactional

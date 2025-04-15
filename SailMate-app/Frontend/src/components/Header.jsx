@@ -67,14 +67,30 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  const isTurkish = currentLanguage === 'tr';
+  
+  // Helper function to get localized notification content
+  const getLocalizedNotificationContent = (notification) => {
+    if (isTurkish && notification.titleTr && notification.messageTr) {
+      return {
+        title: notification.titleTr,
+        message: notification.messageTr
+      };
+    }
+    return {
+      title: notification.title,
+      message: notification.message
+    };
+  };
   
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
     if (!userId) return;
     const token = useSessionToken();
     try {
-      const response = await axios.get(`${API_BASE_URL}/notifications/count`,{
+      const response = await axios.get(`${API_BASE_URL}/notifications/count`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -218,6 +234,13 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
     }
   }, [userId]);
 
+  // Refetch notifications when language changes
+  useEffect(() => {
+    if (isDropdownOpen) {
+      fetchNotifications();
+    }
+  }, [currentLanguage, isDropdownOpen]);
+
   return (
     <>
       <div className="relative" ref={dropdownRef} style={{ position: 'relative', zIndex: 60 }}>
@@ -255,26 +278,33 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
               ) : notifications.length === 0 ? (
                 <div className="py-4 px-4 text-center text-gray-500">{t('notifications.empty')}</div>
               ) : (
-                notifications.map(notification => (
-                  <div 
-                    key={notification.id} 
-                    className={`py-2 px-4 border-b hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`}
-                    onClick={() => handleNotificationClick(notification)}
-                  >
-                    <div className="flex items-start">
-                      <div className={`mr-3 mt-1 ${getNotificationColor(notification.type)}`}>
-                        <Bell size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{notification.title}</p>
-                        <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(notification.createdAt).toLocaleString()}
-                        </p>
+                notifications.map(notification => {
+                  // Get localized content based on current language
+                  const { title, message } = getLocalizedNotificationContent(notification);
+                  
+                  return (
+                    <div 
+                      key={notification.id} 
+                      className={`py-2 px-4 border-b hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                      onClick={() => handleNotificationClick(notification)}
+                    >
+                      <div className="flex items-start">
+                        <div className={`mr-3 mt-1 ${getNotificationColor(notification.type)}`}>
+                          <Bell size={16} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{title}</p>
+                          <p className="text-xs text-gray-600 mt-1">{message}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(notification.createdAt).toLocaleString(
+                              isTurkish ? 'tr-TR' : undefined
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
             
@@ -291,7 +321,12 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
       </div>
       
       {/* Notification Modal */}
-      <NotificationModal isOpen={isModalOpen} onClose={closeModal} userId={userId} />
+      <NotificationModal 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        userId={userId} 
+        isTurkish={isTurkish}
+      />
     </>
   );
 };
