@@ -45,6 +45,7 @@ public class ActivityLogService {
             activityLog.getFullName(),
             activityLog.getUserRole(),
             activityLog.getDescription(),
+            activityLog.getDescriptionTr(),
             activityLog.getCreatedAt()
         );
     }
@@ -150,7 +151,8 @@ public class ActivityLogService {
             userId,
             fullName,
             userRole,
-            request.getDescription()
+            request.getDescription(),
+            request.getDescriptionTr()
         );
         
         // Save to database
@@ -166,7 +168,8 @@ public class ActivityLogService {
             String actionType,
             String entityType,
             String entityId,
-            String description) {
+            String description,
+            String descriptionTr) {
         
         // Create the activity log with system user
         ActivityLog activityLog = new ActivityLog(
@@ -176,7 +179,8 @@ public class ActivityLogService {
             "system",
             "System",
             "system",
-            description
+            description,
+            descriptionTr
         );
         
         // Save to database

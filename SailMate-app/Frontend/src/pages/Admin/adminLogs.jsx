@@ -571,7 +571,9 @@ const AdminLogs = () => {
                             <div>
                                 <p className="text-sm font-medium text-gray-600">{t("admin.logs.fullDescription")}</p>
                                 <p className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm">
-                                    {selectedLogDetails.description}
+                                    {i18n.language === 'tr' && selectedLogDetails.descriptionTr 
+                                        ? selectedLogDetails.descriptionTr 
+                                        : selectedLogDetails.description}
                                 </p>
                             </div>
                             

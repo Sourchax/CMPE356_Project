@@ -3,6 +3,7 @@ package group12.Backend.controller;
 import group12.Backend.util.*;
 import group12.Backend.dto.ActivityLogDTO;
 import group12.Backend.dto.VoyageDTO;
+import group12.Backend.entity.Voyage;
 import group12.Backend.service.ActivityLogService;
 import group12.Backend.service.VoyageService;
 import java.io.IOException;
@@ -31,6 +32,13 @@ public class VoyageController {
     
     @Autowired
     private ActivityLogService activityLogService;
+    
+    // Static map for status translations
+    private static final Map<Voyage.VoyageStatus, String> STATUS_TRANSLATIONS = new HashMap<>();
+    static {
+        STATUS_TRANSLATIONS.put(Voyage.VoyageStatus.active, "AKTİF");
+        STATUS_TRANSLATIONS.put(Voyage.VoyageStatus.cancel, "İPTAL EDİLDİ");
+    }
     
     // Get all voyages
     @GetMapping
@@ -81,10 +89,19 @@ public class VoyageController {
             logRequest.setActionType("CREATE");
             logRequest.setEntityType("VOYAGE");
             logRequest.setEntityId(createdVoyage.getId().toString());
-            logRequest.setDescription("Created voyage from " + createdVoyage.getFromStationTitle() + 
+            
+            String description = "Created voyage from " + createdVoyage.getFromStationTitle() + 
                 " (" + createdVoyage.getFromStationCity() + ") to " + 
                 createdVoyage.getToStationTitle() + " (" + createdVoyage.getToStationCity() + 
-                ") on " + createdVoyage.getDepartureDate());
+                ") on " + createdVoyage.getDepartureDate();
+                
+            String descriptionTr = "Sefer oluşturuldu: " + createdVoyage.getFromStationTitle() + 
+                " (" + createdVoyage.getFromStationCity() + ") - " + 
+                createdVoyage.getToStationTitle() + " (" + createdVoyage.getToStationCity() + 
+                "), tarih: " + createdVoyage.getDepartureDate();
+            
+            logRequest.setDescription(description);
+            logRequest.setDescriptionTr(descriptionTr);
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVoyage);
@@ -112,6 +129,7 @@ public class VoyageController {
             logRequest.setEntityType("VOYAGE");
             logRequest.setEntityId("bulk");
             logRequest.setDescription("Created " + createdCount + " voyages in bulk operation");
+            logRequest.setDescriptionTr("Toplu işlemle " + createdCount + " sefer oluşturuldu");
             activityLogService.createActivityLog(logRequest, claims);
             
             Map<String, Object> response = new HashMap<>();
@@ -149,12 +167,18 @@ public class VoyageController {
                 logRequest.setEntityId(id.toString());
                 
                 StringBuilder description = new StringBuilder("Updated voyage");
+                StringBuilder descriptionTr = new StringBuilder("Sefer güncellendi");
                 
                 if (originalVoyage != null) {
                     description.append(" from ")
                              .append(originalVoyage.getFromStationTitle())
                              .append(" to ")
                              .append(originalVoyage.getToStationTitle());
+                             
+                    descriptionTr.append(": ")
+                               .append(originalVoyage.getFromStationTitle())
+                               .append(" - ")
+                               .append(originalVoyage.getToStationTitle());
                     
                     // Log significant changes
                     if (voyageDTO.getDepartureDate() != null && 
@@ -163,18 +187,31 @@ public class VoyageController {
                                  .append(originalVoyage.getDepartureDate())
                                  .append(" to ")
                                  .append(updatedVoyage.getDepartureDate());
+                                 
+                        descriptionTr.append(", tarih ")
+                                   .append(originalVoyage.getDepartureDate())
+                                   .append("'den ")
+                                   .append(updatedVoyage.getDepartureDate())
+                                   .append("'e değiştirildi");
                     }
                     
                     if (voyageDTO.getStatus() != null && 
-                        voyageDTO.getStatus() != originalVoyage.getStatus()) {
+                        !voyageDTO.getStatus().equals(originalVoyage.getStatus())) {
                         description.append(", status changed from ")
                                  .append(originalVoyage.getStatus())
                                  .append(" to ")
                                  .append(updatedVoyage.getStatus());
+                                 
+                        descriptionTr.append(", durum ")
+                                   .append(getStatusTranslation(originalVoyage.getStatus()))
+                                   .append("'dan ")
+                                   .append(getStatusTranslation(updatedVoyage.getStatus()))
+                                   .append("'a değiştirildi");
                     }
                 }
                 
                 logRequest.setDescription(description.toString());
+                logRequest.setDescriptionTr(descriptionTr.toString());
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 return ResponseEntity.ok(updatedVoyage);
@@ -209,6 +246,7 @@ public class VoyageController {
                 logRequest.setEntityId(id.toString());
                 
                 StringBuilder description = new StringBuilder("Cancelled voyage with ID: " + id);
+                StringBuilder descriptionTr = new StringBuilder("Sefer iptal edildi, ID: " + id);
                 
                 if (voyage != null) {
                     description.append(" from ")
@@ -221,9 +259,21 @@ public class VoyageController {
                              .append(voyage.getToStationCity())
                              .append(") on ")
                              .append(voyage.getDepartureDate());
+                             
+                    descriptionTr.append(": ")
+                               .append(voyage.getFromStationTitle())
+                               .append(" (")
+                               .append(voyage.getFromStationCity())
+                               .append(") - ")
+                               .append(voyage.getToStationTitle())
+                               .append(" (")
+                               .append(voyage.getToStationCity())
+                               .append("), tarih: ")
+                               .append(voyage.getDepartureDate());
                 }
                 
                 logRequest.setDescription(description.toString());
+                logRequest.setDescriptionTr(descriptionTr.toString());
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 response.put("success", true);
@@ -262,6 +312,7 @@ public class VoyageController {
                 logRequest.setEntityId(id.toString());
                 
                 StringBuilder description = new StringBuilder("Deleted voyage with ID: " + id);
+                StringBuilder descriptionTr = new StringBuilder("Sefer silindi, ID: " + id);
                 
                 if (voyage != null) {
                     description.append(" from ")
@@ -274,9 +325,21 @@ public class VoyageController {
                              .append(voyage.getToStationCity())
                              .append(") on ")
                              .append(voyage.getDepartureDate());
+                             
+                    descriptionTr.append(": ")
+                               .append(voyage.getFromStationTitle())
+                               .append(" (")
+                               .append(voyage.getFromStationCity())
+                               .append(") - ")
+                               .append(voyage.getToStationTitle())
+                               .append(" (")
+                               .append(voyage.getToStationCity())
+                               .append("), tarih: ")
+                               .append(voyage.getDepartureDate());
                 }
                 
                 logRequest.setDescription(description.toString());
+                logRequest.setDescriptionTr(descriptionTr.toString());
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 response.put("success", true);
@@ -321,5 +384,11 @@ public class VoyageController {
     public ResponseEntity<Integer> countActiveVoyages() {
         int count = voyageService.countActiveVoyages();
         return ResponseEntity.ok(count);
+    }
+    
+    // Helper method to translate status to Turkish
+    private String getStatusTranslation(Voyage.VoyageStatus status) {
+        if (status == null) return "";
+        return STATUS_TRANSLATIONS.getOrDefault(status, status.toString());
     }
 }

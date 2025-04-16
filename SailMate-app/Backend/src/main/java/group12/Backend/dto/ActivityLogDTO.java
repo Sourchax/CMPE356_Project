@@ -11,6 +11,7 @@ public class ActivityLogDTO {
     private String fullName;
     private String userRole;
     private String description;
+    private String descriptionTr;
     private LocalDateTime createdAt;
     
     // Default constructor
@@ -20,7 +21,7 @@ public class ActivityLogDTO {
     // Constructor with all fields
     public ActivityLogDTO(Integer id, String actionType, String entityType, String entityId,
                          String userId, String fullName, String userRole, 
-                         String description, LocalDateTime createdAt) {
+                         String description, String descriptionTr, LocalDateTime createdAt) {
         this.id = id;
         this.actionType = actionType;
         this.entityType = entityType;
@@ -29,6 +30,7 @@ public class ActivityLogDTO {
         this.fullName = fullName;
         this.userRole = userRole;
         this.description = description;
+        this.descriptionTr = descriptionTr;
         this.createdAt = createdAt;
     }
     
@@ -97,6 +99,14 @@ public class ActivityLogDTO {
         this.description = description;
     }
     
+    public String getDescriptionTr() {
+        return descriptionTr;
+    }
+    
+    public void setDescriptionTr(String descriptionTr) {
+        this.descriptionTr = descriptionTr;
+    }
+    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -111,6 +121,7 @@ public class ActivityLogDTO {
         private String entityType;
         private String entityId;
         private String description;
+        private String descriptionTr;
         
         // Getters and Setters
         public String getActionType() {
@@ -143,6 +154,14 @@ public class ActivityLogDTO {
         
         public void setDescription(String description) {
             this.description = description;
+        }
+        
+        public String getDescriptionTr() {
+            return descriptionTr;
+        }
+        
+        public void setDescriptionTr(String descriptionTr) {
+            this.descriptionTr = descriptionTr;
         }
     }
     

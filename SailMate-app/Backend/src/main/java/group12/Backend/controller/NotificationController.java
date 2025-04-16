@@ -182,6 +182,7 @@ public class NotificationController {
         logRequest.setEntityType("NOTIFICATION");
         logRequest.setEntityId("broadcast");
         logRequest.setDescription("Sent broadcast notification: " + title);
+        logRequest.setDescriptionTr("Toplu bildirim gönderildi: " + title);
         activityLogService.createActivityLog(logRequest, claims);
         
         Map<String, Object> response = new HashMap<>();
@@ -214,6 +215,7 @@ public class NotificationController {
             logRequest.setEntityType("NOTIFICATION");
             logRequest.setEntityId("broadcast/" + id);
             logRequest.setDescription("Deleted broadcast notification with ID: " + id);
+            logRequest.setDescriptionTr("Toplu bildirim silindi, ID: " + id);
             activityLogService.createActivityLog(logRequest, claims);
         }
         

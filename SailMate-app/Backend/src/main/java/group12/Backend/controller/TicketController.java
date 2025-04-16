@@ -88,6 +88,7 @@ public class TicketController {
             logRequest.setEntityType("TICKET");
             logRequest.setEntityId(id.toString());
             logRequest.setDescription("Retrieved ticket details for ticket ID: " + id);
+            logRequest.setDescriptionTr("Bilet detayları görüntülendi, bilet ID: " + id);
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.ok(ticketResponse);
@@ -133,6 +134,7 @@ public class TicketController {
                     logRequest.setEntityType("TICKET");
                     logRequest.setEntityId(ticketID);
                     logRequest.setDescription("Retrieved ticket details for ticket ID: " + ticketID);
+                    logRequest.setDescriptionTr("Bilet detayları görüntülendi, bilet ID: " + ticketID);
                     activityLogService.createActivityLog(logRequest, claims);
                     return ResponseEntity.ok(ticketResponse);
                     
@@ -181,10 +183,16 @@ public class TicketController {
             
             // Prepare voyage details for logging
             String voyageDetails = "";
+            String voyageDetailsTr = "";
             try {
                 Voyage voyage = voyageService.getVoyageEntityById(ticketRequest.getVoyageId()).orElse(null);
                 if (voyage != null) {
                     voyageDetails = String.format(" for voyage from %s to %s on %s", 
+                        voyage.getFromStation().getTitle(),
+                        voyage.getToStation().getTitle(),
+                        voyage.getDepartureDate()
+                    );
+                    voyageDetailsTr = String.format(" %s - %s seferi için, tarih: %s", 
                         voyage.getFromStation().getTitle(),
                         voyage.getToStation().getTitle(),
                         voyage.getDepartureDate()
@@ -199,13 +207,25 @@ public class TicketController {
             logRequest.setActionType("CREATE");
             logRequest.setEntityType("TICKET");
             logRequest.setEntityId(createdTicket.getTicketID());
-            logRequest.setDescription(String.format(
+            
+            String description = String.format(
                 "Created ticket %s%s for %d passenger(s), class: %s", 
                 createdTicket.getTicketID(),
                 voyageDetails,
                 ticketRequest.getPassengerCount(),
                 ticketRequest.getTicketClass()
-            ));
+            );
+            
+            String descriptionTr = String.format(
+                "Bilet oluşturuldu: %s%s, %d yolcu için, sınıf: %s", 
+                createdTicket.getTicketID(),
+                voyageDetailsTr,
+                ticketRequest.getPassengerCount(),
+                ticketRequest.getTicketClass()
+            );
+            
+            logRequest.setDescription(description);
+            logRequest.setDescriptionTr(descriptionTr);
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
@@ -233,28 +253,41 @@ public class TicketController {
             if (updatedTicket.isPresent()) {
                 // Log what changed
                 StringBuilder changes = new StringBuilder();
+                StringBuilder changesTr = new StringBuilder();
                 
                 if (updateRequest.getTicketClass() != null && !updateRequest.getTicketClass().equals(originalTicketClass)) {
                     changes.append(String.format("class changed from %s to %s", originalTicketClass, updateRequest.getTicketClass()));
+                    changesTr.append(String.format("sınıf %s'dan %s'a değiştirildi", originalTicketClass, updateRequest.getTicketClass()));
                 }
                 
                 if (updateRequest.getPassengerCount() != null && originalTicket.isPresent() && 
                     !updateRequest.getPassengerCount().equals(originalTicket.get().getPassengerCount())) {
                     if (changes.length() > 0) changes.append(", ");
+                    if (changesTr.length() > 0) changesTr.append(", ");
+                    
                     changes.append(String.format("passenger count changed from %d to %d", 
+                        originalTicket.get().getPassengerCount(), updateRequest.getPassengerCount()));
+                    changesTr.append(String.format("yolcu sayısı %d'dan %d'a değiştirildi", 
                         originalTicket.get().getPassengerCount(), updateRequest.getPassengerCount()));
                 }
                 
                 if (updateRequest.getSelectedSeats() != null && originalTicket.isPresent() && 
                     !updateRequest.getSelectedSeats().equals(originalTicket.get().getSelectedSeats())) {
                     if (changes.length() > 0) changes.append(", ");
+                    if (changesTr.length() > 0) changesTr.append(", ");
+                    
                     changes.append(String.format("seats changed from %s to %s", 
+                        originalTicket.get().getSelectedSeats(), updateRequest.getSelectedSeats()));
+                    changesTr.append(String.format("koltuklar %s'dan %s'a değiştirildi", 
                         originalTicket.get().getSelectedSeats(), updateRequest.getSelectedSeats()));
                 }
                 
                 String description = String.format("Updated ticket %s", ticketID);
+                String descriptionTr = String.format("Bilet güncellendi %s", ticketID);
+                
                 if (changes.length() > 0) {
                     description += " (" + changes.toString() + ")";
+                    descriptionTr += " (" + changesTr.toString() + ")";
                 }
                 
                 // Log the activity
@@ -263,6 +296,7 @@ public class TicketController {
                 logRequest.setEntityType("TICKET");
                 logRequest.setEntityId(ticketID);
                 logRequest.setDescription(description);
+                logRequest.setDescriptionTr(descriptionTr);
                 activityLogService.createActivityLog(logRequest, claims);
             }
             
@@ -296,6 +330,7 @@ public class TicketController {
         if (deleted) {
             // Build the description for the log
             StringBuilder description = new StringBuilder("Deleted ticket " + ticketID);
+            StringBuilder descriptionTr = new StringBuilder("Bilet silindi " + ticketID);
             
             // Add voyage details if available
             if (ticketToDelete.isPresent() && ticketToDelete.get().getVoyageId() != null) {
@@ -304,6 +339,12 @@ public class TicketController {
                     enrichTicketWithVoyageInfo(ticket);
                     
                     description.append(String.format(" for voyage from %s to %s on %s", 
+                        ticket.getFromStationTitle(),
+                        ticket.getToStationTitle(),
+                        ticket.getDepartureDate()
+                    ));
+                    
+                    descriptionTr.append(String.format(", %s - %s seferi için, tarih: %s", 
                         ticket.getFromStationTitle(),
                         ticket.getToStationTitle(),
                         ticket.getDepartureDate()
@@ -392,6 +433,7 @@ public class TicketController {
             logRequest.setEntityType("TICKET");
             logRequest.setEntityId(ticketID);
             logRequest.setDescription(description.toString());
+            logRequest.setDescriptionTr(descriptionTr.toString());
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.noContent().build();
@@ -557,6 +599,7 @@ public class TicketController {
             e.printStackTrace();
         }
     }
+    
     
     private void sendRoundTripConfirmationEmailWithPDFs(HashMap<String, Object> user, Map<String, Object> departureTicket, Map<String, Object> returnTicket) {
         try {

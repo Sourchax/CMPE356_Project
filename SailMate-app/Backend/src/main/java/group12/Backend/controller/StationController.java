@@ -33,6 +33,14 @@ public class StationController {
     private final StationService stationService;
     private final ActivityLogService activityLogService;
     
+    // Static map for status translations
+    private static final Map<Station.Status, String> STATUS_TRANSLATIONS = new HashMap<>();
+    static {
+        STATUS_TRANSLATIONS.put(Station.Status.active, "AKTİF");
+        STATUS_TRANSLATIONS.put(Station.Status.inactive, "PASİF");
+        STATUS_TRANSLATIONS.put(Station.Status.maintenance, "BAKIMDA");
+    }
+    
     @Autowired
     public StationController(StationService stationService, ActivityLogService activityLogService) {
         this.stationService = stationService;
@@ -117,6 +125,7 @@ public class StationController {
             logRequest.setEntityType("STATION");
             logRequest.setEntityId(savedStation.getId().toString());
             logRequest.setDescription("Created station: " + savedStation.getTitle() + " in " + savedStation.getCity());
+            logRequest.setDescriptionTr("İstasyon oluşturuldu: " + savedStation.getTitle() + ", " + savedStation.getCity() + " şehrinde");
             activityLogService.createActivityLog(logRequest, claims);
             
             return new ResponseEntity<>(savedStation, HttpStatus.CREATED);
@@ -163,26 +172,37 @@ public class StationController {
             logRequest.setEntityId(id.toString());
             
             StringBuilder descriptionBuilder = new StringBuilder("Updated station: " + updatedStation.getTitle());
+            StringBuilder descriptionTrBuilder = new StringBuilder("İstasyon güncellendi: " + updatedStation.getTitle());
             
             // Add changed fields to description
             List<String> changes = new ArrayList<>();
+            List<String> changesTr = new ArrayList<>();
+            
             if (!originalTitle.equals(updatedStation.getTitle())) {
                 changes.add("title changed from '" + originalTitle + "' to '" + updatedStation.getTitle() + "'");
+                changesTr.add("başlık '" + originalTitle + "' yerine '" + updatedStation.getTitle() + "' olarak değiştirildi");
             }
             if (!originalCity.equals(updatedStation.getCity())) {
                 changes.add("city changed from '" + originalCity + "' to '" + updatedStation.getCity() + "'");
+                changesTr.add("şehir '" + originalCity + "' yerine '" + updatedStation.getCity() + "' olarak değiştirildi");
             }
             if (originalStatus != updatedStation.getStatus()) {
                 changes.add("status changed from '" + originalStatus + "' to '" + updatedStation.getStatus() + "'");
+                changesTr.add("durum '" + getStatusTranslation(originalStatus) + "' yerine '" + getStatusTranslation(updatedStation.getStatus()) + "' olarak değiştirildi");
             }
             
             if (!changes.isEmpty()) {
                 descriptionBuilder.append(" (");
                 descriptionBuilder.append(String.join(", ", changes));
                 descriptionBuilder.append(")");
+                
+                descriptionTrBuilder.append(" (");
+                descriptionTrBuilder.append(String.join(", ", changesTr));
+                descriptionTrBuilder.append(")");
             }
             
             logRequest.setDescription(descriptionBuilder.toString());
+            logRequest.setDescriptionTr(descriptionTrBuilder.toString());
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.ok(updatedStation);
@@ -222,6 +242,7 @@ public class StationController {
             logRequest.setEntityType("STATION");
             logRequest.setEntityId(id.toString());
             logRequest.setDescription("Deleted station: " + stationTitle + " in " + stationCity);
+            logRequest.setDescriptionTr("İstasyon silindi: " + stationTitle + ", " + stationCity + " şehrinde");
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.noContent().build();
@@ -241,6 +262,12 @@ public class StationController {
         station.setAddress(stationDTO.getAddress());
         station.setStatus(stationDTO.getStatus());
         return station;
+    }
+    
+    // Helper method to translate status to Turkish using the map
+    private String getStatusTranslation(Station.Status status) {
+        if (status == null) return "";
+        return STATUS_TRANSLATIONS.getOrDefault(status, status.toString());
     }
 
     @GetMapping("/count")

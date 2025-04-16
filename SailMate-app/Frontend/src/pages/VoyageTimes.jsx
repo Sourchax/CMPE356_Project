@@ -7,7 +7,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 const VoyageTimes = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   useEffect(() => {
     document.title = t('pageTitle.voyageTimes');
@@ -229,10 +229,16 @@ const VoyageTimes = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString('en-US', {
+    
+    const options = {
       month: 'short',
       day: 'numeric'
-    });
+    };
+    
+    const date = new Date(dateString);
+    const locale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
+    
+    return date.toLocaleDateString(locale, options);
   };
 
   return (

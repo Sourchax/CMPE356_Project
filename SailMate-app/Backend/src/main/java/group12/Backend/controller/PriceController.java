@@ -73,16 +73,26 @@ public class PriceController {
                 logRequest.setEntityId(id.toString());
                 
                 StringBuilder description = new StringBuilder("Updated price for class: " + updatedPrice.getClassName());
+                StringBuilder descriptionTr = new StringBuilder("Fiyat güncellendi, sınıf: " + updatedPrice.getClassName());
+                
                 if (originalPrice != null) {
                     description.append(" from ")
                               .append(originalPrice.getValue())
                               .append(" to ")
                               .append(updatedPrice.getValue());
+                              
+                    descriptionTr.append(", ")
+                              .append(originalPrice.getValue())
+                              .append("'dan ")
+                              .append(updatedPrice.getValue())
+                              .append("'e değiştirildi");
                 } else {
                     description.append(" to ").append(updatedPrice.getValue());
+                    descriptionTr.append(", yeni değer: ").append(updatedPrice.getValue());
                 }
                 
                 logRequest.setDescription(description.toString());
+                logRequest.setDescriptionTr(descriptionTr.toString());
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 return new ResponseEntity<>(updatedPrice, HttpStatus.OK);
@@ -129,16 +139,26 @@ public class PriceController {
                 logRequest.setEntityId("class/" + className);
                 
                 StringBuilder description = new StringBuilder("Updated price for class: " + className);
+                StringBuilder descriptionTr = new StringBuilder("Fiyat güncellendi, sınıf: " + className);
+                
                 if (originalPrice != null) {
                     description.append(" from ")
                               .append(originalPrice.getValue())
                               .append(" to ")
                               .append(updatedPrice.getValue());
+                              
+                    descriptionTr.append(", ")
+                              .append(originalPrice.getValue())
+                              .append("'dan ")
+                              .append(updatedPrice.getValue())
+                              .append("'e değiştirildi");
                 } else {
                     description.append(" to ").append(updatedPrice.getValue());
+                    descriptionTr.append(", yeni değer: ").append(updatedPrice.getValue());
                 }
                 
                 logRequest.setDescription(description.toString());
+                logRequest.setDescriptionTr(descriptionTr.toString());
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 return new ResponseEntity<>(updatedPrice, HttpStatus.OK);

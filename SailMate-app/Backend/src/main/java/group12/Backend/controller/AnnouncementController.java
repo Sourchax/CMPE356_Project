@@ -75,6 +75,7 @@ public class AnnouncementController {
             logRequest.setEntityType("ANNOUNCEMENT");
             logRequest.setEntityId(created.getId().toString());
             logRequest.setDescription("Created announcement: " + created.getTitle());
+            logRequest.setDescriptionTr("Duyuru oluşturuldu: " + created.getTitle());
             activityLogService.createActivityLog(logRequest, claims);
             
             return new ResponseEntity<>(created, HttpStatus.CREATED);   
@@ -108,11 +109,15 @@ public class AnnouncementController {
                 logRequest.setEntityId(id.toString());
                 
                 String description = "Updated announcement: " + updated.getTitle();
+                String descriptionTr = "Duyuru güncellendi: " + updated.getTitle();
+                
                 if (originalAnnouncement != null && !originalAnnouncement.getTitle().equals(updated.getTitle())) {
                     description += " (previously: " + originalAnnouncement.getTitle() + ")";
+                    descriptionTr += " (önceki: " + originalAnnouncement.getTitle() + ")";
                 }
                 
                 logRequest.setDescription(description);
+                logRequest.setDescriptionTr(descriptionTr);
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 return ResponseEntity.ok(updated);
@@ -146,11 +151,15 @@ public class AnnouncementController {
                 logRequest.setEntityId(id.toString());
                 
                 String description = "Deleted announcement";
+                String descriptionTr = "Duyuru silindi";
+                
                 if (announcement != null) {
                     description += ": " + announcement.getTitle();
+                    descriptionTr += ": " + announcement.getTitle();
                 }
                 
                 logRequest.setDescription(description);
+                logRequest.setDescriptionTr(descriptionTr);
                 activityLogService.createActivityLog(logRequest, claims);
                 
                 return ResponseEntity.noContent().build();

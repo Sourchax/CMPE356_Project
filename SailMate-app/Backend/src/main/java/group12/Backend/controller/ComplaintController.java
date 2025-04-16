@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -33,6 +32,13 @@ public class ComplaintController {
     
     private final ComplaintService complaintService;
     private final ActivityLogService activityLogService;
+
+    // Static map for status translations
+    private static final Map<Complaint.ComplaintStatus, String> STATUS_TRANSLATIONS = new HashMap<>();
+    static {
+        STATUS_TRANSLATIONS.put(Complaint.ComplaintStatus.active, "AKTİF");
+        STATUS_TRANSLATIONS.put(Complaint.ComplaintStatus.solved, "ÇÖZÜLDÜ");
+    }
 
     @Autowired
     private JavaMailSender emailSender;
@@ -97,6 +103,7 @@ public class ComplaintController {
             logRequest.setEntityType("COMPLAINT");
             logRequest.setEntityId(createdComplaint.getId().toString());
             logRequest.setDescription("Created complaint: " + createdComplaint.getSubject() + " from " + createdComplaint.getSender());
+            logRequest.setDescriptionTr("Şikayet oluşturuldu: " + createdComplaint.getSubject() + " gönderen: " + createdComplaint.getSender());
             activityLogService.createActivityLog(logRequest, claims);
             
             return new ResponseEntity<>(createdComplaint, HttpStatus.CREATED);
@@ -149,23 +156,33 @@ public class ComplaintController {
                     logRequest.setEntityId(id.toString());
                     
                     StringBuilder description = new StringBuilder("Updated complaint");
+                    StringBuilder descriptionTr = new StringBuilder("Şikayet güncellendi");
                     
                     if (originalComplaint != null) {
                         description.append(": ").append(originalComplaint.getSubject());
+                        descriptionTr.append(": ").append(originalComplaint.getSubject());
                         
                         if (originalComplaint.getStatus() != request.getStatus()) {
                             description.append(", status changed from ")
                                      .append(originalComplaint.getStatus())
                                      .append(" to ")
                                      .append(request.getStatus());
+                                     
+                            descriptionTr.append(", durum ")
+                                     .append(getStatusTranslation(originalComplaint.getStatus()))
+                                     .append("'dan ")
+                                     .append(getStatusTranslation(request.getStatus()))
+                                     .append("'a değiştirildi");
                         }
                         
                         if (request.getReply() != null && !request.getReply().equals(originalComplaint.getReply())) {
                             description.append(", reply added/updated");
+                            descriptionTr.append(", yanıt eklendi/güncellendi");
                         }
                     }
                     
                     logRequest.setDescription(description.toString());
+                    logRequest.setDescriptionTr(descriptionTr.toString());
                     activityLogService.createActivityLog(logRequest, claims);
                     
                     return ResponseEntity.ok(updatedComplaint);
@@ -194,11 +211,15 @@ public class ComplaintController {
             logRequest.setEntityId(id.toString());
             
             String description = "Deleted complaint";
+            String descriptionTr = "Şikayet silindi";
+            
             if (complaint != null) {
                 description += ": " + complaint.getSubject() + " from " + complaint.getSender();
+                descriptionTr += ": " + complaint.getSubject() + " gönderen: " + complaint.getSender();
             }
             
             logRequest.setDescription(description);
+            logRequest.setDescriptionTr(descriptionTr);
             activityLogService.createActivityLog(logRequest, claims);
             
             return ResponseEntity.noContent().build();
@@ -206,5 +227,11 @@ public class ComplaintController {
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
+    }
+    
+    // Helper method to translate status to Turkish using the map
+    private String getStatusTranslation(Complaint.ComplaintStatus status) {
+        if (status == null) return "";
+        return STATUS_TRANSLATIONS.getOrDefault(status, status.toString());
     }
 }

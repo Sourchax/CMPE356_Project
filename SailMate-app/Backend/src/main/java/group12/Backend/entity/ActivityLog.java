@@ -32,6 +32,9 @@ public class ActivityLog {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
     
+    @Column(name = "description_tr", nullable = false, columnDefinition = "TEXT")
+    private String descriptionTr;
+    
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
@@ -45,7 +48,8 @@ public class ActivityLog {
     }
     
     public ActivityLog(String actionType, String entityType, String entityId, 
-                      String userId, String fullName, String userRole, String description) {
+                      String userId, String fullName, String userRole, 
+                      String description, String descriptionTr) {
         this.actionType = actionType;
         this.entityType = entityType;
         this.entityId = entityId;
@@ -53,6 +57,7 @@ public class ActivityLog {
         this.fullName = fullName;
         this.userRole = userRole;
         this.description = description;
+        this.descriptionTr = descriptionTr;
     }
     
     // Getters and Setters
@@ -118,6 +123,14 @@ public class ActivityLog {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getDescriptionTr() {
+        return descriptionTr;
+    }
+    
+    public void setDescriptionTr(String descriptionTr) {
+        this.descriptionTr = descriptionTr;
     }
     
     public LocalDateTime getCreatedAt() {
