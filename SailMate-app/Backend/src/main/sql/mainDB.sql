@@ -26,6 +26,7 @@ CREATE TABLE activity_log (
     full_name VARCHAR(255),
     user_role VARCHAR(50) DEFAULT 'user',
     description TEXT NOT NULL,
+    description_tr TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
