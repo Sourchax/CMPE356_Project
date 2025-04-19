@@ -8,6 +8,7 @@ import React from "react";
  * @param {string} [props.size='md'] - Button size (sm, md, lg)
  * @param {boolean} [props.fullWidth=false] - Whether the button should take full width
  * @param {boolean} [props.loading=false] - Loading state of the button
+ * @param {string} [props.loadingText='Loading...'] - Text to display when loading
  * @param {React.ReactNode} props.children - Button content
  * @param {function} [props.onClick] - Click handler
  * @param {string} [props.type='button'] - Button type
@@ -19,6 +20,7 @@ const Button = ({
   size = 'md', 
   fullWidth = false, 
   loading = false,
+  loadingText = 'Loading...',
   children, 
   onClick, 
   type = 'button', 
@@ -67,7 +69,7 @@ const Button = ({
       {loading ? (
         <div className="flex items-center justify-center">
           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-          <span>Loading...</span>
+          <span>{loadingText}</span>
         </div>
       ) : (
         children

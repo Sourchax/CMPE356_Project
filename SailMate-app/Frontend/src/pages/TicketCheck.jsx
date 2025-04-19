@@ -368,6 +368,7 @@ const TicketCheck = () => {
                   fullWidth
                   size="lg"
                   loading={loading}
+                  loadingText={t('common.loading')}
                   disabled={loading}
                   className="submit-button ticketcheck-button"
                 >
@@ -554,6 +555,8 @@ const TicketCheck = () => {
                   onClick={handleDownloadTicket}
                   variant="primary"
                   size="lg"
+                  loading={loading}
+                  loadingText={t('common.loading')}
                   disabled={ticketDetails.status.toLowerCase() === "canceled"}
                   className="ticketcheck-button px-4 py-3 text-base w-full"
                 >

@@ -402,6 +402,7 @@ const Contact = () => {
                 <Button 
                   type="submit" 
                   loading={loading}
+                  loadingText={t('common.loading')}
                   variant="primary"
                   fullWidth
                   size="lg"

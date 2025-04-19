@@ -415,6 +415,7 @@ const TicketCancel = () => {
                 size="lg"
                 loading={loading || fetchingDetails}
                 disabled={loading || fetchingDetails}
+                loadingText={t('common.loading')}
                 className="ticketcancel-button"
               >
                 {fetchingDetails ? t('ticketCancel.retrievingDetails') : t('ticketCancel.continueButton')}
@@ -543,6 +544,7 @@ const TicketCancel = () => {
                   size="lg"
                   loading={loading}
                   disabled={loading}
+                  loadingText={t('common.loading')}
                   className="ticketcancel-button px-4 py-3 text-base w-full"
                 >
                   {t('ticketCancel.confirmButton')}

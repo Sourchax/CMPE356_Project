@@ -90,7 +90,8 @@
     "searchTickets": "Search Tickets",
     "viewOnMap": "View on Map",
     "all": "All",
-    "error": "Error"
+    "error": "Error",
+    "loading": "Loading..."
   },
   "homepage": {
     "hero": {

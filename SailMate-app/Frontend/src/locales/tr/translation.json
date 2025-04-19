@@ -97,7 +97,8 @@
     "switchToUser": "Kullanıcı Moduna Geç",
     "toggleMenu": "Menüyü Aç/Kapat",
     "retry": "Tekrar Dene",
-    "error": "Hata"
+    "error": "Hata",
+    "loading": "Yükleniyor..."
   },
   "homepage": {
     "hero": {
