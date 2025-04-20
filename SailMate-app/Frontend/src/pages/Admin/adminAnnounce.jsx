@@ -584,7 +584,7 @@ export default function AdminAnnounce() {
             </div>
             
             <p className="mb-4">
-              {t('admin.announcements.delete.confirmMessage', { title: announcementToDelete.title })}
+              {t('admin.announcements.delete.confirmMessage').replace('{title}', announcementToDelete.title)}
             </p>
             
             <div className="flex justify-end gap-3 mt-5">

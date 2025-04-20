@@ -42,6 +42,20 @@ const MyTickets = () => {
     USD: '$',
     EUR: '€'
   };
+  const translatePassengerType = (type) => {
+    if (!type) return t('passengerTypes.adult'); // Default to adult if not specified
+    
+    // Convert to lowercase for case-insensitive comparison
+    const lowerType = type.toLowerCase();
+    
+    if (lowerType === 'adult') return t('passengerTypes.adult');
+    if (lowerType === 'student') return t('passengerTypes.student');
+    if (lowerType === 'child') return t('passengerTypes.child');
+    if (lowerType === 'senior') return t('passengerTypes.senior');
+    
+    // Return the original if no match (fallback)
+    return type;
+  };
 
   // Fetch currency rates when component mounts
   useEffect(() => {
@@ -399,9 +413,9 @@ const MyTickets = () => {
                     onChange={(e) => setSelectedCurrency(e.target.value)}
                     className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                   >
-                    <option value="TRY">Turkish Lira (₺)</option>
-                    <option value="USD">US Dollar ($)</option>
-                    <option value="EUR">Euro (€)</option>
+                    <option value="TRY">{t('currencies.turkishLira')} (₺)</option>
+                    <option value="USD">{t('currencies.usDollar')} ($)</option>
+                    <option value="EUR">{t('currencies.euro')} (€)</option>
                   </select>
                 </div>
               </div>
@@ -578,9 +592,9 @@ const MyTickets = () => {
                       onChange={(e) => setSelectedCurrency(e.target.value)}
                       className="bg-gray-100 border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D3A73]"
                     >
-                      <option value="TRY">₺ TRY</option>
-                      <option value="USD">$ USD</option>
-                      <option value="EUR">€ EUR</option>
+                      <option value="TRY">₺ {t('currencies.shortTRY')}</option>
+                      <option value="USD">$ {t('currencies.shortUSD')}</option>
+                      <option value="EUR">€ {t('currencies.shortEUR')}</option>
                     </select>
                   </div>
                 </div>
@@ -600,7 +614,7 @@ const MyTickets = () => {
                         </div>
                         <div>
                           <p className="text-gray-500">{t('myTickets.type')}</p>
-                          <p>{passenger.passengerType || "Adult"}</p>
+                          <p>{translatePassengerType(passenger.passengerType)}</p>
                         </div>
                         
                         {/* Only show email and phone for non-child passengers */}

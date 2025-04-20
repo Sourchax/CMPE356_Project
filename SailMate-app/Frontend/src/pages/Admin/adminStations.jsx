@@ -88,17 +88,18 @@ const AdminStations = () => {
       newErrors.personnel = t('admin.stations.validation.contactPersonInvalid');
     }
     
-    // Phone validation - more flexible to allow different formats
     if (!formData.phoneno.trim()) {
       newErrors.phoneno = t('admin.stations.validation.phoneRequired');
-    } else if (!/^(\+?\d{1,3}[- ]?)?\d{3,}[- \d]*$/.test(formData.phoneno.trim()) || formData.phoneno.replace(/[^\d]/g, '').length < 10) {
+    } else if (!/^(\+?\d{1,3}[- ]?)?\d{3,}[- \d]*$/.test(formData.phoneno.trim()) || 
+               formData.phoneno.replace(/[^\d]/g, '').length < 10 || 
+               formData.phoneno.replace(/[^\d]/g, '').length > 16) {
       newErrors.phoneno = t('admin.stations.validation.phoneInvalid');
     }
     
     // City validation - allow only letters, spaces, hyphens, and apostrophes, including Turkish characters
     if (!formData.city.trim()) {
       newErrors.city = t('admin.stations.validation.cityRequired');
-    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s'-]+$/.test(formData.city.trim())) {
+    } else if (!/^[a-zA-ZğüşöçıİĞÜŞÖÇ\s]+$/.test(formData.city.trim())) {
       newErrors.city = t('admin.stations.validation.cityInvalid');
     }
     

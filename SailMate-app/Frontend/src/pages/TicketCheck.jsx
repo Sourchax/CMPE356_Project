@@ -26,6 +26,37 @@ const TicketCheck = () => {
   });
   const navigate = useNavigate();
 
+  const translatePassengerType = (type) => {
+    if (!type) return t('passengerTypes.adult'); // Default to adult if not specified
+    
+    // Convert to lowercase for case-insensitive comparison
+    const lowerType = type.toLowerCase();
+    
+    if (lowerType === 'adult') return t('passengerTypes.adult');
+    if (lowerType === 'student') return t('passengerTypes.student');
+    if (lowerType === 'child') return t('passengerTypes.child');
+    if (lowerType === 'senior') return t('passengerTypes.senior');
+    
+    // Return the original if no match (fallback)
+    return type;
+  };
+
+  const translateTicketStatus = (status) => {
+    if (!status) return t('ticketStatus.unknown');
+    
+    // Convert to lowercase for case-insensitive comparison
+    const lowerStatus = status.toLowerCase();
+    
+    if (lowerStatus === 'confirmed') return t('ticketStatus.confirmed');
+    if (lowerStatus === 'upcoming') return t('ticketStatus.upcoming');
+    if (lowerStatus === 'completed') return t('ticketStatus.completed');
+    if (lowerStatus === 'canceled') return t('ticketStatus.canceled');
+    if (lowerStatus === 'unknown') return t('ticketStatus.unknown');
+    
+    // Return the original if no match (fallback)
+    return status;
+  }
+
   // Initialize ticket details with empty values
   const [ticketDetails, setTicketDetails] = useState({
     id: "",
@@ -284,11 +315,11 @@ const TicketCheck = () => {
 
   // Get departure and destination display
   const getDepartureDisplay = () => {
-    return ticketDetails.fromStationCity || ticketDetails.fromStationTitle || "-";
+    return ticketDetails.fromStationTitle || "-";
   };
 
   const getDestinationDisplay = () => {
-    return ticketDetails.toStationCity || ticketDetails.toStationTitle || "-";
+    return ticketDetails.toStationTitle || "-";
   };
 
   return (
@@ -383,7 +414,7 @@ const TicketCheck = () => {
                   <h2 className="text-2xl font-bold text-gray-800 font-sans">{t('ticketCheck.ticketStatus')}</h2>
                   <div className={`mt-2 px-4 py-1 rounded-full ${getStatusBgColor(ticketDetails.status)}`}>
                     <span className={`font-medium ${getStatusColor(ticketDetails.status)}`}>
-                      {ticketDetails.status}
+                      {translateTicketStatus(ticketDetails.status)}
                     </span>
                   </div>
                 </div>
@@ -412,13 +443,13 @@ const TicketCheck = () => {
                     <span className="font-medium text-gray-700 font-sans">{ticketDetails.ticketID}</span>
                   </div>
                   
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-sans flex items-center">
-                      <Ship size={16} className="mr-2 text-gray-500" />
+                  <div className="flex justify-between items-start">
+                    <span className="text-gray-600 font-sans flex items-center flex-shrink-0">
+                      <Ship size={16} className="mr-2 text-gray-500 flex-shrink-0" />
                       {t('ticketCheck.journey')}:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">
-                      {getDepartureDisplay()} to {getDestinationDisplay()}
+                    <span className="font-medium text-gray-700 font-sans text-right break-words max-w-[60%]">
+                      {getDepartureDisplay()} - {getDestinationDisplay()}
                     </span>
                   </div>
                   
@@ -479,7 +510,7 @@ const TicketCheck = () => {
                             <span className="font-medium">{passenger.name} {passenger.surname}</span>
                             {passenger.passengerType && (
                               <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
-                                {passenger.passengerType}
+                                {translatePassengerType(passenger.passengerType)}
                               </span>
                             )}
                           </div>
@@ -516,7 +547,7 @@ const TicketCheck = () => {
                     </p>
                   </div>
                 )}
-                
+
                 {ticketDetails.status.toLowerCase() === "upcoming" && (
                   <div className="bg-blue-50 rounded-md p-4">
                     <p className="text-sm text-blue-700 font-sans">
@@ -524,7 +555,7 @@ const TicketCheck = () => {
                     </p>
                   </div>
                 )}
-                
+
                 {ticketDetails.status.toLowerCase() === "completed" && (
                   <div className="bg-gray-50 rounded-md p-4">
                     <p className="text-sm text-gray-700 font-sans">
@@ -532,7 +563,7 @@ const TicketCheck = () => {
                     </p>
                   </div>
                 )}
-                
+
                 {ticketDetails.status.toLowerCase() === "canceled" && (
                   <div className="bg-red-50 rounded-md p-4">
                     <p className="text-sm text-red-700 font-sans">

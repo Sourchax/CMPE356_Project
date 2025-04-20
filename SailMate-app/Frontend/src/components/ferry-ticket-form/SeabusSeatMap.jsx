@@ -267,8 +267,10 @@ const SeaBusSeatMap = ({
         </div>
         
         {/* Stern indicator */}
-        <div className="absolute -bottom-8 right-1/2 transform translate-x-1/2 text-gray-600 flex items-center">
-          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded">{t('ferryTicketing.stern')}</span>
+        <div className="mt-6 pb-2 flex justify-center">
+          <span className="text-xs font-semibold bg-gray-200 px-2 py-1 rounded text-gray-600">
+            {t('ferryTicketing.stern')}
+          </span>
         </div>
       </div>
     </div>

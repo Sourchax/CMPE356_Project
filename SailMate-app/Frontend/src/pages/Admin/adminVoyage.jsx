@@ -647,6 +647,7 @@ const applyFilters = () => {
     // Logical validations
     if (voyage.fromStationId && voyage.toStationId && voyage.fromStationId === voyage.toStationId) {
       errors.toStationId = t('adminVoyage.validation.stationsSame');
+      return errors; // Return early to prevent the form submission with invalid stations
     }
     
     if (voyage.departureTime && voyage.arrivalTime) {
@@ -654,16 +655,14 @@ const applyFilters = () => {
       const depTime = new Date(`2000-01-01T${voyage.departureTime}`);
       const arrTime = new Date(`2000-01-01T${voyage.arrivalTime}`);
       
-      // If arrival time is earlier in the day than departure, assume it's the next day
-      let timeDiffMinutes;
+      // Check if arrival time is earlier in the day than departure time
       if (arrTime < depTime) {
-        // Add a day to arrival time (86400000 ms = 24 hours)
-        arrTime.setTime(arrTime.getTime() + 86400000);
-        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
-      } else {
-        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+        errors.arrivalTime = t('adminVoyage.validation.arrivalBeforeDeparture');
+        return errors; // Return early to prevent additional logic on this invalid state
       }
       
+      // Continue with existing validation...
+      const timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
       if (timeDiffMinutes < 40) {
         errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
       }
@@ -763,6 +762,7 @@ const applyFilters = () => {
     // Logical validations
     if (schedule.fromStationId && schedule.toStationId && schedule.fromStationId === schedule.toStationId) {
       errors.toStationId = t('adminVoyage.validation.stationsSame');
+      return errors; // Return early to prevent additional validation and form submission with invalid stations
     }
     
     if (schedule.departureTime && schedule.arrivalTime) {
@@ -770,16 +770,14 @@ const applyFilters = () => {
       const depTime = new Date(`2000-01-01T${schedule.departureTime}`);
       const arrTime = new Date(`2000-01-01T${schedule.arrivalTime}`);
       
-      // If arrival time is earlier in the day than departure, assume it's the next day
-      let timeDiffMinutes;
+      // Check if arrival time is earlier in the day than departure time
       if (arrTime < depTime) {
-        // Add a day to arrival time
-        arrTime.setTime(arrTime.getTime() + 86400000); // 86400000 ms = 24 hours
-        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
-      } else {
-        timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+        errors.arrivalTime = t('adminVoyage.validation.arrivalBeforeDeparture');
+        return errors; // Return early to prevent additional logic on this invalid state
       }
       
+      // Continue with existing validation...
+      const timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
       if (timeDiffMinutes < 40) {
         errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
       }

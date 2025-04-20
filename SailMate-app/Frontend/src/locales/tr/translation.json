@@ -100,6 +100,34 @@
     "error": "Hata",
     "loading": "Yükleniyor..."
   },
+  "announcements": {
+    "loading": "Duyurular yükleniyor...",
+    "errorMessage": "Duyurular yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+    "noAnnouncementsAvailable": "Duyuru bulunmamaktadır",
+    "details": "Detaylar",
+    "closeModal": "Kapat"
+  },
+  "passengerTypes": {
+  "adult": "Yetişkin",
+  "student": "Öğrenci",
+  "child": "Çocuk",
+  "senior": "Yaşlı"
+  },
+    "ticketStatus": {
+    "confirmed": "Onaylandı",
+    "upcoming": "Yaklaşan",
+    "completed": "Tamamlandı",
+    "canceled": "İptal Edildi",
+    "unknown": "Bilinmiyor"
+  },
+    "currencies": {
+    "turkishLira": "Türk Lirası",
+    "usDollar": "ABD Doları",
+    "euro": "Euro",
+    "shortTRY": "TL",
+    "shortUSD": "USD",
+    "shortEUR": "EUR"
+  },
   "homepage": {
     "hero": {
       "title": "Konfor ve Stil ile Seyahat Edin",
@@ -1049,7 +1077,7 @@
         "phoneRequired": "Telefon numarası zorunludur",
         "phoneInvalid": "Lütfen en az 10 haneli geçerli bir telefon numarası girin",
         "cityRequired": "Şehir zorunludur",
-        "cityInvalid": "Şehir sadece harf, boşluk, tire ve kesme işareti içerebilir",
+        "cityInvalid": "Şehir sadece harf ve boşluk içerebilir",
         "addressRequired": "Adres zorunludur",
         "addressMinLength": "Adres en az 5 karakter olmalıdır"
       }
@@ -1842,6 +1870,7 @@
       "minVoyageTime": "Sefer süresi en az 40 dakika olmalıdır",
       "pastDate": "Sefer tarihi geçmiş bir tarih olamaz",
       "futureTooFar": "Sefer tarihi bir yıldan daha uzak bir gelecek olamaz",
+      "arrivalBeforeDeparture": "Varış saati kalkış saatinden önce olamaz",
       "pastTimeToday": "Bugünkü seferler için geçmiş bir saat seçemezsiniz",
       "pastDepartureToday": "Bugünkü seferler için kalkış saati gelecekte olmalıdır",
       "pastArrivalToday": "Bugünkü seferler için varış saati gelecekte olmalıdır",

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import placeholder from "../assets/images/placeholder.jpg";
 import axios from "axios";
 import { X } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 // API URL
 const API_BASE_URL = "http://localhost:8080/api/announcements";
@@ -16,6 +17,7 @@ const truncateText = (text, maxLength = 50) => {
 };
 
 export default function Announcements() {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +34,14 @@ export default function Announcements() {
         setError(null);
       } catch (err) {
         console.error("Error fetching announcements:", err);
-        setError("Failed to load announcements. Please try again later.");
+        setError(t('announcements.errorMessage', 'Failed to load announcements. Please try again later.'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchAnnouncements();
-  }, []);
+  }, [t]);
 
   // Open modal with selected announcement
   const openAnnouncementModal = (announcement) => {
@@ -54,7 +56,7 @@ export default function Announcements() {
         <div className="container mx-auto px-4 text-center">
           <div className="inline-block animate-pulse">
             <div className="w-16 h-16 bg-blue-200 rounded-full mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading announcements...</p>
+            <p className="text-gray-600">{t('announcements.loading', 'Loading announcements...')}</p>
           </div>
         </div>
       </section>
@@ -80,7 +82,7 @@ export default function Announcements() {
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <div className="bg-white p-8 rounded-xl shadow-md">
-            <p className="text-xl text-gray-600">No announcements available</p>
+            <p className="text-xl text-gray-600">{t('announcements.noAnnouncementsAvailable', 'No announcements available')}</p>
           </div>
         </div>
       </section>
@@ -143,6 +145,7 @@ export default function Announcements() {
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 z-10 text-gray-600 hover:text-gray-900 bg-white bg-opacity-20 hover:bg-opacity-50 rounded-full p-2 transition"
+              aria-label={t('announcements.closeModal', 'Close modal')}
             >
               <X size={24} />
             </button>
@@ -167,7 +170,7 @@ export default function Announcements() {
                 </p>
                 {selectedAnnouncement.details && (
                   <div className="text-gray-700">
-                    <h3 className="font-semibold mb-2 break-words">Details:</h3>
+                    <h3 className="font-semibold mb-2 break-words">{t('announcements.details', 'Details')}:</h3>
                     <p className="max-h-48 overflow-y-auto break-words">
                       {selectedAnnouncement.details}
                     </p>

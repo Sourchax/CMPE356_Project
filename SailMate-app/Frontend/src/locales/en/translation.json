@@ -93,6 +93,35 @@
     "error": "Error",
     "loading": "Loading..."
   },
+  "announcements": {
+    "loading": "Loading announcements...",
+    "errorMessage": "Failed to load announcements. Please try again later.",
+    "noAnnouncementsAvailable": "No announcements available",
+    "details": "Details",
+    "closeModal": "Close modal"
+  },
+
+    "passengerTypes": {
+    "adult": "Adult",
+    "student": "Student",
+    "child": "Child",
+    "senior": "Senior"
+  },
+    "ticketStatus": {
+    "confirmed": "Confirmed",
+    "upcoming": "Upcoming",
+    "completed": "Completed",
+    "canceled": "Canceled",
+    "unknown": "Unknown"
+  },
+    "currencies": {
+    "turkishLira": "Turkish Lira",
+    "usDollar": "US Dollar",
+    "euro": "Euro",
+    "shortTRY": "TRY",
+    "shortUSD": "USD",
+    "shortEUR": "EUR"
+  },
   "homepage": {
     "hero": {
       "title": "Sail with Comfort & Style",
@@ -1057,7 +1086,7 @@
         "phoneRequired": "Phone number is required",
         "phoneInvalid": "Please enter a valid phone number with at least 10 digits",
         "cityRequired": "City is required",
-        "cityInvalid": "City can only contain letters, spaces, hyphens, and apostrophes",
+        "cityInvalid": "City can only contain letters and spaces",
         "addressRequired": "Address is required",
         "addressMinLength": "Address must be at least 5 characters"
       }
@@ -1832,6 +1861,7 @@
       "arrivalTimeRequired": "Arrival time is required",
       "dateRequired": "Date is required",
       "stationsSame": "Departure and arrival stations cannot be the same",
+      "arrivalBeforeDeparture": "Arrival time cannot be before departure time",
       "minVoyageTime": "Voyage must be at least 40 minutes long",
       "pastDate": "Voyage date cannot be in the past",
       "futureTooFar": "Voyage date cannot be more than one year in the future",
