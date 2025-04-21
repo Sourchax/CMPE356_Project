@@ -644,80 +644,87 @@ const applyFilters = () => {
       errors.departureDate = t('adminVoyage.validation.dateRequired');
     }
     
-    // Logical validations
-    if (voyage.fromStationId && voyage.toStationId && voyage.fromStationId === voyage.toStationId) {
-      errors.toStationId = t('adminVoyage.validation.stationsSame');
-      return errors; // Return early to prevent the form submission with invalid stations
-    }
-    
-    if (voyage.departureTime && voyage.arrivalTime) {
-      // Check if arrival time is after departure time
-      const depTime = new Date(`2000-01-01T${voyage.departureTime}`);
-      const arrTime = new Date(`2000-01-01T${voyage.arrivalTime}`);
+    // Logical validations - convert IDs to numbers before comparing
+    if (voyage.fromStationId && voyage.toStationId) {
+      // Convert to numbers to ensure consistent comparison
+      const fromId = parseInt(voyage.fromStationId);
+      const toId = parseInt(voyage.toStationId);
       
-      // Check if arrival time is earlier in the day than departure time
-      if (arrTime < depTime) {
-        errors.arrivalTime = t('adminVoyage.validation.arrivalBeforeDeparture');
-        return errors; // Return early to prevent additional logic on this invalid state
-      }
-      
-      // Continue with existing validation...
-      const timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
-      if (timeDiffMinutes < 40) {
-        errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
+      if (fromId === toId) {
+        errors.toStationId = t('adminVoyage.validation.stationsSame');
       }
     }
     
-    // Date validation - ensure date is not in the past
-    if (voyage.departureDate) {
-      const voyageDate = new Date(voyage.departureDate);
-      const today = new Date();
-      const todayStart = new Date(today);
-      todayStart.setHours(0, 0, 0, 0);
-      
-      if (voyageDate < todayStart) {
-        errors.departureDate = t('adminVoyage.validation.pastDate');
+    // Only continue with other validations if stations are different
+    if (!errors.toStationId) {
+      if (voyage.departureTime && voyage.arrivalTime) {
+        // Check if arrival time is after departure time
+        const depTime = new Date(`2000-01-01T${voyage.departureTime}`);
+        const arrTime = new Date(`2000-01-01T${voyage.arrivalTime}`);
+        
+        // Check if arrival time is earlier in the day than departure time
+        if (arrTime < depTime) {
+          errors.arrivalTime = t('adminVoyage.validation.arrivalBeforeDeparture');
+        } else {
+          // Continue with existing validation...
+          const timeDiffMinutes = (arrTime - depTime) / 60000; // Convert ms to minutes
+          if (timeDiffMinutes < 40) {
+            errors.arrivalTime = t('adminVoyage.validation.minVoyageTime');
+          }
+        }
       }
-
+      
+      // Date validation - ensure date is not in the past
       if (voyage.departureDate) {
         const voyageDate = new Date(voyage.departureDate);
         const today = new Date();
         const todayStart = new Date(today);
         todayStart.setHours(0, 0, 0, 0);
         
-        // Get date one year from today
-        const oneYearFromNow = new Date(todayStart);
-        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-        
         if (voyageDate < todayStart) {
           errors.departureDate = t('adminVoyage.validation.pastDate');
-        } else if (voyageDate > oneYearFromNow) {
-          errors.departureDate = t('adminVoyage.validation.futureTooFar');
         }
-      }
-
-      // If the voyage is today, validate that the time is not in the past
-      if (voyageDate.getFullYear() === today.getFullYear() &&
-          voyageDate.getMonth() === today.getMonth() &&
-          voyageDate.getDate() === today.getDate()) {
-        
-        if (voyage.departureTime) {
-          const [depHours, depMinutes] = voyage.departureTime.split(':').map(Number);
-          const currentHour = today.getHours();
-          const currentMinute = today.getMinutes();
+  
+        if (voyage.departureDate) {
+          const voyageDate = new Date(voyage.departureDate);
+          const today = new Date();
+          const todayStart = new Date(today);
+          todayStart.setHours(0, 0, 0, 0);
           
-          if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
-            errors.departureTime = t('adminVoyage.validation.pastDepartureToday');
+          // Get date one year from today
+          const oneYearFromNow = new Date(todayStart);
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+          
+          if (voyageDate < todayStart) {
+            errors.departureDate = t('adminVoyage.validation.pastDate');
+          } else if (voyageDate > oneYearFromNow) {
+            errors.departureDate = t('adminVoyage.validation.futureTooFar');
           }
         }
-        
-        if (voyage.arrivalTime) {
-          const [arrHours, arrMinutes] = voyage.arrivalTime.split(':').map(Number);
-          const currentHour = today.getHours();
-          const currentMinute = today.getMinutes();
+  
+        // If the voyage is today, validate that the time is not in the past
+        if (voyageDate.getFullYear() === today.getFullYear() &&
+            voyageDate.getMonth() === today.getMonth() &&
+            voyageDate.getDate() === today.getDate()) {
           
-          if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
-            errors.arrivalTime = t('adminVoyage.validation.pastArrivalToday');
+          if (voyage.departureTime) {
+            const [depHours, depMinutes] = voyage.departureTime.split(':').map(Number);
+            const currentHour = today.getHours();
+            const currentMinute = today.getMinutes();
+            
+            if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
+              errors.departureTime = t('adminVoyage.validation.pastDepartureToday');
+            }
+          }
+          
+          if (voyage.arrivalTime) {
+            const [arrHours, arrMinutes] = voyage.arrivalTime.split(':').map(Number);
+            const currentHour = today.getHours();
+            const currentMinute = today.getMinutes();
+            
+            if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
+              errors.arrivalTime = t('adminVoyage.validation.pastArrivalToday');
+            }
           }
         }
       }
@@ -840,9 +847,16 @@ const applyFilters = () => {
   };
   // Save voyage (add or update)
   const saveVoyage = async () => {
+    // Validate first and ensure we always use the most up-to-date state
+    const errors = validateVoyage(currentVoyage);
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    
     // Check if voyage might have become completed while editing
     if (isEditing) {
-      // First, get the current status of the voyage from the server
       try {
         const response = await voyageService.getVoyages({ id: currentVoyage.id });
         const serverVoyage = response.find(v => v.id === currentVoyage.id);
@@ -855,55 +869,7 @@ const applyFilters = () => {
         }
       } catch (error) {
         console.error('Error checking voyage status:', error);
-        // Continue with validation and attempt to save
       }
-    }
-    
-    // Double-check if current date/time would make this voyage completed
-    const voyageDate = new Date(currentVoyage.departureDate);
-    const today = new Date();
-    
-    if (voyageDate.getFullYear() === today.getFullYear() &&
-        voyageDate.getMonth() === today.getMonth() &&
-        voyageDate.getDate() === today.getDate()) {
-      
-      // Check if departure time is in the past
-      if (currentVoyage.departureTime) {
-        const [depHours, depMinutes] = currentVoyage.departureTime.split(':').map(Number);
-        const currentHour = today.getHours();
-        const currentMinute = today.getMinutes();
-        
-        if (depHours < currentHour || (depHours === currentHour && depMinutes <= currentMinute)) {
-          setValidationErrors(prev => ({
-            ...prev,
-            departureTime: t('adminVoyage.validation.pastTimeToday')
-          }));
-          return;
-        }
-      }
-      
-      // Check if arrival time is in the past
-      if (currentVoyage.arrivalTime) {
-        const [arrHours, arrMinutes] = currentVoyage.arrivalTime.split(':').map(Number);
-        const currentHour = today.getHours();
-        const currentMinute = today.getMinutes();
-        
-        if (arrHours < currentHour || (arrHours === currentHour && arrMinutes <= currentMinute)) {
-          setValidationErrors(prev => ({
-            ...prev,
-            arrivalTime: t('adminVoyage.validation.pastTimeToday')
-          }));
-          return;
-        }
-      }
-    }
-    
-    // Validate before saving
-    const errors = validateVoyage(currentVoyage);
-  
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      return;
     }
     
     setIsLoading(true);
@@ -911,16 +877,13 @@ const applyFilters = () => {
       const formattedVoyage = formatVoyageForAPI(currentVoyage);
       
       if (isEditing) {
-        // Update existing voyage
         await voyageService.updateVoyage(currentVoyage.id, formattedVoyage);
         showAlert('success', t('adminVoyage.alerts.voyageUpdated'));
       } else {
-        // Add new voyage
         await voyageService.createVoyage(formattedVoyage);
         showAlert('success', t('adminVoyage.alerts.voyageCreated'));
       }
       
-      // Refresh voyages list
       await fetchVoyages();
       setValidationErrors({});
       closeModal();
