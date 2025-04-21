@@ -179,6 +179,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
                 onChange={(e) => setMessage(e.target.value)}
                 required
                 rows={4}
+                maxLength={500}
                 style={{ maxHeight: "150px" }}
               />
               <div className="text-xs text-gray-500 mt-1 text-right">
