@@ -108,6 +108,8 @@ public class ClerkUsers {
             user.put("full_name", res.user().get().firstName().get() + " " + res.user().get().lastName().get());
             if (res.user().get().emailAddresses().isPresent())
                 user.put("email", res.user().get().emailAddresses().get().getFirst().emailAddress());
+            if (res.user().get().phoneNumbers().isPresent())
+                user.put("phone", res.user().get().phoneNumbers().get().getFirst().phoneNumber());
 
             return user;
         }
