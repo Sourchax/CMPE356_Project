@@ -32,6 +32,10 @@ const CustomSignUp = () => {
               socialButtonsBlockButton: "social-buttons",
               formFieldInput: "form-input",
               formButtonPrimary: "form-button",
+              formFieldInputShowPasswordButton: "cl-formFieldInputShowPasswordButton",
+              formFieldInput__password: "cl-formFieldInput__password",
+              formFieldInput__phoneNumber:"cl-phoneInput",
+              phoneInput: "cl-phoneInput",
             },
           }}
           path="/sign-up"

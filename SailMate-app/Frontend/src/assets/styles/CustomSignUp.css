@@ -68,7 +68,7 @@
 
 .form-input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 5px 10px;
     border: 2px solid rgba(0, 47, 108, 0.95);
     border-radius: 8px;
     font-size: 14px;
@@ -104,4 +104,29 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(240, 200, 8, 0.5);
 }
+  .cl-formFieldInput__password {
+    position: relative;
+  }
 
+  .cl-formFieldInput__password {
+    position: relative;
+  }
+
+  .cl-formFieldInputShowPasswordButton {
+    position: absolute;
+    right: 12px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cl-phoneInput{
+    padding: 0;
+    margin: 0;
+  }
