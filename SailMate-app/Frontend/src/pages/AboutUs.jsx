@@ -161,7 +161,7 @@ const AboutUs = () => {
             {
               name: "Ege Kaptanoğlu",
               title: t('aboutPage.team.members.customerExperience'),
-              image: "https://media.licdn.com/dms/image/v2/C4D03AQHdnIrOjIAOxQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1650220552799?e=1746057600&v=beta&t=dS4cN8SonvQfPD2yfTNGvot_oBAdiLHtOYX3EGgGC-U",
+              image: "https://media.licdn.com/dms/image/v2/C4D03AQHdnIrOjIAOxQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1650220552799?e=1752105600&v=beta&t=CE6qwIXT1DosNFAW7EMSLiQMLIqhcyJiMyWLrYxLrkw",
               delay: 0.4
             },
             {

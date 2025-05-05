@@ -382,7 +382,41 @@ const FerryTicketForm = () => {
           // Just log the error and continue
         }
       }
-  
+      try {
+        if (formData.notifyBySMS) {
+          // Create detailed message content based on ticket type
+          let message = "Thank you for choosing SailMate! \\n";
+          
+          // Add departure ticket details
+          message += `DEPARTURE: ${formData.tripData.departure} to ${formData.tripData.arrival}\\n`;
+          message += `Date: ${formData.tripData.departureDate}\\n`;
+          message += `Time: ${formData.selectedDeparture.departure}\\n`;
+          message += `Passengers: ${formData.departureDetails.passengerCount}\\n`;
+          
+          // Add return ticket details if it's a round trip
+          if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
+            message += `\\nRETURN: ${formData.tripData.arrival} to ${formData.tripData.departure}\\n`;
+            message += `Date: ${formData.tripData.returnDate}\\n`;
+            message += `Time: ${formData.selectedReturn.departure}\\n`;
+            message += `Passengers: ${formData.departureDetails.passengerCount}\\n`;
+          }
+          
+          message += "Have a pleasant journey!";
+          
+          // Call the SMS API
+          const smsResponse = await axios.post(`${API_URL}/sms/send`, {
+            message: message
+          }, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          
+          console.log("SMS notification sent:", smsResponse.data);
+        }
+      } catch (smsError) {
+        console.error("Error sending SMS notification:", smsError);
+      }
       return true;
     } catch (error) {
       console.error("Error creating tickets:", error);
