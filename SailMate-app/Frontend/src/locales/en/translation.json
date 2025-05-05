@@ -1272,6 +1272,7 @@
     "oneWay": "One Way",
     "return": "Return",
     "date": "Date",
+    "earlyBookingDiscount": "Early Booking Discount",
     "placeholders": {
       "name": "Enter your Name",
       "surname": "Enter your Surname",

@@ -88,10 +88,25 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
   const studentDiscount = getPrice("Student") / 100; // Convert percentage to decimal
   const seniorDiscount = getPrice("Senior") / 100;   // Convert percentage to decimal
   const childDiscount = 1.00; // 100% discount for children
+  const earlyBookingDiscount = 0.10; // 10% early booking discount
+
+  const isEarlyBooking = (dateStr) => {
+    if (!dateStr) return false;
+    
+    const today = new Date();
+    const targetDate = new Date(dateStr);
+    
+    // Calculate one month from today
+    const oneMonthLater = new Date(today);
+    oneMonthLater.setMonth(today.getMonth() + 1);
+    
+    // Return true if target date is after one month from today
+    return targetDate > oneMonthLater;
+  };
 
   // Calculate initial prices (before discounts)
-  let departurePriceValue = serviceFee * passengers;
-  let returnPriceValue = serviceFee * passengers;
+  let departurePriceValue = 0;
+  let returnPriceValue = 0;
 
   const tickets = [
     { label: t('ferryTicketing.oneWay').toUpperCase(), date: departureDate, dep: departure, arr: arrival, planningInfo: ticketPlanningInfo?.departure },
@@ -118,7 +133,6 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
       breakdown.adult = {
         count: passengerTypes.adult,
         unitPrice: basePrice,
-        discount: 0,
         total: adultPrice
       };
     }
@@ -162,7 +176,10 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
       };
     }
     
-    return { total, breakdown };
+    return { 
+      total, 
+      breakdown
+    };
   };
 
   // Update prices and notify parent component when they change
@@ -187,13 +204,11 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
   return (
     <>
       {tickets.map((ticket, index) => {
-        // Extract data from planningInfo or use placeholder if missing
         const planning = ticket.planningInfo || {};
         const depTime = planning?.departure || "N/A";
         const arrTime = planning?.arrival || "N/A";
         const seatType = planning?.type || "N/A";
 
-        // Set price based on selected seat type
         let selectedPrice;
         if (seatType === "business") {
           selectedPrice = businessPrice;
@@ -205,14 +220,22 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
           selectedPrice = "N/A";
         }
 
-        // Calculate prices with discounts
+        const isEarlyBookingApplicable = isEarlyBooking(ticket.date);
+
         const passengerPrices = calculatePassengerPrices(selectedPrice, passengerTypes);
         
-        // Update total prices for departure and return
         if (ticket.label === t('ferryTicketing.oneWay').toUpperCase() && passengerPrices.total !== "N/A") {
-          departurePriceValue = (passengerPrices.total + (serviceFee * passengers));
+          const passengerTotal = isEarlyBookingApplicable ? 
+            passengerPrices.total * (1 - earlyBookingDiscount) : 
+            passengerPrices.total;
+          
+          departurePriceValue = passengerTotal + (serviceFee * passengers);
         } else if (ticket.label === t('ferryTicketing.return').toUpperCase() && passengerPrices.total !== "N/A") {
-          returnPriceValue = (passengerPrices.total + (serviceFee * passengers));
+          const passengerTotal = isEarlyBookingApplicable ? 
+            passengerPrices.total * (1 - earlyBookingDiscount) : 
+            passengerPrices.total;
+          
+          returnPriceValue = passengerTotal + (serviceFee * passengers);
         }
 
         // Set the overall color style based on the selected seat type
@@ -270,7 +293,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                 <div className="space-y-1">
                   {passengerTypes.adult > 0 && (
                     <div className="flex justify-between items-center">
-                      <div className="text-gray-700">{t('ferryTicketing.passengers.adult')} {passengerTypes.adult > 1 ? `× ${passengerTypes.adult}` : ''}</div>
+                      <div className="text-gray-700">
+                        {t('ferryTicketing.passengers.adult')} {passengerTypes.adult > 1 ? `× ${passengerTypes.adult}` : ''}
+                      </div>
                       {passengerPrices.breakdown.adult && (
                         <div className="font-bold" style={{ color: colorStyle }}>
                           {formatPrice(passengerPrices.breakdown.adult.total)}
@@ -283,7 +308,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
                         {t('ferryTicketing.passengerType.student')} × {passengerTypes.student} 
-                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: studentDiscount * 100})})</span>
+                        <span className="text-green-600 ml-1">
+                          ({t('ferryTicketing.pricing.discountPercentage', {percent: studentDiscount * 100})})
+                        </span>
                       </div>
                       {passengerPrices.breakdown.student && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -297,7 +324,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
                         {t('ferryTicketing.passengerType.senior')} × {passengerTypes.senior}
-                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: seniorDiscount * 100})})</span>
+                        <span className="text-green-600 ml-1">
+                          ({t('ferryTicketing.pricing.discountPercentage', {percent: seniorDiscount * 100})})
+                        </span>
                       </div>
                       {passengerPrices.breakdown.senior && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -310,7 +339,9 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
                     <div className="flex justify-between items-center">
                       <div className="text-gray-700">
                         {t('ferryTicketing.passengerType.child')} × {passengerTypes.child}
-                        <span className="text-green-600 ml-1">({t('ferryTicketing.pricing.discountPercentage', {percent: 100})})</span>
+                        <span className="text-green-600 ml-1">
+                          ({t('ferryTicketing.pricing.discountPercentage', {percent: 100})})
+                        </span>
                       </div>
                       {passengerPrices.breakdown.child && (
                         <div className="font-bold" style={{ color: colorStyle }}>
@@ -323,13 +354,17 @@ const TicketSum = ({ ticketPlanningInfo, ticketTripInfo, prices, onPriceCalculat
               )}
             </div>
 
-            {/* Display only the selected seat type's price with currency conversion */}
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-gray-600">{t('ferryTicketing.pricing.basePrice')}</div>
-              <div className="font-bold" style={{ color: colorStyle }}>
-                {formatPrice(selectedPrice)}
+            {/* Display Early Booking Discount if applicable */}
+            {isEarlyBookingApplicable && (
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-green-600 font-medium">
+                  {t('ferryTicketing.earlyBookingDiscount', {percent: 10}) || `Early Booking Discount (10%)`}
+                </div>
+                <div className="font-bold text-green-600">
+                  {formatPrice(-passengerPrices.total * earlyBookingDiscount)}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="border-t my-2"></div>
 
