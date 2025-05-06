@@ -385,6 +385,7 @@
     "downloadTicket": "Bileti İndir",
     "goBack": "Geri Dön",
     "errorMessage": "Bilet yüklenemedi. Lütfen bilet numaranızı ve e-postanızı kontrol edin.",
+    "completedTicketMessage": "Bu sefer zaten tamamlanmıştır. Bu bilet arşivlerimizde saklanmaktadır ve artık aktif değildir. Yine de kayıtlarınız için indirebilirsiniz.",
     "status": {
       "confirmed": "Biletiniz onaylandı! Lütfen limana kalkıştan en az 30 dakika önce gelin.",
       "upcoming": "Seyahatiniz yakında! Lütfen limana kalkıştan en az 30 dakika önce gelin.",
@@ -422,7 +423,8 @@
     "errorMessages": {
       "notFound": "Bilet detayları bulunamadı. Lütfen bilet numarasını kontrol edip tekrar deneyin.",
       "alreadyDeparted": "Bu bilet iptal edilemez çünkü sefer zaten başlamış veya tamamlanmış.",
-      "cancelError": "Biletiniz iptal edilirken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibimizle iletişime geçin."
+      "cancelError": "Biletiniz iptal edilirken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibimizle iletişime geçin.",
+      "alreadyCompleted": "Bu bilet zaten tamamlanmış ve iptal edilemez. Tamamlanan biletler arşivlenir ve artık aktif değildir."
     },
     "successMessage": "Biletiniz başarıyla iptal edildi. Kısa süre içinde e-posta gönderilecektir."
   },
@@ -437,7 +439,7 @@
     "active": "Aktif",
     "completed": "Tamamlanmış",
     "currency": "Para Birimi",
-    "noFilteredTickets": "Hiç {status} bilet bulunamadı.",
+    "noFilteredTickets": "Hiç bilet bulunamadı.",
     "showAllTickets": "Tüm biletleri göster",
     "needHelp": "Biletlerinizle ilgili sorun mu yaşıyorsunuz?",
     "contactSupport": "Destek ekibimizle iletişime geçin",
@@ -1514,7 +1516,8 @@
         "totalTickets": "Toplam Satılan Biletler",
         "totalRevenue": "Toplam Gelir",
         "totalPassengers": "Toplam Yolcular",
-        "avgTicketPrice": "Ort. Bilet Fiyatı"
+        "avgTicketPrice": "Ort. Bilet Fiyatı",
+        "completed": "Tamamlanmış"
       },
       "ticketClasses": {
         "promo": "Promo",

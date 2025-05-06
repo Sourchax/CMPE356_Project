@@ -241,10 +241,32 @@ const TicketCancel = () => {
     checkAuthAndProceed(async () => {
       setLoading(true);
       
-      // Fetch ticket details if not already available
-      if (!ticketDetails) {
+      try {
+        setFetchingDetails(true);
+        
+        // First, check if the ticket exists in completed tickets
         try {
-          setFetchingDetails(true);
+          const completedResponse = await axios.get(`${API_URL}/completed-tickets/ticket/${ticketId}`, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          
+          // If we get a response, the ticket exists in completed tickets
+          if (completedResponse.data) {
+            setLoading(false);
+            setFetchingDetails(false);
+            displayError(t('ticketCancel.errorMessages.alreadyCompleted'));
+            return;
+          }
+        } catch (error) {
+          // If we get a 404, the ticket is not in completed tickets, which is what we want
+          // So we proceed with checking active tickets
+          console.log("Ticket not found in completed tickets, proceeding to check active tickets");
+        }
+        
+        // Continue with checking active tickets
+        try {
           // Use the correct endpoint from your controller - "/ticketID/{ticketID}"
           const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
             headers: {
@@ -266,24 +288,16 @@ const TicketCancel = () => {
           } else {
             throw new Error("Ticket not found");
           }
-        } catch (error) {
-          console.error("Error fetching ticket details:", error);
+        } catch (ticketError) {
+          console.error("Error fetching ticket details:", ticketError);
           displayError(t('ticketCancel.errorMessages.notFound'));
-        } finally {
-          setFetchingDetails(false);
-          setLoading(false);
         }
-      } else {
-        // If we already have ticket details, check if voyage is expired
-        if (isVoyageExpired(ticketDetails)) {
-          setLoading(false);
-          displayError(t('ticketCancel.errorMessages.alreadyDeparted'));
-          return;
-        }
-        
-        // If not expired, show confirmation
+      } catch (error) {
+        console.error("Error in ticket cancellation process:", error);
+        displayError(t('ticketCancel.errorMessages.generalError'));
+      } finally {
+        setFetchingDetails(false);
         setLoading(false);
-        setShowConfirmation(true);
       }
     });
   };

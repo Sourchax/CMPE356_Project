@@ -73,7 +73,8 @@ const TicketCheck = () => {
     totalPrice: 0,
     status: "",
     voyageId: null,
-    passengers: []
+    passengers: [],
+    isCompletedTicket: false // Flag to track if this is a completed ticket
   });
 
   // Currency symbols for display
@@ -148,26 +149,74 @@ const TicketCheck = () => {
       setError(null);
       
       try {
-        // First, try to fetch ticket by ticketID
-        const response = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
-          headers: {
-            Authorization: `Bearer ${useSessionToken()}`
-          }
-        });
+        let ticketFound = false;
+        let ticketData = null;
         
-        if (response.data) {
+        // First, try to fetch ticket from active tickets
+        try {
+          const activeResponse = await axios.get(`${API_URL}/tickets/ticketID/${ticketId}`, {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          });
+          
+          if (activeResponse.data) {
+            ticketFound = true;
+            ticketData = { ...activeResponse.data, isCompletedTicket: false };
+          }
+        } catch (activeError) {
+          console.log("Ticket not found in active tickets, trying completed tickets");
+        }
+        
+        // If not found in active tickets, try completed tickets
+        if (!ticketFound) {
+          try {
+            const completedResponse = await axios.get(`${API_URL}/completed-tickets/ticket/${ticketId}`, {
+              headers: {
+                Authorization: `Bearer ${useSessionToken()}`
+              }
+            });
+            
+            if (completedResponse.data) {
+              ticketFound = true;
+              ticketData = {
+                ...completedResponse.data,
+                isCompletedTicket: true,
+                // Map the completed ticket fields to match active ticket schema
+                ticketID: completedResponse.data.ticketId,
+                fromStationCity: completedResponse.data.depCity,
+                fromStationTitle: completedResponse.data.depStationTitle,
+                toStationCity: completedResponse.data.arrCity,
+                toStationTitle: completedResponse.data.arrStationTitle,
+                departureDate: completedResponse.data.depDate,
+                departureTime: completedResponse.data.depTime,
+                arrivalTime: completedResponse.data.arrTime
+              };
+            }
+          } catch (completedError) {
+            console.log("Ticket not found in completed tickets either");
+          }
+        }
+        
+        if (ticketData) {
           // Check if the provided email matches any passenger's email
-          const ticket = response.data;
-          const passengerEmails = ticket.passengers ? ticket.passengers.map(p => p.email.toLowerCase()) : [];
+          const passengerEmails = ticketData.passengers ? ticketData.passengers.map(p => p.email.toLowerCase()) : [];
           
           if (passengerEmails.includes(email.toLowerCase()) || 
-              (ticket.bookerEmail && ticket.bookerEmail.toLowerCase() === email.toLowerCase())) {
+              (ticketData.bookerEmail && ticketData.bookerEmail.toLowerCase() === email.toLowerCase())) {
             
-            // Determine ticket status based on departure date/time
-            const status = calculateTicketStatus(ticket);
+            // Set status for the ticket
+            let status;
+            if (ticketData.isCompletedTicket) {
+              // If it's a completed ticket, status is always "Completed"
+              status = "Completed";
+            } else {
+              // For active tickets, calculate status based on departure date/time
+              status = calculateTicketStatus(ticketData);
+            }
             
             setTicketDetails({
-              ...ticket,
+              ...ticketData,
               status: status
             });
             
@@ -175,6 +224,8 @@ const TicketCheck = () => {
           } else {
             setError("The email provided does not match our records for this ticket.");
           }
+        } else {
+          setError("Ticket not found. Please check your ticket ID and try again.");
         }
       } catch (err) {
         console.error("Error fetching ticket:", err);
@@ -231,12 +282,17 @@ const TicketCheck = () => {
         setLoading(true);
         
         // We need to use the string ticketID based on the controller endpoint
-        const ticketID = ticketDetails.ticketID;
+        const ticketID = ticketDetails.ticketID || ticketDetails.ticketId;
         
         console.log(`Downloading ticket with ID: ${ticketID}`);
         
+        // Different endpoints for active vs completed tickets
+        const endpoint = ticketDetails.isCompletedTicket
+          ? `${API_URL}/completed-tickets/${ticketID}/download`
+          : `${API_URL}/tickets/${ticketID}/download`;
+        
         // Call the API endpoint to download the ticket
-        const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
+        const response = await axios.get(endpoint, {
           responseType: 'blob',  // Important: expect binary data
           headers: {
             Authorization: `Bearer ${useSessionToken()}`
@@ -315,11 +371,11 @@ const TicketCheck = () => {
 
   // Get departure and destination display
   const getDepartureDisplay = () => {
-    return ticketDetails.fromStationTitle || "-";
+    return ticketDetails.fromStationTitle || ticketDetails.depStationTitle || "-";
   };
 
   const getDestinationDisplay = () => {
-    return ticketDetails.toStationTitle || "-";
+    return ticketDetails.toStationTitle || ticketDetails.arrStationTitle || "-";
   };
 
   return (
@@ -440,7 +496,7 @@ const TicketCheck = () => {
                       <Ticket size={16} className="mr-2 text-gray-500" />
                       {t('ticketCheck.ticketIdLabel')}:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.ticketID}</span>
+                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.ticketID || ticketDetails.ticketId}</span>
                   </div>
                   
                   <div className="flex justify-between items-start">
@@ -458,7 +514,7 @@ const TicketCheck = () => {
                       <Calendar size={16} className="mr-2 text-gray-500" />
                       {t('ticketCheck.departureDate')}:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{formatDate(ticketDetails.departureDate)}</span>
+                    <span className="font-medium text-gray-700 font-sans">{formatDate(ticketDetails.departureDate || ticketDetails.depDate)}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -466,7 +522,7 @@ const TicketCheck = () => {
                       <Clock size={16} className="mr-2 text-gray-500" />
                       {t('ticketCheck.departureTime')}:
                     </span>
-                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.departureTime}</span>
+                    <span className="font-medium text-gray-700 font-sans">{ticketDetails.departureTime || ticketDetails.depTime}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -559,7 +615,9 @@ const TicketCheck = () => {
                 {ticketDetails.status.toLowerCase() === "completed" && (
                   <div className="bg-gray-50 rounded-md p-4">
                     <p className="text-sm text-gray-700 font-sans">
-                      {t('ticketCheck.status.completed')}
+                      {ticketDetails.isCompletedTicket 
+                        ? t('ticketCheck.completedTicketMessage') 
+                        : t('ticketCheck.status.completed')}
                     </p>
                   </div>
                 )}

@@ -27,7 +27,9 @@ const ManagerDashboard = () => {
     pendingComplaints: 0,
     ticketTypes: 8,
     charts: 2,
-    ticketsSold: 0 // New state for tickets sold
+    ticketsSold: 0,
+    activeTickets: 0,
+    completedTickets: 0
   });
   const [loading, setLoading] = useState(true);
   const [userCountLoading, setUserCountLoading] = useState(true);
@@ -37,19 +39,32 @@ const ManagerDashboard = () => {
     const fetchTicketsSold = async () => {
       try {
         setTicketSoldLoading(true);
-        const response = await axios.get('http://localhost:8080/api/tickets/count', {
-          headers: {
-            Authorization: `Bearer ${useSessionToken()}`
-          }
-        });
         
-        if (response.data) {
-          setDashboardStats(prevStats => ({
-            ...prevStats,
-            charts: response.data,
-            ticketsSold: response.data
-          }));
-        }
+        // Get both active and completed tickets counts
+        const [activeResponse, completedResponse] = await Promise.all([
+          axios.get('http://localhost:8080/api/tickets/count', {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          }),
+          axios.get('http://localhost:8080/api/completed-tickets/count', {
+            headers: {
+              Authorization: `Bearer ${useSessionToken()}`
+            }
+          })
+        ]);
+        
+        const activeTickets = activeResponse.data || 0;
+        const completedTickets = completedResponse.data || 0;
+        const totalTickets = activeTickets + completedTickets;
+        
+        setDashboardStats(prevStats => ({
+          ...prevStats,
+          charts: totalTickets,
+          ticketsSold: totalTickets,
+          activeTickets: activeTickets,
+          completedTickets: completedTickets
+        }));
       } catch (error) {
         console.error("Error fetching tickets purchased:", error);
         // In case of error, keep the default value

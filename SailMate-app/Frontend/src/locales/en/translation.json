@@ -448,6 +448,7 @@
     "downloadTicket": "Download Ticket",
     "goBack": "Go Back",
     "errorMessage": "Failed to load ticket. Please check your ticket ID and email.",
+    "completedTicketMessage": "This voyage has already been completed. This ticket is stored in our archives and is no longer active. You can still download it for your records.",
     "status": {
       "confirmed": "Your ticket is confirmed! Please arrive at the port at least 30 minutes before departure.",
       "upcoming": "Your journey is coming soon! Please arrive at the port at least 30 minutes before departure.",
@@ -485,7 +486,8 @@
     "errorMessages": {
       "notFound": "Could not find ticket details. Please check the ticket ID and try again.",
       "alreadyDeparted": "This ticket cannot be cancelled because the voyage has already departed or is completed.",
-      "cancelError": "There was an error cancelling your ticket. Please try again or contact support."
+      "cancelError": "There was an error cancelling your ticket. Please try again or contact support.",
+      "alreadyCompleted": "This ticket has already been completed and cannot be cancelled. Completed tickets are archived and no longer active."
     },
     "successMessage": "Your ticket has been successfully cancelled. Email will be sent shortly."
   },
@@ -652,7 +654,7 @@
     "active": "Active",
     "completed": "Completed",
     "currency": "Currency",
-    "noFilteredTickets": "No {status} tickets found.",
+    "noFilteredTickets": "No tickets found.",
     "showAllTickets": "Show all tickets",
     "needHelp": "Having trouble with your tickets?",
     "contactSupport": "Contact our support team",
@@ -1522,7 +1524,8 @@
         "totalTickets": "Total Tickets Sold",
         "totalRevenue": "Total Revenue",
         "totalPassengers": "Total Passengers",
-        "avgTicketPrice": "Avg. Ticket Price"
+        "avgTicketPrice": "Avg. Ticket Price",
+        "completed": "Completed"
       },
       "ticketClasses": {
         "promo": "Promo",

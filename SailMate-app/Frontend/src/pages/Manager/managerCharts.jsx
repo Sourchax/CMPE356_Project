@@ -36,14 +36,25 @@ const ManagerCharts = () => {
         };
         
         // Make parallel API calls to get all the data we need
-        const [ticketsResponse, voyagesResponse, stationsResponse] = await Promise.all([
+        const [
+          ticketsResponse, 
+          completedTicketsResponse,
+          voyagesResponse, 
+          stationsResponse
+        ] = await Promise.all([
           axios.get(`${API_BASE_URL}/tickets`, { headers }),
+          axios.get(`${API_BASE_URL}/completed-tickets`, { headers }),
           axios.get(`${API_BASE_URL}/voyages`, { headers }),
           axios.get(`${API_BASE_URL}/stations`, { headers })
         ]);
         
         // Process the data to create dashboard metrics
-        const processedData = processApiData(ticketsResponse.data, voyagesResponse.data, stationsResponse.data);
+        const processedData = processApiData(
+          ticketsResponse.data, 
+          completedTicketsResponse.data, 
+          voyagesResponse.data, 
+          stationsResponse.data
+        );
         setDashboardData(processedData);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -57,7 +68,7 @@ const ManagerCharts = () => {
   }, [activeYear]);
   
   // Process the API data to create dashboard metrics
-  const processApiData = (tickets, voyages, stations) => {
+  const processApiData = (tickets, completedTickets, voyages, stations) => {
     // Create a station lookup map for easy access
     const stationMap = {};
     stations.forEach(station => {
@@ -74,8 +85,46 @@ const ManagerCharts = () => {
       };
     });
     
+    // Combine active and completed tickets
+    // First, normalize completed tickets to match the structure of active tickets
+    const normalizedCompletedTickets = completedTickets.map(ticket => {
+      return {
+        ...ticket,
+        ticketID: ticket.ticketId, // Map ticketId to ticketID for consistency
+        voyageId: ticket.voyageId,
+        // For completed tickets, use the stored static data
+        fromStationCity: ticket.depCity,
+        fromStationTitle: ticket.depStationTitle,
+        toStationCity: ticket.arrCity,
+        toStationTitle: ticket.arrStationTitle,
+        departureDate: ticket.depDate,
+        departureTime: ticket.depTime,
+        arrivalTime: ticket.arrTime,
+        // These fields should already be the same
+        passengerCount: ticket.passengerCount,
+        totalPrice: ticket.totalPrice,
+        ticketClass: ticket.ticketClass,
+        selectedSeats: ticket.selectedSeats,
+        userId: ticket.userId,
+        // Time fields
+        createdAt: ticket.createdAt,
+        updatedAt: ticket.updatedAt,
+        // Flag to identify completed tickets
+        isCompletedTicket: true
+      };
+    });
+    
+    // Add flag to active tickets
+    const normalizedActiveTickets = tickets.map(ticket => ({
+      ...ticket,
+      isCompletedTicket: false
+    }));
+    
+    // Combine both types of tickets
+    const allTickets = [...normalizedActiveTickets, ...normalizedCompletedTickets];
+    
     // Filter tickets for the active year
-    const yearTickets = tickets.filter(ticket => {
+    const yearTickets = allTickets.filter(ticket => {
       const ticketDate = new Date(ticket.createdAt);
       return ticketDate.getFullYear() === activeYear;
     });
@@ -112,7 +161,7 @@ const ManagerCharts = () => {
       
       // Process each ticket for this month
       monthTickets.forEach(ticket => {
-        const ticketClass = ticket.ticketClass;
+        const ticketClass = ticket.ticketClass.toLowerCase();
         
         // Count tickets by class
         ticketsByClass[ticketClass]++;
@@ -145,17 +194,42 @@ const ManagerCharts = () => {
     const routeRevenue = {};
     
     yearTickets.forEach(ticket => {
-      // Skip tickets without voyage info
-      if (!ticket.voyageId || !voyageMap[ticket.voyageId]) return;
+      // Skip tickets without voyage info for active tickets
+      if (!ticket.isCompletedTicket && (!ticket.voyageId || !voyageMap[ticket.voyageId])) return;
       
-      const voyage = voyageMap[ticket.voyageId];
-      const fromStation = voyage.fromStation;
-      const toStation = voyage.toStation;
+      let fromStationId, toStationId, fromStation, toStation;
       
-      // Skip if station info is missing
-      if (!fromStation || !toStation) return;
+      if (ticket.isCompletedTicket) {
+        // For completed tickets, we already have the station info stored
+        fromStationId = 0; // Use placeholder IDs for completed tickets
+        toStationId = 1;
+        fromStation = {
+          id: fromStationId,
+          title: ticket.fromStationTitle || ticket.depStationTitle,
+          city: ticket.fromStationCity || ticket.depCity
+        };
+        toStation = {
+          id: toStationId,
+          title: ticket.toStationTitle || ticket.arrStationTitle,
+          city: ticket.toStationCity || ticket.arrCity
+        };
+      } else {
+        // For active tickets, get info from the voyage
+        const voyage = voyageMap[ticket.voyageId];
+        fromStation = voyage.fromStation;
+        toStation = voyage.toStation;
+        
+        // Skip if station info is missing
+        if (!fromStation || !toStation) return;
+        
+        fromStationId = fromStation.id;
+        toStationId = toStation.id;
+      }
       
-      const routeKey = `${fromStation.id}-${toStation.id}`;
+      // Create a unique route key - for completed tickets, use a city+title based key
+      const routeKey = ticket.isCompletedTicket ?
+        `${fromStation.city}-${fromStation.title}-${toStation.city}-${toStation.title}` :
+        `${fromStationId}-${toStationId}`;
       
       // Count routes
       routeCounts[routeKey] = (routeCounts[routeKey] || 0) + 1;
@@ -166,18 +240,34 @@ const ManagerCharts = () => {
     
     // Create popular routes array
     const popularRoutes = Object.keys(routeCounts).map(routeKey => {
-      const [fromId, toId] = routeKey.split('-');
-      const fromStation = stationMap[fromId];
-      const toStation = stationMap[toId];
+      let from, fromCity, to, toCity;
       
-      return {
-        from: fromStation.title,
-        fromCity: fromStation.city,
-        to: toStation.title,
-        toCity: toStation.city,
-        count: routeCounts[routeKey],
-        revenue: routeRevenue[routeKey]
-      };
+      if (routeKey.split('-').length > 2) {
+        // This is a completed ticket route key (city-title-city-title)
+        const [fromCity, fromTitle, toCity, toTitle] = routeKey.split('-');
+        return {
+          from: fromTitle,
+          fromCity: fromCity,
+          to: toTitle,
+          toCity: toCity,
+          count: routeCounts[routeKey],
+          revenue: routeRevenue[routeKey]
+        };
+      } else {
+        // This is an active ticket route key (fromId-toId)
+        const [fromId, toId] = routeKey.split('-');
+        const fromStation = stationMap[fromId];
+        const toStation = stationMap[toId];
+        
+        return {
+          from: fromStation.title,
+          fromCity: fromStation.city,
+          to: toStation.title,
+          toCity: toStation.city,
+          count: routeCounts[routeKey],
+          revenue: routeRevenue[routeKey]
+        };
+      }
     }).sort((a, b) => b.count - a.count);
     
     // Calculate ticket class performance
@@ -188,9 +278,11 @@ const ManagerCharts = () => {
     };
     
     yearTickets.forEach(ticket => {
-      const ticketClass = ticket.ticketClass;
-      classTotals[ticketClass].totalSold++;
-      classTotals[ticketClass].totalRevenue += ticket.totalPrice;
+      const ticketClass = ticket.ticketClass.toLowerCase();
+      if (classTotals[ticketClass]) {
+        classTotals[ticketClass].totalSold++;
+        classTotals[ticketClass].totalRevenue += ticket.totalPrice;
+      }
     });
     
     // Calculate average prices
@@ -222,13 +314,19 @@ const ManagerCharts = () => {
     const totalPassengers = yearTickets.reduce((sum, ticket) => sum + ticket.passengerCount, 0);
     const avgTicketPrice = totalTickets > 0 ? (totalRevenue / totalTickets) : 0;
     
+    // Count active vs completed tickets
+    const activeTicketsCount = yearTickets.filter(ticket => !ticket.isCompletedTicket).length;
+    const completedTicketsCount = yearTickets.filter(ticket => ticket.isCompletedTicket).length;
+    
     const summaryStats = {
       totalTickets,
       totalRevenue,
       totalPassengers,
       averageTicketPrice: Math.round(avgTicketPrice),
       mostPopularRoute: popularRoutes.length > 0 ? popularRoutes[0] : null,
-      mostProfitableClass: classPerformance.sort((a, b) => b.totalRevenue - a.totalRevenue)[0]
+      mostProfitableClass: classPerformance.sort((a, b) => b.totalRevenue - a.totalRevenue)[0],
+      activeTicketsCount,
+      completedTicketsCount
     };
     
     // Create chart data
@@ -291,6 +389,12 @@ const ManagerCharts = () => {
     value: item.totalSold
   }));
   
+  // Prepare data for ticket status distribution
+  const ticketStatusData = [
+    { name: 'Active', value: summaryStats.activeTicketsCount },
+    { name: 'Completed', value: summaryStats.completedTicketsCount }
+  ].filter(item => item.value > 0);
+  
   // Prepare data for popular routes
   const routeData = popularRoutes.slice(0, 5).map(route => ({
     name: `${route.fromCity} → ${route.toCity}`,
@@ -341,6 +445,11 @@ const ManagerCharts = () => {
             </div>
             <div className="mt-4 flex items-center text-sm">
               <span className="text-gray-500">{t('manager.charts.year')} {activeYear}</span>
+              {summaryStats.completedTicketsCount > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-gray-100 rounded text-xs">
+                  {summaryStats.completedTicketsCount} {t('manager.charts.metrics.completed')}
+                </span>
+              )}
             </div>
           </div>
           
@@ -439,11 +548,11 @@ const ManagerCharts = () => {
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold mb-4">{t('manager.charts.ticketClassDistribution')}</h2>
             <div className="flex flex-col lg:flex-row">
-                <div className="h-80 w-full lg:w-1/2 relative">
+              <div className="h-80 w-full lg:w-1/2 relative">
                 <div className="absolute inset-0">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie
+                      <Pie
                         data={ticketClassData.filter(item => item.value > 0)}
                         cx="50%"
                         cy="50%"
@@ -455,60 +564,60 @@ const ManagerCharts = () => {
                         // No label, we'll add a custom legend
                         labelLine={false}
                         isAnimationActive={false}
-                        >
+                      >
                         {ticketClassData.filter(item => item.value > 0).map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => value.toLocaleString()} />
-                        
-                        {/* Custom legend below the chart */}
-                        <Legend
+                      </Pie>
+                      <Tooltip formatter={(value) => value.toLocaleString()} />
+                      
+                      {/* Custom legend below the chart */}
+                      <Legend
                         layout="horizontal"
                         verticalAlign="bottom"
                         align="center"
                         payload={
-                            ticketClassData.filter(item => item.value > 0).map((entry, index) => ({
+                          ticketClassData.filter(item => item.value > 0).map((entry, index) => ({
                             value: `${t(`manager.charts.ticketClasses.${entry.name}`)} ${((entry.value / ticketClassData.reduce((sum, item) => sum + (item.value > 0 ? item.value : 0), 0)) * 100).toFixed(0)}%`,
                             type: 'circle',
                             color: COLORS[index % COLORS.length],
-                            }))
+                          }))
                         }
-                        />
+                      />
                     </PieChart>
-                    </ResponsiveContainer>
+                  </ResponsiveContainer>
                 </div>
-                </div>
-                <div className="w-full lg:w-1/2 mt-4 lg:mt-0">
+              </div>
+              <div className="w-full lg:w-1/2 mt-4 lg:mt-0">
                 <h3 className="text-lg font-medium mb-3">{t('manager.charts.classStatistics')}</h3>
                 <div className="space-y-4">
-                    {classPerformance.map((cls, index) => (
+                  {classPerformance.map((cls, index) => (
                     <div key={cls.class}>
-                        <div className="flex justify-between mb-1">
+                      <div className="flex justify-between mb-1">
                         <span className="font-medium">{t(`manager.charts.ticketClasses.${cls.class}`)}</span>
                         <span>{cls.totalSold.toLocaleString()} {t('manager.charts.tickets')}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                            className="h-2 rounded-full" 
-                            style={{ 
+                          className="h-2 rounded-full" 
+                          style={{ 
                             width: cls.percentOfTotal > 0 ? `${cls.percentOfTotal}%` : '0%', 
                             backgroundColor: COLORS[index % COLORS.length] 
-                            }}
+                          }}
                         ></div>
-                        </div>
-                        <div className="text-sm text-gray-500 mt-1">
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
                         {formatCurrency(cls.totalRevenue)} {t('manager.charts.totalRevenue')}
-                        </div>
+                      </div>
                     </div>
-                    ))}
+                  ))}
                 </div>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
           
-          {/* Popular Routes */}
-          <div className="bg-white p-6 rounded-xl shadow-md">
+          {/* Ticket Status Distribution and Popular Routes */}
+          <div className="bg-white p-6 rounded-xl shadow-md">     
             <h2 className="text-xl font-semibold mb-4">{t('manager.charts.popularRoutes')}</h2>
             <div className="space-y-4 mb-4">
               {popularRoutes.slice(0, 3).map((route, index) => (

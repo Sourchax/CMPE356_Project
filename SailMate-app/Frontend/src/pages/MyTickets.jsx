@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
-import {useSessionToken} from "../utils/sessions.js";
+import { useSessionToken } from "../utils/sessions.js";
 import { Filter, DollarSign } from 'lucide-react';
 import { useTranslation } from "react-i18next";
 
@@ -12,16 +12,16 @@ const API_URL = "http://localhost:8080/api";
 // Helper function to get location display text
 const getLocationDisplay = (ticket, type) => {
   if (type === 'from') {
-    // Try city first, then fall back to title
-    return ticket.fromStationTitle || "-";
+    return ticket.fromStationTitle || ticket.depStationTitle || "-";
   } else {
-    return ticket.toStationTitle || "-";
+    return ticket.toStationTitle || ticket.arrStationTitle || "-";
   }
 };
 
 const MyTickets = () => {
   const { t } = useTranslation();
-  const [tickets, setTickets] = useState([]);
+  const [activeTickets, setActiveTickets] = useState([]);
+  const [completedTickets, setCompletedTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,6 +42,7 @@ const MyTickets = () => {
     USD: '$',
     EUR: '€'
   };
+
   const translatePassengerType = (type) => {
     if (!type) return t('passengerTypes.adult'); // Default to adult if not specified
     
@@ -110,39 +111,71 @@ const MyTickets = () => {
 
     // Fetch tickets when component mounts and user is authenticated
     if (isLoaded && userId) {
-      fetchUserTickets();
+      fetchAllUserTickets();
     }
   }, [isLoaded, isSignedIn, userId, navigate]);
 
   // Apply filters when tickets or statusFilter changes
   useEffect(() => {
     filterTickets();
-  }, [tickets, statusFilter]);
+  }, [activeTickets, completedTickets, statusFilter]);
 
-  const fetchUserTickets = async () => {
+  const fetchAllUserTickets = async () => {
     try {
       setLoading(true);
-      console.log("Fetching tickets for user:", userId);
+      console.log("Fetching all tickets for user:", userId);
       
-      // Call the API endpoint to get tickets for the current user
-      const response = await axios.get(`${API_URL}/tickets/by-user`, {
-        headers: {
-          Authorization: `Bearer ${useSessionToken()}`
-        }
-      });
+      // Fetch both active and completed tickets in parallel
+      const [activeResponse, completedResponse] = await Promise.all([
+        axios.get(`${API_URL}/tickets/by-user`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        }),
+        axios.get(`${API_URL}/completed-tickets/by-user`, {
+          headers: {
+            Authorization: `Bearer ${useSessionToken()}`
+          }
+        })
+      ]);
       
-      // Ensure response.data is an array
-      const ticketsData = Array.isArray(response.data) ? response.data : [];
-      console.log("Tickets data received:", ticketsData);
+      // Process active tickets
+      const activeTicketsData = Array.isArray(activeResponse.data) ? activeResponse.data : [];
+      console.log("Active tickets data received:", activeTicketsData);
+      
+      // Process completed tickets
+      const completedTicketsData = Array.isArray(completedResponse.data) ? completedResponse.data : [];
+      console.log("Completed tickets data received:", completedTicketsData);
       
       // Sort tickets by createdAt date, newest first
-      const sortedTickets = sortTicketsByCreationDate(ticketsData);
-      setTickets(sortedTickets);
+      const sortedActiveTickets = sortTicketsByCreationDate(activeTicketsData);
+      const sortedCompletedTickets = sortTicketsByCreationDate(completedTicketsData);
+      
+      // Add a flag to identify the ticket type
+      const processedActiveTickets = sortedActiveTickets.map(ticket => ({
+        ...ticket,
+        isCompleted: false
+      }));
+      
+      const processedCompletedTickets = sortedCompletedTickets.map(ticket => ({
+        ...ticket,
+        isCompleted: true,
+        // Map completed ticket properties to match active ticket schema
+        ticketID: ticket.ticketId,
+        depDate: ticket.depDate,
+        depTime: ticket.depTime,
+        arrTime: ticket.arrTime,
+        // Note: We already have properties named properly in our JSX
+      }));
+      
+      setActiveTickets(processedActiveTickets);
+      setCompletedTickets(processedCompletedTickets);
       setError(null);
     } catch (err) {
       console.error("Error fetching tickets:", err);
       setError("Failed to load tickets. Please try again.");
-      setTickets([]);
+      setActiveTickets([]);
+      setCompletedTickets([]);
     } finally {
       setLoading(false);
     }
@@ -162,20 +195,29 @@ const MyTickets = () => {
 
   const filterTickets = () => {
     if (statusFilter === "all") {
-      setFilteredTickets(tickets);
+      // Show active tickets first, then completed tickets
+      setFilteredTickets([...activeTickets, ...completedTickets]);
     } else if (statusFilter === "active") {
-      setFilteredTickets(tickets.filter(ticket => !isTicketCompleted(ticket)));
+      setFilteredTickets(activeTickets);
     } else if (statusFilter === "completed") {
-      setFilteredTickets(tickets.filter(ticket => isTicketCompleted(ticket)));
+      setFilteredTickets(completedTickets);
     }
   };
 
-  const handleViewDetails = async (ticketId) => {
+  const handleViewDetails = async (ticket) => {
     try {
       setLoading(true);
       
+      // No need to fetch if it's already a completed ticket
+      if (ticket.isCompleted) {
+        setSelectedTicket(ticket);
+        setShowModal(true);
+        setLoading(false);
+        return;
+      }
+      
       // Get detailed ticket information when user clicks "View Details"
-      const response = await axios.get(`${API_URL}/tickets/${ticketId}`, {
+      const response = await axios.get(`${API_URL}/tickets/${ticket.id}`, {
         headers: {
           Authorization: `Bearer ${useSessionToken()}`
         }
@@ -184,7 +226,7 @@ const MyTickets = () => {
       // Verify we got a valid response
       if (response.data) {
         console.log("Selected ticket data:", response.data);
-        setSelectedTicket(response.data);
+        setSelectedTicket({...response.data, isCompleted: false});
         setShowModal(true);
       } else {
         throw new Error("Empty response received");
@@ -208,13 +250,17 @@ const MyTickets = () => {
       setLoading(true);
       
       // We need to use the string ticketID (not the numeric id) based on the controller endpoint
-      const ticketID = ticket.ticketID; 
+      const ticketID = ticket.ticketID || ticket.ticketId; 
       
       console.log(`Downloading ticket with ID: ${ticketID}`);
       
+      // Different endpoints for active vs completed tickets
+      const endpoint = ticket.isCompleted 
+        ? `${API_URL}/completed-tickets/${ticketID}/download`
+        : `${API_URL}/tickets/${ticketID}/download`;
+      
       // Call the API endpoint to download the ticket
-      // The endpoint structure is /api/tickets/{ticketId}/download where ticketId is the string ID
-      const response = await axios.get(`${API_URL}/tickets/${ticketID}/download`, {
+      const response = await axios.get(endpoint, {
         responseType: 'blob',  // Important: expect binary data
         headers: {
           Authorization: `Bearer ${useSessionToken()}`
@@ -248,6 +294,12 @@ const MyTickets = () => {
   };
 
   const handleCancelTicket = (ticket) => {
+    // Only active tickets can be cancelled
+    if (ticket.isCompleted) {
+      alert(t('myTickets.cannotCancelCompleted'));
+      return;
+    }
+    
     // Navigate to the ticket-cancel route with the ticket info in location state
     navigate("/ticket-cancel", {
       state: {
@@ -281,30 +333,19 @@ const MyTickets = () => {
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   };
 
-  // Helper function to check if a ticket is completed (departure time has passed)
-  const isTicketCompleted = (ticket) => {
-    if (!ticket.departureDate || !ticket.departureTime) return false;
-    
-    const now = new Date();
-    const departureDate = new Date(ticket.departureDate);
-    
-    // Set departure time on the departure date
-    const timeParts = ticket.departureTime.split(':');
-    departureDate.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10));
-    
-    return now > departureDate;
-  };
-
   // Get ticket status display
   const getTicketStatus = (ticket) => {
-    return isTicketCompleted(ticket) ? t('myTickets.completed') : t('myTickets.active');
+    return ticket.isCompleted ? t('myTickets.completed') : t('myTickets.active');
   };
 
   // Get count of active tickets for the filter badge
-  const activeTicketsCount = tickets.filter(ticket => !isTicketCompleted(ticket)).length;
+  const activeTicketsCount = activeTickets.length;
   
   // Get count of completed tickets for the filter badge
-  const completedTicketsCount = tickets.filter(ticket => isTicketCompleted(ticket)).length;
+  const completedTicketsCount = completedTickets.length;
+
+  // Get the total tickets count
+  const totalTicketsCount = activeTicketsCount + completedTicketsCount;
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-white">
@@ -340,7 +381,7 @@ const MyTickets = () => {
             <div className="text-center py-8 text-red-600">
               <p className="text-gray-600 mb-8">{error}</p>
               <Button 
-                onClick={fetchUserTickets} 
+                onClick={fetchAllUserTickets} 
                 variant="primary"
                 size="lg"
                 className="reload-button mytickets-button"
@@ -348,7 +389,7 @@ const MyTickets = () => {
                 {t('common.tryAgain')}
               </Button>
             </div>
-          ) : tickets.length === 0 ? (
+          ) : totalTicketsCount === 0 ? (
             <div className="text-center py-12 px-4">
               <p className="text-gray-600 mb-4">{t('myTickets.noTickets')}</p>
               <Button 
@@ -378,7 +419,7 @@ const MyTickets = () => {
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {t('myTickets.all')} ({tickets.length})
+                      {t('myTickets.all')} ({totalTicketsCount})
                     </button>
                     <button
                       onClick={() => setStatusFilter("active")}
@@ -432,15 +473,15 @@ const MyTickets = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
-                  {filteredTickets.map((ticket) => (
-                    <div key={ticket.id} 
+                  {filteredTickets.map((ticket, index) => (
+                    <div key={`${ticket.isCompleted ? 'comp-' : 'active-'}${ticket.id || index}`} 
                         className="rounded-lg shadow-sm overflow-hidden border border-[#f0f0f0] transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg">
                       <div className="bg-gray-50 p-4 flex justify-between items-center border-b border-[#eaeaea]">
                         <h3 className="text-lg font-medium text-gray-800">
                           {getLocationDisplay(ticket, 'from')} - {getLocationDisplay(ticket, 'to')}
                         </h3>
                         <span className={`${
-                          getTicketStatus(ticket) === t('myTickets.active') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          ticket.isCompleted ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                         } px-3 py-1 rounded-full text-sm font-medium`}>
                           {getTicketStatus(ticket)}
                         </span>
@@ -448,9 +489,9 @@ const MyTickets = () => {
                       
                       <div className="flex flex-col md:flex-row justify-between p-4">
                         <div className="space-y-2 md:flex-1">
-                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.ticketId')}:</span> {ticket.ticketID}</p>
+                          <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.ticketId')}:</span> {ticket.ticketID || ticket.ticketId}</p>
                           <p className="text-gray-600">
-                            <span className="font-medium text-gray-700">{t('myTickets.departure')}:</span> {formatDate(ticket.departureDate)}, {formatTime(ticket.departureTime)}
+                            <span className="font-medium text-gray-700">{t('myTickets.departure')}:</span> {formatDate(ticket.departureDate || ticket.depDate)}, {formatTime(ticket.departureTime || ticket.depTime)}
                           </p>
                           <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.class')}:</span> {ticket.ticketClass}</p>
                           <p className="text-gray-600"><span className="font-medium text-gray-700">{t('myTickets.passengerCount')}:</span> {ticket.passengerCount}</p>
@@ -462,7 +503,7 @@ const MyTickets = () => {
                         
                         <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 md:items-center">
                           <Button
-                            onClick={() => handleViewDetails(ticket.id)}
+                            onClick={() => handleViewDetails(ticket)}
                             variant="primary"
                             size="sm"
                             className="view-button mytickets-button"
@@ -478,7 +519,7 @@ const MyTickets = () => {
                             {t('myTickets.downloadTicket')}
                           </Button>
                           {/* Only show cancel button for active tickets */}
-                          {getTicketStatus(ticket) === t('myTickets.active') && (
+                          {!ticket.isCompleted && (
                             <Button
                               onClick={() => handleCancelTicket(ticket)}
                               variant="outline"
@@ -538,12 +579,12 @@ const MyTickets = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.ticketId')}</p>
-                  <p className="font-medium">{selectedTicket.ticketID}</p>
+                  <p className="font-medium">{selectedTicket.ticketID || selectedTicket.ticketId}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.status')}</p>
                   <p className={`font-medium ${
-                    getTicketStatus(selectedTicket) === t('myTickets.active') ? 'text-green-600' : 'text-blue-600'
+                    selectedTicket.isCompleted ? 'text-blue-600' : 'text-green-600'
                   }`}>
                     {getTicketStatus(selectedTicket)}
                   </p>
@@ -568,11 +609,11 @@ const MyTickets = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.date')}</p>
-                  <p className="font-medium">{formatDate(selectedTicket.departureDate)}</p>
+                  <p className="font-medium">{formatDate(selectedTicket.departureDate || selectedTicket.depDate)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.time')}</p>
-                  <p className="font-medium">{formatTime(selectedTicket.departureTime)}</p>
+                  <p className="font-medium">{formatTime(selectedTicket.departureTime || selectedTicket.depTime)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">{t('myTickets.seats')}</p>
