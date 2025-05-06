@@ -117,6 +117,7 @@ public class ComplaintController {
         Claims claims = Authentication.getClaims(auth);
         if (claims == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
             // Get original complaint for logging
@@ -125,20 +126,54 @@ public class ComplaintController {
             ComplaintDTO updatedComplaint = complaintService.updateComplaintStatus(id, request);
             
             try {
-                // Send email notification
+                // Get user information to determine language preference
+                HashMap<String, Object> user = null;
+                String language = "en"; // Default to English
+                
+                // Try to get the user who submitted the complaint
+                if (updatedComplaint.getUserId() != null && !updatedComplaint.getUserId().isEmpty()) {
+                    try {
+                        user = ClerkUsers.getUser(updatedComplaint.getUserId());
+                        if (user != null && user.containsKey("lan")) {
+                            language = (String) user.get("lan");
+                        }
+                    } catch (Exception e) {
+                        // If user lookup fails, fall back to English
+                        System.err.println("Error retrieving user language preference: " + e.getMessage());
+                        language = "en";
+                    }
+                }
+                
+                // Send email notification in the appropriate language
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom("sailmatesup@gmail.com");
                 message.setTo(updatedComplaint.getEmail());
-                message.setSubject("Response to Your SailMate Complaint #" + id);
-                message.setText("Dear " + updatedComplaint.getSender() + ",\n\n" +
-                        "Thank you for bringing your concerns to our attention. We've reviewed your complaint regarding:\n\n" +
-                        "\"" + originalComplaint.getSubject() + "\"\n" +
-                        "\"" + originalComplaint.getMessage() + "\"\n\n" +
-                        "Our response:\n" +
-                        "\"" + updatedComplaint.getReply() + "\"\n\n" +
-                        "We value your feedback as it helps us improve our services. If you have any further questions or comments, please don't hesitate to contact us.\n\n" +
-                        "Smooth sailing,\n" +
-                        "The SailMate Support Team");
+                
+                if ("tr".equals(language)) {
+                    // Turkish email
+                    message.setSubject("SailMate Şikayet #" + id + " için Yanıt");
+                    message.setText("Sayın " + updatedComplaint.getSender() + ",\n\n" +
+                            "Endişelerinizi bize bildirdiğiniz için teşekkür ederiz. Aşağıdaki konuyla ilgili şikayetinizi inceledik:\n\n" +
+                            "\"" + originalComplaint.getSubject() + "\"\n" +
+                            "\"" + originalComplaint.getMessage() + "\"\n\n" +
+                            "Yanıtımız:\n" +
+                            "\"" + updatedComplaint.getReply() + "\"\n\n" +
+                            "Geri bildirimlerinizi değerlendiriyoruz, çünkü hizmetlerimizi geliştirmemize yardımcı oluyor. Başka sorularınız veya yorumlarınız varsa, lütfen bizimle iletişime geçmekten çekinmeyin.\n\n" +
+                            "İyi yolculuklar,\n" +
+                            "SailMate Destek Ekibi");
+                } else {
+                    // English email (default)
+                    message.setSubject("Response to Your SailMate Complaint #" + id);
+                    message.setText("Dear " + updatedComplaint.getSender() + ",\n\n" +
+                            "Thank you for bringing your concerns to our attention. We've reviewed your complaint regarding:\n\n" +
+                            "\"" + originalComplaint.getSubject() + "\"\n" +
+                            "\"" + originalComplaint.getMessage() + "\"\n\n" +
+                            "Our response:\n" +
+                            "\"" + updatedComplaint.getReply() + "\"\n\n" +
+                            "We value your feedback as it helps us improve our services. If you have any further questions or comments, please don't hesitate to contact us.\n\n" +
+                            "Smooth sailing,\n" +
+                            "The SailMate Support Team");
+                }
                 
                 emailSender.send(message);
                 System.out.println("Email sent successfully to: " + updatedComplaint.getEmail());
@@ -147,49 +182,48 @@ public class ComplaintController {
                 System.err.println("Failed to send email: " + e.getMessage());
                 e.printStackTrace();
             }
-
-                    
-                    // Log the activity
-                    ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
-                    logRequest.setActionType("UPDATE");
-                    logRequest.setEntityType("COMPLAINT");
-                    logRequest.setEntityId(id.toString());
-                    
-                    StringBuilder description = new StringBuilder("Updated complaint");
-                    StringBuilder descriptionTr = new StringBuilder("Şikayet güncellendi");
-                    
-                    if (originalComplaint != null) {
-                        description.append(": ").append(originalComplaint.getSubject());
-                        descriptionTr.append(": ").append(originalComplaint.getSubject());
-                        
-                        if (originalComplaint.getStatus() != request.getStatus()) {
-                            description.append(", status changed from ")
-                                     .append(originalComplaint.getStatus())
-                                     .append(" to ")
-                                     .append(request.getStatus());
-                                     
-                            descriptionTr.append(", durum ")
-                                     .append(getStatusTranslation(originalComplaint.getStatus()))
-                                     .append("'dan ")
-                                     .append(getStatusTranslation(request.getStatus()))
-                                     .append("'a değiştirildi");
-                        }
-                        
-                        if (request.getReply() != null && !request.getReply().equals(originalComplaint.getReply())) {
-                            description.append(", reply added/updated");
-                            descriptionTr.append(", yanıt eklendi/güncellendi");
-                        }
-                    }
-                    
-                    logRequest.setDescription(description.toString());
-                    logRequest.setDescriptionTr(descriptionTr.toString());
-                    activityLogService.createActivityLog(logRequest, claims);
-                    
-                    return ResponseEntity.ok(updatedComplaint);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("UPDATE");
+            logRequest.setEntityType("COMPLAINT");
+            logRequest.setEntityId(id.toString());
+            
+            StringBuilder description = new StringBuilder("Updated complaint");
+            StringBuilder descriptionTr = new StringBuilder("Şikayet güncellendi");
+            
+            if (originalComplaint != null) {
+                description.append(": ").append(originalComplaint.getSubject());
+                descriptionTr.append(": ").append(originalComplaint.getSubject());
+                
+                if (originalComplaint.getStatus() != request.getStatus()) {
+                    description.append(", status changed from ")
+                             .append(originalComplaint.getStatus())
+                             .append(" to ")
+                             .append(request.getStatus());
+                             
+                    descriptionTr.append(", durum ")
+                             .append(getStatusTranslation(originalComplaint.getStatus()))
+                             .append("'dan ")
+                             .append(getStatusTranslation(request.getStatus()))
+                             .append("'a değiştirildi");
                 }
-                else{
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+                
+                if (request.getReply() != null && !request.getReply().equals(originalComplaint.getReply())) {
+                    description.append(", reply added/updated");
+                    descriptionTr.append(", yanıt eklendi/güncellendi");
                 }
+            }
+            
+            logRequest.setDescription(description.toString());
+            logRequest.setDescriptionTr(descriptionTr.toString());
+            activityLogService.createActivityLog(logRequest, claims);
+            
+            return ResponseEntity.ok(updatedComplaint);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
     }
     
     @DeleteMapping("/{id}")

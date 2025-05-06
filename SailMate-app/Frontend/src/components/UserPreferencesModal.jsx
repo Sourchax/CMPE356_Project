@@ -133,6 +133,7 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="text-white hover:text-gray-200 transition-colors bg-red-600 hover:bg-red-700 rounded-md w-8 h-8 flex items-center justify-center"
             aria-label="Close"
+            disabled={isSubmitting}
           >
             <X size={20} />
           </button>
@@ -164,6 +165,7 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#0D3A73] focus:border-[#0D3A73]"
                 value={emailSmsLanguage}
                 onChange={(e) => setEmailSmsLanguage(e.target.value)}
+                disabled={isSubmitting}
               >
                 <option value="en">English</option>
                 <option value="tr">Türkçe</option>
@@ -186,7 +188,11 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 text-sm font-medium text-white bg-[#0D3A73] hover:bg-blue-800 rounded-md transition"
+            className={`px-4 py-2 text-sm font-medium text-white ${
+              isSubmitting 
+                ? "bg-blue-400 cursor-not-allowed" 
+                : "bg-[#0D3A73] hover:bg-blue-800 cursor-pointer"
+            } rounded-md transition`}
             disabled={isSubmitting}
           >
             {isSubmitting ? t("preferencesModal.saving") : t("preferencesModal.save")}

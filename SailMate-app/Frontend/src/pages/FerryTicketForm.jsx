@@ -10,7 +10,7 @@ import ThankYouPage from "../components/ferry-ticket-form/ThankYouPage.jsx";
 import SeatSelectionBox from '../components/ferry-ticket-form/seatSelectionBox.jsx';
 import SeatSelectionModal from '../components/ferry-ticket-form/seatSelectionModal.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import {useSessionToken} from "../utils/sessions.js"
 import { useTranslation } from "react-i18next";
 
@@ -83,6 +83,7 @@ const FerryTicketForm = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const { userId, isLoaded } = useAuth();
+  const { user } = useUser();
   const [isDepartureSeatModalOpen, setIsDepartureSeatModalOpen] = useState(false);
   const [isReturnSeatModalOpen, setIsReturnSeatModalOpen] = useState(false);
   const [departureSelectedSeats, setDepartureSelectedSeats] = useState([]);
@@ -361,10 +362,10 @@ const FerryTicketForm = () => {
         console.log("Return ticket created:", returnTicketResponse.data);
       }
   
-      // Store ticket information in state or localStorage for the Thank You page
       const ticketInfo = {
         departureTicket: departureTicketResponse.data,
-        returnTicket: returnTicketResponse ? returnTicketResponse.data : null
+        returnTicket: returnTicketResponse ? returnTicketResponse.data : null,
+        lang_pref: user.publicMetadata?.lan || "en" // Pass user language preference
       };
       
       // Send email notifications with PDF attachments if the user opted in
@@ -372,7 +373,7 @@ const FerryTicketForm = () => {
         try {
           const emailResponse = await axios.post(`${API_URL}/tickets/send-email`, ticketInfo, {
             headers: {
-              Authorization: `Bearer ${useSessionToken()}`
+              Authorization: `Bearer ${await useSessionToken()}`
             }
           });
           console.log("Ticket confirmation emails with PDFs sent", emailResponse.data);
@@ -385,23 +386,48 @@ const FerryTicketForm = () => {
       try {
         if (formData.notifyBySMS) {
           // Create detailed message content based on ticket type
-          let message = "Thank you for choosing SailMate! \\n";
-          
-          // Add departure ticket details
-          message += `DEPARTURE: ${formData.tripData.departure} to ${formData.tripData.arrival}\\n`;
-          message += `Date: ${formData.tripData.departureDate}\\n`;
-          message += `Time: ${formData.selectedDeparture.departure}\\n`;
-          message += `Passengers: ${formData.departureDetails.passengerCount}\\n`;
-          
-          // Add return ticket details if it's a round trip
-          if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
-            message += `\\nRETURN: ${formData.tripData.arrival} to ${formData.tripData.departure}\\n`;
-            message += `Date: ${formData.tripData.returnDate}\\n`;
-            message += `Time: ${formData.selectedReturn.departure}\\n`;
+          let message = "";
+          const userLanguage = user.publicMetadata?.lan || "en";
+  
+          if (userLanguage === "tr") {
+            // Turkish version
+            message = "SailMate'i seçtiğiniz için teşekkür ederiz! \\n";
+            
+            // Add departure ticket details
+            message += `GİDİŞ: ${formData.tripData.departure} - ${formData.tripData.arrival}\\n`;
+            message += `Tarih: ${formData.tripData.departureDate}\\n`;
+            message += `Saat: ${formData.selectedDeparture.departure}\\n`;
+            message += `Yolcu: ${formData.departureDetails.passengerCount}\\n`;
+            
+            // Add return ticket details if it's a round trip
+            if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
+              message += `\\nDÖNÜŞ: ${formData.tripData.arrival} - ${formData.tripData.departure}\\n`;
+              message += `Tarih: ${formData.tripData.returnDate}\\n`;
+              message += `Saat: ${formData.selectedReturn.departure}\\n`;
+              message += `Yolcu: ${formData.departureDetails.passengerCount}\\n`;
+            }
+            
+            message += "İyi yolculuklar dileriz!";
+          } else {
+            // English version (default)
+            message = "Thank you for choosing SailMate! \\n";
+            
+            // Add departure ticket details
+            message += `DEPARTURE: ${formData.tripData.departure} to ${formData.tripData.arrival}\\n`;
+            message += `Date: ${formData.tripData.departureDate}\\n`;
+            message += `Time: ${formData.selectedDeparture.departure}\\n`;
             message += `Passengers: ${formData.departureDetails.passengerCount}\\n`;
+            
+            // Add return ticket details if it's a round trip
+            if (formData.tripData.returnDate !== "" && formData.selectedReturn) {
+              message += `\\nRETURN: ${formData.tripData.arrival} to ${formData.tripData.departure}\\n`;
+              message += `Date: ${formData.tripData.returnDate}\\n`;
+              message += `Time: ${formData.selectedReturn.departure}\\n`;
+              message += `Passengers: ${formData.departureDetails.passengerCount}\\n`;
+            }
+            
+            message += "Have a pleasant journey!";
           }
-          
-          message += "Have a pleasant journey!";
           
           // Call the SMS API
           const smsResponse = await axios.post(`${API_URL}/sms/send`, {

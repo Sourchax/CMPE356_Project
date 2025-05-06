@@ -325,6 +325,9 @@ public class TicketController {
 
         HashMap<String, Object> user = ClerkUsers.getUser(claims.getSubject());
         
+        // Get user's language preference, default to English if not specified
+        String language = user.containsKey("lan") ? (String) user.get("lan") : "en";
+        
         boolean deleted = ticketService.deleteTicket(id);
         
         if (deleted) {
@@ -355,22 +358,44 @@ public class TicketController {
                         SimpleMailMessage message = new SimpleMailMessage();
                         message.setFrom("sailmatesup@gmail.com");
                         message.setTo((String) user.get("email"));
-                        message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
-                        message.setText("Dear " + user.get("full_name")+",\n\n" +
-                                "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
-                                "Voyage Details:\n" +
-                                "From: " + ticket.getFromStationTitle() + "\n" +
-                                "To: " + ticket.getToStationTitle() + "\n" +
-                                "Departure Date: " + ticket.getDepartureDate() + "\n" +
-                                "Passenger Count: " + ticket.getPassengerCount() + "\n" +
-                                "Seat Class: " + ticket.getTicketClass() + "\n" +
-                                "Selected Seats: " + ticket.getSelectedSeats() + "\n\n" +
-                                "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
-                                "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
-                                "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
-                                "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
-                                "Smooth sailing,\n" +
-                                "The SailMate Team");
+                        
+                        if ("tr".equals(language)) {
+                            // Turkish email
+                            message.setSubject("SailMate Bilet İptali - İade Onayı");
+                            message.setText("Sayın " + user.get("full_name") + ",\n\n" +
+                                    "Bilet no #" + ticketID + " başarıyla iptal edilmiştir.\n\n" +
+                                    "Sefer Detayları:\n" +
+                                    "Nereden: " + ticket.getFromStationTitle() + "\n" +
+                                    "Nereye: " + ticket.getToStationTitle() + "\n" +
+                                    "Kalkış Tarihi: " + ticket.getDepartureDate() + "\n" +
+                                    "Yolcu Sayısı: " + ticket.getPassengerCount() + "\n" +
+                                    "Koltuk Sınıfı: " + ticket.getTicketClass() + "\n" +
+                                    "Seçilen Koltuklar: " + ticket.getSelectedSeats() + "\n\n" +
+                                    "Bilet tutarının tamamı için iade işlemi başlatılmıştır ve orijinal ödeme yönteminize göre işleme alınacaktır. " +
+                                    "İade, bankanızın işlem süresine bağlı olarak 5-7 iş günü içinde hesabınızda görünmelidir.\n\n" +
+                                    "İadenizle ilgili herhangi bir sorunuz varsa veya daha fazla yardıma ihtiyacınız olursa, lütfen destek ekibimizle iletişime geçin.\n\n" +
+                                    "Feribot seyahat ihtiyaçlarınız için SailMate'i tercih ettiğiniz için teşekkür ederiz.\n\n" +
+                                    "İyi yolculuklar,\n" +
+                                    "SailMate Ekibi");
+                        } else {
+                            // English email (default)
+                            message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
+                            message.setText("Dear " + user.get("full_name")+",\n\n" +
+                                    "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                                    "Voyage Details:\n" +
+                                    "From: " + ticket.getFromStationTitle() + "\n" +
+                                    "To: " + ticket.getToStationTitle() + "\n" +
+                                    "Departure Date: " + ticket.getDepartureDate() + "\n" +
+                                    "Passenger Count: " + ticket.getPassengerCount() + "\n" +
+                                    "Seat Class: " + ticket.getTicketClass() + "\n" +
+                                    "Selected Seats: " + ticket.getSelectedSeats() + "\n\n" +
+                                    "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                                    "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                                    "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                                    "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                                    "Smooth sailing,\n" +
+                                    "The SailMate Team");
+                        }
                         
                         emailSender.send(message);
                         System.out.println("Cancellation email sent successfully to: " + (String) user.get("email"));
@@ -386,15 +411,30 @@ public class TicketController {
                         SimpleMailMessage message = new SimpleMailMessage();
                         message.setFrom("sailmatesup@gmail.com");
                         message.setTo((String) user.get("email"));
-                        message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
-                        message.setText("Dear " + user.get("full_name")+",\n\n" +
-                                "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
-                                "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
-                                "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
-                                "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
-                                "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
-                                "Smooth sailing,\n" +
-                                "The SailMate Team");
+                        
+                        if ("tr".equals(language)) {
+                            // Basic Turkish email
+                            message.setSubject("SailMate Bilet İptali - İade Onayı");
+                            message.setText("Sayın " + user.get("full_name") + ",\n\n" +
+                                    "Bilet no #" + ticketID + " başarıyla iptal edilmiştir.\n\n" +
+                                    "Bilet tutarının tamamı için iade işlemi başlatılmıştır ve orijinal ödeme yönteminize göre işleme alınacaktır. " +
+                                    "İade, bankanızın işlem süresine bağlı olarak 5-7 iş günü içinde hesabınızda görünmelidir.\n\n" +
+                                    "İadenizle ilgili herhangi bir sorunuz varsa veya daha fazla yardıma ihtiyacınız olursa, lütfen destek ekibimizle iletişime geçin.\n\n" +
+                                    "Feribot seyahat ihtiyaçlarınız için SailMate'i tercih ettiğiniz için teşekkür ederiz.\n\n" +
+                                    "İyi yolculuklar,\n" +
+                                    "SailMate Ekibi");
+                        } else {
+                            // Basic English email (default)
+                            message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
+                            message.setText("Dear " + user.get("full_name")+",\n\n" +
+                                    "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                                    "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                                    "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                                    "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                                    "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                                    "Smooth sailing,\n" +
+                                    "The SailMate Team");
+                        }
                         
                         emailSender.send(message);
                         System.out.println("Basic cancellation email sent successfully to: " + (String) user.get("email"));
@@ -408,16 +448,31 @@ public class TicketController {
                 try {
                     SimpleMailMessage message = new SimpleMailMessage();
                     message.setFrom("sailmatesup@gmail.com");
-                        message.setTo((String) user.get("email"));
+                    message.setTo((String) user.get("email"));
+                    
+                    if ("tr".equals(language)) {
+                        // Basic Turkish email
+                        message.setSubject("SailMate Bilet İptali - İade Onayı");
+                        message.setText("Sayın " + user.get("full_name") + ",\n\n" +
+                                "Bilet no #" + ticketID + " başarıyla iptal edilmiştir.\n\n" +
+                                "Bilet tutarının tamamı için iade işlemi başlatılmıştır ve orijinal ödeme yönteminize göre işleme alınacaktır. " +
+                                "İade, bankanızın işlem süresine bağlı olarak 5-7 iş günü içinde hesabınızda görünmelidir.\n\n" +
+                                "İadenizle ilgili herhangi bir sorunuz varsa veya daha fazla yardıma ihtiyacınız olursa, lütfen destek ekibimizle iletişime geçin.\n\n" +
+                                "Feribot seyahat ihtiyaçlarınız için SailMate'i tercih ettiğiniz için teşekkür ederiz.\n\n" +
+                                "İyi yolculuklar,\n" +
+                                "SailMate Ekibi");
+                    } else {
+                        // Basic English email (default)
                         message.setSubject("SailMate Ticket Cancellation - Refund Confirmation");
                         message.setText("Dear " + user.get("full_name")+",\n\n" +
-                            "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
-                            "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
-                            "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
-                            "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
-                            "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
-                            "Smooth sailing,\n" +
-                            "The SailMate Team");
+                                "Your ticket #" + ticketID + " has been successfully cancelled.\n\n" +
+                                "A refund has been initiated for the full ticket amount and will be processed according to your original payment method. " +
+                                "The refund should appear in your account within 5-7 business days, depending on your bank's processing time.\n\n" +
+                                "If you have any questions regarding your refund or need further assistance, please contact our support team.\n\n" +
+                                "Thank you for choosing SailMate for your ferry travel needs.\n\n" +
+                                "Smooth sailing,\n" +
+                                "The SailMate Team");
+                    }
                     
                     emailSender.send(message);
                     System.out.println("Basic cancellation email sent successfully to: " + (String) user.get("email"));
@@ -504,6 +559,12 @@ public class TicketController {
             // Extract ticket data from the request
             Map<String, Object> departureTicket = (Map<String, Object>) ticketInfo.get("departureTicket");
             Map<String, Object> returnTicket = (Map<String, Object>) ticketInfo.get("returnTicket");
+            String languagePreference = (String) ticketInfo.get("lang_pref");
+            
+            // Default to English if no language preference is specified
+            if (languagePreference == null) {
+                languagePreference = "en";
+            }
             
             if (departureTicket == null) {
                 return ResponseEntity.badRequest().body("No ticket data provided");
@@ -518,13 +579,17 @@ public class TicketController {
             
             // Send a single email with both tickets if it's a round trip
             if (returnTicket != null) {
-                sendRoundTripConfirmationEmailWithPDFs(user, departureTicket, returnTicket);
+                sendRoundTripConfirmationEmailWithPDFs(user, departureTicket, returnTicket, languagePreference);
             } else {
                 // Just a one-way trip
-                sendOneWayConfirmationEmailWithPDF(user, departureTicket);
+                sendOneWayConfirmationEmailWithPDF(user, departureTicket, languagePreference);
             }
             
-            return ResponseEntity.ok().body(Map.of("message", "Ticket confirmation email with PDF attachments sent successfully"));
+            String successMessage = languagePreference.equals("tr") ? 
+                "Bilet onay e-postası PDF ekleri ile başarıyla gönderildi" : 
+                "Ticket confirmation email with PDF attachments sent successfully";
+                
+            return ResponseEntity.ok().body(Map.of("message", successMessage));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -532,7 +597,7 @@ public class TicketController {
         }
     }
 
-    private void sendOneWayConfirmationEmailWithPDF(HashMap<String, Object> user, Map<String, Object> ticketData) {
+    private void sendOneWayConfirmationEmailWithPDF(HashMap<String, Object> user, Map<String, Object> ticketData, String language) {
         try {
             // Get the ticket ID from the ticket data
             String ticketId = (String) ticketData.get("ticketID");
@@ -565,27 +630,54 @@ public class TicketController {
             
             helper.setFrom("sailmatesup@gmail.com");
             helper.setTo((String) user.get("email"));
-            helper.setSubject("SailMate Ticket Confirmation - Your Ferry Ticket");
             
-            // Build the email content
-            String emailContent = "Dear " + user.get("full_name") + ",\n\n" +
-                    "Thank you for choosing SailMate! Your ticket has been successfully booked.\n\n" +
-                    "Ticket Details:\n" +
-                    "Ticket #: " + ticketId + "\n" +
-                    "From: " + fromStation + "\n" +
-                    "To: " + toStation + "\n" +
-                    "Date: " + departureDate + "\n" +
-                    "Departure Time: " + departureTime + "\n" +
-                    "Arrival Time: " + arrivalTime + "\n" +
-                    "Passenger Count: " + passengerCount + "\n" +
-                    "Seat Class: " + ticketClass + "\n" +
-                    "Selected Seats: " + selectedSeats + "\n\n" +
-                    "Your ticket is attached to this email as a PDF. You can also view and download your ticket from your account dashboard on the SailMate website.\n\n" +
-                    "For any assistance, please contact our customer support team.\n\n" +
-                    "We wish you a pleasant journey!\n\n" +
-                    "Smooth sailing,\n" +
-                    "The SailMate Team";
+            String emailSubject, emailContent;
             
+            if (language.equals("tr")) {
+                // Turkish email content
+                emailSubject = "SailMate Bilet Onayı - Feribot Biletiniz";
+                
+                emailContent = "Sayın " + user.get("full_name") + ",\n\n" +
+                        "SailMate'i tercih ettiğiniz için teşekkür ederiz! Biletiniz başarıyla kaydedildi.\n\n" +
+                        "Bilet Detayları:\n" +
+                        "Bilet No: " + ticketId + "\n" +
+                        "Nereden: " + fromStation + "\n" +
+                        "Nereye: " + toStation + "\n" +
+                        "Tarih: " + departureDate + "\n" +
+                        "Kalkış Saati: " + departureTime + "\n" +
+                        "Varış Saati: " + arrivalTime + "\n" +
+                        "Yolcu Sayısı: " + passengerCount + "\n" +
+                        "Koltuk Sınıfı: " + ticketClass + "\n" +
+                        "Seçilen Koltuklar: " + selectedSeats + "\n\n" +
+                        "Biletiniz bu e-postaya PDF olarak eklenmiştir. Biletinizi SailMate web sitesindeki hesap panelinizden de görüntüleyebilir ve indirebilirsiniz.\n\n" +
+                        "Herhangi bir yardım için lütfen müşteri destek ekibimizle iletişime geçin.\n\n" +
+                        "İyi yolculuklar dileriz!\n\n" +
+                        "Keyifli seyahatler,\n" +
+                        "SailMate Ekibi";
+            } else {
+                // English email content (default)
+                emailSubject = "SailMate Ticket Confirmation - Your Ferry Ticket";
+                
+                emailContent = "Dear " + user.get("full_name") + ",\n\n" +
+                        "Thank you for choosing SailMate! Your ticket has been successfully booked.\n\n" +
+                        "Ticket Details:\n" +
+                        "Ticket #: " + ticketId + "\n" +
+                        "From: " + fromStation + "\n" +
+                        "To: " + toStation + "\n" +
+                        "Date: " + departureDate + "\n" +
+                        "Departure Time: " + departureTime + "\n" +
+                        "Arrival Time: " + arrivalTime + "\n" +
+                        "Passenger Count: " + passengerCount + "\n" +
+                        "Seat Class: " + ticketClass + "\n" +
+                        "Selected Seats: " + selectedSeats + "\n\n" +
+                        "Your ticket is attached to this email as a PDF. You can also view and download your ticket from your account dashboard on the SailMate website.\n\n" +
+                        "For any assistance, please contact our customer support team.\n\n" +
+                        "We wish you a pleasant journey!\n\n" +
+                        "Smooth sailing,\n" +
+                        "The SailMate Team";
+            }
+            
+            helper.setSubject(emailSubject);
             helper.setText(emailContent);
             
             // Generate and attach the PDF ticket
@@ -601,7 +693,7 @@ public class TicketController {
     }
     
     
-    private void sendRoundTripConfirmationEmailWithPDFs(HashMap<String, Object> user, Map<String, Object> departureTicket, Map<String, Object> returnTicket) {
+    private void sendRoundTripConfirmationEmailWithPDFs(HashMap<String, Object> user, Map<String, Object> departureTicket, Map<String, Object> returnTicket, String language) {
         try {
             // Get ticket IDs from the ticket data
             String depTicketId = (String) departureTicket.get("ticketID");
@@ -648,45 +740,88 @@ public class TicketController {
             
             helper.setFrom("sailmatesup@gmail.com");
             helper.setTo((String) user.get("email"));
-            helper.setSubject("SailMate Ticket Confirmation - Your Round Trip Ferry Tickets");
             
-            // Build the email content
-            String emailContent = "Dear " + user.get("full_name") + ",\n\n" +
-                    "Thank you for choosing SailMate! Your round trip tickets have been successfully booked.\n\n" +
-                    "OUTBOUND JOURNEY:\n" +
-                    "Ticket #: " + depTicketId + "\n" +
-                    "From: " + depFromStation + "\n" +
-                    "To: " + depToStation + "\n" +
-                    "Date: " + depDepartureDate + "\n" +
-                    "Departure Time: " + depDepartureTime + "\n" +
-                    "Arrival Time: " + depArrivalTime + "\n" +
-                    "Passenger Count: " + depPassengerCount + "\n" +
-                    "Seat Class: " + depTicketClass + "\n" +
-                    "Selected Seats: " + depSelectedSeats + "\n\n" +
-                    "RETURN JOURNEY:\n" +
-                    "Ticket #: " + retTicketId + "\n" +
-                    "From: " + retFromStation + "\n" +
-                    "To: " + retToStation + "\n" +
-                    "Date: " + retDepartureDate + "\n" +
-                    "Departure Time: " + retDepartureTime + "\n" +
-                    "Arrival Time: " + retArrivalTime + "\n" +
-                    "Passenger Count: " + retPassengerCount + "\n" +
-                    "Seat Class: " + retTicketClass + "\n" +
-                    "Selected Seats: " + retSelectedSeats + "\n\n" +
-                    "Your tickets are attached to this email as PDFs. You can also view and download your tickets from your account dashboard on the SailMate website.\n\n" +
-                    "For any assistance, please contact our customer support team.\n\n" +
-                    "We wish you a pleasant journey!\n\n" +
-                    "Smooth sailing,\n" +
-                    "The SailMate Team";
+            String emailSubject, emailContent;
             
+            if (language.equals("tr")) {
+                // Turkish email content
+                emailSubject = "SailMate Bilet Onayı - Gidiş-Dönüş Feribot Biletleriniz";
+                
+                emailContent = "Sayın " + user.get("full_name") + ",\n\n" +
+                        "SailMate'i tercih ettiğiniz için teşekkür ederiz! Gidiş-dönüş biletleriniz başarıyla kaydedildi.\n\n" +
+                        "GİDİŞ YOLCULUĞU:\n" +
+                        "Bilet No: " + depTicketId + "\n" +
+                        "Nereden: " + depFromStation + "\n" +
+                        "Nereye: " + depToStation + "\n" +
+                        "Tarih: " + depDepartureDate + "\n" +
+                        "Kalkış Saati: " + depDepartureTime + "\n" +
+                        "Varış Saati: " + depArrivalTime + "\n" +
+                        "Yolcu Sayısı: " + depPassengerCount + "\n" +
+                        "Koltuk Sınıfı: " + depTicketClass + "\n" +
+                        "Seçilen Koltuklar: " + depSelectedSeats + "\n\n" +
+                        "DÖNÜŞ YOLCULUĞU:\n" +
+                        "Bilet No: " + retTicketId + "\n" +
+                        "Nereden: " + retFromStation + "\n" +
+                        "Nereye: " + retToStation + "\n" +
+                        "Tarih: " + retDepartureDate + "\n" +
+                        "Kalkış Saati: " + retDepartureTime + "\n" +
+                        "Varış Saati: " + retArrivalTime + "\n" +
+                        "Yolcu Sayısı: " + retPassengerCount + "\n" +
+                        "Koltuk Sınıfı: " + retTicketClass + "\n" +
+                        "Seçilen Koltuklar: " + retSelectedSeats + "\n\n" +
+                        "Biletleriniz bu e-postaya PDF olarak eklenmiştir. Biletlerinizi SailMate web sitesindeki hesap panelinizden de görüntüleyebilir ve indirebilirsiniz.\n\n" +
+                        "Herhangi bir yardım için lütfen müşteri destek ekibimizle iletişime geçin.\n\n" +
+                        "İyi yolculuklar dileriz!\n\n" +
+                        "Keyifli seyahatler,\n" +
+                        "SailMate Ekibi";
+            } else {
+                // English email content (default)
+                emailSubject = "SailMate Ticket Confirmation - Your Round Trip Ferry Tickets";
+                
+                emailContent = "Dear " + user.get("full_name") + ",\n\n" +
+                        "Thank you for choosing SailMate! Your round trip tickets have been successfully booked.\n\n" +
+                        "OUTBOUND JOURNEY:\n" +
+                        "Ticket #: " + depTicketId + "\n" +
+                        "From: " + depFromStation + "\n" +
+                        "To: " + depToStation + "\n" +
+                        "Date: " + depDepartureDate + "\n" +
+                        "Departure Time: " + depDepartureTime + "\n" +
+                        "Arrival Time: " + depArrivalTime + "\n" +
+                        "Passenger Count: " + depPassengerCount + "\n" +
+                        "Seat Class: " + depTicketClass + "\n" +
+                        "Selected Seats: " + depSelectedSeats + "\n\n" +
+                        "RETURN JOURNEY:\n" +
+                        "Ticket #: " + retTicketId + "\n" +
+                        "From: " + retFromStation + "\n" +
+                        "To: " + retToStation + "\n" +
+                        "Date: " + retDepartureDate + "\n" +
+                        "Departure Time: " + retDepartureTime + "\n" +
+                        "Arrival Time: " + retArrivalTime + "\n" +
+                        "Passenger Count: " + retPassengerCount + "\n" +
+                        "Seat Class: " + retTicketClass + "\n" +
+                        "Selected Seats: " + retSelectedSeats + "\n\n" +
+                        "Your tickets are attached to this email as PDFs. You can also view and download your tickets from your account dashboard on the SailMate website.\n\n" +
+                        "For any assistance, please contact our customer support team.\n\n" +
+                        "We wish you a pleasant journey!\n\n" +
+                        "Smooth sailing,\n" +
+                        "The SailMate Team";
+            }
+            
+            helper.setSubject(emailSubject);
             helper.setText(emailContent);
             
             // Generate and attach the PDF tickets
             byte[] departurePdfBytes = ticketService.generateTicketPdfBytes(depTicketId);
-            helper.addAttachment("outbound-ticket-" + depTicketId + ".pdf", new ByteArrayResource(departurePdfBytes));
+            String departureAttachmentName = language.equals("tr") ? 
+                "gidis-bileti-" + depTicketId + ".pdf" : 
+                "outbound-ticket-" + depTicketId + ".pdf";
+            helper.addAttachment(departureAttachmentName, new ByteArrayResource(departurePdfBytes));
             
             byte[] returnPdfBytes = ticketService.generateTicketPdfBytes(retTicketId);
-            helper.addAttachment("return-ticket-" + retTicketId + ".pdf", new ByteArrayResource(returnPdfBytes));
+            String returnAttachmentName = language.equals("tr") ? 
+                "donus-bileti-" + retTicketId + ".pdf" : 
+                "return-ticket-" + retTicketId + ".pdf";
+            helper.addAttachment(returnAttachmentName, new ByteArrayResource(returnPdfBytes));
             
             emailSender.send(message);
             System.out.println("Round-trip ticket confirmation email with PDFs sent to: " + (String) user.get("email"));

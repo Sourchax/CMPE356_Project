@@ -115,18 +115,36 @@ public class ClerkUsers {
             .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
             .build();
         
-        try{
+        try {
             GetUserResponse res = sdk.users().get()
                 .userId(userId)
                 .call();
-
+    
             HashMap<String, Object> user = new HashMap<>();
             user.put("full_name", res.user().get().firstName().get() + " " + res.user().get().lastName().get());
             if (res.user().get().emailAddresses().isPresent())
                 user.put("email", res.user().get().emailAddresses().get().getFirst().emailAddress());
             if (res.user().get().phoneNumbers().isPresent())
                 user.put("phone", res.user().get().phoneNumbers().get().getFirst().phoneNumber());
-
+            
+            // Get language preference from user metadata
+            if (res.user().get().publicMetadata().isPresent()) {
+                Object metadata = res.user().get().publicMetadata().get();
+                if (metadata instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> metadataMap = (Map<String, Object>) metadata;
+                    if (metadataMap.containsKey("lan")) {
+                        user.put("lan", metadataMap.get("lan"));
+                    } else {
+                        user.put("lan", "en"); // Default to English if no language preference is set
+                    }
+                } else {
+                    user.put("lan", "en"); // Default to English if metadata is not a map
+                }
+            } else {
+                user.put("lan", "en"); // Default to English if no metadata is present
+            }
+    
             return user;
         }
         catch (Exception e) {
