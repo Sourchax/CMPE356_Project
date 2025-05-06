@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSessionToken } from '../utils/sessions';
 import { X, Bell, Check, Trash2 } from 'lucide-react';
@@ -16,6 +16,7 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
   const isTurkish = currentLanguage === 'tr';
+  const modalRef = useRef(null); // Added ref for modal content
   
   // Helper function to get localized notification content
   const getLocalizedNotificationContent = (notification) => {
@@ -37,6 +38,44 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
       fetchNotifications();
     }
   }, [isOpen, userId, activeTab, currentLanguage]);
+
+  // Handle outside click to close modal and prevent background scrolling
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      // Prevent background scrolling when modal is open
+      document.body.style.overflow = "hidden";
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    
+    return () => {
+      // Re-enable scrolling when modal is closed
+      document.body.style.overflow = "auto";
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscKey);
+    }
+    
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isOpen, onClose]);
 
   // Fetch notifications based on active tab
   const fetchNotifications = async () => {
@@ -147,9 +186,10 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     event.stopPropagation();
     
     try {
+      const token = useSessionToken();
       await axios.put(`${API_BASE_URL}/notifications/read-all`, {}, {
         headers: {
-          Authorization: `Bearer ${useSessionToken()}`,
+          Authorization: `Bearer ${token}`,
         }
       });
       // Update local state
@@ -205,25 +245,26 @@ const NotificationsModal = ({ isOpen, onClose, userId }) => {
     return true;
   });
 
-  // Handle modal backdrop click without closing it when clicking content
-  const handleModalClick = (event) => {
-    // Only close if clicking directly on the backdrop
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
     <div 
       className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center"
-      onClick={handleModalClick}
+      onClick={(e) => {
+        // Only close if clicking directly on the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
 
       {/* Modal panel */}
-      <div className="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full sm:max-w-xl md:max-w-2xl mx-4" onClick={e => e.stopPropagation()}>
+      <div 
+        ref={modalRef}
+        className="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full sm:max-w-xl md:max-w-2xl mx-4" 
+        onClick={e => e.stopPropagation()}
+      >
         <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-[#0D3A73]">{t('notifications.title')}</h3>

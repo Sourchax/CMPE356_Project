@@ -91,7 +91,18 @@
     "viewOnMap": "View on Map",
     "all": "All",
     "error": "Error",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "preferences": "Preferences"
+  },
+  "preferencesModal": {
+    "title": "User Preferences",
+    "emailSmsLanguage": "Email & SMS Language",
+    "emailSmsLanguageHelp": "Select the language for email notifications and SMS messages.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "success": "Preferences updated successfully!",
+    "error": "There was an error updating your preferences. Please try again."
   },
   "announcements": {
     "loading": "Loading announcements...",

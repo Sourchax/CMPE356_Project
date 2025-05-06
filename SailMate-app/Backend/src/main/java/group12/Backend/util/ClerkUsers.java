@@ -72,6 +72,22 @@ public class ClerkUsers {
         }
     }
 
+    public static void updateUserLanguage(String userId, String language) throws Exception {
+        Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
+        Clerk sdk = Clerk.builder()
+            .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
+            .build();
+
+        UpdateUserMetadataResponse res = sdk.users().updateMetadata()
+        .userId(userId)
+        .requestBody(UpdateUserMetadataRequestBody.builder().publicMetadata(Map.of("lan", language)).build())
+        .call();
+            
+        if (res.user().isEmpty()) {
+            throw new Exception("Failed to update user language preference");
+        }
+    }
+
     public static void deleteUser(String userId) throws Exception {
         Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
         Clerk sdk = Clerk.builder()

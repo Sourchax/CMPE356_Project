@@ -243,7 +243,7 @@ const NotificationBell = ({ userId, isMaxZoom }) => {
 
   return (
     <>
-      <div className="relative" ref={dropdownRef} style={{ position: 'relative', zIndex: 60 }}>
+      <div className="relative" ref={dropdownRef} style={{ position: 'relative', zIndex: 10 }}>
         <button 
           className="text-[#0D3A73] hover:text-[#06AED5] focus:outline-none transition-colors" 
           onClick={toggleDropdown}

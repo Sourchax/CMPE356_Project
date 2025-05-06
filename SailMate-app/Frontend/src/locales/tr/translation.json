@@ -98,7 +98,18 @@
     "toggleMenu": "Menüyü Aç/Kapat",
     "retry": "Tekrar Dene",
     "error": "Hata",
-    "loading": "Yükleniyor..."
+    "loading": "Yükleniyor...",
+    "preferences": "Tercihler"
+  },
+  "preferencesModal": {
+    "title": "Kullanıcı Tercihleri",
+    "emailSmsLanguage": "E-posta ve SMS Dili",
+    "emailSmsLanguageHelp": "E-posta bildirimleri ve SMS mesajları için dil seçiniz.",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "success": "Tercihleriniz başarıyla güncellendi!",
+    "error": "Tercihleriniz güncellenirken bir hata oluştu. Lütfen tekrar deneyin."
   },
   "announcements": {
     "loading": "Duyurular yükleniyor...",

@@ -1,18 +1,15 @@
 import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, LayoutDashboard, LogOut, Megaphone, X } from "lucide-react";
+import { User, LayoutDashboard, LogOut, Megaphone, X, Settings} from "lucide-react";
+import UserPreferencesModal from "../components/UserPreferencesModal";
 import axios from "axios";
 import { useSessionToken } from "../utils/sessions";
 import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// Broadcast Modal Component remains unchanged
 const BroadcastModal = ({ isOpen, onClose }) => {
-  // Existing code for BroadcastModal...
-  // (keeping this component unchanged)
-  
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,7 +18,7 @@ const BroadcastModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
   const { t } = useTranslation();
 
-  // Handle outside click to close modal
+  // Handle outside click to close modal and prevent background scrolling
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -30,10 +27,14 @@ const BroadcastModal = ({ isOpen, onClose }) => {
     };
 
     if (isOpen) {
+      // Prevent background scrolling when modal is open
+      document.body.style.overflow = "hidden";
       document.addEventListener("mousedown", handleClickOutside);
     }
     
     return () => {
+      // Re-enable scrolling when modal is closed
+      document.body.style.overflow = "auto";
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
@@ -223,6 +224,12 @@ const CustomUserButton = () => {
   const menuRef = useRef(null);
   const menuContentRef = useRef(null);
   const { t } = useTranslation();
+  const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState(false);
+
+  const openPreferencesModal = () => {
+    setIsPreferencesModalOpen(true);
+    handleMenuClose();
+  };
 
   // Custom hook for window dimensions
   const useWindowSize = () => {
@@ -471,7 +478,13 @@ const CustomUserButton = () => {
                 </span>
               </li>
             )}
-
+            <li
+              className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+              onClick={openPreferencesModal}
+            >
+              <Settings size={isMobile ? 16 : 18} className="flex-shrink-0" />
+              <span>{t('common.preferences')}</span>
+            </li>
             {/* Sign Out */}
             <li
               className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-xs sm:text-sm text-red-500 hover:bg-red-100 cursor-pointer"
@@ -491,6 +504,11 @@ const CustomUserButton = () => {
       <BroadcastModal 
         isOpen={isBroadcastModalOpen} 
         onClose={() => setIsBroadcastModalOpen(false)} 
+      />
+
+      <UserPreferencesModal 
+        isOpen={isPreferencesModalOpen} 
+        onClose={() => setIsPreferencesModalOpen(false)} 
       />
     </div>
   );
