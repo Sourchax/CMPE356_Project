@@ -152,6 +152,38 @@ CREATE TABLE prices (
     PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE completed_tickets (
+    id INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+    ticket_id VARCHAR(32) NOT NULL UNIQUE,
+    voyage_id INTEGER,
+    dep_city VARCHAR(100) NOT NULL,
+    dep_station_title VARCHAR(150) NOT NULL,
+    arr_city VARCHAR(100) NOT NULL,
+    arr_station_title VARCHAR(150) NOT NULL,
+    dep_date DATE NOT NULL,
+    dep_time TIME NOT NULL,
+    arr_time TIME NOT NULL,
+    ship_type VARCHAR(255) NOT NULL,
+    fuel_type BOOLEAN DEFAULT false,
+    passenger_count INT UNSIGNED NOT NULL,
+    total_price INTEGER UNSIGNED NOT NULL,
+    ticket_class VARCHAR(50) NOT NULL,
+    selected_seats VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
+    ticket_data JSON NOT NULL COMMENT 'Stores passenger information including name, surname, birthDate, email, phoneNo',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    
+    -- Create indexes for better query performance
+    INDEX idx_completed_ticket_id (ticket_id),
+    INDEX idx_completed_voyage_id (voyage_id),
+    INDEX idx_completed_user (user_id),
+    INDEX idx_completed_dep_date (dep_date),
+    INDEX idx_completed_class (ticket_class),
+    INDEX idx_completed_cities (dep_city, arr_city)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Create indexes for better performance
 CREATE INDEX idx_voyage_date ON voyages(departure_date);
 CREATE INDEX idx_voyage_status ON voyages(status);

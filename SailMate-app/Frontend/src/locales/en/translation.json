@@ -1195,7 +1195,8 @@
         "PRICE": "Price",
         "ANNOUNCEMENT": "Announcement",
         "COMPLAINT": "Complaint",
-        "NOTIFICATION": "Notification"
+        "NOTIFICATION": "Notification",
+        "COMPLETED_TICKET": "Completed Ticket"
       },
       "actions": {
         "CREATE": "Create",

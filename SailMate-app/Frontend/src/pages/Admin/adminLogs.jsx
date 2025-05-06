@@ -24,9 +24,9 @@ const AdminLogs = () => {
     // Available roles for filtering
     const roles = ["user", "admin", "manager", "super"];
 
-    const entityTypes = ["VOYAGE", "TICKET", "STATION", "PRICE", "ANNOUNCEMENT", "COMPLAINT", "NOTIFICATION"];
+    const entityTypes = ["VOYAGE", "TICKET", "STATION", "PRICE", "ANNOUNCEMENT", "COMPLAINT", "NOTIFICATION", "COMPLETED_TICKET"];
     // Available action types for filtering
-    const actionTypes = ["CREATE", "UPDATE", "DELETE", "CANCEL", "BROADCAST", "BULK_CREATE"];
+    const actionTypes = ["CREATE", "UPDATE", "DELETE", "CANCEL", "READ", "BROADCAST", "BULK_CREATE"];
 
     // Fetch logs
     useEffect(() => {
@@ -219,6 +219,8 @@ const AdminLogs = () => {
                 return 'bg-purple-100 text-purple-800 border border-purple-200';
             case 'BULK_CREATE':
                 return 'bg-cyan-100 text-cyan-800 border border-cyan-200';
+            case 'READ':
+                return 'bg-violet-100 text-violet-800 border border-violet-200';
             default:
                 return 'bg-gray-100 text-gray-800 border border-gray-200';
         }
@@ -241,6 +243,8 @@ const AdminLogs = () => {
                 return 'bg-sky-100 text-sky-800 border border-sky-200';
             case 'TICKET':
                 return 'bg-amber-100 text-amber-800 border border-amber-200';
+            case 'COMPLETED_TICKET':
+                return 'bg-teal-100 text-teal-800 border border-teal-200';
             default:
                 return 'bg-gray-100 text-gray-800 border border-gray-200';
         }

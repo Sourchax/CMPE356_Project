@@ -1186,7 +1186,8 @@
         "PRICE": "Fiyat",
         "ANNOUNCEMENT": "Duyuru",
         "COMPLAINT": "Şikayet",
-        "NOTIFICATION": "Bildirim"
+        "NOTIFICATION": "Bildirim",
+        "COMPLETED_TICKET": "Tamamlanmış Bilet"
       },
       "actions": {
         "CREATE": "Oluştur",

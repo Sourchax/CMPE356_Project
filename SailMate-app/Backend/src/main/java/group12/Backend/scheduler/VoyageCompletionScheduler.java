@@ -44,7 +44,7 @@ public class VoyageCompletionScheduler {
      * Scheduled task to check for completed voyages and move their tickets to completed_tickets
      * Runs every 15 minutes
      */
-    @Scheduled(cron = "0 */15 * * * *") // Run every 15 minutes
+    @Scheduled(cron = "0 */2 * * * *") // Run every 15 minutes
     @Transactional
     public void processCompletedVoyages() {
         logger.info("Starting scheduled task to process completed voyages...");
@@ -55,7 +55,7 @@ public class VoyageCompletionScheduler {
         // Find all active voyages that have departed (date is today or in the past)
         List<Voyage> potentiallyCompletedVoyages = voyageRepository.findByStatusAndDepartureDateBetween(
                 Voyage.VoyageStatus.active, 
-                LocalDate.of(2000, 1, 1), // Start from a date far in the past
+                LocalDate.of(2025, 1, 1),
                 currentDate
         );
         
@@ -63,15 +63,15 @@ public class VoyageCompletionScheduler {
         int processedTickets = 0;
         
         for (Voyage voyage : potentiallyCompletedVoyages) {
-            // Check if voyage has departed and arrived
+            // Check if voyage has departed
             boolean hasVoyageCompleted = false;
             
             if (voyage.getDepartureDate().isBefore(currentDate)) {
                 // If departure date is in the past, voyage has completed
                 hasVoyageCompleted = true;
             } else if (voyage.getDepartureDate().isEqual(currentDate)) {
-                // If departure date is today, check if arrival time has passed
-                if (voyage.getArrivalTime().isBefore(currentTime)) {
+                // If departure date is today, check if departure time has passed
+                if (voyage.getDepartureTime().isBefore(currentTime)) {
                     hasVoyageCompleted = true;
                 }
             }
@@ -90,7 +90,6 @@ public class VoyageCompletionScheduler {
                 }
             }
         }
-        
         logger.info(String.format("Completed voyage processing: %d voyages and %d tickets processed", 
                 processedVoyages, processedTickets));
     }

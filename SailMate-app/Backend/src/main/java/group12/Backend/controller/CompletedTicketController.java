@@ -51,7 +51,7 @@ public class CompletedTicketController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+        if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
             List<CompletedTicketDTO> tickets = completedTicketService.getAllCompletedTickets();
             
             // Log the activity
@@ -87,7 +87,7 @@ public class CompletedTicketController {
             
             // Check authorization: either admin/super or the owner of the ticket
             String role = (String) claims.get("meta_data", HashMap.class).get("role");
-            if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role) || 
+            if ("super".equalsIgnoreCase(role) || 
                     claims.getSubject().equals(ticketDTO.getUserId())) {
                 
                 // Log the activity
@@ -212,7 +212,7 @@ public class CompletedTicketController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
+        if ("manager".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)) {
             long count = completedTicketService.getCompletedTicketCount();
             return ResponseEntity.ok(count);
         } else {
@@ -244,8 +244,7 @@ public class CompletedTicketController {
         CompletedTicketDTO ticket = ticketOpt.get();
         String role = (String) claims.get("meta_data", HashMap.class).get("role");
         
-        if (!ticket.getUserId().equals(claims.getSubject()) && 
-                !("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role))) {
+        if (!ticket.getUserId().equals(claims.getSubject())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized to download this ticket");
         }
         
