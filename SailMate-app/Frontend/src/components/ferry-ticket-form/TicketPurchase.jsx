@@ -35,19 +35,6 @@ const TicketPurchase = ({ notifyBySMS, setNotifyBySMS, notifyByEmail, setNotifyB
             />
           </div>
         </div>
-  
-        <div className="mt-4 flex items-center">
-          <input 
-            type="checkbox" 
-            id="eticket" 
-            checked={wantETicket} 
-            onChange={() => setWantETicket(!wantETicket)} 
-            className="mr-2" 
-          />
-          <label htmlFor="eticket">
-            {t('ferryTicketing.wantETicket')} <span className="font-bold">{t('ferryTicketing.eTicketInvoiceNote')}</span>
-          </label>
-        </div>
       </div>
     );
   };
