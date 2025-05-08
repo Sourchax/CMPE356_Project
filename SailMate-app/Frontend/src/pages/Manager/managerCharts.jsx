@@ -13,7 +13,10 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(value);
 };
 
-const COLORS = ['#0D3A73', '#06AED5', '#F0C809', '#DD614A'];
+const COLORS = ['#DD614A', '#06AED5', '#F0C809', '#0D3A73'];
+const BUSINESS_COLOR = '#DD614A';
+const ECONOMY_COLOR = '#06AED5';
+const PROMO_COLOR = '#F0C809';
 
 const ManagerCharts = () => {
   const { t } = useTranslation();
@@ -400,6 +403,19 @@ const ManagerCharts = () => {
     name: `${route.fromCity} → ${route.toCity}`,
     value: route.count
   }));
+
+  const getTicketClassColor = (className) => {
+    switch(className.toLowerCase()) {
+      case 'business':
+        return BUSINESS_COLOR;
+      case 'economy':
+        return ECONOMY_COLOR;
+      case 'promo':
+        return PROMO_COLOR;
+      default:
+        return '#0D3A73';
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -514,9 +530,9 @@ const ManagerCharts = () => {
                   <YAxis tickFormatter={(value) => `₺${value}K`} />
                   <Tooltip formatter={(value) => `₺${value.toLocaleString()}K`} />
                   <Legend />
-                  <Bar dataKey="Promo Revenue" stackId="a" name={t('manager.charts.ticketClasses.promo')} fill="#F0C809" />
-                  <Bar dataKey="Economy Revenue" stackId="a" name={t('manager.charts.ticketClasses.economy')} fill="#06AED5" />
-                  <Bar dataKey="Business Revenue" stackId="a" name={t('manager.charts.ticketClasses.business')} fill="#0D3A73" />
+                  <Bar dataKey="Promo Revenue" stackId="a" name={t('manager.charts.ticketClasses.promo')} fill={PROMO_COLOR} />
+                  <Bar dataKey="Economy Revenue" stackId="a" name={t('manager.charts.ticketClasses.economy')} fill={ECONOMY_COLOR} />
+                  <Bar dataKey="Business Revenue" stackId="a" name={t('manager.charts.ticketClasses.business')} fill={BUSINESS_COLOR} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -533,9 +549,9 @@ const ManagerCharts = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="Promo Tickets" name={t('manager.charts.ticketClasses.promo')} stroke="#F0C809" strokeWidth={2} activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="Economy Tickets" name={t('manager.charts.ticketClasses.economy')} stroke="#06AED5" strokeWidth={2} activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="Business Tickets" name={t('manager.charts.ticketClasses.business')} stroke="#0D3A73" strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Promo Tickets" name={t('manager.charts.ticketClasses.promo')} stroke={PROMO_COLOR} strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Economy Tickets" name={t('manager.charts.ticketClasses.economy')} stroke={ECONOMY_COLOR} strokeWidth={2} activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Business Tickets" name={t('manager.charts.ticketClasses.business')} stroke={BUSINESS_COLOR} strokeWidth={2} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -565,8 +581,8 @@ const ManagerCharts = () => {
                         labelLine={false}
                         isAnimationActive={false}
                       >
-                        {ticketClassData.filter(item => item.value > 0).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        {ticketClassData.filter(item => item.value > 0).map((entry) => (
+                          <Cell key={`cell-${entry.name}`} fill={getTicketClassColor(entry.name)} />
                         ))}
                       </Pie>
                       <Tooltip formatter={(value) => value.toLocaleString()} />
@@ -577,10 +593,10 @@ const ManagerCharts = () => {
                         verticalAlign="bottom"
                         align="center"
                         payload={
-                          ticketClassData.filter(item => item.value > 0).map((entry, index) => ({
+                          ticketClassData.filter(item => item.value > 0).map((entry) => ({
                             value: `${t(`manager.charts.ticketClasses.${entry.name}`)} ${((entry.value / ticketClassData.reduce((sum, item) => sum + (item.value > 0 ? item.value : 0), 0)) * 100).toFixed(0)}%`,
                             type: 'circle',
-                            color: COLORS[index % COLORS.length],
+                            color: getTicketClassColor(entry.name),
                           }))
                         }
                       />
@@ -598,13 +614,13 @@ const ManagerCharts = () => {
                         <span>{cls.totalSold.toLocaleString()} {t('manager.charts.tickets')}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="h-2 rounded-full" 
-                          style={{ 
-                            width: cls.percentOfTotal > 0 ? `${cls.percentOfTotal}%` : '0%', 
-                            backgroundColor: COLORS[index % COLORS.length] 
-                          }}
-                        ></div>
+                      <div 
+                        className="h-2 rounded-full" 
+                        style={{ 
+                          width: cls.percentOfTotal > 0 ? `${cls.percentOfTotal}%` : '0%', 
+                          backgroundColor: getTicketClassColor(cls.class) 
+                        }}
+                      ></div>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
                         {formatCurrency(cls.totalRevenue)} {t('manager.charts.totalRevenue')}

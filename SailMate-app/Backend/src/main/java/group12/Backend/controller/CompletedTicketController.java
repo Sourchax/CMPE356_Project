@@ -85,10 +85,7 @@ public class CompletedTicketController {
         if (ticket.isPresent()) {
             CompletedTicketDTO ticketDTO = ticket.get();
             
-            // Check authorization: either admin/super or the owner of the ticket
-            String role = (String) claims.get("meta_data", HashMap.class).get("role");
-            if ("super".equalsIgnoreCase(role) || 
-                    claims.getSubject().equals(ticketDTO.getUserId())) {
+            if (claims.getSubject().equals(ticketDTO.getUserId())) {
                 
                 // Log the activity
                 ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
@@ -124,10 +121,7 @@ public class CompletedTicketController {
         if (ticket.isPresent()) {
             CompletedTicketDTO ticketDTO = ticket.get();
             
-            // Check authorization: either admin/super or the owner of the ticket
-            String role = (String) claims.get("meta_data", HashMap.class).get("role");
-            if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role) || 
-                    claims.getSubject().equals(ticketDTO.getUserId())) {
+            if ( claims.getSubject().equals(ticketDTO.getUserId())) {
                 
                 // Log the activity
                 ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
@@ -158,15 +152,6 @@ public class CompletedTicketController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
         List<CompletedTicketDTO> tickets = completedTicketService.getCompletedTicketsByUserId(claims.getSubject());
-        
-        // Log the activity
-        ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
-        logRequest.setActionType("READ");
-        logRequest.setEntityType("COMPLETED_TICKET");
-        logRequest.setEntityId("user-" + claims.getSubject());
-        logRequest.setDescription("Retrieved all completed tickets for user");
-        logRequest.setDescriptionTr("Kullanıcının tüm tamamlanmış biletleri görüntülendi");
-        activityLogService.createActivityLog(logRequest, claims);
         
         return ResponseEntity.ok(tickets);
     }
@@ -242,7 +227,6 @@ public class CompletedTicketController {
         }
         
         CompletedTicketDTO ticket = ticketOpt.get();
-        String role = (String) claims.get("meta_data", HashMap.class).get("role");
         
         if (!ticket.getUserId().equals(claims.getSubject())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized to download this ticket");

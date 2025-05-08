@@ -212,7 +212,7 @@ const AdminVoyage = () => {
   const [filters, setFilters] = useState({
     search: '',
     date: '',
-    status: '',
+    status: 'normal',
     shipType: '',
     fuelType: ''
   });
@@ -258,7 +258,12 @@ const AdminVoyage = () => {
       const processedData = processVoyagesStatus(data);
       
       setVoyages(processedData);
-      setFilteredVoyages(processedData);
+      
+      // Apply the default filter (normal status)
+      const normalVoyages = processedData.filter(voyage => 
+        voyage.status === VOYAGE_STATUS.ACTIVE
+      );
+      setFilteredVoyages(normalVoyages);
       
       // Fetch seats sold data for all voyages
       const voyageIds = data.map(voyage => voyage.id);
@@ -400,7 +405,7 @@ const applyFilters = () => {
   const resetFilters = () => {
     setFilters({
       date: '',
-      status: '',
+      status: 'normal',
       shipType: '',
       fuelType: ''
     });
@@ -1133,17 +1138,17 @@ const applyFilters = () => {
             </div>
             
             <div>
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
-              >
-                <option value="">{t('adminVoyage.filters.allStatuses')}</option>
-                <option value="normal">{t('adminVoyage.filters.normal')}</option>
-                <option value="cancelled">{t('adminVoyage.filters.cancelled')}</option>
-                <option value="completed">{t('adminVoyage.filters.completed')}</option>
-              </select>
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#06AED5] focus:ring focus:ring-[#06AED5] focus:ring-opacity-50"
+            >
+              <option value="">{t('adminVoyage.filters.allStatuses')}</option>
+              <option value="normal">{t('adminVoyage.filters.normal')}</option>
+              <option value="cancelled">{t('adminVoyage.filters.cancelled')}</option>
+              <option value="completed">{t('adminVoyage.filters.completed')}</option>
+            </select>
             </div>
             
             <div>
