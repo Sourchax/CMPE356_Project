@@ -216,7 +216,7 @@ const ManagerFinance = () => {
       return;
     }
     
-    const token = useSessionToken();
+    const token = await useSessionToken();
     
     // Set submitting state
     setIsSubmitting(true);
@@ -225,6 +225,8 @@ const ManagerFinance = () => {
     try {
       // Compare with original prices fetched from API
       const apiUpdates = [];
+      // Track all price changes for the consolidated notification
+      const priceChanges = [];
   
       // Check Ticket Classes
       const promoPrice = prices.find(price => price.className === "Promo");
@@ -237,6 +239,13 @@ const ManagerFinance = () => {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Promo",
+          oldValue: promoPrice.value,
+          newValue: ticketClasses[0].basePrice
+        });
       }
   
       const economyPrice = prices.find(price => price.className === "Economy");
@@ -249,6 +258,13 @@ const ManagerFinance = () => {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Economy",
+          oldValue: economyPrice.value,
+          newValue: ticketClasses[1].basePrice
+        });
       }
   
       const businessPrice = prices.find(price => price.className === "Business");
@@ -261,6 +277,13 @@ const ManagerFinance = () => {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Business",
+          oldValue: businessPrice.value,
+          newValue: ticketClasses[2].basePrice
+        });
       }
   
       // Check Discounts
@@ -269,11 +292,18 @@ const ManagerFinance = () => {
         apiUpdates.push(
           axios.put(`${API_URL}/prices/class/Student`, {
             className: "Student",
-            value: discounts[0].percentage
+            value: discounts[0].percentage 
           }, {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Student",
+          oldValue: studentDiscount.value,
+          newValue: discounts[0].percentage
+        });
       }
   
       const seniorDiscount = prices.find(price => price.className === "Senior");
@@ -286,6 +316,13 @@ const ManagerFinance = () => {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Senior",
+          oldValue: seniorDiscount.value,
+          newValue: discounts[1].percentage
+        });
       }
   
       // Check Service Fee
@@ -299,11 +336,49 @@ const ManagerFinance = () => {
             headers: { Authorization: `Bearer ${token}` }
           })
         );
+        
+        // Track this change for notification
+        priceChanges.push({
+          className: "Fee",
+          oldValue: feePrice.value,
+          newValue: serviceFee
+        });
       }
   
       // Only make API calls for changed values
       if (apiUpdates.length > 0) {
+        // First, update all the prices in parallel
         await Promise.all(apiUpdates);
+        
+        // After successful updates, update the local prices state to reflect the changes
+        const updatedPrices = [...prices];
+        
+        priceChanges.forEach(change => {
+          const index = updatedPrices.findIndex(p => p.className === change.className);
+          if (index !== -1) {
+            updatedPrices[index] = {
+              ...updatedPrices[index],
+              value: change.newValue
+            };
+          }
+        });
+        
+        // Update local state to reflect changes
+        setPrices(updatedPrices);
+        
+        // Then, if there are any changes, send a single consolidated notification
+        if (priceChanges.length > 0) {
+          console.log("Sending price notifications:", priceChanges);
+          try {
+            await axios.post(`${API_URL}/prices/notify-price-updates`, priceChanges, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("Price notification sent successfully");
+          } catch (notifyError) {
+            console.error("Error sending price notification:", notifyError);
+            // Continue even if notification fails - prices are already updated
+          }
+        }
         
         // Show success message
         setSaveSuccess(true);
@@ -311,6 +386,9 @@ const ManagerFinance = () => {
         setTimeout(() => {
           setSaveSuccess(false);
         }, 3000);
+      } else {
+        // No changes were made
+        console.log("No changes detected, nothing to update");
       }
       
     } catch (err) {

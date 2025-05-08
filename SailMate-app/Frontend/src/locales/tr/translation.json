@@ -109,7 +109,12 @@
     "save": "Kaydet",
     "saving": "Kaydediliyor...",
     "success": "Tercihleriniz başarıyla güncellendi!",
-    "error": "Tercihleriniz güncellenirken bir hata oluştu. Lütfen tekrar deneyin."
+    "error": "Tercihleriniz güncellenirken bir hata oluştu. Lütfen tekrar deneyin.",
+
+    "newsSubscription": "E-posta Bildirimleri Al",
+    "newsSubscriptionHelp": "Yeni istasyonlar, fiyat değişiklikleri ve önemli duyurular hakkında bildirimler alın.",
+    "newsletterOn": "Güncelleme ve değişiklikler hakkında e-posta bildirimleri alacaksınız.",
+    "newsletterOff": "E-posta bildirimleri almayacaksınız."
   },
   "announcements": {
     "loading": "Duyurular yükleniyor...",

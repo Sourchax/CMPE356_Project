@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
-import { Settings, X } from "lucide-react";
+import { Settings, X, Mail, Globe, CheckCircle, XCircle } from "lucide-react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useSessionToken } from "../utils/sessions";
@@ -10,6 +10,7 @@ const API_BASE_URL = 'http://localhost:8080/api';
 const UserPreferencesModal = ({ isOpen, onClose }) => {
   const { user } = useUser();
   const [emailSmsLanguage, setEmailSmsLanguage] = useState("en");
+  const [newsSubscription, setNewsSubscription] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -22,6 +23,10 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
       // Get language preferences from user metadata if available
       const userLan = user.publicMetadata?.lan || "en";
       setEmailSmsLanguage(userLan);
+      
+      // Get newsletter subscription preference (default to false if not set)
+      const userNewsSubscription = user.publicMetadata?.news === true || false;
+      setNewsSubscription(userNewsSubscription);
     }
   }, [isOpen, user]);
 
@@ -82,7 +87,8 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
       
       // Update preferences through backend API only
       await axios.post(`${API_BASE_URL}/users/preferences`, {
-        emailSmsLanguage
+        emailSmsLanguage,
+        newsSubscription
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -93,12 +99,17 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
       // This is just for UI display and doesn't affect the actual user data
       if (user && user.publicMetadata) {
         // Create a shallow copy of the metadata
-        const updatedMetadata = { ...user.publicMetadata, lan: emailSmsLanguage };
+        const updatedMetadata = { 
+          ...user.publicMetadata, 
+          lan: emailSmsLanguage,
+          news: newsSubscription
+        };
         
-        // Force update the dropdown value
+        // Force update the values
         setEmailSmsLanguage(emailSmsLanguage);
+        setNewsSubscription(newsSubscription);
         
-        // This is a trick to update the select dropdown visually without actually
+        // This is a trick to update the UI visually without actually
         // modifying Clerk's data (which is already updated through the API)
         Object.defineProperty(user, 'publicMetadata', {
           writable: true,
@@ -153,11 +164,12 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
               </div>
             )}
             
-            <div className="mb-4">
+            <div className="mb-6">
               <label 
                 htmlFor="email-sms-language" 
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1 flex items-center"
               >
+                <Globe size={18} className="mr-2 text-[#0D3A73]" />
                 {t("preferencesModal.emailSmsLanguage")}
               </label>
               <select
@@ -173,6 +185,49 @@ const UserPreferencesModal = ({ isOpen, onClose }) => {
               <p className="mt-1 text-xs text-gray-500">
                 {t("preferencesModal.emailSmsLanguageHelp")}
               </p>
+            </div>
+            
+            {/* Newsletter subscription option */}
+            <div className="mb-6">
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="newsletter-subscription"
+                    type="checkbox"
+                    className="h-4 w-4 text-[#0D3A73] border-gray-300 rounded focus:ring-[#0D3A73]"
+                    checked={newsSubscription}
+                    onChange={(e) => setNewsSubscription(e.target.checked)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label 
+                    htmlFor="newsletter-subscription" 
+                    className="font-medium text-gray-700 flex items-center cursor-pointer"
+                  >
+                    <Mail size={18} className="mr-2 text-[#0D3A73]" />
+                    {t("preferencesModal.newsSubscription")}
+                  </label>
+                  <p className="text-gray-500 mt-1">
+                    {t("preferencesModal.newsSubscriptionHelp")}
+                  </p>
+                  
+                  {/* Show current status */}
+                  <div className="mt-2 flex items-center">
+                    {newsSubscription ? (
+                      <p className="text-green-600 flex items-center">
+                        <CheckCircle size={16} className="mr-1" />
+                        {t("preferencesModal.newsletterOn")}
+                      </p>
+                    ) : (
+                      <p className="text-gray-500 flex items-center">
+                        <XCircle size={16} className="mr-1" />
+                        {t("preferencesModal.newsletterOff")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         </div>

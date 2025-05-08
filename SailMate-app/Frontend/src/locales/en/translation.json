@@ -102,7 +102,11 @@
     "save": "Save",
     "saving": "Saving...",
     "success": "Preferences updated successfully!",
-    "error": "There was an error updating your preferences. Please try again."
+    "error": "There was an error updating your preferences. Please try again.",
+    "newsSubscription": "Receive Email Notifications",
+    "newsSubscriptionHelp": "Get notifications about new stations, price changes, and important announcements.",
+    "newsletterOn": "You will receive email notifications about updates and changes.",
+    "newsletterOff": "You will not receive email notifications."
   },
   "announcements": {
     "loading": "Loading announcements...",

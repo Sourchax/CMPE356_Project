@@ -41,7 +41,12 @@ public class ClerkUsers {
                         if (metadataMap.containsKey("role")) {
                             user.put("role", metadataMap.get("role"));
                         }
-
+                        if (metadataMap.containsKey("lan")) {
+                            user.put("lan", metadataMap.get("lan"));
+                        }
+                        if (metadataMap.containsKey("news")) {
+                            user.put("news", metadataMap.get("news"));
+                        }
                     }
                 }
                 if (a.imageUrl().isPresent())
@@ -79,12 +84,35 @@ public class ClerkUsers {
             .build();
 
         UpdateUserMetadataResponse res = sdk.users().updateMetadata()
-        .userId(userId)
-        .requestBody(UpdateUserMetadataRequestBody.builder().publicMetadata(Map.of("lan", language)).build())
-        .call();
+            .userId(userId)
+            .requestBody(UpdateUserMetadataRequestBody.builder().publicMetadata(Map.of("lan", language)).build())
+            .call();
             
         if (res.user().isEmpty()) {
             throw new Exception("Failed to update user language preference");
+        }
+    }
+    
+    /**
+     * Update user metadata with multiple fields at once
+     * 
+     * @param userId The user ID
+     * @param metadata A map of metadata fields to update
+     * @throws Exception If the update fails
+     */
+    public static void updateUserMetadata(String userId, Map<String, Object> metadata) throws Exception {
+        Dotenv dotenv = Dotenv.configure().directory("../Frontend").filename(".env.local").load();
+        Clerk sdk = Clerk.builder()
+            .bearerAuth(dotenv.get("VITE_CLERK_SECRET_KEY"))
+            .build();
+
+        UpdateUserMetadataResponse res = sdk.users().updateMetadata()
+            .userId(userId)
+            .requestBody(UpdateUserMetadataRequestBody.builder().publicMetadata(metadata).build())
+            .call();
+            
+        if (res.user().isEmpty()) {
+            throw new Exception("Failed to update user metadata");
         }
     }
 
@@ -127,22 +155,35 @@ public class ClerkUsers {
             if (res.user().get().phoneNumbers().isPresent())
                 user.put("phone", res.user().get().phoneNumbers().get().getFirst().phoneNumber());
             
-            // Get language preference from user metadata
+            // Get user preferences from metadata
             if (res.user().get().publicMetadata().isPresent()) {
                 Object metadata = res.user().get().publicMetadata().get();
                 if (metadata instanceof Map) {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> metadataMap = (Map<String, Object>) metadata;
+                    
+                    // Get language preference (default to English)
                     if (metadataMap.containsKey("lan")) {
                         user.put("lan", metadataMap.get("lan"));
                     } else {
-                        user.put("lan", "en"); // Default to English if no language preference is set
+                        user.put("lan", "en");
+                    }
+                    
+                    // Get newsletter subscription (default to false)
+                    if (metadataMap.containsKey("news")) {
+                        user.put("news", metadataMap.get("news"));
+                    } else {
+                        user.put("news", false);
                     }
                 } else {
-                    user.put("lan", "en"); // Default to English if metadata is not a map
+                    // Default values if metadata is not a map
+                    user.put("lan", "en");
+                    user.put("news", false);
                 }
             } else {
-                user.put("lan", "en"); // Default to English if no metadata is present
+                // Default values if no metadata is present
+                user.put("lan", "en");
+                user.put("news", false);
             }
     
             return user;

@@ -17,10 +17,10 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class UserPreferencesController {
     
-    // Update user language preference
+    // Update user preferences
     @PostMapping("")
     public ResponseEntity<Map<String, Object>> updateUserPreferences(
-            @RequestBody Map<String, String> request,
+            @RequestBody Map<String, Object> request,
             @RequestHeader("Authorization") String auth) throws Exception {
         
         // Authenticate user
@@ -29,7 +29,9 @@ public class UserPreferencesController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         
         String userId = claims.getSubject();
-        String emailSmsLanguage = request.get("emailSmsLanguage");
+        
+        // Get language preference from request
+        String emailSmsLanguage = (String) request.get("emailSmsLanguage");
         
         if (emailSmsLanguage == null || emailSmsLanguage.isEmpty()) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -46,14 +48,26 @@ public class UserPreferencesController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
         
+        // Get newsletter subscription preference from request (default to false if not provided)
+        Boolean newsSubscription = request.get("newsSubscription") instanceof Boolean ?
+                (Boolean) request.get("newsSubscription") : false;
+        
         try {
-            // Update user's language preference in Clerk
-            ClerkUsers.updateUserLanguage(userId, emailSmsLanguage);
+            // Create a map for metadata updates
+            Map<String, Object> metadataUpdates = new HashMap<>();
+            metadataUpdates.put("lan", emailSmsLanguage);
+            metadataUpdates.put("news", newsSubscription);
+            
+            // Update user's metadata in Clerk with both preferences
+            ClerkUsers.updateUserMetadata(userId, metadataUpdates);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "User preferences updated successfully");
-            response.put("language", emailSmsLanguage);
+            response.put("preferences", Map.of(
+                "language", emailSmsLanguage,
+                "newsSubscription", newsSubscription
+            ));
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -88,8 +102,16 @@ public class UserPreferencesController {
                 metadata = claimsMetadata;
             }
             
+            // Get language preference (default to "en")
+            String language = (String) metadata.getOrDefault("lan", "en");
+            
+            // Get newsletter subscription (default to false)
+            Boolean newsSubscription = metadata.get("news") instanceof Boolean ? 
+                    (Boolean) metadata.get("news") : false;
+            
             Map<String, Object> preferences = new HashMap<>();
-            preferences.put("emailSmsLanguage", metadata.getOrDefault("lan", "en"));
+            preferences.put("emailSmsLanguage", language);
+            preferences.put("newsSubscription", newsSubscription);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);

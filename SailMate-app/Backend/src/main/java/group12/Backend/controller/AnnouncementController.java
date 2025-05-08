@@ -42,6 +42,9 @@ public class AnnouncementController {
     @Autowired
     private ActivityLogService activityLogService;
     
+    @Autowired
+    private EmailUtil emailUtil;
+    
     // Get all announcements
     @GetMapping
     public ResponseEntity<List<AnnouncementDTO>> getAllAnnouncements() {
@@ -77,6 +80,9 @@ public class AnnouncementController {
             logRequest.setDescription("Created announcement: " + created.getTitle());
             logRequest.setDescriptionTr("Duyuru oluşturuldu: " + created.getTitle());
             activityLogService.createActivityLog(logRequest, claims);
+            
+            // Send email notification to users with news subscription
+            emailUtil.notifyAnnouncementAdded(created.getTitle());
             
             return new ResponseEntity<>(created, HttpStatus.CREATED);   
         }
@@ -183,5 +189,4 @@ public class AnnouncementController {
     public ResponseEntity<Long> getAnnouncementCount() {
         return ResponseEntity.ok(announcementService.getAnnouncementCount());
     }
-    
 }

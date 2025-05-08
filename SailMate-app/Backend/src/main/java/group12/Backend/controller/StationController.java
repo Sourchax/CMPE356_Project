@@ -33,6 +33,9 @@ public class StationController {
     private final StationService stationService;
     private final ActivityLogService activityLogService;
     
+    @Autowired
+    private EmailUtil emailUtil;
+    
     // Static map for status translations
     private static final Map<Station.Status, String> STATUS_TRANSLATIONS = new HashMap<>();
     static {
@@ -128,7 +131,53 @@ public class StationController {
             logRequest.setDescriptionTr("İstasyon oluşturuldu: " + savedStation.getTitle() + ", " + savedStation.getCity() + " şehrinde");
             activityLogService.createActivityLog(logRequest, claims);
             
+            // Send email notification to users with news subscription
+            emailUtil.notifyStationCreated(savedStation.getTitle(), savedStation.getCity());
+            
             return new ResponseEntity<>(savedStation, HttpStatus.CREATED);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
+        Claims claims = Authentication.getClaims(auth);
+        if (claims == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        String role = (String) claims.get("meta_data", HashMap.class).get("role");
+        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
+            if (!stationService.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Get station details for logging before deletion
+            Optional<Station> stationOpt = stationService.getStationById(id);
+            String stationTitle = "";
+            String stationCity = "";
+            
+            if (stationOpt.isPresent()) {
+                Station station = stationOpt.get();
+                stationTitle = station.getTitle();
+                stationCity = station.getCity();
+            }
+            
+            stationService.deleteStation(id);
+            
+            // Log the activity
+            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
+            logRequest.setActionType("DELETE");
+            logRequest.setEntityType("STATION");
+            logRequest.setEntityId(id.toString());
+            logRequest.setDescription("Deleted station: " + stationTitle + " in " + stationCity);
+            logRequest.setDescriptionTr("İstasyon silindi: " + stationTitle + ", " + stationCity + " şehrinde");
+            activityLogService.createActivityLog(logRequest, claims);
+            
+            // Send email notification to users with news subscription
+            emailUtil.notifyStationDeleted(stationTitle, stationCity);
+            
+            return ResponseEntity.noContent().build();
         }
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
@@ -210,46 +259,6 @@ public class StationController {
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }     
-    }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Integer id, @RequestHeader("Authorization") String auth) throws Exception {
-        Claims claims = Authentication.getClaims(auth);
-        if (claims == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        String role = (String) claims.get("meta_data", HashMap.class).get("role");
-        if ("admin".equalsIgnoreCase(role) || "super".equalsIgnoreCase(role)){
-            if (!stationService.existsById(id)) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Get station details for logging before deletion
-            Optional<Station> stationOpt = stationService.getStationById(id);
-            String stationTitle = "";
-            String stationCity = "";
-            
-            if (stationOpt.isPresent()) {
-                Station station = stationOpt.get();
-                stationTitle = station.getTitle();
-                stationCity = station.getCity();
-            }
-            
-            stationService.deleteStation(id);
-            
-            // Log the activity
-            ActivityLogDTO.ActivityLogCreateRequest logRequest = new ActivityLogDTO.ActivityLogCreateRequest();
-            logRequest.setActionType("DELETE");
-            logRequest.setEntityType("STATION");
-            logRequest.setEntityId(id.toString());
-            logRequest.setDescription("Deleted station: " + stationTitle + " in " + stationCity);
-            logRequest.setDescriptionTr("İstasyon silindi: " + stationTitle + ", " + stationCity + " şehrinde");
-            activityLogService.createActivityLog(logRequest, claims);
-            
-            return ResponseEntity.noContent().build();
-        }
-        else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
-        }
     }
     
     private Station convertToEntity(StationDTO stationDTO) {
