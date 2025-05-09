@@ -1291,6 +1291,8 @@
     "return": "Return",
     "date": "Date",
     "earlyBookingDiscount": "Early Booking Discount",
+    "processingPayment": "Processing your payment and creating tickets. Please wait...",
+    "beingPrepared": "Your ferry tickets are being prepared",
     "placeholders": {
       "name": "Enter your Name",
       "surname": "Enter your Surname",
@@ -1456,7 +1458,7 @@
       "stats": {
         "activeUsers": "Active Users",
         "pendingComplaints": "Pending Complaints",
-        "ticketTypes": "Ticket Types",
+        "ticketTypes": "Price Modals",
         "totalTickets": "Total Tickets Purchased"
       },
       "cards": {

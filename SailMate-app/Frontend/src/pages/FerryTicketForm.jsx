@@ -3,6 +3,7 @@ import JourneyCatagory from "../components/ferry-ticket-form/JourneyCatagory.jsx
 import TicketSum from "../components/ferry-ticket-form/TicketSum.jsx";
 import PaymentConfirmation from "../components/ferry-ticket-form/PaymentConfirmation.jsx";
 import { FaClock } from 'react-icons/fa';
+import { Ship, Waves } from 'lucide-react';
 import axios from 'axios';
 import DepartureInfo from "../components/ferry-ticket-form/DepartureInfo.jsx";
 import TicketPurchase from "../components/ferry-ticket-form/TicketPurchase.jsx";
@@ -22,6 +23,33 @@ const steps = [
 ];
 
 const API_URL = "http://localhost:8080/api";
+
+const LoadingOverlay = ({ message, beingPrepared }) => {
+  return (
+    <div className="fixed inset-0 bg-blue-900/70 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+      <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full mx-4 transform transition-all border-l-4 border-blue-500">
+        <div className="relative w-24 h-24 mx-auto mb-6 flex flex-col items-center justify-center">
+          {/* Ship icon with gentle animation */}
+          <div className="text-blue-600 animate-bounce duration-2000">
+            <Ship size={48} strokeWidth={1.5} />
+          </div>
+          
+          {/* Waves icon below the ship */}
+          <div className="text-blue-400 mt-2 animate-pulse">
+            <Waves size={40} strokeWidth={1.5} />
+          </div>
+        </div>
+        
+        <p className="text-xl font-medium text-blue-800 mb-2">
+          {message}
+        </p>
+        <p className="text-sm text-blue-500">
+          {beingPrepared}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const ProgressBar = ({ currentStep, width }) => {
   return (
@@ -62,6 +90,8 @@ const FerryTicketForm = () => {
   const location = useLocation();
   const [prices, setPrices] = useState([]);
 
+
+  const [isProcessing, setIsProcessing] = useState(false);
   useEffect(() => {
     const fetchPrices = async () => {
       try {
@@ -267,10 +297,11 @@ const FerryTicketForm = () => {
     setCurrentStep((prev) => prev - 1);
   }
   const handleSubmit = async () => {
+    setIsProcessing(true);
     const ticketsCreated = await createTickets();
     
     if (ticketsCreated) {
-      // If tickets were created successfully, show the Thank You page
+      setIsProcessing(false);
       setCurrentStep(4);
     }
   };
@@ -388,7 +419,7 @@ const FerryTicketForm = () => {
           // Create detailed message content based on ticket type
           let message = "";
           const userLanguage = user.publicMetadata?.lan || "en";
-  
+
           if (userLanguage === "tr") {
             // Turkish version
             message = "SailMate'i seçtiğiniz için teşekkür ederiz! \\n";
@@ -429,24 +460,27 @@ const FerryTicketForm = () => {
             message += "Have a pleasant journey!";
           }
           
-          // Call the SMS API
-          const smsResponse = await axios.post(`${API_URL}/sms/send`, {
+          // Call the SMS API without waiting for the response
+          axios.post(`${API_URL}/sms/send`, {
             message: message
           }, {
             headers: {
               Authorization: `Bearer ${useSessionToken()}`
             }
+          }).then(smsResponse => {
+            console.log("SMS notification sent:", smsResponse.data);
+          }).catch(smsError => {
+            console.error("Error sending SMS notification:", smsError);
           });
-          
-          console.log("SMS notification sent:", smsResponse.data);
         }
       } catch (smsError) {
-        console.error("Error sending SMS notification:", smsError);
+        console.error("Error preparing SMS notification:", smsError);
       }
       return true;
     } catch (error) {
       console.error("Error creating tickets:", error);
       alert("There was an error creating your tickets. Please try again.");
+      setIsProcessing(false);
       return false;
     }
   };
@@ -599,7 +633,9 @@ const FerryTicketForm = () => {
   };
 
   return (
-    currentStep === 4 ? (
+    <>
+      {isProcessing && <LoadingOverlay message={t('ferryTicketing.processingPayment')} beingPrepared={t('ferryTicketing.beingPrepared')}/>}
+      {currentStep === 4 ? (
       <ThankYouPage />
     ) : (
       <div className="relative max-w-7xl mx-auto p-3 sm:p-6 bg-white shadow-md rounded-lg min-h-[80vh]">
@@ -792,7 +828,8 @@ const FerryTicketForm = () => {
           )}
         </div>
       </div>
-    )
+    )}
+    </>
   );
 };
 

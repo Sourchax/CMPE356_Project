@@ -1282,6 +1282,8 @@
     "oneWay": "Tek Yön",
     "return": "Dönüş",
     "earlyBookingDiscount": "Erken Rezervasyon İndirimi",
+    "processingPayment": "Ödemeniz işleniyor ve biletleriniz oluşturuluyor. Lütfen bekleyin...",
+    "beingPrepared": "Feribot biletleriniz hazırlanıyor",
         "date": "Tarih",
     "placeholders": {
       "name": "Adınızı Girin",
@@ -1449,7 +1451,7 @@
       "stats": {
         "activeUsers": "Aktif Kullanıcılar",
         "pendingComplaints": "Bekleyen Şikayetler",
-        "ticketTypes": "Bilet Türleri",
+        "ticketTypes": "Fiyat Modelleri",
         "totalTickets": "Toplam Satılan Biletler"
       },
       "cards": {
