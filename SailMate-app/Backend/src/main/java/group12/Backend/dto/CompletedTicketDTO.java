@@ -19,7 +19,7 @@ public class CompletedTicketDTO {
     private String shipType;
     private Boolean fuelType;
     private Integer passengerCount;
-    private Integer totalPrice;
+    private Double totalPrice;  // Changed from Integer to Double
     private String ticketClass;
     private String selectedSeats;
     private String userId;
@@ -34,7 +34,7 @@ public class CompletedTicketDTO {
                              String depStationTitle, String arrCity, String arrStationTitle,
                              LocalDate depDate, LocalTime depTime, LocalTime arrTime,
                              String shipType, Boolean fuelType, Integer passengerCount,
-                             Integer totalPrice, String ticketClass, String selectedSeats,
+                             Double totalPrice, String ticketClass, String selectedSeats,
                              String userId, List<TicketDTO.PassengerInfo> passengers,
                              LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -164,11 +164,11 @@ public class CompletedTicketDTO {
         this.passengerCount = passengerCount;
     }
     
-    public Integer getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
     
-    public void setTotalPrice(Integer totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
     

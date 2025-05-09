@@ -79,7 +79,7 @@ public class TicketDTO {
     public static class TicketRequest {
         private Integer voyageId;
         private Integer passengerCount;
-        private Integer totalPrice;
+        private Double totalPrice;  // Changed from Integer to Double
         private String ticketClass;
         private String selectedSeats;
         private String userId;
@@ -88,7 +88,7 @@ public class TicketDTO {
         // Constructors
         public TicketRequest() {}
         
-        public TicketRequest(Integer voyageId, Integer passengerCount, Integer totalPrice, 
+        public TicketRequest(Integer voyageId, Integer passengerCount, Double totalPrice, 
                             String ticketClass, String selectedSeats, String userId, 
                             List<PassengerInfo> passengers) {
             this.voyageId = voyageId;
@@ -117,11 +117,11 @@ public class TicketDTO {
             this.passengerCount = passengerCount;
         }
         
-        public Integer getTotalPrice() {
+        public Double getTotalPrice() {
             return totalPrice;
         }
         
-        public void setTotalPrice(Integer totalPrice) {
+        public void setTotalPrice(Double totalPrice) {
             this.totalPrice = totalPrice;
         }
         
@@ -163,7 +163,7 @@ public class TicketDTO {
         private String ticketID;
         private Integer voyageId;
         private Integer passengerCount;
-        private Integer totalPrice;
+        private Double totalPrice;  // Changed from Integer to Double
         private String ticketClass;
         private String selectedSeats;
         private String userId;
@@ -184,7 +184,7 @@ public class TicketDTO {
         public TicketResponse() {}
         
         public TicketResponse(Integer id, String ticketID, Integer voyageId, Integer passengerCount,
-                            Integer totalPrice, String ticketClass, String selectedSeats, String userId,
+                            Double totalPrice, String ticketClass, String selectedSeats, String userId,
                             List<PassengerInfo> passengers, LocalDateTime createdAt, LocalDateTime updatedAt) {
             this.id = id;
             this.ticketID = ticketID;
@@ -232,11 +232,11 @@ public class TicketDTO {
             this.passengerCount = passengerCount;
         }
         
-        public Integer getTotalPrice() {
+        public Double getTotalPrice() {
             return totalPrice;
         }
         
-        public void setTotalPrice(Integer totalPrice) {
+        public void setTotalPrice(Double totalPrice) {
             this.totalPrice = totalPrice;
         }
         
@@ -348,7 +348,7 @@ public class TicketDTO {
     
     public static class TicketUpdateRequest {
         private Integer passengerCount;
-        private Integer totalPrice;
+        private Double totalPrice;  // Changed from Integer to Double
         private String ticketClass;
         private String selectedSeats;
         private List<PassengerInfo> passengers;
@@ -356,7 +356,7 @@ public class TicketDTO {
         // Constructors
         public TicketUpdateRequest() {}
         
-        public TicketUpdateRequest(Integer passengerCount, Integer totalPrice, String ticketClass,
+        public TicketUpdateRequest(Integer passengerCount, Double totalPrice, String ticketClass,
                                 String selectedSeats, List<PassengerInfo> passengers) {
             this.passengerCount = passengerCount;
             this.totalPrice = totalPrice;
@@ -374,11 +374,11 @@ public class TicketDTO {
             this.passengerCount = passengerCount;
         }
         
-        public Integer getTotalPrice() {
+        public Double getTotalPrice() {
             return totalPrice;
         }
         
-        public void setTotalPrice(Integer totalPrice) {
+        public void setTotalPrice(Double totalPrice) {
             this.totalPrice = totalPrice;
         }
         

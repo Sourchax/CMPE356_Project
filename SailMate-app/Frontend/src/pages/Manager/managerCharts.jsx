@@ -192,86 +192,74 @@ const ManagerCharts = () => {
       };
     });
     
-    // Calculate route popularity
     const routeCounts = {};
     const routeRevenue = {};
+    const routeDetails = {}; // Properly declare routeDetails at the same scope level as other variables
     
     yearTickets.forEach(ticket => {
       // Skip tickets without voyage info for active tickets
       if (!ticket.isCompletedTicket && (!ticket.voyageId || !voyageMap[ticket.voyageId])) return;
       
-      let fromStationId, toStationId, fromStation, toStation;
+      let fromCity, fromTitle, toCity, toTitle;
       
       if (ticket.isCompletedTicket) {
         // For completed tickets, we already have the station info stored
-        fromStationId = 0; // Use placeholder IDs for completed tickets
-        toStationId = 1;
-        fromStation = {
-          id: fromStationId,
-          title: ticket.fromStationTitle || ticket.depStationTitle,
-          city: ticket.fromStationCity || ticket.depCity
-        };
-        toStation = {
-          id: toStationId,
-          title: ticket.toStationTitle || ticket.arrStationTitle,
-          city: ticket.toStationCity || ticket.arrCity
-        };
+        fromCity = ticket.fromStationCity || ticket.depCity;
+        fromTitle = ticket.fromStationTitle || ticket.depStationTitle;
+        toCity = ticket.toStationCity || ticket.arrCity;
+        toTitle = ticket.toStationTitle || ticket.arrStationTitle;
       } else {
         // For active tickets, get info from the voyage
         const voyage = voyageMap[ticket.voyageId];
-        fromStation = voyage.fromStation;
-        toStation = voyage.toStation;
         
-        // Skip if station info is missing
-        if (!fromStation || !toStation) return;
+        // Skip if voyage or station info is missing
+        if (!voyage || !voyage.fromStation || !voyage.toStation) return;
         
-        fromStationId = fromStation.id;
-        toStationId = toStation.id;
+        fromCity = voyage.fromStation.city;
+        fromTitle = voyage.fromStation.title;
+        toCity = voyage.toStation.city;
+        toTitle = voyage.toStation.title;
       }
       
-      // Create a unique route key - for completed tickets, use a city+title based key
-      const routeKey = ticket.isCompletedTicket ?
-        `${fromStation.city}-${fromStation.title}-${toStation.city}-${toStation.title}` :
-        `${fromStationId}-${toStationId}`;
+      // Skip if we're missing any essential route information
+      if (!fromCity || !toCity) return;
+      
+      // Create a consistent route key based on city names for both types of tickets
+      const routeKey = `${fromCity}-${toCity}`;
       
       // Count routes
       routeCounts[routeKey] = (routeCounts[routeKey] || 0) + 1;
       
       // Sum revenue by route
       routeRevenue[routeKey] = (routeRevenue[routeKey] || 0) + ticket.totalPrice;
+      
+      // Store the station titles for this route (for the first occurrence)
+      if (!routeDetails[routeKey]) {
+        routeDetails[routeKey] = {
+          fromTitle: fromTitle,
+          toTitle: toTitle
+        };
+      }
     });
     
     // Create popular routes array
     const popularRoutes = Object.keys(routeCounts).map(routeKey => {
-      let from, fromCity, to, toCity;
+      // The route key is now consistently "fromCity-toCity"
+      const [fromCity, toCity] = routeKey.split('-');
       
-      if (routeKey.split('-').length > 2) {
-        // This is a completed ticket route key (city-title-city-title)
-        const [fromCity, fromTitle, toCity, toTitle] = routeKey.split('-');
-        return {
-          from: fromTitle,
-          fromCity: fromCity,
-          to: toTitle,
-          toCity: toCity,
-          count: routeCounts[routeKey],
-          revenue: routeRevenue[routeKey]
-        };
-      } else {
-        // This is an active ticket route key (fromId-toId)
-        const [fromId, toId] = routeKey.split('-');
-        const fromStation = stationMap[fromId];
-        const toStation = stationMap[toId];
-        
-        return {
-          from: fromStation.title,
-          fromCity: fromStation.city,
-          to: toStation.title,
-          toCity: toStation.city,
-          count: routeCounts[routeKey],
-          revenue: routeRevenue[routeKey]
-        };
-      }
-    }).sort((a, b) => b.count - a.count);
+      // Get the station titles from our stored details
+      const details = routeDetails[routeKey] || {};
+      
+      return {
+        from: details.fromTitle || fromCity, // Fallback to city if title is missing
+        fromCity: fromCity,
+        to: details.toTitle || toCity, // Fallback to city if title is missing
+        toCity: toCity,
+        count: routeCounts[routeKey],
+        revenue: routeRevenue[routeKey]
+      };
+    // Changed sorting to use revenue instead of count
+    }).sort((a, b) => b.revenue - a.revenue);
     
     // Calculate ticket class performance
     const classTotals = {
@@ -312,7 +300,6 @@ const ManagerCharts = () => {
         : 0
     }));
     
-    // Calculate summary statistics
     const totalRevenue = yearTickets.reduce((sum, ticket) => sum + ticket.totalPrice, 0);
     const totalPassengers = yearTickets.reduce((sum, ticket) => sum + ticket.passengerCount, 0);
     const avgTicketPrice = totalTickets > 0 ? (totalRevenue / totalTickets) : 0;
@@ -326,7 +313,11 @@ const ManagerCharts = () => {
       totalRevenue,
       totalPassengers,
       averageTicketPrice: Math.round(avgTicketPrice),
-      mostPopularRoute: popularRoutes.length > 0 ? popularRoutes[0] : null,
+      // Now this is the most profitable route since we sorted by revenue
+      mostProfitableRoute: popularRoutes.length > 0 ? popularRoutes[0] : null,
+      mostPopularRouteByCount: popularRoutes.length > 0 
+        ? [...popularRoutes].sort((a, b) => b.count - a.count)[0] 
+        : null,
       mostProfitableClass: classPerformance.sort((a, b) => b.totalRevenue - a.totalRevenue)[0],
       activeTicketsCount,
       completedTicketsCount
@@ -632,7 +623,6 @@ const ManagerCharts = () => {
             </div>
           </div>
           
-          {/* Ticket Status Distribution and Popular Routes */}
           <div className="bg-white p-6 rounded-xl shadow-md">     
             <h2 className="text-xl font-semibold mb-4">{t('manager.charts.popularRoutes')}</h2>
             <div className="space-y-4 mb-4">
@@ -654,13 +644,13 @@ const ManagerCharts = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium">{route.count.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500">{formatCurrency(route.revenue)}</div>
+                    <div className="font-medium">{formatCurrency(route.revenue)}</div>
+                    <div className="text-sm text-gray-500">{route.count.toLocaleString()} {t('manager.charts.tickets')}</div>
                   </div>
                 </div>
               ))}
             </div>
-            {summaryStats.mostPopularRoute && (
+            {summaryStats.mostProfitableRoute && (
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <div className="flex items-start">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -670,9 +660,9 @@ const ManagerCharts = () => {
                     <h4 className="font-medium">{t('manager.charts.profitableRoute')}</h4>
                     <p className="text-sm text-gray-600 mt-1">
                       {t('manager.charts.routeRevenue', {
-                        from: summaryStats.mostPopularRoute.fromCity,
-                        to: summaryStats.mostPopularRoute.toCity,
-                        revenue: formatCurrency(summaryStats.mostPopularRoute.revenue)
+                        from: summaryStats.mostProfitableRoute.fromCity,
+                        to: summaryStats.mostProfitableRoute.toCity,
+                        revenue: formatCurrency(summaryStats.mostProfitableRoute.revenue)
                       })}
                     </p>
                   </div>

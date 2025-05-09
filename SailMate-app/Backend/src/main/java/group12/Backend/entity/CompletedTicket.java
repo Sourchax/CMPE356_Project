@@ -1,3 +1,4 @@
+// CompletedTicket.java
 package group12.Backend.entity;
 
 import jakarta.persistence.*;
@@ -50,7 +51,7 @@ public class CompletedTicket {
     private Integer passengerCount;
     
     @Column(name = "total_price", nullable = false)
-    private Integer totalPrice;
+    private Double totalPrice;   // Changed from Integer to Double
     
     @Column(name = "ticket_class", nullable = false)
     private String ticketClass;
@@ -190,11 +191,11 @@ public class CompletedTicket {
         this.passengerCount = passengerCount;
     }
 
-    public Integer getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Integer totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

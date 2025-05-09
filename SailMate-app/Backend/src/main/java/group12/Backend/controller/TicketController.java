@@ -543,12 +543,18 @@ public class TicketController {
 
     @PostMapping("/send-email")
     public ResponseEntity<?> sendTicketEmail(@RequestBody Map<String, Object> ticketInfo, @RequestHeader("Authorization") String auth) throws Exception {
-        Claims claims = Authentication.getClaims(auth);
-        if(claims == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authorized");
-
         try {
-            // Get user information from Clerk
+            Claims claims = Authentication.getClaims(auth);     
+            if (claims == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid authentication token");
+            }
+            
+            String userId = claims.getSubject();
+            System.out.println("User ID from claims: " + userId);
+            
+            if (userId == null || userId.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User ID not found in token");
+            }
             HashMap<String, Object> user = ClerkUsers.getUser(claims.getSubject());
             if(user == null)
                 return ResponseEntity.badRequest().body("User not found");

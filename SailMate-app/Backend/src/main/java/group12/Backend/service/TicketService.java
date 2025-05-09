@@ -134,7 +134,7 @@ public class TicketService {
             
             // Track original values for notification
             Integer originalPassengerCount = ticket.getPassengerCount();
-            Integer originalTotalPrice = ticket.getTotalPrice();
+            Double originalTotalPrice = ticket.getTotalPrice();
             String originalTicketClass = ticket.getTicketClass();
             String originalSelectedSeats = ticket.getSelectedSeats();
             String originalTicketData = ticket.getTicketData();
